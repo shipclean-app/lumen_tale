@@ -23,8 +23,8 @@
 
 ## Error handling
 
-- Prefer typed exceptions (`SourceException`, `NetworkException`, `DatabaseException`) over bare `Exception` / `Error`.
-- Use `sealed class` result types where failure is a meaningful outcome; otherwise throw and `try/catch` at boundaries.
+- Repositories and sources throw **typed exceptions** — the `AppException` hierarchy (`SourceException`, `NetworkException`, `DatabaseException`, `ChapterNotAvailableException`). See `13-error-handling.md`. We do **not** use a `Result<T>` / `Either` return type; Riverpod `AsyncValue` already models async failure.
+- Never surface `e.toString()` or stacktraces to users — map exceptions to localized messages.
 - Never swallow errors: log with `core/utils/logger` and rethrow or map. No `print()` (`avoid_print`).
 - Never write a silent `catch (_) {}` (`empty_catches`).
 
@@ -41,3 +41,15 @@
 - Prefer streams over callbacks for reactive data.
 - Keep methods small and focused; no god-objects.
 - Document public APIs with doc comments (`///`). Do not add comments that merely restate the code.
+
+## Dependencies (pubspec)
+
+- It is **forbidden** to edit `pubspec.yaml` by hand to add, remove, or pin packages.
+- Always use the official commands: `flutter pub add <pkg>`, `flutter pub add dev:<pkg>`, `flutter pub remove <pkg>`.
+- Non-package changes (assets, fonts, metadata) are allowed but must stay minimal and justified.
+
+## Codegen (build_runner)
+
+- `freezed`, `riverpod_generator`, and drift generate code — never hand-write what codegen produces (no hand-written `copyWith` / `==` / providers for annotated classes).
+- Regenerate with `dart run build_runner build --delete-conflicting-outputs`. Generated files are committed and excluded from analysis (`analysis_options.yaml`).
+- Do not mix hand-written and generated models for the same type.

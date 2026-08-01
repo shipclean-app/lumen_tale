@@ -22,3 +22,11 @@ SQLite via `drift`. Mirrors Mihon's schema (manga/chapter/library/history/source
 7. **Indexes**: index hot query paths — chapters by `(novelId, number)`, history by `lastReadAt`, novels by `title` / `status`.
 8. **No N+1**: fetch chapter counts for the library via aggregate queries (a `libraryView`-style query), never per-row loops.
 9. **JSON columns**: `genres` and `memo` are stored as JSON strings via a drift `TypeConverter`.
+
+## Repository & mappers (data layer)
+
+- Repository interfaces live in `domain/repositories`, implementations in `data/repositories`.
+- DB entities and domain models are distinct types. Mapping lives in `data/mappers/` as static classes (`NovelMappers.fromRow`, `.toInsert`, ...). Domain never imports drift.
+- Repositories return domain types or `Stream<T>`; never expose `TableRow` / `QueryRow` / `Map<String, dynamic>` to features.
+- Mappers handle: timestamps (epoch millis ↔ `DateTime`), JSON columns (`genres`, `memo`), enum ↔ int codes.
+- Every mapper ships unit tests (see `10-testing.md`).

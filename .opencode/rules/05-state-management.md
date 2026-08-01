@@ -14,3 +14,28 @@ Riverpod covers both **state management** and **dependency injection**.
 8. **DI roles**: repositories and interactors are providers. `SourceManager` is a provider that builds the registry from `source_registry.dart`.
 9. **No `ChangeNotifier`**: anything beyond trivial widget-local state uses Riverpod. `StatefulWidget` is allowed only for ephemeral state.
 10. **AutoDispose**: prefer `autoDispose` for screen-scoped providers (search, browse) to free memory. Keep library/session providers non-disposing.
+
+## Lifecycle
+
+- `autoDispose` is the default for screen-scoped providers (search, browse, reader).
+- `keepAlive` only for global / session providers (app preferences, `SourceManager`, library). Never `keepAlive` a parameterized provider without a reason.
+
+## Invalidation (cache)
+
+- After a mutation, refresh with `ref.invalidateSelf()` inside an `AsyncNotifier`, or `ref.invalidate(provider)` from the UI.
+- When several providers must refresh together, group them in a named helper (e.g. `invalidateLibraryProviders(ref)`).
+
+## Notifier patterns
+
+- One notifier per concern (per screen/feature), never one giant provider exposing a whole state tree.
+- Dependencies (repositories, interactors) are injected via `ref.watch` in `build()`.
+- Mutations are public methods on the notifier; pages call `ref.read(provider.notifier).method(...)`.
+- Navigation logic never lives in a provider.
+
+## Anti-patterns
+
+- A giant provider exposing an entire feature's state tree — split it.
+- A provider modifying another provider's state directly — use `ref.invalidate` or `ref.read(other.notifier).action()`.
+- `ref.read` in `build()` where you mean to listen — use `ref.watch`.
+- Missing `.autoDispose` on page-scoped providers.
+- Hand-writing a provider when `@riverpod` codegen applies (we use codegen, see rule 1).

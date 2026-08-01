@@ -15,3 +15,9 @@
 6. **Network**: inject a fake `dio` client (or an interceptor) so tests never hit the network.
 7. **Naming**: `test`/`group` blocks read as sentences. Test behavior, not implementation.
 8. **Coverage targets**: keep source parsing + conversion coverage high (≥ 80%); these are the risky, change-prone parts.
+
+## Priorities
+
+- **P0 (always keep)**: source parsing (selectors/mappers), HTML→Markdown conversion, chapter recognition / numbering, repository round-trips (in-memory drift), domain value objects, route constants.
+- **P1 (add progressively)**: Riverpod notifiers/controllers via `ProviderContainer` + `overrideWith` — state transitions (loading → success / loading → error), cache invalidation.
+- **P2 (reusable components)**: widget tests for shared components (async state body, empty/error views, toast, covers) — `tester.tap`, `pumpAndSettle` (with a timeout).

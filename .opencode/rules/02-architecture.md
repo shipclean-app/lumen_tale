@@ -63,3 +63,16 @@ Additional rules:
 3. Remote fetch goes through the `Source` contract in `domain/sources`, implemented by `sources/implementations`.
 4. Source returns raw HTML → converted to Markdown → persisted via `core/storage` + the `data` repository.
 5. DB changes stream back through drift → Riverpod → reactive UI.
+
+## Repository pattern
+
+- `domain/repositories` defines `abstract` interfaces; methods return **domain types** (or `Stream<T>`), never DB rows, DTOs, or raw `Map<String, dynamic>`.
+- `data/repositories` implements them (drift-backed, dio-backed). Mapping between DB entities and domain models lives in `data/mappers/` as static `Mappers` classes (`fromRow`, `toDomain`, `toInsert`, ...).
+- Features depend on the interfaces only — swapping an implementation must not touch UI code.
+- Sources (`sources/implementations`) are consumed through the `Source` contract in `domain/sources`, never directly from a feature.
+
+## UI vs logic
+
+- Pages (`features/<f>/screens`) contain **only** UI composition + simple calls (`ref.watch`, `ref.read(...notifier).action`).
+- Business logic (validation, orchestration, side effects, IO) lives in Riverpod notifiers + `domain/interactors`.
+- If a page/widget approaches ~250 lines, extract sections into `widgets/` and logic into `providers/` / interactors — but never split artificially.

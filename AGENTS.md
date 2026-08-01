@@ -86,3 +86,7 @@ Project-specific conventions live in `.opencode/rules/` (loaded as instructions 
 - `10-testing.md` — testing conventions
 - `11-git-workflow.md` — git and PR conventions
 - `12-ai-agent-workflow.md` — how agents must operate in this repo
+- `13-error-handling.md` — typed exceptions, no `Result<T>`
+- `14-design-tokens.md` — theme, design tokens, accessibility
+- `15-performance.md` — builds, lists, reactivity, reader
+- `16-i18n.md` — FR/EN localization via ARB
