@@ -14,19 +14,20 @@ SQLite via `drift`. Mirrors Mihon's schema (manga/chapter/library/history/source
 ## Rules
 
 1. **Migrations**: use `schemaVersion` + `MigrationStrategy` with `beforeOpen`. Never drop tables silently in a release; always write an explicit migration step.
-2. **Schema snapshots**: keep drift schema snapshots (e.g. `drift_schemas/`) when the `drift_dev` schema-steps workflow is enabled, so future migrations are generated from diffs.
+2. **Schema snapshots are mandatory, not conditional**: `drift_dev` is a dev dependency and snapshots are committed under `drift_schemas/`. After any table change run `dart run build_runner build --delete-conflicting-outputs`, then `dart run drift_dev schema dump lib/core/database` to export the new structure. A migration written without a snapshot cannot be regenerated, so it is a one-way door. Related: `dart run drift_dev make-migrations` scaffolds the migration utilities; `dart run drift_dev analyze` lints the generated database code.
 3. **Streams**: prefer query streams for anything reactive; avoid manual refresh hacks.
-4. **Mappers**: DB entities and domain models are distinct types. Mapping lives in `data/mappers/`. Domain never knows about DB rows.
+4. **Mappers**: see `02-architecture.md` §Repository pattern — that section owns the boundary rule (interfaces in `domain`, implementations in `data`, mapping in `data/mappers/`, no DB types in features). Only the drift-specific mechanics are here, below.
 5. **Boolean flags**: `read` / `bookmark` / `downloaded` are plain booleans on chapters (Mihon uses bitmasks; we prefer clarity in v1).
 6. **Timestamps**: store UTC epoch millis; format at the UI layer with `intl`.
 7. **Indexes**: index hot query paths — chapters by `(novelId, number)`, history by `lastReadAt`, novels by `title` / `status`.
 8. **No N+1**: fetch chapter counts for the library via aggregate queries (a `libraryView`-style query), never per-row loops.
 9. **JSON columns**: `genres` and `memo` are stored as JSON strings via a drift `TypeConverter`.
 
-## Repository & mappers (data layer)
+## Mappers (drift-specific mechanics)
 
-- Repository interfaces live in `domain/repositories`, implementations in `data/repositories`.
-- DB entities and domain models are distinct types. Mapping lives in `data/mappers/` as static classes (`NovelMappers.fromRow`, `.toInsert`, ...). Domain never imports drift.
-- Repositories return domain types or `Stream<T>`; never expose `TableRow` / `QueryRow` / `Map<String, dynamic>` to features.
+The mapper *boundary* is owned by `02-architecture.md` §Repository pattern. These are the drift concerns that boundary doesn't cover:
+
 - Mappers handle: timestamps (epoch millis ↔ `DateTime`), JSON columns (`genres`, `memo`), enum ↔ int codes.
-- Every mapper ships unit tests (see `10-testing.md`).
+- Domain never imports drift — a freezed model has no `TableRow` in its signature.
+- Repositories return domain types or `Stream<T>`; never expose `TableRow` / `QueryRow` / `Map<String, dynamic>` to features.
+- Every mapper ships unit tests, round-tripping a row ↔ domain model (see `10-testing.md`).

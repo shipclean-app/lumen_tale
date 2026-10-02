@@ -13,12 +13,7 @@ Riverpod covers both **state management** and **dependency injection**.
 7. **Scoping**: override providers at the router/feature scope where needed (e.g. a per-source instance). Prefer explicit overrides over global singletons.
 8. **DI roles**: repositories and interactors are providers. `SourceManager` is a provider that builds the registry from `source_registry.dart`.
 9. **No `ChangeNotifier`**: anything beyond trivial widget-local state uses Riverpod. `StatefulWidget` is allowed only for ephemeral state.
-10. **AutoDispose**: prefer `autoDispose` for screen-scoped providers (search, browse) to free memory. Keep library/session providers non-disposing.
-
-## Lifecycle
-
-- `autoDispose` is the default for screen-scoped providers (search, browse, reader).
-- `keepAlive` only for global / session providers (app preferences, `SourceManager`, library). Never `keepAlive` a parameterized provider without a reason.
+10. **Provider lifetime — this section is the only place it is stated.** `autoDispose` is the default for screen-scoped providers (search, browse, reader) so they free memory on pop. `keepAlive` only for global / session providers (app preferences, `SourceManager`, library). Never `keepAlive` a parameterized provider without a stated reason. `15-performance.md` §State & reactivity cross-references this rule; it does not restate it.
 
 ## Invalidation (cache)
 
@@ -37,5 +32,5 @@ Riverpod covers both **state management** and **dependency injection**.
 - A giant provider exposing an entire feature's state tree — split it.
 - A provider modifying another provider's state directly — use `ref.invalidate` or `ref.read(other.notifier).action()`.
 - `ref.read` in `build()` where you mean to listen — use `ref.watch`.
-- Missing `.autoDispose` on page-scoped providers.
-- Hand-writing a provider when `@riverpod` codegen applies (we use codegen, see rule 1).
+- Missing `.autoDispose` on a page-scoped provider — see Conventions rule 10.
+- Hand-writing a provider when `@riverpod` codegen applies (rule 1).

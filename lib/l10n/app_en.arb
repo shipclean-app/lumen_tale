@@ -1,0 +1,44 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Lumen Tale",
+
+  "navLibrary": "Library",
+  "navBrowse": "Browse",
+  "navUpdates": "Updates",
+  "navHistory": "History",
+  "navDownloads": "Downloads",
+  "navSettings": "Settings",
+
+  "commonRetry": "Retry",
+  "commonCancel": "Cancel",
+  "commonErrorTitle": "Something went wrong",
+  "commonErrorBody": "The operation could not be completed.",
+
+  "libraryEmptyTitle": "Your library is empty",
+  "libraryEmptyBody": "Add a novel from Browse to start reading.",
+
+  "browseEmptyBody": "No source is available yet.",
+
+  "chapterCount": "{count, plural, =0{No chapters} =1{1 chapter} other{{count} chapters}}",
+  "@chapterCount": {
+    "description": "Number of chapters available for a novel.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+
+  "coverSemanticsLabel": "Cover of {title}",
+  "@coverSemanticsLabel": {
+    "description": "Accessibility label for a novel cover thumbnail.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "The Wandering Inn"
+      }
+    }
+  }
+}

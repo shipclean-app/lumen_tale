@@ -15,9 +15,9 @@ It is inspired by [Mihon](https://github.com/mihonapp/mihon) (a manga reader) bu
 Source website (HTML)
   → Source.fetchChapterContent(chapter)     raw HTML
   → clean: strip nav, ads, scripts, boilerplate (per-source selectors)
-  → convert: HTML → Markdown (html2md + overrides)
+  → convert: HTML → Markdown (in-repo converter on `html`, per-source overrides)
   → persist: chapter .md file + metadata on disk
-  → render: Markdown reader (flutter_markdown)
+  → render: Markdown reader (flutter_markdown_plus)
 ```
 
 This pipeline is the heart of the product. Every source-specific rule must preserve this contract.
