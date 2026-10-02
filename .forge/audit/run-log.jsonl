@@ -77,3 +77,5 @@
 {"ts":"2026-10-02T15:56:46.149Z","type":"register","deliverable":"design-flows","path":".forge/design/flows.md","kind":"deliverable"}
 {"ts":"2026-10-02T15:56:46.202Z","type":"register","deliverable":"design-coverage","path":".forge/design/coverage.md","kind":"deliverable"}
 {"ts":"2026-10-02T15:56:46.243Z","type":"hash","kind":"deliverable","entry":"design-flows","content_hash":"sha256:03f975faa2d5"}
+{"ts":"2026-10-02T16:01:10.299Z","type":"register","deliverable":"design-verdicts","path":".forge/design/screens/_mihon-verdicts.md","kind":"deliverable"}
+{"ts":"2026-10-02T16:01:10.349Z","type":"hash","kind":"deliverable","entry":"design-verdicts","content_hash":"sha256:139a17963e05"}

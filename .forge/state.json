@@ -873,6 +873,33 @@
         ".forge/design/design-system.md",
         ".forge/design/coverage.md"
       ]
+    },
+    "design-verdicts": {
+      "path": ".forge/design/screens/_mihon-verdicts.md",
+      "type": "design-verdicts",
+      "status": "draft",
+      "content_hash": "sha256:139a17963e05",
+      "headings": {
+        "1": "Shell and navigation",
+        "2": "Library",
+        "3": "Novel details — `MangaScreen`",
+        "4": "Updates",
+        "5": "History",
+        "6": "Browse",
+        "7": "More, stats, settings",
+        "8": "Reader — the deepest area, and the most divergent",
+        "9": "The counts, honestly",
+        "6.1": "Sources",
+        "6.2": "Extensions",
+        "6.3": "MigrateSource",
+        "8.1": "What we add that Mihon does not have"
+      },
+      "updated_at": "2026-10-02T16:01:10.347Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/benchmarks.md",
+        ".forge/design/design-system.md"
+      ]
     }
   },
   "index": {
@@ -967,7 +994,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 14,
+      "register": 15,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 7,
