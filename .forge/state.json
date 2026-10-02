@@ -811,7 +811,7 @@
       "status": "draft",
       "content_hash": "sha256:306bf7349a1f",
       "headings": {},
-      "updated_at": "2026-10-02T15:49:12.307Z",
+      "updated_at": "2026-10-02T15:56:46.200Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -841,6 +841,37 @@
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
+      ]
+    },
+    "design-flows": {
+      "path": ".forge/design/flows.md",
+      "type": "design-flows",
+      "status": "draft",
+      "content_hash": "sha256:03f975faa2d5",
+      "headings": {
+        "0": "The one-sentence loop",
+        "1": "Happy path — first ever read (cold start)",
+        "2": "The core loop, once the app is warm",
+        "3": "Alternative flows",
+        "4": "Error flows — the substantial part",
+        "5": "Onboarding",
+        "6": "Flows the design deliberately does NOT have",
+        "7": "Coverage of this file against the flows the phase requires",
+        "3.1": "Resuming a novel not at the top",
+        "3.2": "Finding a novel by title in what is already owned",
+        "3.3": "A serialised novel has new chapters",
+        "3.4": "Reading while offline, deliberately",
+        "3.5": "A source that supports search",
+        "4.1": "The distinction that must never blur",
+        "4.2": "Failure kinds, and what the reader does",
+        "4.3": "Failure in the middle of the work",
+        "4.4": "The honest limitation in the download flow"
+      },
+      "updated_at": "2026-10-02T15:56:46.242Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md",
+        ".forge/design/coverage.md"
       ]
     }
   },
@@ -936,7 +967,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 12,
+      "register": 14,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 7,
