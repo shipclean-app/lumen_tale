@@ -166,7 +166,7 @@ AppScaffold (titleBar = "Sources")
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, rows 72dp + a 24dp consequence line | Nothing. Design target |
-| **Tablet** `600–1023dp` | Identical single column, centred (**ADR-010**) | Nothing |
+| **Tablet** `600–1023dp` | Identical single column, centred (**ADR-019**) | Nothing |
 | **Desktop** `1024–1439dp` | Same; desktop out of scope | — |
 
 - **Cible tactile**: 48dp minimum on the switch, 48dp on the whole row's tap target, 48dp on each status chip.
@@ -226,7 +226,7 @@ AppScaffold (titleBar = "Sources")
 
 - [x] All nine states described; four have no rendering and each says **why**, including that a static registry makes two of them *unreachable* rather than merely unstyled
 - [x] Every interactive element has a behaviour, a feedback and a resulting state
-- [x] Responsive defined at every breakpoint; the two larger ones stop widening (ADR-010)
+- [x] Responsive defined at every breakpoint; the two larger ones stop widening (ADR-019)
 - [x] Anti-generic section checked **and justified**; the assumed choice is *consequence-first rows, so B32 can be promised in words*
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID appears in § 9

@@ -183,7 +183,7 @@ These are absences with reasons. Per ADR-010 these are **excluded, not deferred*
 | Migrate from another app | Out of scope (ADR-010) |
 | Cloud sync between devices | ADR-010. Deliberately excluded |
 | In-app purchase / subscription | ADR-010. Personal use |
-| Tablet two-pane reader | ADR-010 |
+| Tablet two-pane reader | ADR-019 |
 | Page-turn mode in the reader | ADR-009 — v2. **Absent, not disabled** |
 | Permission prompts | Nothing to request |
 

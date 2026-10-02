@@ -310,7 +310,7 @@ AppScaffold (titleBar "About Lumen Tale", bottomNav kept)
 
 - [x] All nine states described, with a concrete rendering. The four with nothing distinct to render say **why** they have none.
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-019.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated: **B29 as a test the reader can run, not a promise.**
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.

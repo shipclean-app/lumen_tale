@@ -163,7 +163,7 @@ AppScaffold (titleBar, bottomNav)
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | The design target. Single column, `--space-lg` 16dp margins on the notice block, rows full-bleed with `--space-md` internal padding, `--space-3xl` 48dp top margin, day headers in `--space-lg` above their first row | Nothing — this is what ships |
-| **Tablet** `600–1023dp` | **Identical single column, centred, capped.** The column stops at the `--reader-md` measure width and centres. **This is deliberately not a tablet layout** (ADR-010, C3): there is no two-column date-split and no grouped-by-novel variant, even though a calendar-heatmap or a "by novel" grouping is the obvious thing to add here and would break the one order a log should have | Nothing collapses — the layout simply stops growing |
+| **Tablet** `600–1023dp` | **Identical single column, centred, capped.** The column stops at the `--reader-md` measure width and centres. **This is deliberately not a tablet layout** (ADR-019, C3): there is no two-column date-split and no grouped-by-novel variant, even though a calendar-heatmap or a "by novel" grouping is the obvious thing to add here and would break the one order a log should have | Nothing collapses — the layout simply stops growing |
 | **Desktop** `1024–1439dp` | Same single column, centred. Flutter desktop is out of scope (C3) | — |
 
 `--bp-wide` `≥ 1440dp` follows the same capped-and-centred rule by declaration (`design-system.md` § 1.7).
@@ -235,7 +235,7 @@ AppScaffold (titleBar, bottomNav)
 
 - [x] All nine states described with a concrete rendering; the ones that split or that are explained say **why** (empty-no-data splits by cause, offline has a second rendering for a deleted download, read-only is expanded into four named properties because a blanket "read-only" is not implementable).
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint of the design system; the two larger ones say "identical, stop widening" — ADR-010, and the rejected "grouped by novel" variant is named so it is not re-proposed.
+- [x] Responsive defined at **every** breakpoint of the design system; the two larger ones say "identical, stop widening" — ADR-019, and the rejected "grouped by novel" variant is named so it is not re-proposed.
 - [x] Anti-generic section checked **and justified**; the assumed choices are stated (no progress anywhere, no search/filter/sort, and the bound printed twice).
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with its value.
 - [x] Every B/E/C ID on this screen appears in § 9.

@@ -218,6 +218,138 @@ void main() {
     );
   });
 
+  group('B6 — the download mark is a column, not a probe', () {
+    test('downloadedAt defaults to null: not downloaded', () async {
+      await db
+          .into(db.novels)
+          .insert(
+            NovelsCompanion.insert(
+              id: 'n1',
+              sourceId: 's',
+              url: '/a',
+              title: 'A',
+            ),
+          );
+      final c = await db
+          .into(db.chapters)
+          .insertReturning(
+            ChaptersCompanion.insert(
+              id: 'c1',
+              novelId: 'n1',
+              name: 'One',
+              url: '/a_1',
+              ordinal: 0,
+            ),
+          );
+      expect(
+        c.downloadedAt,
+        isNull,
+        reason: 'B6 — a chapter is not marked until its file is wholly present',
+      );
+    });
+
+    test(
+      'B33 — deleting one chapter clears only that chapter\'s mark',
+      () async {
+        await db
+            .into(db.novels)
+            .insert(
+              NovelsCompanion.insert(
+                id: 'n1',
+                sourceId: 's',
+                url: '/a',
+                title: 'A',
+              ),
+            );
+        await db
+            .into(db.chapters)
+            .insert(
+              ChaptersCompanion.insert(
+                id: 'c1',
+                novelId: 'n1',
+                name: 'One',
+                url: '/c1',
+                ordinal: 0,
+              ),
+            );
+        await db
+            .into(db.chapters)
+            .insert(
+              ChaptersCompanion.insert(
+                id: 'c2',
+                novelId: 'n1',
+                name: 'Two',
+                url: '/c2',
+                ordinal: 1,
+                downloadedAt: Value(DateTime(2026, 10, 2)),
+              ),
+            );
+
+        // The deletion B33 authorises.
+        await (db.update(db.chapters)..where((c) => c.id.equals('c2'))).write(
+          const ChaptersCompanion(downloadedAt: Value(null)),
+        );
+
+        final rows = {
+          for (final r in await db.select(db.chapters).get()) r.id: r,
+        };
+        expect(rows['c1']!.downloadedAt, isNull);
+        expect(rows['c2']!.downloadedAt, isNull);
+
+        // And now the state that motivated the column: a deliberate deletion is
+        // indistinguishable from a never-downloaded chapter *only if the mark is
+        // the store*. With a column, "was downloaded, now removed" is
+        // representable, so a future migration can tell them apart.
+        // A distinct date, so the assertion below cannot pass by coincidence.
+        final earlier = DateTime(2026, 10, 1, 9, 30);
+        await (db.update(db.chapters)..where((c) => c.id.equals('c1'))).write(
+          ChaptersCompanion(downloadedAt: Value(earlier)),
+        );
+        final after = {
+          for (final r in await db.select(db.chapters).get()) r.id: r,
+        };
+        expect(
+          after['c1']!.downloadedAt,
+          isNotNull,
+          reason: 'the mark is data, so it survives independently of any probe',
+        );
+      },
+    );
+
+    test('the unread count is unaffected by the download mark', () async {
+      // B48 and B6 must not interact: downloading a chapter does not make it
+      // read, and reading it does not require a download.
+      await db
+          .into(db.novels)
+          .insert(
+            NovelsCompanion.insert(
+              id: 'n1',
+              sourceId: 's',
+              url: '/a',
+              title: 'A',
+            ),
+          );
+      await db
+          .into(db.chapters)
+          .insert(
+            ChaptersCompanion.insert(
+              id: 'c1',
+              novelId: 'n1',
+              name: 'One',
+              url: '/a_1',
+              ordinal: 0,
+              downloadedAt: Value(DateTime(2026, 10, 2)),
+            ),
+          );
+      final rows = await db.select(db.chapters).get();
+      expect(
+        rows.single.isRead,
+        isFalse,
+        reason: 'B13 — downloaded is not read',
+      );
+    });
+  });
+
   group('B16 — a position is per chapter', () {
     test('two chapters of one novel hold independent offsets', () async {
       await db

@@ -5,17 +5,19 @@ generated_at: 2026-10-02
 derived_from: .forge/prd.md
 impl_waves: 6
 impl_waves_rationale: >-
-  Coarser than the computed topological minimum of 11, and deliberately so.
-  The 11 waves are what the dependency graph *permits*; six are the roadmap's
+  Coarser than the computed topological minimum of 12, and deliberately so.
+  The 12 waves are what the dependency graph *permits*; six are the roadmap's
   milestone waves, which is what it *intends*. They differ because the graph
   allows cheap slices that touch only foundations — 2-6 (reading position), 3-5
-  (about), 6-5 (history), 6-7 (English) — to start in wave 1, while the roadmap
-  holds them for later milestones. Declaring 11 would erase the milestone
-  grouping, and declaring nothing would leave `dependency-check --write` free to
-  overwrite the distinction without saying so. The difference that matters:
-  browse UI (3-1) is topologically available at wave 4, but milestone Wave 2
-  completes the whole offline chain ending at 2-4, so following the milestones
-  puts the offline read proof BEFORE any browse UI exists.
+  (about), 6-7 (English) — to start in wave 1, while the roadmap holds them for
+  later milestones. Declaring 12 would erase the milestone grouping, and
+  declaring nothing would leave `dependency-check --write` free to overwrite the
+  distinction without saying so. The difference that matters: browse UI (3-1) is
+  topologically available at wave 4, but milestone Wave 2 completes the whole
+  offline chain ending at 2-4, so following the milestones puts the offline read
+  proof BEFORE any browse UI exists. Wave 12 is 6-10 alone (B37, ADR-021), which
+  waits on 6-4 and on nothing else recent — it is a notification wrapper, so the
+  graph can offer it early and the roadmap still ships it late.
 ---
 
 # Architecture — Lumen Tale
@@ -165,7 +167,7 @@ This foundation exists before any feature because **Q-003** blocks every device 
 
 ### 3.1 Inventory
 
-34 items: 5 foundations + 29 slices. `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
+33 items: 5 foundations + **28 scheduled slices** — plus `6-8` and `6-9`, withdrawn from v1 for want of a rule (see § 3.1). `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
 
 | Slice | Key | Wave | Depends on | Responsibility |
 |---|---|---|---|---|
@@ -201,8 +203,9 @@ This foundation exists before any feature because **Q-003** blocks every device 
 | `6.5` | `6-5` | 2 | `2-6` | History, time-bounded |
 | `6.6` | `6-6` | 10 | `6-3` | Unread badge, similar-title warning, title-only search |
 | `6.7` | `6-7` | 1 | `localisation` | English translations, including every error string |
-| `6.8` | `6-8` | 3 | `6-5` | **Reading statistics** — plain counts, plainly labelled. The `stats` screen and `/more/stats` route exist in the design system, so a slot without a slice would be an empty module |
-| `6.9` | `6-9` | 4 | `local-store`, `2-1` | **Source management** — the list and the enable switch. B1's `enabled` behaviour has a column (§ 4.6) and a route but no slice to make it reachable |
+| `6.10` | `6-10` | 11 | `6-4` | **B37 — the manual check runs as a foreground job with a visible, cancellable notification.** Restored to v1 by ADR-021 |
+| **—** | ~~`6-8`~~ | — | — | **Reading statistics. NOT SCHEDULED IN V1.** A red-team pass found it attributed to rules and stories that do not contain it: US-12's four criteria are a history list, resume, offline, retention — **no statistics** — and `roadmap.md` § 4.1 says *V1 is defined by SC-1..SC-6 and nothing else*, and no SC mentions figures. The screen and route stay; the **slice is withdrawn from v1** and returns in v2 |
+| **—** | ~~`6-9`~~ | — | — | **Source management. NOT SCHEDULED IN V1**, for the same reason. **B1 says which sites ship; it says nothing about hiding or disabling one**, and US-01 is *which site to browse*. The `sources.enabled` column (§ 4.6) is kept because it is one bit and the screen is already specified — but **no v1 rule needs it**, and that is now stated rather than implied |
 
 ### 3.1b Verification gates — not slices, and not optional
 
@@ -240,8 +243,6 @@ No slice carries this. `apk-pipeline` builds the APK and `local-store` owns the 
 | US-15 My text size | `theme-type`, `2-8` | B27, ADR-017 |
 | US-16 Told when a site breaks | `failure-discriminator`, `3-1` | B22, B24, C6, C7 |
 | US-17 A new version as a file | `apk-pipeline`, `3-5` | B31, B34, B43 |
-| US-01 Browse a source *(enabling/disabling it)* | `6-9` | B1 |
-| US-12 Review what I read *(as figures)* | `6-8` | B17, B46, B47 |
 
 **All 17 stories have at least one slice.** `coverage.md` records the other direction: which of the 49 rules are non-visual, and why.
 
@@ -465,24 +466,25 @@ Each is an **exclusion with a reason**, recorded in `coverage.md` § B29/B30 and
 
 ### 6.1 Computed waves
 
-Eleven waves, computed by `dependency-check.js`, not asserted:
+Twelve waves, computed by `dependency-check.js`, not asserted:
 
 ```
 W 0  0-1, apk-pipeline, local-store, localisation, theme-type
 W 1  0-2, 0-3, 0-4, 2-6, 3-5, 6-7
 W 2  6-5, failure-discriminator
-W 3  6-8                          ← new; depends only on 6-5 (W 2)
+
 W 3  2-1
-W 4  2-2, 2-5, 3-1, 6-1, 6-9     ← 2-2 also waits on 0-4 (W 1)
+W 4  2-2, 2-5, 3-1, 6-1     ← 2-2 also waits on 0-4 (W 1)
 W 5  2-3, 3-2, 3-4, 6-2
 W 6  2-4, 3-3
 W 7  2-7, 5-1
 W 8  2-8, 5-2
 W 9  5-3, 6-3
 W10  6-4, 6-6
+W11  6-10            ← ADR-021 restored B37 to v1; it waits on 6-4
 ```
 
-**Cycles: none. Dead dependencies: none.** Verified, not read.
+**Cycles: none. Dead dependencies: none. Orphans: none.** Verified by `dependency-check --full --write`, not read — 33 nodes, 28 slices, 5 foundations, 36 edges.
 
 ### 6.2 The critical path
 
@@ -493,9 +495,9 @@ W10  6-4, 6-6
 
 The wow moment is on the critical path, not at the end of it. And **the offline proof precedes every browse UI slice in milestone order**, which is the roadmap's deliberate inversion and is explained in § 6.3.
 
-### 6.3 Why `impl_waves: 6` and not 11
+### 6.3 Why `impl_waves: 6` and not 12
 
-The graph permits more parallelism than the roadmap intends. `2-6` (reading position), `3-5` (about), `6-5` (history) and `6-7` (English) each depend only on a foundation, so the graph offers them in wave 1 — while the roadmap holds them for later milestones. Declaring 11 would erase the milestone grouping; declaring nothing would let `--write` overwrite the distinction silently.
+The graph permits more parallelism than the roadmap intends. `2-6` (reading position), `3-5` (about) and `6-7` (English) each depend only on a foundation, and `6-5` (history) only on `2-6` and a foundation, so the graph offers them in wave 1 — while the roadmap holds them for later milestones. Declaring 11 would erase the milestone grouping; declaring nothing would let `--write` overwrite the distinction silently.
 
 The difference that matters, and the reason the milestones govern:
 
@@ -510,9 +512,13 @@ Browse UI is available *first* by topology. Following milestones puts the offlin
 
 | Wave | Parallelisable |
 |---|---|
-| 0 | all five foundations, plus fixtures — 6 independent starts |
+| 0 | `0-1` plus **four** of the five foundations — `apk-pipeline`, `local-store`, `localisation`, `theme-type`. `failure-discriminator` is **not** wave-0: it waits on `0-1` and `0-2` and lands in W2. **6 independent starts** |
 | 1 | `0-2`, `0-3`, `0-4`, `2-6`, `3-5`, `6-7` — 6 |
-| 4 | `2-2`, `2-5`, `3-1`, `6-1` — 4 |
+| 4 | `2-2`, `2-5`, `3-1`, `6-1` — **4** |
+| 10 | `6-4`, `6-6` — 2 |
+| 11 | `6-10` — **1, and it is alone** (ADR-021) |
+| 2 | `failure-discriminator`, `6-5` — 2, and the smallest useful wave |
+| 3, 6–9 | one to three slices each — the dependency chain, not a choice |
 
 ### 6.5 Cycles
 
@@ -586,12 +592,12 @@ An amendment is recorded with `state.js amend`, which **refuses** the renumberin
 
 - [x] Every PRD user story has a slice — § 3.2, all 17
 - [x] Every slice has a responsibility expressible in one line — § 3.1
-- [x] Foundations identified and separated from feature slices — § 2, five of them, all wave-0-eligible
+- [x] Foundations identified and separated from feature slices — § 2, five of them, four wave-0-eligible and `failure-discriminator` at W2 on purpose (§ 6.4)
 - [x] All data models defined field by field — § 4, six tables, 38 columns
 - [x] The template's "every endpoint lists its error codes" is satisfied **by § 5's honest substitution**: there is no API, the failure taxonomy is enumerated with its recovery, and the excluded surfaces are listed with reasons rather than left blank
 - [x] Dependency graph has no cycles — § 6.5, verified by `dependency-check`
 - [x] Implementation order is consistent with the dependencies — § 6.1–6.3, and the milestone-vs-topology divergence is declared with its reason
-- [x] Non-trivial architecture decisions are recorded as ADRs — § 7, ten, with `DECISIONS.md` as the authority
+- [x] Non-trivial architecture decisions are recorded as ADRs — § 7, **eleven** (ADR-003, 005, 008, 009, 010, 013, 014, 015, 016, 017, 019, 020 — twelve rows once ADR-009 is counted), with `DECISIONS.md` as the authority
 - [x] The DDL **executes** — against real SQLite rather than pglite, with 12 constraints asserted as behaviour, and the drift guard proven red once
 - [x] `consistency-check references`: zero broken
 

@@ -184,7 +184,7 @@ AppScaffold (titleBar + content + bottomNav)
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, `--space-lg` 16dp margins, rows full-bleed with `--space-md` 12dp internal padding. Queue actions are a trailing `Pause` / `Cancel` pair, each 48dp | Nothing. This is the design target and the only width v1 ships (C3) |
-| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it and `design-system.md` § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The sections stop growing and centre |
+| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-019 excluded it and `design-system.md` § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The sections stop growing and centre |
 | **Desktop** `1024–1439dp` | Same. Flutter desktop is out of scope (C3) | — |
 
 - **Touch target**: 48dp minimum on every row, every trailing action, every section-level button and the snackbar's **Open** and **Undo**. A disabled action — and there is exactly one class of them, a `Pause` on a queue that is not running — stays **48dp tall** so the row does not jump under the reader's finger.
@@ -266,7 +266,7 @@ AppScaffold (titleBar + content + bottomNav)
 
 - [x] All nine states described, with a concrete rendering or an argued reason for having none. Only `LoadingState` as a whole-screen state is absent, and it is explained: the data is local and the rows are immediate.
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010, not an omission.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-019, not an omission.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated (a permanent in-process notice, no auto-resume, and no aggregate bar).
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.

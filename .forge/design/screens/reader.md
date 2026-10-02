@@ -164,7 +164,7 @@ AppScaffold (no titleBar, no bottomNav, readerChrome slot set)
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, `--space-lg` 16dp margins, measure capped at 65–75 characters by the `--reader-*` step and the screen width, whichever is **smaller** | Nothing. This is the design target |
-| **Tablet** `600–1023dp` | Identical single column, centred. **Explicitly not a tablet layout** (ADR-010) | Nothing collapses — the layout simply stops widening |
+| **Tablet** `600–1023dp` | Identical single column, centred. **Explicitly not a tablet layout** (ADR-019) | Nothing collapses — the layout simply stops widening |
 | **Desktop** `1024–1439dp` | Same. Flutter desktop is out of scope | — |
 
 - **Touch target**: 48dp minimum everywhere, **including all three tap zones**. The centre zone is the full screen; the two edge zones are each 24dp wide but 48dp tall minimum in their vertical extent, and they yield to the centre zone above and below the text block so a vertical scroll starting near an edge does not change chapters.
@@ -234,7 +234,7 @@ AppScaffold (no titleBar, no bottomNav, readerChrome slot set)
 
 - [x] All nine states described, with a concrete rendering. The three with nothing to render say **why** they have none.
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010, not an omission.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-019, not an omission.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated (no title bar, no transition in).
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.

@@ -161,7 +161,7 @@ AppScaffold (titleBar = "Statistics")
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column; label left, value right on one line | Nothing. Design target |
-| **Tablet** `600–1023dp` | Identical, centred (**ADR-010**) | Nothing |
+| **Tablet** `600–1023dp` | Identical, centred (**ADR-019**) | Nothing |
 | **Desktop** `1024–1439dp` | Same; desktop out of scope | — |
 
 - **Cible tactile**: `SourceBar` rows 48dp minimum even though the bar is 8dp. **A figure is never a touch target.**
@@ -215,7 +215,7 @@ AppScaffold (titleBar = "Statistics")
 
 - [x] All nine states described; six have no rendering and each says why, and **Empty — no data** explicitly refuses to render zeroes
 - [x] Every interactive element has a behaviour, a feedback and a resulting state — and the non-interactive rows are marked as such
-- [x] Responsive defined at every breakpoint; the two larger ones stop widening (ADR-010)
+- [x] Responsive defined at every breakpoint; the two larger ones stop widening (ADR-019)
 - [x] Anti-generic section checked **and justified**; the assumed choice is *no score, no streak, no goal, no comparison*, argued in a table rather than asserted
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID appears in § 9

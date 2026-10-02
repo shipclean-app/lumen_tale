@@ -21,7 +21,9 @@ So there are three honest answers for a rule, and only three:
 2. **It is not observable, and the reason it is not observable is written down.**
 3. **It is withdrawn** (B42).
 
-## Business rules — 49, all accounted for
+## Business rules — 49 rows in the PRD, all accounted for
+
+> The three counts below sum to **50** because `withdrawn` is counted separately from the 49 rows: B42 is a withdrawal that keeps its ID and appears in no § 4 table, so 36 + 13 + 1 = 50 counts it twice by construction. The reassurance is the `Unaccounted: 0` line, and it holds — **B50, added by the ADR-015 amendment, is listed.**
 
 | Answer | Count | Rules |
 |---|---|---|

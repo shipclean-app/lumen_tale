@@ -235,10 +235,10 @@ targets (§4.0), SC-6 (a broken site reported, verified against a captured fixtu
 | Reading modes + orientation lock | ADR-009 | Low — v1 already scrolls correctly in both orientations per US-04 |
 | Colour filters (sepia, inversion, per-chapter) | ADR-009 | Medium — night readers are our persona and sepia is the commonest request in this genre |
 | **True background download execution** | **E7 states the queue runs in-process and has no background executor; the queue survives app closure by *resuming*, not by continuing.** | Medium-high — `benchmarks.md` §3 lists background download as a v1 capability, and Webnovel's published advantage is exactly this ("just works in the background"). See §7.2: this is a contradiction between two approved documents and needs the orchestrator to settle it. |
-| Scheduled update checks with a foreground notification | B35's interval picker and B37 are the most device-dependent machinery in the project. Deferred **only if** the §3.5 reduction is accepted at the gate. | Low — B35 already requires checks to be **off by default**, so nothing is lost for the reader's battery in v1. |
+| ~~Scheduled update checks with a foreground notification~~ — **deferral WITHDRAWN 2026-10-02** | **B37 now ships** (ADR-021): a manual *Check now* runs as a foreground job with a visible, cancellable notification, exactly as `settings.md` specifies. It needs **no background executor** and does not touch **E7**, which is about the download queue — a different subsystem with a different lifecycle. **B35's interval picker** stays v2, and that is a *different* question: whether the reader may opt into a *schedule*, not whether a manual check is visible. | **Now nil.** `roadmap.md` § 0 Rule 3 forbids deferring an un-withdrawn PRD rule, and the PRD's own mechanism for dropping one is a withdrawal that keeps its ID. This row claimed a deferral nobody was authorised to make. |
 | Novel Fire | C10, B1, E21 — conditional, **outside the version ladder entirely**. Not "v2". | None — see §7.1. |
 | Additional languages beyond FR/EN | Not a PRD requirement at all; only `benchmarks.md` §3 mentions "more" | None |
-| Tablet layout, desktop, web, store publication, `.txt`/EPUB/PDF reading, trackers, social features, in-app purchases | PRD §9; ADR-010; C-002, C-003, C-010 | None — these are **exclusions**, not deferrals. See §5.2. |
+| Tablet layout, desktop, web, store publication, `.txt`/EPUB/PDF reading, trackers, social features, in-app purchases | PRD §9; ADR-019; C-002, C-003, C-010 | None — these are **exclusions**, not deferrals. See §5.2. |
 
 ### 3.3 Risks specific to V1
 
@@ -287,8 +287,8 @@ and badges, SC-4 names two complete languages. Any smaller V1 stops being "v1 do
 weight without failing a criterion is inside US-10:
 
 > Ship US-10 in V1 as **manual "update library" only** (B36), with the local count (B48) and the visible
-> "last checked / never checked" state (B49). Defer B35's interval picker and B37's foreground notification to
-> V2+. B35 already requires checks to be **off by default**, so the reader loses nothing they would otherwise
+> "last checked / never checked" state (B49). ~~Defer B35's interval picker and B37's foreground notification to
+> V2+.~~ **Superseded 2026-10-02 — ADR-021.** B37 is back in V1; only *scheduled* checking stays in V2+. B35 already requires checks to be **off by default**, so the reader loses nothing they would otherwise
 > have. SC-3 remains satisfiable. The rule against shipping a control that does nothing is absolute: an interval
 > picker present but inert is a lie (B24), so the picker goes with the scheduler, not before it.
 
@@ -320,7 +320,7 @@ document can honestly say, and it is enough to stop the items being forgotten.
 | **Reading modes + orientation lock** | ADR-009, `benchmarks.md` §3 | Same subsystem, same reason | Same |
 | **Colour filters (sepia, inversion)** | ADR-009, `benchmarks.md` §3 | Cheap to build, but it competes for attention with items that change what the product *is* | V1 shipped, and ideally one direct request from the owner |
 | **True background download execution** (the queue continues after the app is closed) | E7, B21, `benchmarks.md` §3 | The approved PRD explicitly refuses it: the queue runs in-process and resumes. Making it continue is a different product promise with real battery and politeness costs (C7) | The contradiction in §7.2 is settled, **and** the battery cost of downloads — the PRD's own unmeasured unknown (§8) — has been measured on the owner's phone |
-| **Scheduled update checks + cancellable foreground notification** | B35, B37 | Most device-dependent machinery in the project | The §3.5 reduction is accepted, **and** the owner has run the manual check enough times to know what interval they would actually pick |
+| ~~Scheduled update checks + cancellable foreground notification~~ | B35, B37 | **Removed from the V2 backlog — B37 is in v1 per ADR-021.** What remains genuinely v2 is only *scheduled* checking | Most device-dependent machinery in the project | The §3.5 reduction is accepted, **and** the owner has run the manual check enough times to know what interval they would actually pick |
 | **Novel Fire** | B1, C10, E21 | Conditional, **not a version** | The owner confirms the terms (Q-004). Then it is added — whenever, or never. |
 
 ### 4.2 Ideas for V3+ (not requirements; recorded so they are not lost)
@@ -328,7 +328,11 @@ document can honestly say, and it is enough to stop the items being forgotten.
 - **More languages beyond FR and EN** — depends on whether a borrowed-device reader ever asks (`benchmarks.md` §3 lists "more" only as parity).
 - **Tablet / larger-screen layout** — the owner answered "phone only *for the moment*" (client point C-002), so this was never a requirement and reopening it needs a reason, not a schedule.
 - **Local file reading (.txt / EPUB / PDF)** — PRD §9 declined it: the app reads web novels, it is not a document reader. Only worth revisiting if the owner ever wants the format.
-- **Not adopting, on purpose:** Mihon's 4 library filter toggles, 10 sort modes and 4 display modes. More library controls on a phone the reader uses one-handed, reading, is friction, not feature. Recorded here so it is visibly a decision and not an oversight.
+- ~~**Not adopting, on purpose:** Mihon's 4 library filter toggles, 10 sort modes and 4 display modes.~~ **REVERSED 2026-10-02 — partially, and the reversal is recorded here rather than quietly applied.** The design phase adopted them: Filter / Sort / Display as three tabs of one sheet, all four display modes carried, ten sorts with Random kept. A red-team pass caught this paragraph saying *not adopting* while `_mihon-verdicts.md` said *all four survive* and `library.md` built them — three approved documents, three different claims, every structural gate green.
+
+  **The design wins, because it is both later and more specific.** The owner's standing instruction is to copy Mihon as far as possible, and the argument against was never about *capability* — it was about *phone ergonomics*, which the sheet's three-tab form answers directly by putting all three controls behind one button instead of three buttons.
+
+  **What actually shipped, so "reversed" is not overclaiming:** 4 filter chips, **5 sorts** (not 10), and **no Display tab**. The reversal is real and partial. Any future session reading "not adopting" in this file would now be wrong, which is why it is struck rather than deleted. Recorded here so it is visibly a decision and not an oversight.
 
 ### 4.3 The three §7.1 targets that are "not yet measurable" — where each gets a number, or is deleted
 
@@ -368,7 +372,7 @@ device.
 | **English UI deferred to V1** (US-13 → V1) | The app's chrome is French-only during the MVP, for a reader of English content. | The localisation **mechanism** ships in the MVP, so V1's SC-4 is additive translation work and not a retrofit. | **Low.** The one real risk — retrofitting i18n across a shipped app — is avoided entirely. |
 | **B40 similar-title warning and B45 title-only search deferred to V1** | In the MVP, two similarly titled novels from two sites sit side by side without warning. | No merge is possible in the MVP in the first place, so the warning guards a mistake the MVP cannot make. | **Low**, rising to medium if the MVP accumulates many library entries — which is exactly what happens by the time V1 starts. |
 | **Third source never a v1 dependency** (B1, C10) | If Novel Fire is the site the owner actually reads, v1 does not serve it. | FanMTL is the first source and does not wait; v1's success is judged without Novel Fire by explicit agreement (E21). | **None to the schedule.** See §7.1. |
-| **Mihon's library ergonomics deliberately not adopted** (4 filter toggles, 10 sorts, 4 display modes) | A power-user library. | One-handed, at night, while reading — every extra library control is friction. | **None.** Recorded so the omission reads as a decision. |
+| ~~Mihon's library ergonomics deliberately not adopted~~ **(reversed — see the note in § 2.1)** | Reduced, not absent: the controls ship behind one sheet, and the display-mode tab does not. | One-handed, at night, while reading — every extra library control is friction. | **None.** Recorded so the omission reads as a decision. |
 
 ### 5.2 Excluded, not deferred — never in any version
 
@@ -415,7 +419,7 @@ the 7-story alternative rather than hiding it.
 
 | Dependency | Impacts | Status | Risk if unavailable |
 |---|---|---|---|
-| **Q-003 — a real Android phone, and a way to install an APK on it** | MVP, V1, and every §7.1 target | **Open — nothing in `.forge/` records that one exists** | **The roadmap has no exit criteria.** SC-2 needs connectivity physically off; SC-5 needs an install; B31 needs a second install; the frame-budget targets need `FrameTiming` from a real device. Without it the project can be built but not finished. §7.1 of this document. |
+| **Q-008 — a real Android phone, and a way to install an APK on it** | MVP, V1, and every §7.1 target | **Open — nothing in `.forge/` records that one exists** | **The roadmap has no exit criteria.** SC-2 needs connectivity physically off; SC-5 needs an install; B31 needs a second install; the frame-budget targets need `FrameTiming` from a real device. Without it the project can be built but not finished. §7.1 of this document. |
 | **Q-004 — Novel Fire's terms of service** (the PRD carries this as C10 / E21 / B1 and as an open Unknown) | V1 (does not gate it), V2+ | **Unconfirmed, no deadline** | None to the schedule by explicit agreement (B1, C10, E21). §7.1 of this document. |
 | **FanMTL's current page structure** | MVP (gates everything) | **Unverified** — no artefact in `.forge/` records that its HTML has ever been read. C1 verified its *terms*, not its markup. | **High.** Selectors designed from memory fail on first contact. Wave 0 exists for this. |
 | **Royal Road's current page structure** | V1 (SC-1) | **Unverified** | Medium-High — a cost if the source contract is a real contract (ADR-013); a rewrite if it is not. Capture fixtures in Wave 0 while the capture tooling exists. |
@@ -544,7 +548,8 @@ them will inherit them.
 | 6.1 | Royal Road adapter (SC-1) — the real test of the source contract | 0.3, 2.1 | SC-1 |
 | 6.2 | Search, **per source, only where measured usable** (US-02, B41, B50) | 3.1 | — (SC-1 satisfied by 6.1) |
 | 6.3 | The local counting model: unopened count is local and exact (B48), last-checked / never-checked is visible (B49), a check never downloads (B38) | 5.2 | SC-3 |
-| 6.4 | Manual "update library" (B36) — and **B35's interval picker + B37's foreground notification only if the §3.5 reduction is refused** | 6.3 | SC-3 |
+| 6.4 | Manual "update library" (B36) | 6.3 | SC-3 |
+| 6.10 | **B37 — the manual check as a foreground job with a visible, cancellable notification** (ADR-021) | 6.4 | SC-3 |
 | 6.5 | History view, time-bounded, never touching reading positions (US-12, B17, B46, B47) | 2.6 | SC-3 |
 | 6.6 | Library unread badge, similar-title warning, title-only search (US-09b, B14, B40, B45) | 6.3 | SC-3 |
 | 6.7 | English translations, **including every error and download-status message** (US-13, B28) | 1.4 | SC-4 |

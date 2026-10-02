@@ -183,7 +183,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | The design target. Single column, `--space-lg` 16dp horizontal margins, rows full-bleed with `--space-md` internal padding, `--space-3xl` 48dp top margin | Nothing — this is what ships |
-| **Tablet** `600–1023dp` | **Identical single column, centred, capped.** The column stops at the `--reader-md` measure width and centres. **This is deliberately not a tablet layout** (ADR-010, C3): there is no two-pane library, no master/detail split, no wider cover grid. Past 600dp the layout stops widening, full stop | Nothing collapses — the layout simply stops growing |
+| **Tablet** `600–1023dp` | **Identical single column, centred, capped.** The column stops at the `--reader-md` measure width and centres. **This is deliberately not a tablet layout** (ADR-019, C3): there is no two-pane library, no master/detail split, no wider cover grid. Past 600dp the layout stops widening, full stop | Nothing collapses — the layout simply stops growing |
 | **Desktop** `1024–1439dp` | Same single column, centred. Flutter desktop is out of scope (C3) | — |
 
 The same policy applies at `--bp-wide` `≥ 1440dp`, which `design-system.md` § 1.7 declares as the same capped column; the app does not ship there, and the rule is written so that if it ever did, it would still be one centred column.
@@ -270,7 +270,7 @@ The same policy applies at `--bp-wide` `≥ 1440dp`, which `design-system.md` §
 
 - [x] All nine states described with a concrete rendering; the three that split or explain say **why** (offline splits into three consequences, submit-error into two submissions, read-only names its two read-only elements).
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint of the design system, and the two larger ones say "identical, stop widening" — ADR-010, not an omission.
+- [x] Responsive defined at **every** breakpoint of the design system, and the two larger ones say "identical, stop widening" — ADR-019, not an omission.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated (a resume at the top, not a summary; an author that is displayed but not searchable).
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with its value.
 - [x] Every B/E/C ID on this screen appears in § 9.

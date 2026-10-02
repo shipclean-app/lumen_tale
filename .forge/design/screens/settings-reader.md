@@ -257,7 +257,7 @@ AppScaffold (titleBar "Reader settings", bottomNav kept)
 
 - [x] All nine states described, with a concrete rendering. The two with nothing distinct to render say **why**.
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-019.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated: **a real specimen, and a labelled stand-in rather than lorem ipsum.**
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.

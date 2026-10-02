@@ -154,7 +154,7 @@ Sheet  --color-surface-raised, --shadow-sheet, radius --radius-lg
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Full-height sheet, 64dp rows, 48dp number column | Nothing. Design target |
-| **Tablet** `600–1023dp` | Sheet is capped at `--bp-mobile` width and centred; the reader behind it stays single-column (**ADR-010**) | Nothing collapses |
+| **Tablet** `600–1023dp` | Sheet is capped at `--bp-mobile` width and centred; the reader behind it stays single-column (**ADR-019**) | Nothing collapses |
 | **Desktop** `1024–1439dp` | Same; desktop out of scope | — |
 
 - **Cible tactile**: 64dp rows, 48dp close button, 48dp on every tappable tile.
@@ -214,7 +214,7 @@ Sheet  --color-surface-raised, --shadow-sheet, radius --radius-lg
 
 - [x] All nine states described; three have no rendering and each says why, and **the absence of a success state is justified** (the chapter changing *is* the feedback)
 - [x] Every interactive element has a behaviour, a feedback and a resulting state — **including the ones deliberately inert**: long-press and swipe do nothing, and say why
-- [x] Responsive defined at every breakpoint; the two larger ones stop widening (ADR-010)
+- [x] Responsive defined at every breakpoint; the two larger ones stop widening (ADR-019)
 - [x] Anti-generic section checked **and justified**; the assumed choice is *no search field, and the current chapter always scrolled into view*, both argued
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID appears in § 9

@@ -141,6 +141,22 @@ class Chapters extends Table {
   /// When it became read. Null while `isRead` is false.
   DateTimeColumn get readAt => dateTime().nullable()();
 
+  /// **B6's mark.** Null means "not downloaded". Non-null means the `.md` file
+  /// was wholly present when this was written.
+  ///
+  /// The mark is **written after** the atomic rename in `2-3`, never before.
+  /// That ordering is the whole of B6's intent: a crash between the two steps
+  /// leaves a file with no mark, which is the safe direction — the chapter
+  /// offers itself for download rather than opening as if it were complete.
+  /// The reverse — a mark with no file — is unreachable, which is what makes
+  /// B6 expressible rather than merely true of the happy path.
+  ///
+  /// Without this column the mark was a per-row filesystem probe, and that was
+  /// the defect: B33 deletes one chapter's copy, so a probe could not
+  /// distinguish "deleted on purpose" from "file lost", and probing 10 000 rows
+  /// put B9's complete-list requirement at risk (see ADR-021).
+  DateTimeColumn get downloadedAt => dateTime().nullable()();
+
   /// B9 — reading order is the site's order, so it is an explicit ordinal and
   /// not something re-derived from `number`. Sites interleave volumes,
   /// side stories and numeric gaps; re-sorting by number would reorder them.
@@ -277,8 +293,10 @@ class Sources extends Table {
 ///
 /// **Version 1 is the first shipped schema.** `06-database.md` owns migrations:
 /// a version bump ships a `MigrationStrategy` step, and
-/// `dart run drift_dev schema dump lib/core/database` exports a snapshot that is
-/// committed beside this file. B31 is the reason that discipline is not
+/// `dart run drift_dev schema dump lib/core/database/app_database.dart
+/// lib/core/database/schema.json` exports the snapshot committed beside this
+/// file. **Two arguments** — with one it prints usage and exits 0, so it looks
+/// like it ran. B31 is the reason that discipline is not
 /// optional — installing a new version over an existing one must preserve every
 /// row, so a migration that drops a table is a migration that breaks the one
 /// promise this app makes that its competitors break.

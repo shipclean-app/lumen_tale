@@ -200,7 +200,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | The design target. Single column, `--space-lg` 16dp margins on the metadata block, chapter tiles full-bleed with `--space-md` internal padding, `--space-3xl` 48dp top margin | Nothing — this is what ships |
-| **Tablet** `600–1023dp` | **Identical single column, centred, capped.** The content column stops at the `--reader-md` measure width and centres, and **deliberately does not** become a two-pane master/detail with the chapter list in a side rail — ADR-010 and C3 put tablet out of scope, and a two-pane version of this screen would be the single most expensive layout in the app to get right on a device nobody will test it on | Nothing collapses — the layout simply stops growing |
+| **Tablet** `600–1023dp` | **Identical single column, centred, capped.** The content column stops at the `--reader-md` measure width and centres, and **deliberately does not** become a two-pane master/detail with the chapter list in a side rail — ADR-019 and C3 put tablet out of scope, and a two-pane version of this screen would be the single most expensive layout in the app to get right on a device nobody will test it on | Nothing collapses — the layout simply stops growing |
 | **Desktop** `1024–1439dp` | Same single column, centred. Flutter desktop is out of scope (C3) | — |
 
 `--bp-wide` `≥ 1440dp` follows the same capped-and-centred rule by declaration (`design-system.md` § 1.7); the chapter list never widens past the measure, because a chapter title stretched across 1 400dp is the same failure the reader's prose column is capped against.
@@ -296,7 +296,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 
 - [x] All nine states described with a concrete rendering; the three that split or explain say **why** (offline splits three ways, load-error names three different failures, read-only has no variant because the screen is unconditionally read-only with respect to content).
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint of the design system; the two larger ones say "identical, stop widening" — ADR-010, and the rejected two-pane layout is named so nobody re-proposes it as an improvement.
+- [x] Responsive defined at **every** breakpoint of the design system; the two larger ones say "identical, stop widening" — ADR-019, and the rejected two-pane layout is named so nobody re-proposes it as an improvement.
 - [x] Anti-generic section checked **and justified**; the assumed choices are stated (no sort/filter/search on the chapter list, and an action row that can never grow a fourth button).
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with its value.
 - [x] Every B/E/C ID on this screen appears in § 9.

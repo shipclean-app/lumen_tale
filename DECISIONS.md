@@ -45,6 +45,13 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 - **Closes when**: the downloads feature is specified in detail (acceptance criteria for "download 200 chapters and close the app").
 - **Status**: Open
 
+### Q-008 — Is there a real Android phone, and a way to put an APK on it?
+
+- **Status**: Open — raised 2026-10-02 by splitting **Q-003**, which had become two questions under one ID.
+- **Why the split matters**: `DECISIONS.md`'s Q-003 asked *can a native build be validated here* and closed on *an Android SDK is installed and `flutter build apk` succeeds*. `roadmap.md` asked *is there a real phone and a way to install on it* and has **no exit criteria at all**. Those are different questions with different answers: **ADR-011 already made the SDK a CI dependency**, so Q-003's original question is arguably satisfied by CI while the device question is untouched. One ID for both meant a session could close it on the easy half and believe v1 was verifiable.
+- **Closes when**: a CI-built APK has been installed on a real phone, a chapter has been read on it with the connection off, and the **upgrade-safety drill** has run (`architecture.md` § 3.1b). Not on the SDK alone.
+- **Blocks**: SC-5, and the MVP and V1 gates. **Nothing else** — the whole build sequence proceeds without it.
+
 ### Q-003 — Can the native SQLite build be validated on this machine?
 
 - **What is not known**: the stack uses `sqlite3` 3.x, which compiles the native library through Dart's build hooks (`native_toolchain_c`). `dart run drift_dev` works, so the hooks execute here — but no Android or iOS build has been run, because this environment has no Android SDK and no Xcode.
@@ -102,6 +109,24 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 - **Alternatives considered**: (a) Browse first, as the literal `mobile_consumer` "discover → consume → return" loop reads — rejected: the loop is *entered* through the reader's own shelf, not through a catalogue; putting Browse first optimises the step that happens least. (b) Downloads as a fifth tab, since offline is the stated wow moment — rejected: downloads are a **state of library novels**, not a place to browse, and their progress is surfaced in three better places (library row, novel detail, persistent status bar). The *offline guarantee* is proven by Wave 2, which is a build-order decision, not a navigation one. (c) Merge History into Library — rejected: they answer different questions ("what do I have" vs "what did I read"), and B46 already refuses to conflate reading position with history.
 - **Consequences**: Recorded via `state.js set-nav` so the order is machine-checkable rather than asserted in prose. `design-system.md` § 3.2 carries the full per-item score and rationale. **Downloads sits in overflow with its reason written down**, because an overflow entry with no recorded reason is how a tab silently reappears.
 
+### ADR-021: B37 ships in v1 — a manual check runs as a foreground job with a cancellable notification
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: A red-team pass found **B37 simultaneously required and denied**. `prd.md:403` says *"A scheduled **or manual** check runs as a foreground job with a visible notification the user can cancel."* `settings.md` designs exactly that on the **manual** path — the foreground notification, the OS-permission deep link, the six interval strings. `architecture.md` said *"No v1 slice implements it"*, and the roadmap deferred it behind an undecided gate. ADR-020 made it worse by *rejecting* "a manual new-chapter notification" — but that is a **different notification** from B37's **job-progress** one, and conflating them let a live rule slip through as if it had been discharged.
+- **Decision**: **B37 ships in v1, on the manual path.** A manual *Check now* runs as a foreground job with a visible, cancellable notification, exactly as `settings.md` specifies. This needs no background executor and does not contradict E7, which is about the **download** queue — a different subsystem with a different lifecycle.
+- **Alternatives considered**: (a) Keep denying it — rejected: a design cannot decline an approved business rule; the only two mechanisms are shipping it or **withdrawing** it through the PRD's own apparatus. (b) Withdraw B37 — rejected: the notification is honest and useful (C12: the reader can see a check is running), it is already designed, and `workmanager` is already a committed dependency. Withdrawing would be the larger change.
+- **Consequences**: Slice `6-10` carries B37. The roadmap's § 3.5 deferral is **withdrawn as a deferral** — it was never permitted, because `roadmap.md` § 0 Rule 3 says scoping "does not weaken, reinterpret or drop" any PRD rule, and the PRD's mechanism for dropping one is a **withdrawal that keeps its ID**. B35's *interval picker* stays conditional on the reader opting in (B35), which is a different question from whether the manual check is visible.
+
+### ADR-022: The download mark is a column (`chapters.downloadedAt`), not a filesystem probe
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: **B6** says a chapter "is **marked as downloaded** only once it is completely present". **B33** says a single chapter's copy can be deleted on its own. But the committed schema had **no mark at all** — `chapters` held `id, novelId, name, number, url, isRead, readAt, ordinal`. So the mark was a per-row filesystem probe, and `reader-chapter-sheet.md` documented the consequence itself: *"Absent while marked downloaded → treated as absent; B6 says it cannot be, so this is a drift alarm."* Three problems followed. **B33 created the forbidden state** — a deleted copy is indistinguishable from a never-downloaded one. **B9 was at risk** — US-05 requires 10 000 chapters visibly marked, and probing 10 000 files is not a list operation. And the architecture conceded the divergence was real: *"A mismatch is **detectable**"* — while C8 requires the app be **incapable** of a false state of completeness.
+- **Decision**: **`chapters.downloadedAt` is a nullable datetime. Null means not downloaded.** It is written **after** the atomic rename, never before. That ordering is the whole of B6's intent: a crash between the two leaves a file with no mark, which is the safe direction — the chapter offers itself for download rather than opening as complete. The reverse, a mark with no file, is unreachable.
+- **Alternatives considered**: (a) A `isDownloaded` boolean — rejected: it cannot say *when*, so "downloaded then deleted" and "never downloaded" still share a value. (b) Keep the probe — rejected for the three reasons above. (c) Delete the row on delete — rejected: **B9** requires the chapter list complete whatever its length, and a 10 000-chapter novel would lose its chapter list because one file was removed.
+- **Consequences**: `downloaded_at` exists in `schema.json` and is drift-guarded. **Schema version stays 1** — nothing has shipped, so this is a fix before release rather than a migration. Three tests cover it, including that deleting one chapter clears only that chapter's mark, and that `downloadedAt` and `isRead` are independent (B48 and B6 must not interact: downloaded is not read).
+
 ### ADR-020: No new-chapter notification in v1 — forced by B35, not chosen
 
 - **Date**: 2026-10-02
@@ -119,6 +144,15 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 - **Decision**: **v1 targets Android phones.** Past `--bp-mobile` the layout stops growing and centres. **No rail, no two-pane settings, no wider result grid, no desktop target.** Flutter desktop is out of scope.
 - **Alternatives considered**: (a) Keep Mihon's tablet behaviour — rejected: it doubles the layout surface for a device the owner does not have, and `archetypes.md` § 2 rates a phone-first reading loop as the archetype. (b) Ship "cap and centre" past 600dp and call it a tablet app — rejected: it is the same layout with a wider margin, so calling it a tablet layout would claim something not built. (c) Defer tablets to v2 — **chosen**, and recorded as such so v2 inherits a decision rather than starting one.
 - **Consequences**: `design-system.md` § 1.7's "cap and centre" policy is the whole tablet story, and it is what every screen's § 6 repeats. `benchmarks.md` § 3's parity row for tablet layout reads `no / possible`, and § 4 now carries its cost. The rail and two-pane code in Mihon's inventory are excluded with this ADR as the stated reason, which `_mihon-verdicts.md` § 9 already argued on frequency grounds — this gives that argument a name.
+
+### ADR-012 superseded — v1 success criteria
+
+**ADR-012 listed five criteria. The PRD now has six, and SC-1 has changed shape.** ADR-012 remains `Active` in the table above, which is how a zeroed-context session would read it and be told v1 succeeds when "FanMTL and Royal Road are browsable, **searchable**". Two amendments were missed when they landed, which is the root cause and is recorded below.
+
+- **SC-1** was amended by **ADR-015** (v1 claims *browse by genre*, and *search where — and only where — the site genuinely implements it*, B50). On measurement **FanMTL has no usable search at all**, so a v1 that read ADR-012's wording would be unachievable by construction.
+- **SC-6** ("a broken site is reported, never presented as empty") has no counterpart in ADR-012, and `prd.md:591` says it exists "**for no other purpose**". A five-item list cannot describe a six-criterion v1.
+
+**The root cause, and the mechanism that would have caught it.** `DECISIONS.md` is append-only and states that changing an entry requires "an entry that supersedes it". ADR-015 amended the PRD via `state.js amend` and **stopped**. It did not touch ADR-012, which is the document that *established* the criteria. Same for ADR-019 and ADR-013. **Every ADR that changes a prior ADR must supersede it here, or the corpus carries two truths.**
 
 ### Q-006 — Is the default branch `master` or `main`?
 
@@ -266,7 +300,9 @@ A closed question leaves this section and **becomes an ADR**, carrying the decis
 - **Alternatives considered**: (a) "It builds and the tests pass" — rejected: says nothing about whether a person can read a novel. (b) A user-count target — rejected: this is personal-use, so there is no audience to grow into. (c) Feature-parity with Mihon — rejected: Mihon's scope is larger and explicitly excluded here.
 - **Consequences**: Item 5 means Q-003 closes through CI, not through a local SDK install. Item 2 makes the offline promise falsifiable, which is the product's core claim. Criterion 1 names two sites rather than "the site", so success cannot be met by a single lucky integration.
 
-### ADR-013: All three v1 sources are adapters over one platform contract; FanMTL is built first
+### ADR-013: All three v1 sources are adapters over one platform contract
+
+> **Amended 2026-10-02:** the title's "all three v1" is inaccurate against **B1**, which is *exactly two* sites (FanMTL, Royal Road) with Novel Fire conditional on Q-004 and never counted against v1's success. The **contract** covers three sources; **v1** ships two. `roadmap.md` places Novel Fire after V1, not inside it.; FanMTL is built first
 
 - **Date**: 2026-10-02
 - **Status**: Active

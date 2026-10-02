@@ -38,7 +38,7 @@ This does not change anything in our design — ADR-008 already chose `go_router
 | Mihon surface | Source | Verdict | Our screen | Why |
 |---|---|---|---|---|
 | `MainActivity` | `ui/main/MainActivity.kt:129` | **ADAPT** | `app/` bootstrap | Mihon hosts a single Voyager navigator and routes 9 intent types into it (`handleIntentAction` `:524-599`). We have 1 intent type (the launcher) and a `go_router` router. Its global banner channel (`:217-227`) survives as the persistent download status bar |
-| `HomeScreen` | `ui/home/HomeScreen.kt:54` | **ADAPT** | shell in `app/` | Owns the tab set and a `TabNavigator`. Its badge computation (`:206-255`) is worth keeping. `isTabletUi()` (`:83-88`) is dropped — ADR-010 |
+| `HomeScreen` | `ui/home/HomeScreen.kt:54` | **ADAPT** | shell in `app/` | Owns the tab set and a `TabNavigator`. Its badge computation (`:206-255`) is worth keeping. `isTabletUi()` (`:83-88`) is dropped — ADR-019 |
 | `LibraryTab` … `MoreTab` (5) | `ui/{library,updates,history,browse,more}/*Tab.kt` | **COPY** | 5 tabs | **The backbone transfers exactly**, and ADR-018 argues the same order from frequency rather than inheriting it |
 | Tab re-tap behaviours | `LibraryTab.kt:79` (settings sheet), `UpdatesTab.kt:49` (download queue), `HistoryTab.kt:57` (**resume last chapter**), `BrowseTab.kt:46` (search), `MoreTab.kt:56` (settings) | **ADAPT** | — | History's "re-tap resumes the last chapter" is **the single best idea in the inventory** and we adopt it verbatim. Browse's re-tap opens search, which we cannot always do (ADR-015) — ours opens the genre index |
 | Donation campaign sheet | `MainActivity.kt:361-478` | **EXCLUDE** | — | Asks for money after 30 days' install. The app is personal-use and unshipped (ADR-010). Also it is a modal the user cannot swipe away (`enableImplicitDismiss = false`, `:373`) |
@@ -175,10 +175,10 @@ This does not change anything in our design — ADR-008 already chose `go_router
 | `StatsScreen` + content | `ui/stats/StatsScreen.kt:18` | **ADAPT** | `stats` | Kept — it is cheap once history exists. But it must be re-framed: reading time, entries per source, chapter distribution, averages. **No streaks, no goals, no achievements** — that is our explicit anti-reference against the competitor model |
 | `SupportUsScreen` | `mihon/feature/support/SupportUsScreen.kt:40` | **EXCLUDE** | — | Patreon / OpenCollective / Discord. Personal use, unshipped |
 | `CategoryScreen` + 3 dialogs | `ui/category/CategoryScreen.kt:21` | **EXCLUDE** | — | User-defined categories with drag-reorder. Our genres come from the sources |
-| `SettingsScreen` (wrapper) + 2-pane `TwoPanelBox` | `ui/setting/SettingsScreen.kt:26,56-79` | **ADAPT** | `settings` | Same indirection, minus the tablet branch (ADR-010) |
+| `SettingsScreen` (wrapper) + 2-pane `TwoPanelBox` | `ui/setting/SettingsScreen.kt:26,56-79` | **ADAPT** | `settings` | Same indirection, minus the tablet branch (ADR-019) |
 | `SettingsMainScreen` — **10 category rows** | `presentation/more/settings/screen/SettingsMainScreen.kt:52,173-236` | **ADAPT** | `settings` | Mihon: Appearance, Library, Reader, Downloads, Tracking, Browse, Data & storage, Security, Advanced, About. Ours: **Appearance, Reader, Downloads, Library, Sources, History, Language, About** — 8. Tracking and Security have no content for us (B4, personal use). Data & storage becomes a per-source storage row inside Downloads |
 | `SettingsSearchScreen` + `SearchableSettings` interface | `…/SettingsSearchScreen.kt:60`, `SearchableSettings.kt:12` | **EXCLUDE** | — | Full-text search across 9 settings screens. With 8 settings screens of ~30 rows total, a search index over it is more machinery than it saves |
-| `SettingsAppearanceScreen` | `…/SettingsAppearanceScreen.kt:31` | **ADAPT** | `settings` | Theme (kept, **B26**), pure-black dark (**excluded** — ADR-016 gives night its own cool ink, and pure black raises halation), tablet UI mode (**excluded**, ADR-010), language (kept, **B28**), date format and relative format (kept — history is time-bounded by **B47**, so a relative timestamp is on the critical path) |
+| `SettingsAppearanceScreen` | `…/SettingsAppearanceScreen.kt:31` | **ADAPT** | `settings` | Theme (kept, **B26**), pure-black dark (**excluded** — ADR-016 gives night its own cool ink, and pure black raises halation), tablet UI mode (**excluded**, ADR-019), language (kept, **B28**), date format and relative format (kept — history is time-bounded by **B47**, so a relative timestamp is on the critical path) |
 | `SettingsLibraryScreen` | `…/SettingsLibraryScreen.kt:41` | **ADAPT** | `settings` | Category rows excluded. `pref_library_update_interval` **survives but defaults to off** (**B35**) |
 | `SettingsReaderScreen` — 6 groups incl. Pager viewer, Webtoon viewer, Reader navigation | `…/SettingsReaderScreen.kt:21` | **ADAPT** | `settings-reader` | Text size and theme survive (**B27**, **B26**). **Pager viewer and Webtoon viewer groups excluded wholesale** — they configure image scaling, zoom, crop, dual-page split and page rotation, which have no meaning for continuous text. Reader navigation (volume keys, vertical navigator) excluded |
 | `SettingsDownloadScreen` | `…/SettingsDownloadScreen.kt:24` | **ADAPT** | `settings` | WiFi-only survives. **`save_chapter_as_cbz` excluded** — we store Markdown, and CBZ is a comic archive. `split_tall_images` excluded. **Concurrency is forced to 1 by B18**, so both concurrency preferences are excluded rather than exposed as a choice we do not offer. Delete-after-read survives only as an explicit per-chapter action (**B33**) |
@@ -254,20 +254,20 @@ This does not change anything in our design — ADR-008 already chose `go_router
 
 - **No notes, no bookmarks in v1.** Both are Mihon features and neither is in the PRD.
 - **No user-defined categories.** Mihon's most-used organisation feature. Ours come from the sources, which is a real reduction in control and is recorded as such rather than disguised.
-- **No random-manga exclusion** — we kept it, because it is one line and genuinely useful.
+
 - **No Cloudflare cookie harvesting** (ADR-014). Mihon's `CloudflareInterceptor` grows the bypass surface; ours declines it, and `17-security.md` rule 5 carries the measured measurement showing why.
 
-### What Mihon has that we should reconsider
+### What Mihon has, and where each landed
 
-Three things in this inventory look like they earn their place, and they are **not** in the current v1:
+**Ten** behaviours in this inventory earn their place. **Eight are already adopted** and marked below; two are v2 candidates. The point of recording the adopted ones is that the roadmap declined some of Mihon's library ergonomics and the design adopted them — see the reversal note under the library rows.
 
 | Mihon feature | Source | The case for it |
 |---|---|---|
-| **History's "Resume" per entry** | `HistoryTab.kt:68-76` | Already **adopted** — copied. Listed here because it is the template for the others |
-| **Re-tap tab to resume the last chapter** | `HistoryTab.kt:57-59` | Already **adopted** — copied |
-| **`SourceFilterDialog`'s generic filter renderer** | `SourceFilterDialog.kt:34-60` | Already **adopted** — copied, and it is the mechanism that makes ADR-013 cheap |
-| **Page slider with prev/next chapter buttons** | `ChapterNavigator.kt:66` | Already **adopted** |
-| **One-item "continue reading" on the library row** | `LibraryToolbar.kt:267-287` | Already **adopted** and promoted to the top of the screen |
-| **Random novel** | `LibrarySettingsDialog.kt:186-195` | Already **adopted** |
-| **Per-series reader settings** | `ReadingModePage.kt:32` | Real value — orientation and size per novel rather than globally. **Worth a v2 look**; v1 keeps size and theme global because B27/B26 do not require per-novel |
-| **Mihon's two-stage up-navigation** | `BrowseSourceScreen.kt:85-90` | Already **adopted** |
+| **History's "Resume" per entry** | `HistoryTab.kt:68-76` | **Adopted** — copied. Listed here because it is the template for the others |
+| **Re-tap tab to resume the last chapter** | `HistoryTab.kt:57-59` | **Adopted** — copied |
+| **`SourceFilterDialog`'s generic filter renderer** | `SourceFilterDialog.kt:34-60` | **Adopted** — copied, and it is the mechanism that makes ADR-013 cheap |
+| **Page slider with prev/next chapter buttons** | `ChapterNavigator.kt:66` | **Adopted** |
+| **One-item "continue reading" on the library row** | `LibraryToolbar.kt:267-287` | **Adopted** and promoted to the top of the screen |
+| **Random novel** | `LibrarySettingsDialog.kt:186-195` | **Adopted** |
+| **V2 candidate** | `ReadingModePage.kt:32` | Real value — orientation and size per novel rather than globally. **Worth a v2 look**; v1 keeps size and theme global because B27/B26 do not require per-novel |
+| **Mihon's two-stage up-navigation** | `BrowseSourceScreen.kt:85-90` | **Adopted** |

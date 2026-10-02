@@ -227,7 +227,7 @@ Named, not "a nice transition".
 | `--bp-desktop` | `1024–1439dp` | Same single column, centred. Flutter desktop is out of scope. |
 | `--bp-wide` | `≥ 1440dp` | Same single column, centred. |
 
-**This is not a tablet layout and must not be built as one.** The owner excluded it (**ADR-019**, a platform decision — *not* ADR-010, which is a legal-posture decision about sharing, export and backup). The policy above is what "adapts" instead: past 600dp the layout stops growing and centres. `13-error-handling` and `09-widgets-ui` both forbid widening the reader column past the measure, because the failure mode is a 1400dp line of prose.
+**This is not a tablet layout and must not be built as one.** The owner excluded it (**ADR-019**, a platform decision — *not* ADR-019, which is a legal-posture decision about sharing, export and backup). The policy above is what "adapts" instead: past 600dp the layout stops growing and centres. `13-error-handling` and `09-widgets-ui` both forbid widening the reader column past the measure, because the failure mode is a 1400dp line of prose.
 
 **Touch target**: **48dp minimum** on every tappable element, including the reader's tap zones and list-row chevrons.
 
@@ -449,7 +449,7 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 ### 2.12 `SettingsChoiceSheet`
 
-**Role**: the single-value picker for a `navigate` row — theme (3 values), text size (5 values), history retention (5 values), language (2). One component for all of them, so every choice in the app is made the same way.
+**Role**: the single-value picker for a `navigate` row — theme (3 values), text size (5 values), history retention (5 values). **Not language**: B28 forbids an in-app language switch, because the platform already owns that value and a second source of truth for it is a bug waiting to happen. One component for all of them, so every choice in the app is made the same way.
 
 **États** — every state this component must render:
 
@@ -479,7 +479,7 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 > The order of navigation entries **is a statement of priority**. It follows the frequency of the work loop, not the org chart of the domain. `references/module-prioritization.md` — this section is not optional.
 
 - **Type**: bottom nav
-- **Responsive behaviour**: ≥600dp the bar stays at the bottom and stays 5 items. It does not become a rail. **ADR-019**, not ADR-010: tablet exclusion is a platform decision, and ADR-010 is about sharing, export and backup.
+- **Responsive behaviour**: ≥600dp the bar stays at the bottom and stays 5 items. It does not become a rail. **ADR-019**, not ADR-019: tablet exclusion is a platform decision, and ADR-019 is about sharing, export and backup.
 - **Plateau**: 5 items. The rest is overflow.
 
 | Rank | Module | Label (EN / FR) | Freq. | Centrality | Why here and not elsewhere |

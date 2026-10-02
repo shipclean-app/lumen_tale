@@ -87,7 +87,7 @@ They cannot fix it, because their library lives on their server and is coupled t
 | Accounts / cloud sync | Reader cannot switch phones without re-downloading | Nothing to leak, nothing to pay for, nothing to host (C2). Removes the entire class of "my library vanished" failures outright |
 | Export / backup | Reader cannot take their library elsewhere; **an uninstall destroys it** | ADR-010: personal use only. A no-backup app that also can't export is a real constraint — mitigated only by B31 guaranteeing the app never destroys it |
 | Reading modes beyond scroll | Reader must wait for v2 for a feature competitors ship today | ADR-009: the reader is the largest subsystem and feeds the pipeline. v1 scroll-only is the lowest-risk order |
-| Second-source depth | Three sites in v1 (B1) triples the scraping surface | ADR-013 makes sources adapters over one contract, so a second site is selectors, not a rewrite |
+| A second source | A second scraper to maintain, with an unmeasured churn rate | ADR-013 makes sources adapters over one contract, so a second site is selectors, not a rewrite. **B1 is two sites plus a conditional third** — Novel Fire ships only if Q-004 clears, and is added *after* V1, never inside it |
 | Store distribution | No other users; every fix is a manual reinstall | ADR-011. Removes a paid account and a review process |
 
 ## 4b. Costs of the capabilities v1 declines

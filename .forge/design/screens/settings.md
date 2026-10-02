@@ -109,7 +109,6 @@ AppScaffold (titleBar "Settings", bottomNav kept — this is a sub-page of More)
     │         value "Last checked 2 days ago"  ← B49 wording, same vocabulary as Updates
     ├── --space-xl break
     ├── GroupLabel "DOWNLOADS"
-    │   └── SettingsSwitchRow  "Remove after reading"
     │         consequence  "When on, a chapter's stored copy is deleted once you
     │                        have finished it. There is no backup of it."  ← `design-system.md` § 2.9
     │         control  Switch (setting variant, off — B32's "off by default")
@@ -209,11 +208,6 @@ Every string on this screen, in both languages, as it will be keyed in the ARB. 
 | `row.checkNow.lastOk` | `Checked {relative} · nothing new.` | `Vérifiée {relative} · rien de nouveau.` |
 | `row.checkNow.never` | `Never checked` | `Jamais vérifiée` |
 | `row.checkNow.failed` | `Could not check {relative}. {cause}` | `Vérification impossible {relative}. {cause}` |
-| `row.removeAfterReading.label` | `Remove after reading` | `Supprimer après lecture` |
-| `row.removeAfterReading.consequence` | `When on, a chapter's stored copy is deleted once you have finished it. There is no backup of it.` | `Activé, la copie stockée d'un chapitre est supprimée dès que vous l'avez terminé. Il n'en existe aucune sauvegarde.` |
-| `dialog.removeAfterReading.title` | `Delete chapters after reading?` | `Supprimer les chapitres après lecture ?` |
-| `dialog.removeAfterReading.body` | `Finish reading a chapter and its stored copy is deleted. There is no backup of it — it cannot be brought back.` | `Terminez la lecture d'un chapitre et sa copie stockée est supprimée. Il n'en existe aucune sauvegarde : elle ne peut pas être récupérée.` |
-| `dialog.removeAfterReading.confirm` | `Turn on` | `Activer` |
 | `row.history.label` | `Reading history` | `Historique de lecture` |
 | `row.history.value` | `{count} entries · oldest {relative}` | `{count} entrées · la plus ancienne {relative}` |
 | `row.history.value.empty` | `0 entries` | `0 entrée` |
@@ -258,7 +252,6 @@ Every string on this screen, in both languages, as it will be keyed in the ARB. 
 | `SettingsRow → /more/sources` | tap | Push the Sources sub-screen — a list with an enable/disable switch per site | Slide | Filled | B1 B50 |
 | `SettingsSwitchRow` — "Check for new chapters" | tap | Write `updateInterval = never`. **Off is the default and stays off until the reader taps it**; the `consequence` line names what OFF means (`Off — nothing is checked unless you ask`), which is what makes the off state legible rather than merely dark | Track fills `--color-accent`, thumb `--color-surface-raised`, `--duration-fast` 120ms; the `consequence` line changes to the chosen interval | Filled, check ON | **B35** |
 | — the same row, when ON | tap | Write `updateInterval = never` — **choosing "Never" actively disables the schedule, it does not merely skip a run** | Track empties to `--color-surface-sunken`, thumb returns | Filled, check OFF, and the interval group **disappears with the row** | **B35** |
-| `SettingsSwitchRow` — "Remove after reading" | tap | Opening a **`danger` confirm dialog first**, every time, never only the first: *"Finish reading a chapter and its stored copy is deleted. There is no backup of it — it cannot be brought back."* Confirming writes `removeAfterReading = true` | Switch snaps on only after the dialog confirms; the dialog is `--shadow-dialog` on `--color-surface-raised` | Filled, deletion ON | **B32**, **B33**, **C8** |
 | — cancelling that dialog | tap | Nothing is written | Dialog dismisses, switch unchanged | Filled, deletion OFF | **B32** |
 | `CheckIntervalGroup` — six radios | tap | Write the chosen interval. Intervals: `Never · Every 12 hours · Every 24 hours · Every 48 hours · Every 72 hours · Weekly` | Radio fills `--color-accent`, label goes `--color-text-primary` | Filled | **B35** |
 | `SettingsActionRow` — "Check now" | tap | Run one library check **in the foreground**, whether or not a schedule exists | Row goes to `loading` (16dp spinner, label hidden, width locked) | Filled, then a snackbar | **B36** |
@@ -286,7 +279,7 @@ Every string on this screen, in both languages, as it will be keyed in the ARB. 
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, full-bleed rows with `--space-md` 12dp internal padding, group labels inset `--space-lg` 16dp, `--space-3xl` 48dp top margin. Values are right-aligned in the row's remaining width and **truncate with an ellipsis** | Nothing. This is the design target |
-| **Tablet** `600–1023dp` | Identical single column, centred, **capped at the same measure as the phone** — the row list does not widen and the label does not drift away from the value. **Explicitly not a tablet layout** (ADR-010) | Nothing collapses — the layout simply stops widening |
+| **Tablet** `600–1023dp` | Identical single column, centred, **capped at the same measure as the phone** — the row list does not widen and the label does not drift away from the value. **Explicitly not a tablet layout** (ADR-019) | Nothing collapses — the layout simply stops widening |
 | **Desktop** `1024–1439dp` | Same single column, centred, same cap. Flutter desktop is out of scope | — |
 
 - **Touch target**: **48dp minimum on every row.** The `Switch` (`setting` variant) is a 48×32dp track, which is under 48 on its short axis — so the **row** is the target, at 48dp, and the switch sits inside it. The sheet rows are 56dp. `RadioListTile` is a Material primitive with its own platform hit-slop behaviour; the row's own height is the guarantee.
@@ -318,7 +311,6 @@ Every string on this screen, in both languages, as it will be keyed in the ARB. 
 | `themeOverride` | `enum(system\|day\|night)` | `shared_preferences`, global | yes | Write fails → control snaps back, snackbar; unreadable → screen-level Load error |
 | `readingScale` | `enum(sm..xxl)` | `shared_preferences`, global | yes | Same |
 | `updateInterval` | `enum(never\|12h\|24h\|48h\|72h\|weekly)` | `shared_preferences` | yes | Same. **Default `never`** — B35 |
-| `removeAfterReading` | `bool` | `shared_preferences` | yes | Write fails → `design-system.md` § 2.9's `failed` state: snap back, failure shown beside the switch. **Default `false`** — B32's "off by default" |
 | `historyRetention` | `enum(1w\|1m\|3m\|1y\|2y)` | `shared_preferences` | yes | Same. **Default `1y`** — B47 |
 | `historyEntryCount` | `int` | local, `COUNT(*)` over the history table | yes | Query fails → the row's value renders as `--text-caption` *"Count unavailable"*, **never as 0** (B48's lesson: a wrong local number is worse than no number) |
 | `historyOldestEntryAt` | `Date?` | local | no | Null → the row says `0 entries`, which is the truth |
@@ -344,8 +336,7 @@ Every string on this screen, in both languages, as it will be keyed in the ARB. 
 | B27 | PRD | The text size appears as the second half of the same value line, with its pixel figure (`Medium (18pt)`) so the reader can compare it against the phone's own font-size slider. The five-step ladder and the live preview live on `settings-reader` |
 | B28 | PRD | The `Language` row is **read-only and carries no chevron**, because B28 forbids an in-app language switch. Its hint line states that the app follows the phone. Changing the phone's language re-localises this whole screen live, including this row's own value (E12) |
 | B30 | PRD | **No backup, no export, no share row exists anywhere.** Their absence is the implementation, and the E11 disclosure is what the absence obliges the app to say instead |
-| B32 | PRD | **A switch exists and is off by default** — *Remove after reading* in the `DOWNLOADS` group — and turning it on requires a `danger` confirmation that names the absence of a backup. The confirmation is required **every** time, not only the first, because B32's guarantee is that deletion is "a separate choice the user makes explicitly", and a second turn of the same switch after weeks is not a choice the reader is making explicitly any more |
-| B33 | PRD | The per-chapter and per-novel deletes that the switch's `consequence` line refers to live where the reader is actually reading. Nothing on this screen can delete anything itself, and the switch's confirmation says so in the reader's own words rather than leaving the consequence to be discovered afterwards |
+| B32 | PRD | **No switch.** B32 requires deletion to be "a **separate choice the user makes explicitly**", and B33 makes it per-chapter. A global auto-delete-on-read switch satisfies neither: confirming it once is not an explicit choice per chapter, and after a week it is not a choice at all. Deletion lives only where B33 puts it — one chapter, from the chapter tile or the downloads screen — and it is the only deletion surface || B33 | PRD | The per-chapter and per-novel deletes that the switch's `consequence` line refers to live where the reader is actually reading. Nothing on this screen can delete anything itself, and the switch's confirmation says so in the reader's own words rather than leaving the consequence to be discovered afterwards |
 | B35 | PRD | The `Check for new chapters` switch is **off by default**, and its `consequence` line says what OFF means (`Off — nothing is checked unless you ask`) — the design system's `design-system.md` § 2.9 requires exactly this line for this setting, and without it "off by default" is a state the reader cannot see. The six-interval group is **not rendered at all** while the switch is off, so the screen never implies that a schedule exists. Choosing `Never` from within the group actively disables the schedule |
 | B36 | PRD | `Check now` is present and live **whether or not the schedule is on**. Nothing on this screen, and nothing about opening the app, triggers a check by itself |
 | B38 | PRD | One `--text-caption` line under the interval group: *"Checking only reads chapter lists. It never downloads anything."* The absence of a download control inside the schedule group is the second half of the same guarantee |
@@ -365,7 +356,7 @@ Every string on this screen, in both languages, as it will be keyed in the ARB. 
 
 - [x] All nine states described, with a concrete rendering. The four with nothing to render say **why** they have none.
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010, not an omission.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-019, not an omission.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated: **no icon column, and a chevron on six of eleven rows and nothing else.**
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.

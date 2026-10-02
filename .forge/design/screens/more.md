@@ -154,7 +154,7 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, full-bleed rows, `--space-lg` margins | Nothing. Design target |
-| **Tablet** `600–1023dp` | Identical single column, centred. **Not a tablet layout** (ADR-010) | Nothing collapses — it stops widening |
+| **Tablet** `600–1023dp` | Identical single column, centred. **Not a tablet layout** (ADR-019) | Nothing collapses — it stops widening |
 | **Desktop** `1024–1439dp` | Same. Flutter desktop out of scope | — |
 
 - **Cible tactile**: 56dp rows, above the 48dp minimum. `trailing` chevrons are 48dp even though the glyph is small.
@@ -207,7 +207,7 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 
 - [x] All nine states described. Six have no rendering and each says **why** — for a static navigation list, manufacturing empty and error states it cannot reach would be a screen that lies about its own robustness
 - [x] Every interactive element has a behaviour, a feedback and a resulting state
-- [x] Responsive defined at every breakpoint; the two larger ones say "identical, stops widening" (ADR-010)
+- [x] Responsive defined at every breakpoint; the two larger ones say "identical, stops widening" (ADR-019)
 - [x] Anti-generic section checked **and justified** — the assumed choice is *consequence-first rows with no icons, so absent features can be honest*
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID on this screen appears in § 9

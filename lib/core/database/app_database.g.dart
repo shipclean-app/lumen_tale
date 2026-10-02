@@ -673,6 +673,17 @@ class $ChaptersTable extends Chapters
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _downloadedAtMeta = const VerificationMeta(
+    'downloadedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> downloadedAt = GeneratedColumn<DateTime>(
+    'downloaded_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _ordinalMeta = const VerificationMeta(
     'ordinal',
   );
@@ -693,6 +704,7 @@ class $ChaptersTable extends Chapters
     url,
     isRead,
     readAt,
+    downloadedAt,
     ordinal,
   ];
   @override
@@ -754,6 +766,15 @@ class $ChaptersTable extends Chapters
         readAt.isAcceptableOrUnknown(data['read_at']!, _readAtMeta),
       );
     }
+    if (data.containsKey('downloaded_at')) {
+      context.handle(
+        _downloadedAtMeta,
+        downloadedAt.isAcceptableOrUnknown(
+          data['downloaded_at']!,
+          _downloadedAtMeta,
+        ),
+      );
+    }
     if (data.containsKey('ordinal')) {
       context.handle(
         _ordinalMeta,
@@ -799,6 +820,10 @@ class $ChaptersTable extends Chapters
         DriftSqlType.dateTime,
         data['${effectivePrefix}read_at'],
       ),
+      downloadedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}downloaded_at'],
+      ),
       ordinal: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}ordinal'],
@@ -842,6 +867,22 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
   /// When it became read. Null while `isRead` is false.
   final DateTime? readAt;
 
+  /// **B6's mark.** Null means "not downloaded". Non-null means the `.md` file
+  /// was wholly present when this was written.
+  ///
+  /// The mark is **written after** the atomic rename in `2-3`, never before.
+  /// That ordering is the whole of B6's intent: a crash between the two steps
+  /// leaves a file with no mark, which is the safe direction — the chapter
+  /// offers itself for download rather than opening as if it were complete.
+  /// The reverse — a mark with no file — is unreachable, which is what makes
+  /// B6 expressible rather than merely true of the happy path.
+  ///
+  /// Without this column the mark was a per-row filesystem probe, and that was
+  /// the defect: B33 deletes one chapter's copy, so a probe could not
+  /// distinguish "deleted on purpose" from "file lost", and probing 10 000 rows
+  /// put B9's complete-list requirement at risk (see ADR-021).
+  final DateTime? downloadedAt;
+
   /// B9 — reading order is the site's order, so it is an explicit ordinal and
   /// not something re-derived from `number`. Sites interleave volumes,
   /// side stories and numeric gaps; re-sorting by number would reorder them.
@@ -854,6 +895,7 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
     required this.url,
     required this.isRead,
     this.readAt,
+    this.downloadedAt,
     required this.ordinal,
   });
   @override
@@ -867,6 +909,9 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
     map['is_read'] = Variable<bool>(isRead);
     if (!nullToAbsent || readAt != null) {
       map['read_at'] = Variable<DateTime>(readAt);
+    }
+    if (!nullToAbsent || downloadedAt != null) {
+      map['downloaded_at'] = Variable<DateTime>(downloadedAt);
     }
     map['ordinal'] = Variable<int>(ordinal);
     return map;
@@ -883,6 +928,9 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
       readAt: readAt == null && nullToAbsent
           ? const Value.absent()
           : Value(readAt),
+      downloadedAt: downloadedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(downloadedAt),
       ordinal: Value(ordinal),
     );
   }
@@ -900,6 +948,7 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
       url: serializer.fromJson<String>(json['url']),
       isRead: serializer.fromJson<bool>(json['isRead']),
       readAt: serializer.fromJson<DateTime?>(json['readAt']),
+      downloadedAt: serializer.fromJson<DateTime?>(json['downloadedAt']),
       ordinal: serializer.fromJson<int>(json['ordinal']),
     );
   }
@@ -914,6 +963,7 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
       'url': serializer.toJson<String>(url),
       'isRead': serializer.toJson<bool>(isRead),
       'readAt': serializer.toJson<DateTime?>(readAt),
+      'downloadedAt': serializer.toJson<DateTime?>(downloadedAt),
       'ordinal': serializer.toJson<int>(ordinal),
     };
   }
@@ -926,6 +976,7 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
     String? url,
     bool? isRead,
     Value<DateTime?> readAt = const Value.absent(),
+    Value<DateTime?> downloadedAt = const Value.absent(),
     int? ordinal,
   }) => ChapterRow(
     id: id ?? this.id,
@@ -935,6 +986,7 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
     url: url ?? this.url,
     isRead: isRead ?? this.isRead,
     readAt: readAt.present ? readAt.value : this.readAt,
+    downloadedAt: downloadedAt.present ? downloadedAt.value : this.downloadedAt,
     ordinal: ordinal ?? this.ordinal,
   );
   ChapterRow copyWithCompanion(ChaptersCompanion data) {
@@ -946,6 +998,9 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
       url: data.url.present ? data.url.value : this.url,
       isRead: data.isRead.present ? data.isRead.value : this.isRead,
       readAt: data.readAt.present ? data.readAt.value : this.readAt,
+      downloadedAt: data.downloadedAt.present
+          ? data.downloadedAt.value
+          : this.downloadedAt,
       ordinal: data.ordinal.present ? data.ordinal.value : this.ordinal,
     );
   }
@@ -960,14 +1015,24 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
           ..write('url: $url, ')
           ..write('isRead: $isRead, ')
           ..write('readAt: $readAt, ')
+          ..write('downloadedAt: $downloadedAt, ')
           ..write('ordinal: $ordinal')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, novelId, name, number, url, isRead, readAt, ordinal);
+  int get hashCode => Object.hash(
+    id,
+    novelId,
+    name,
+    number,
+    url,
+    isRead,
+    readAt,
+    downloadedAt,
+    ordinal,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -979,6 +1044,7 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
           other.url == this.url &&
           other.isRead == this.isRead &&
           other.readAt == this.readAt &&
+          other.downloadedAt == this.downloadedAt &&
           other.ordinal == this.ordinal);
 }
 
@@ -990,6 +1056,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
   final Value<String> url;
   final Value<bool> isRead;
   final Value<DateTime?> readAt;
+  final Value<DateTime?> downloadedAt;
   final Value<int> ordinal;
   final Value<int> rowid;
   const ChaptersCompanion({
@@ -1000,6 +1067,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
     this.url = const Value.absent(),
     this.isRead = const Value.absent(),
     this.readAt = const Value.absent(),
+    this.downloadedAt = const Value.absent(),
     this.ordinal = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1011,6 +1079,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
     required String url,
     this.isRead = const Value.absent(),
     this.readAt = const Value.absent(),
+    this.downloadedAt = const Value.absent(),
     required int ordinal,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -1026,6 +1095,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
     Expression<String>? url,
     Expression<bool>? isRead,
     Expression<DateTime>? readAt,
+    Expression<DateTime>? downloadedAt,
     Expression<int>? ordinal,
     Expression<int>? rowid,
   }) {
@@ -1037,6 +1107,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
       if (url != null) 'url': url,
       if (isRead != null) 'is_read': isRead,
       if (readAt != null) 'read_at': readAt,
+      if (downloadedAt != null) 'downloaded_at': downloadedAt,
       if (ordinal != null) 'ordinal': ordinal,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1050,6 +1121,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
     Value<String>? url,
     Value<bool>? isRead,
     Value<DateTime?>? readAt,
+    Value<DateTime?>? downloadedAt,
     Value<int>? ordinal,
     Value<int>? rowid,
   }) {
@@ -1061,6 +1133,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
       url: url ?? this.url,
       isRead: isRead ?? this.isRead,
       readAt: readAt ?? this.readAt,
+      downloadedAt: downloadedAt ?? this.downloadedAt,
       ordinal: ordinal ?? this.ordinal,
       rowid: rowid ?? this.rowid,
     );
@@ -1090,6 +1163,9 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
     if (readAt.present) {
       map['read_at'] = Variable<DateTime>(readAt.value);
     }
+    if (downloadedAt.present) {
+      map['downloaded_at'] = Variable<DateTime>(downloadedAt.value);
+    }
     if (ordinal.present) {
       map['ordinal'] = Variable<int>(ordinal.value);
     }
@@ -1109,6 +1185,7 @@ class ChaptersCompanion extends UpdateCompanion<ChapterRow> {
           ..write('url: $url, ')
           ..write('isRead: $isRead, ')
           ..write('readAt: $readAt, ')
+          ..write('downloadedAt: $downloadedAt, ')
           ..write('ordinal: $ordinal, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -3230,6 +3307,7 @@ typedef $$ChaptersTableCreateCompanionBuilder =
       required String url,
       Value<bool> isRead,
       Value<DateTime?> readAt,
+      Value<DateTime?> downloadedAt,
       required int ordinal,
       Value<int> rowid,
     });
@@ -3242,6 +3320,7 @@ typedef $$ChaptersTableUpdateCompanionBuilder =
       Value<String> url,
       Value<bool> isRead,
       Value<DateTime?> readAt,
+      Value<DateTime?> downloadedAt,
       Value<int> ordinal,
       Value<int> rowid,
     });
@@ -3360,6 +3439,11 @@ class $$ChaptersTableFilterComposer
 
   ColumnFilters<DateTime> get readAt => $composableBuilder(
     column: $table.readAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3506,6 +3590,11 @@ class $$ChaptersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get ordinal => $composableBuilder(
     column: $table.ordinal,
     builder: (column) => ColumnOrderings(column),
@@ -3561,6 +3650,11 @@ class $$ChaptersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get readAt =>
       $composableBuilder(column: $table.readAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get downloadedAt => $composableBuilder(
+    column: $table.downloadedAt,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get ordinal =>
       $composableBuilder(column: $table.ordinal, builder: (column) => column);
@@ -3704,6 +3798,7 @@ class $$ChaptersTableTableManager
                 Value<String> url = const Value.absent(),
                 Value<bool> isRead = const Value.absent(),
                 Value<DateTime?> readAt = const Value.absent(),
+                Value<DateTime?> downloadedAt = const Value.absent(),
                 Value<int> ordinal = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChaptersCompanion(
@@ -3714,6 +3809,7 @@ class $$ChaptersTableTableManager
                 url: url,
                 isRead: isRead,
                 readAt: readAt,
+                downloadedAt: downloadedAt,
                 ordinal: ordinal,
                 rowid: rowid,
               ),
@@ -3726,6 +3822,7 @@ class $$ChaptersTableTableManager
                 required String url,
                 Value<bool> isRead = const Value.absent(),
                 Value<DateTime?> readAt = const Value.absent(),
+                Value<DateTime?> downloadedAt = const Value.absent(),
                 required int ordinal,
                 Value<int> rowid = const Value.absent(),
               }) => ChaptersCompanion.insert(
@@ -3736,6 +3833,7 @@ class $$ChaptersTableTableManager
                 url: url,
                 isRead: isRead,
                 readAt: readAt,
+                downloadedAt: downloadedAt,
                 ordinal: ordinal,
                 rowid: rowid,
               ),

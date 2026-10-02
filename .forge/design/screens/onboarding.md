@@ -202,7 +202,7 @@ The disclosure is **translated in full and not shortened**, which is the one pla
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, `--space-lg` 16dp margins, `--space-3xl` 48dp top margin. The promise paragraph is capped at the same 65–75 character measure the reader uses, because a promise set across a phone's full width is one line per clause. **`primary` is full width**; `Skip` sits directly above it, left-aligned, 48dp tall, so both controls are in the bottom third within thumb reach | Nothing. This is the design target |
-| **Tablet** `600–1023dp` | Identical single column, centred, **capped** — the paragraph measure does not widen and the `primary` button does not stretch to 800dp. **Explicitly not a tablet layout** (ADR-010) | Nothing collapses — the layout simply stops widening |
+| **Tablet** `600–1023dp` | Identical single column, centred, **capped** — the paragraph measure does not widen and the `primary` button does not stretch to 800dp. **Explicitly not a tablet layout** (ADR-019) | Nothing collapses — the layout simply stops widening |
 | **Desktop** `1024–1439dp` | Same single column, centred, same cap. Flutter desktop is out of scope | — |
 
 - **Touch target**: **48dp minimum on both controls**, and both are in the bottom third of the screen. `Skip` is 48dp tall despite being a `text` button, because it is the way out for a reader who does not want to be walked through anything.
@@ -267,7 +267,7 @@ The disclosure is **translated in full and not shortened**, which is the one pla
 
 - [x] All nine states described, with a concrete rendering. The four with nothing to render say **why** they have none — and each of those reasons is a decision (nothing loads, nothing to be empty, nothing to submit, nothing to configure).
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-019.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated: **two steps, the second a consequence rather than a feature, no swipe, and no settings.**
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.
