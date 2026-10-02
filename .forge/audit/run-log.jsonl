@@ -54,3 +54,4 @@
 {"ts":"2026-10-02T15:26:09.491Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:7217529694b6"}
 {"ts":"2026-10-02T15:26:28.693Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:da8e9150bd1a"}
 {"ts":"2026-10-02T15:27:29.284Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:1b7fd915844d"}
+{"ts":"2026-10-02T15:28:30.310Z","type":"phase2_complete","message":"Roadmap + benchmarks written. Q-007 closed as ADR-015 (search is a per-source opt-in). FanMTL search measured unreachable. PRD amended: B50, US-02 conditional, SC-1 amended."}

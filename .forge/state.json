@@ -782,7 +782,8 @@
       "status_change": 6,
       "gate_approved": 2,
       "phase_status": 1,
-      "amend": 1
+      "amend": 1,
+      "phase2_complete": 1
     }
   },
   "divergences": [],
