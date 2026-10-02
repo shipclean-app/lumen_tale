@@ -1,6 +1,6 @@
 ---
 type: prd
-status: draft
+status: approved
 generated_at: 2026-10-02
 version: 2
 ---

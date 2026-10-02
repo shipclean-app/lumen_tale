@@ -60,6 +60,15 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 - **What the answer determines**: whether the Novel Fire source ships in v1. It is in scope (ADR-013) but its scraper stays unbuilt until this closes.
 - **Closes when**: the owner reads and confirms the terms. At that moment, record it in `18-external-contracts.md` and confirm whether proxied origin content is in scope.
 
+### Q-007 — Is tag browsing an acceptable substitute for text search on FanMTL?
+
+- **Status**: Open — found by measurement, 2026-10-02, after the roadmap was drafted.
+- **What is not known**: `US-02` promises "search inside a site". FanMTL's text search endpoint is **not reachable by an automated client** — GET and POST to `/e/search/index.php` both return 404 with a JavaScript meta-refresh, even for a query that should match, with and without a prior session. This is a reachability failure, **not** a robots.txt one: `/e/search/` is not among the seven paths FanMTL disallows.
+- **What does work**: `/browsetags/` exposes 9 genre tags and `/list/<tag>/<sort>-<page>.html` returns full novel pages. So on FanMTL, finding a novel means browsing genres.
+- **What the answer determines**: whether `US-02` is implementable on the first source at all, and whether the v1 scope says "search" or "browse by genre". It also affects `B45`/library search scope and the roadmap's browse wave.
+- **Closes when**: the owner says whether genre/tag browsing satisfies "find a novel" for FanMTL, or whether text search on that source is dropped from v1. Royal Road and Novel Fire still need their own reachability check before `US-02` can be promised for any source.
+- **Note**: this was **not** caught by the PRD's own review because the PRD assumed every site supports search. It surfaced only from fetching the site.
+
 ### Q-006 — Is the default branch `master` or `main`?
 
 - **Status**: **Closed 2026-10-02** — `master` **is** the main branch.

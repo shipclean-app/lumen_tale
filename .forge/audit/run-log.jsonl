@@ -35,3 +35,15 @@
 {"ts":"2026-10-02T13:08:06.354Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:a4ee5ae6498e"}
 {"ts":"2026-10-02T14:23:39.810Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:00ba9622fdf5"}
 {"ts":"2026-10-02T14:38:28.275Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:8b732386a0ad"}
+{"ts":"2026-10-02T14:44:13.938Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:8b732386a0ad"}
+{"ts":"2026-10-02T14:44:13.999Z","type":"status_change","kind":"deliverable","key":"prd","from":"draft","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/prd.md","from":"draft","to":"approved"}}
+{"ts":"2026-10-02T14:44:14.055Z","type":"phase_status","phase":"1_prd","from":"not_started","to":"approved"}
+{"ts":"2026-10-02T14:44:14.160Z","type":"gate_approved","phase":"1_prd","next_phase":"2"}
+{"ts":"2026-10-02T14:47:19.268Z","type":"register","deliverable":"benchmarks","path":".forge/benchmarks.md","kind":"deliverable"}
+{"ts":"2026-10-02T14:47:19.315Z","type":"hash","kind":"deliverable","entry":"benchmarks","content_hash":"sha256:fcb3b75520f0"}
+{"ts":"2026-10-02T14:57:05.465Z","type":"register","deliverable":"roadmap","path":".forge/roadmap.md","kind":"deliverable"}
+{"ts":"2026-10-02T15:01:45.454Z","type":"hash","kind":"deliverable","entry":"benchmarks","content_hash":"sha256:4703d1fb4148"}
+{"ts":"2026-10-02T15:01:45.531Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:7cdeaeab3c86"}
+{"ts":"2026-10-02T15:03:13.685Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:4d9824e4cd5a"}
+{"ts":"2026-10-02T15:09:36.958Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:18b866c15052"}
+{"ts":"2026-10-02T15:10:57.706Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:9f0130ffc365"}
