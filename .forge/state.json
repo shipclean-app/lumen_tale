@@ -767,7 +767,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "draft",
-      "content_hash": "sha256:7606825797a9",
+      "content_hash": "sha256:d2f0507113f4",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -791,6 +791,7 @@
         "2.6": "`ReaderControls`",
         "2.7": "`EmptyState`, `ErrorState`, `LoadingState`",
         "2.8": "`AppScaffold`",
+        "2.9": "`Switch`",
         "3.1": "Structure",
         "3.2": "Main navigation",
         "3.3": "Breadcrumbs",
@@ -799,7 +800,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-02T15:42:04.336Z",
+      "updated_at": "2026-10-02T16:27:45.147Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -811,7 +812,7 @@
       "status": "draft",
       "content_hash": "sha256:306bf7349a1f",
       "headings": {},
-      "updated_at": "2026-10-02T15:56:46.200Z",
+      "updated_at": "2026-10-02T16:27:45.230Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -837,7 +838,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T15:53:13.427Z",
+      "updated_at": "2026-10-02T16:27:45.507Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -867,7 +868,7 @@
         "4.3": "Failure in the middle of the work",
         "4.4": "The honest limitation in the download flow"
       },
-      "updated_at": "2026-10-02T15:56:46.242Z",
+      "updated_at": "2026-10-02T16:27:45.324Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md",
@@ -894,7 +895,7 @@
         "6.3": "MigrateSource",
         "8.1": "What we add that Mihon does not have"
       },
-      "updated_at": "2026-10-02T16:01:10.347Z",
+      "updated_at": "2026-10-02T16:27:45.414Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md",
@@ -976,7 +977,458 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T15:53:13.386Z",
+      "updated_at": "2026-10-02T16:27:43.992Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "settings": {
+      "path": ".forge/design/screens/settings.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:9bcb142fda5c",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Deliberately absent — and why that is not a gap",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.582Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "settings-reader": {
+      "path": ".forge/design/screens/settings-reader.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:9e24c77bd750",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Deliberately absent (ADR-009, ADR-017) — and why that is not a gap",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.653Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "settings-about": {
+      "path": ".forge/design/screens/settings-about.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:5337c61ac810",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Deliberately absent — and why that is not a gap",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.718Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "browse-sources": {
+      "path": ".forge/design/screens/browse-sources.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:f4515f252e1f",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Controls this screen does not have, and the design-system gap it found",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.321Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "browse-genre": {
+      "path": ".forge/design/screens/browse-genre.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:609c5490f90a",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Claims this screen refuses to make",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.370Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "browse-catalogue": {
+      "path": ".forge/design/screens/browse-catalogue.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:ab8f14acf576",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Claims this screen refuses to make",
+        "12": "Tokens this screen cites",
+        "1.1": "The two modes of one route",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.434Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "downloads": {
+      "path": ".forge/design/screens/downloads.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:0654332d9ab7",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Claims this screen refuses to make",
+        "12": "Tokens this screen cites",
+        "1.1": "Why this screen is in overflow and not a tab — the reason, argued",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.502Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "library": {
+      "path": ".forge/design/screens/library.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:07773542c73b",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Sub-surfaces of this screen",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory",
+        "11.1": "`SortFilterSheet`",
+        "11.2": "`BulkDownloadSheet` and `RemoveFromLibraryDialog`"
+      },
+      "updated_at": "2026-10-02T16:27:44.047Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "novel-details": {
+      "path": ".forge/design/screens/novel-details.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:a08e588d30a4",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Sub-surfaces of this screen",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory",
+        "11.1": "`BulkDownloadSheet`",
+        "11.2": "The similar-title warning (B40)",
+        "11.3": "Chapter selection, and a gap in the design system recorded rather than papered over"
+      },
+      "updated_at": "2026-10-02T16:27:44.134Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "updates": {
+      "path": ".forge/design/screens/updates.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:f8e8da5af68a",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Sub-surfaces of this screen",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory",
+        "11.1": "`NovelActionSheet`",
+        "11.2": "A note on the in-progress check state, and on a divergence in the design system"
+      },
+      "updated_at": "2026-10-02T16:27:44.198Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "history": {
+      "path": ".forge/design/screens/history.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:cc21faccdb13",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Sub-surfaces of this screen",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory",
+        "11.1": "`RetentionSheet` and the clear confirmation"
+      },
+      "updated_at": "2026-10-02T16:27:44.258Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "source-unavailable": {
+      "path": ".forge/design/screens/source-unavailable.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:aff5c806a1f2",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Deliberately absent — and why that is not a gap",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.773Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "onboarding": {
+      "path": ".forge/design/screens/onboarding.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:d7a88ffc6ba7",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Deliberately absent — and why that is not a gap",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:44.833Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "more": {
+      "path": ".forge/design/screens/more.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:9639e8459a94",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Données",
+        "9": "Traçabilité",
+        "10": "Gate checklist",
+        "11": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory",
+        "2.10": "`MoreRow` — declared here because it exists only for this screen"
+      },
+      "updated_at": "2026-10-02T16:27:44.890Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "sources": {
+      "path": ".forge/design/screens/sources.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:278aadb2bee1",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Données",
+        "9": "Traçabilité",
+        "10": "Gate checklist",
+        "11": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory",
+        "2.10": "`SourceRow`"
+      },
+      "updated_at": "2026-10-02T16:27:44.947Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "stats": {
+      "path": ".forge/design/screens/stats.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:54aa3913ad6d",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Données",
+        "9": "Traçabilité",
+        "10": "Gate checklist",
+        "11": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory",
+        "2.10": "`StatRow` and `SourceBar`"
+      },
+      "updated_at": "2026-10-02T16:27:45.010Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    },
+    "reader-chapter-sheet": {
+      "path": ".forge/design/screens/reader-chapter-sheet.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:d0d81a31d3a6",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Données",
+        "9": "Traçabilité",
+        "10": "Gate checklist",
+        "11": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T16:27:45.060Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -994,7 +1446,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 15,
+      "register": 79,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 7,

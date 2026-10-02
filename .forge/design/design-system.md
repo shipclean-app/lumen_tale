@@ -102,9 +102,9 @@ It also keeps the file honest for the checkers. Written as two separate tables, 
 | `--color-text-inverse` | `#FDFAF6` | `#17181A` | **5.54:1** / **7.27:1** | Text on a fill. See § 0.0. |
 | `--color-accent` | `#8A4B12` | `#E3A857` | **5.50:1** / **7.25:1** | Primary action, focus ring, active tab, links |
 | `--color-success` | `#40713A` | `#7FBE72` | **4.68:1** / **6.89:1** | Download complete, source healthy |
-| `--color-warning` | `#8A5A12` | `#E0AC47` | **4.80:1** / **7.36:1** | Partial download, never-checked |
+| `--color-warning` | `#8A5A12` | `#E0AC47` | **4.80:1** / **7.36:1** | Partial or interrupted download |
 | `--color-error` | `#8A3228` | `#EE8B76` | **6.64:1** / **6.22:1** | Failed download, broken source (B22) |
-| `--color-info` | `#426986` | `#7FB3DA` | **4.74:1** / **6.78:1** | Neutral notices |
+| `--color-info` | `#426986` | `#7FB3DA` | **4.74:1** / **6.78:1** | Neutral notices, and the **"never checked"** state (B49) — *never checked* is an absence of information, so it must not borrow the colour that means *something went wrong* |
 | `--color-border` | `#D9D3C9` | `#2E3237` | exempt | Rule between list rows. `exempt` per § 0.0. |
 | `--color-border-field` | `#8F8778` | `#6B6560` | **3.18:1** / **3.24:1** | Text-field outline — a component boundary |
 | `--color-border-focus` | `#8A4B12` | `#E3A857` | **6.07:1** / **8.86:1** | Focus ring |
@@ -268,19 +268,19 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **Sizes**: sm / md / lg map to the four variants above; there is no independent size axis.
 
-**States**
+**États** — every state this component must render:
 
-| State | Trigger | Appearance |
+| État | Trigger | Appearance |
 |---|---|---|
-| default | — | `--color-surface`, no rule |
-| pressed | finger down | `--color-surface-sunken` |
-| selected | multi-select active | `--color-border-strong` 2dp on the leading edge, `--color-accent` 10% fill |
-| focused | keyboard / D-pad | `--color-border-focus` 2dp ring |
-| loading | cover still fetching | `--color-surface-sunken` placeholder block, **no spinner** — a spinner per row in a 40-row list is noise |
-| offline | cover absent and unreachable | `--color-surface-sunken` with the initials of the title, `--color-text-disabled` |
-| error | source broke (B22) | Row still renders; the status line carries `--color-error` **and** an icon **and** wording — never colour alone |
+| `default` | — | `--color-surface`, no rule |
+| `pressed` | finger down | `--color-surface-sunken` |
+| `selected` | multi-select active | `--color-border-strong` 2dp on the leading edge, `--color-accent` 10% fill |
+| `focused` | keyboard / D-pad | `--color-border-focus` 2dp ring |
+| `loading` | cover still fetching | `--color-surface-sunken` placeholder block, **no spinner** — a spinner per row in a 40-row list is noise |
+| `offline` | cover absent and unreachable | `--color-surface-sunken` with the initials of the title, `--color-text-disabled` |
+| `error` | source broke (B22) | Row still renders; the status line carries `--color-error` **and** an icon **and** wording — never colour alone |
 
-**Slots**
+**Slots** — what this row can carry:
 
 | Slot | Required | Content |
 |---|---|---|
@@ -290,6 +290,7 @@ Every component below declares its variants, sizes, **all** states and its slots
 | `status` | no | Unread count / download state / last-read — see B48, B49 |
 | `unreadBadge` | no | `--radius-full` pill, `--color-accent` fill, `--color-text-inverse` label |
 | `trailing` | no | Chevron, or the download progress bar |
+| `progress` | no | 2dp determinate line under the title while a download runs — **not** a slot on `ChapterListTile` alone; B18 needs the same signal in both places |
 
 **Deliberately absent**: no shadow, no rounded card wrapper. A library row is a row. The cover is the only thing with a radius.
 
@@ -299,7 +300,7 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **Variants**: `list` (56dp, in novel details) · `sheet` (64dp, drag handle, in the reader) · `current` (the `list` variant with a 3dp `--color-accent` leading edge marking the reading position).
 
-**States**: default · pressed · read (title `--color-text-secondary`, and **not** struck through — a strike on 300 chapters is a wall of lines) · current · downloading (`--shadow-none` row with a 2dp determinate progress line under the title, `--color-accent`) · failed (`--color-error` icon + wording + retry) · offline-and-absent (row present, tap opens the fetch, labelled as not downloaded).
+**États**: default · `pressed` · `read` (title `--color-text-secondary`, and **not** struck through — a strike on 300 chapters is a wall of lines) · `current` · `downloading` (`--shadow-none` row with a 2dp determinate progress line under the title, `--color-accent`) · `failed` (`--color-error` icon + wording + retry) · `offline-and-absent` (row present, tap opens the fetch, labelled as not downloaded).
 
 **Slots**: `number` (`--text-caption`, tabular) · `title` · `stateIcon` · `progress` · `trailing`.
 
@@ -316,21 +317,21 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **Sizes**: sm 32dp / **md 44dp (default)** / lg 52dp. Width is intrinsic below 360dp and full-width for a form's primary action.
 
-**States**
+**États** — every state this component must render:
 
 | State | Appearance |
 |---|---|
-| default | as per variant |
-| pressed | `--color-accent-600` day / `--color-accent-300` night |
-| focused | 2dp `--color-border-focus` ring, 2dp offset |
-| disabled | `--color-text-disabled` label on `--color-surface-sunken`; **still 48dp tall** so the row does not jump |
-| loading | 16dp spinner centred, label hidden, width locked to prevent reflow |
+| `default` | as per variant |
+| `pressed` | `--color-accent-600` day / `--color-accent-300` night |
+| `focused` | 2dp `--color-border-focus` ring, 2dp offset |
+| `disabled` | `--color-text-disabled` label on `--color-surface-sunken`; **still 48dp tall** so the row does not jump |
+| `loading` | 16dp spinner centred, label hidden, width locked to prevent reflow |
 
 **Slots**: `iconLeft` (optional) · `label` (required) · `trailing` (optional).
 
 ### 2.4 `TextField`
 
-**States**: default (`--color-border-field` 1dp) · focused (2dp `--color-border-focus`) · error (`--color-error` 1dp **plus** a message below at `--text-body-sm` — never the border alone) · disabled · read-only (`--color-surface-sunken` fill, no border) · filled.
+**États**: default (`--color-border-field` 1dp) · `focused` (2dp `--color-border-focus`) · `error` (`--color-error` 1dp **plus** a message below at `--text-body-sm` — never the border alone) · `disabled` · `read`-only (`--color-surface-sunken` fill, no border) · `filled`.
 
 **Slots**: `label` · `placeholder` (never empty micro-copy — a real example, e.g. "Titre du roman") · `prefixIcon` · `suffix` · `helperText` · `errorText`.
 
@@ -342,7 +343,7 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **Variants**: `new` (accent) · `downloaded` (success) · `downloading` (accent + determinate bar) · `failed` (error) · `never-checked` (info, wording only) · `local` (neutral).
 
-**States**: default · pressed (chips in filters) · selected (`--color-accent` fill, `--color-text-inverse`) · unselected (outline, `--color-text-secondary`).
+**États** — every state this component must render: `default` · `pressed` (chips in filters) · `selected` (`--color-accent` fill, `--color-text-inverse`) · `unselected` (outline, `--color-text-secondary`).
 
 **Slots**: `icon` (always paired with colour — `design-quality.md` § 3 forbids colour carrying meaning alone) · `label` · `count`.
 
@@ -352,7 +353,7 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **Slots**: `progressSlider` (chapter + within-chapter, draggable, `--color-accent`) · `chapterTitle` · `sizeButton` · `themeButton` (day/night/system — one tap, per § 0 anti-references) · `chapterListButton` · `backButton`.
 
-**States**: hidden (default — the reading surface) · revealed (fades in over `--duration-slow`) · dragging.
+**États** — every state this component must render: `hidden` (default — the reading surface) · `revealed` (fades in over `--duration-slow`) · `dragging`.
 
 **v1 constraint (ADR-009)**: continuous scroll only. There is no mode-switch button, because there is only one mode. A disabled control would be a promise about v2, and this design does not make promises it has not kept.
 
@@ -368,7 +369,50 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **Slots**: `titleBar` · `content` · `floatingAction` · `bottomNav` (main destinations only) · `persistentStatus` (download progress — see § 3.2) · `readerChrome` (reserved; the reader sets it instead of `titleBar`).
 
-**Rule**: a screen sets `titleBar` **or** `readerChrome`, never both. The reader has no title bar at all — its title lives in the revealed controls, so the first thing on screen when a chapter opens is prose.
+**États** — every state this component must render:
+
+| État | Declencheur | Apparence |
+|---|---|---|
+| `default` | a normal screen | `titleBar` + `content` + `bottomNav` |
+| `immersive` | the reader | `readerChrome` instead of `titleBar` and `bottomNav`; the reader sets both |
+| `busy` | a download is running | `persistentStatus` appears above `bottomNav`, `--color-accent` determinate line |
+
+**Rule**: a screen sets `titleBar` **or** `readerChrome`, never both.
+
+### 2.9 `Switch`
+
+**Role**: a binary setting that takes effect immediately and needs no Save. Used only for settings that persist on change — **never** for anything inside a form that has a submit action.
+
+**Variantes**
+
+| Variant | Appearance | Usage |
+|---|---|---|
+| `setting` | Material 3 switch, track `--color-surface-sunken` off / `--color-accent` on, thumb `--color-surface-raised` | A settings row. Its row also carries a title and a one-line consequence |
+| `inline` | same control, smaller, with its label immediately beside it | Inside a sheet or a dialog, where there is no row to host it |
+
+**Tailles**: md 48×32dp track (the only size). A settings switch that grows is a settings switch that no longer fits a row.
+
+**États** — every state this component must render:
+
+| État | Declencheur | Apparence |
+|---|---|---|
+| `default` | — | Track off `--color-surface-sunken`, thumb `--color-surface-raised`; on `--color-accent` |
+| `pressed` | finger down | Track darkens one step; thumb grows 2dp |
+| `focused` | keyboard / D-pad | 2dp `--color-border-focus` ring, 2dp offset |
+| `disabled` | the setting is unavailable here | `--color-text-disabled` label; thumb `--color-border` |
+| `loading` | **deliberately absent** | A switch has no in-between state — see below |
+| `failed` | the write to storage failed | The row turns `--color-error` and shows the failure **beside** the switch, never by tinting the switch itself |
+
+**Slots**
+
+| Slot | Required | Content |
+|---|---|---|
+| `label` | yes | What the switch controls |
+| `consequence` | no | One line saying what ON actually does — mandatory for the four settings where the effect is not obvious |
+
+**Why there is no `loading` state**, which is the component's whole design decision: a switch that shows a spinner is asking the reader to believe a write is in progress. Ours writes to `shared_preferences` synchronously and **fails loudly instead of pretending** — if the write throws, the switch snaps back and the row says so. A setting that cannot be saved is a bug the reader should see immediately, not a state to design around.
+
+**Why every setting switch carries a `consequence` line.** The four settings most likely to be misunderstood are: *checking for new chapters* (off by default, **B35**), *remove after reading* (**B33** makes deletion per-chapter and explicit, so this stays off), *history retention* (**B47**, one year), and *theme* (**B26**). A switch with a label but no consequence is a switch the reader has to guess about, and B35's "off by default" is meaningless if the reader cannot see what turning it on would do. The reader has no title bar at all — its title lives in the revealed controls, so the first thing on screen when a chapter opens is prose.
 
 ---
 
@@ -451,7 +495,9 @@ Single column, `--space-lg` (16dp) horizontal margin, `--space-3xl` (48dp) top m
 | List page | title bar, full-bleed rows, bottom nav | Library, Updates, History |
 | Detail page | collapsing cover header, metadata block, action row, chapter list | Novel details |
 | Reader | prose column, no title bar, chrome on tap | Reader |
-| Paged grid | 2 columns, 96dp cells, `--space-md` gap | Browse results on ≥600dp; 3 columns at `--bp-desktop` |
+| Result grid | 2 columns, 96dp cells, `--space-md` gap | Browse and search results. **The column count does not change with width** — see below |
+
+> **Why the result grid does not gain columns.** An earlier draft of this table said *2 columns below 600dp, 3 at `--bp-desktop`*, which is a tablet layout, and ADR-010 excludes those. A grid that changes its column count with width is also the grid that makes the reader hunt: the same novel sits in a different place on a tablet. Two columns everywhere keeps a result list learnable, and on a wide screen it centres rather than spreading.
 | Settings | grouped rows with section labels, no icons | Settings and its sub-screens |
 | Sheet | handle, title, content, actions | Chapter list, filters, sort, reader options |
 
