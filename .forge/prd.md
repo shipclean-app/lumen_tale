@@ -368,12 +368,12 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 | B15 | Checking a library novel for new chapters requires a connection. With no connection the app shows the last known result and labels it as possibly out of date; it never presents "no new chapters" as a fresh answer. | US-10 | |
 | B16 | The reading position is remembered separately for each chapter, and reopening a read chapter returns to that position. | US-05, US-11 | |
 | B17 | Reading history lists recently opened chapters in reverse order, most recent first, and returning to a novel offers the most recently read chapter of that novel. | US-11, US-12 | History size is a §12 point |
-| B18 | Downloading a whole novel enqueues its chapters one at a time in reading order, and the user confirms before starting because the action consumes data and storage. | US-07, US-08 | |
+| B18 | Downloading a novel enqueues its chapters one at a time in reading order. The bulk choices offered are: the next chapter, the next 5 / 10 / 25 chapters, **all unread chapters**, or an explicit set the user selected by hand. There is no "download every chapter including ones already read" shortcut — that is reachable only by selecting every chapter deliberately. | US-07 | Resolved from Mihon: a 6-option download menu plus multi-select download |
 | B19 | A download queue can be paused and cancelled. Paused, cancelled and unfinished chapters are never marked as downloaded, and cancelling is immediate from the user's point of view. | US-07, US-08 | |
 | B20 | A download interrupted by loss of connection or by the app closing leaves the affected chapter unstorable-as-complete; the chapter is fetched again from the start rather than completed from a partial state. | US-06, US-08 | |
 | B21 | A download queue survives the app being closed and reopened: it continues from where it stopped rather than restarting the novel. | US-07, US-08 | |
 | B22 | When a site cannot be read — unreachable, changed, or returning nothing where content is expected — the app states that it could not read the site. An empty result is never presented as truth. | US-02, US-03, US-10, US-16 | The main failure mode to avoid (C7) |
-| B23 | A failure on one site never blocks the other sites, and never makes stored chapters unreadable. Removing or repairing a site leaves the other sites and the stored content untouched. | US-16 | |
+| B23 | A failure on one site never blocks the other sites, and never makes stored chapters unreadable. If a site becomes unreachable, changes, or is removed from the app entirely, the chapters already downloaded stay readable on the phone, and the other sites carry on working. | US-09, US-12 | Extended so §12 note 14 points at a rule that actually says this |
 | B24 | Any action that can fail shows an error the user can read and act on, together with a way to try again. No action fails silently to a blank screen or a silent spinner. | US-01, US-16 | Direct consequence of "no server, no telemetry" (C6) |
 | B25 | Reading is a continuous scroll. There is no page-turn mode, no side-by-side layout, and no colour filter in v1. | US-04 | See §9 |
 | B26 | The app follows the phone's light/dark setting, and the user may override light/dark inside the app without changing the phone's setting. | US-14 | In-app override is an assumption — §12 point 5 |
@@ -382,12 +382,21 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 | B29 | No user data leaves the device: no library, no reading progress, no history, no diagnostics, no analytics, no crash reports, no telemetry of any kind. | all | Product expression of C2 |
 | B30 | The app's content is private to the device: no chapter can be shared out of the app, and a novel cannot be sent, exported, or copied elsewhere. | all | |
 | B31 | A new version of the app is delivered as an installable file. Installing a new version over an existing one preserves the library, every downloaded chapter, all reading positions and the history. | US-17 | No backup exists, so upgrade safety is the only recovery path (C8) |
-| B32 | Removing a novel from the library removes its downloaded chapters from the phone, after the user has confirmed the deletion. | US-09 | Storage constraint C4 |
+| B32 | Removing a novel from the library **keeps its downloaded chapters on the phone**. Deleting those chapters is a separate choice the user makes explicitly, off by default. No path removes a novel and silently destroys chapters that cannot be recovered. | US-12 | **Corrected.** Mihon never auto-deletes downloads on removal; with no backup and no export, the opposite is unrecoverable loss |
 | B33 | The downloaded copy of a single chapter can be deleted on its own, leaving the other chapters of the novel untouched. | US-06 | |
 | B34 | The app runs on Android phones only and is delivered as an installable file built automatically. No app store, no store account, no public distribution. | US-17 | See also C3, C9 |
 
 ---
 
+| B35 | **Checking for new chapters is off by default.** The app never checks on its own unless the user turns it on and picks an interval: never, every 12, 24, 48 or 72 hours, or weekly. Choosing "never" actively disables the scheduled check rather than merely skipping it. | US-10 | Mihon `LibraryPreferences.autoUpdateInterval`, default `0` |
+| B36 | A manual action — "update library" — is available whether or not the schedule is on. **Opening the app is not a trigger for a check.** | US-10 | Mihon has no foreground/app-open trigger at all; we inherit that gap rather than close it |
+| B37 | A scheduled or manual check runs as a foreground job with a visible notification the user can cancel. Cancelling one run does not disable the schedule. | US-10 | Mihon `LibraryUpdateWorker`: foreground service, notification with a cancel action |
+| B38 | **A new-chapter check never starts downloading.** Checking and downloading are separate and never overlap: the check reads chapter lists, and anything it finds is queued but held until the check finishes. | US-07, US-10 | **The highest-value Mihon invariant for this product.** Mihon's own stated reason: "We don't want to start downloading while the library is updating, because websites may not like it and they could ban the user." See C7 |
+| B39 | A check skips a novel that has unread chapters, is already completed, or has never been read. | US-10 | Mihon's four skip rules, all on by default |
+| B40 | Library entries are **never renamed, aliased or merged.** Two novels with the same or a similar title stay separate. Adding one that resembles an existing entry warns and offers to open the existing entry or add anyway — nothing is ever merged. | US-03 | Mihon has no title field at all and no merge path; it only warns |
+| B41 | Searching inside a site searches whatever that site searches. The app does not split a query into title, author and description, nor decide which of those a site matches; it passes the reader's words to the site. | US-02 | Mihon passes one opaque query string per source, with no app-level field decomposition |
+| B42 | The library itself is searched locally and understands explicit field prefixes — title, author, genre, source — so a reader can narrow their own library without asking any site for anything. | US-03 | Mihon's local library query language |
+| B43 | The app shows which version is installed, on a dedicated about screen. | US-17 | Mihon `AboutScreen` |
 ## 5. Constraints
 
 <!-- One row per constraint. IDs C1, C2, C3... -->
@@ -574,23 +583,27 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 
 <!-- Every unresolved ambiguity. Never mixed into the established facts above. -->
 
-- ⚠️ **Does browsing a site need to offer that site's own categories, genres or tags?** FanMTL exposes genres (xianxia, xuanhuan, shounen, shoujo, romance) and Royal Road exposes tags. The interview described the catalogue as something to browse but never said whether category filtering is expected. **Blocking for US-01 scope.** Owner decision.
-- ⚠️ **What is the deadline for the Novel Fire terms-of-service decision, and what happens if it is confirmed after that date?** The interview says "before a deadline" without naming it, and does not say whether a late confirmation lands in v1.1 rather than v1. (C10, B1, E21)
-- ⚠️ **When does the app check library novels for new chapters — on app open, on a schedule, or only when the reader asks?** The interview requires the reader to *see* which novels have new chapters but is silent on when the check runs, and C2 forbids the server-side signals that would make it free. Affects US-10 and B15.
-- ⚠️ **Does "download a whole novel" mean every chapter, or every chapter from a chosen point (unread chapters onward)?** The interview says "download a whole novel as a queue" and does not qualify it. Affects B18 and US-07.
-- ⚠️ **Should the app offer an in-app switch for the app's language?** *Partly resolved.* Dark-mode and reader text-size overrides are **already required by the project's own rules** and need no owner decision: `09-widgets-ui.md` §Reader UX puts "font size / line height / theme controls in the reader toolbar", and `14-design-tokens.md` makes reader text sizing a preference driven by a provider and allows "a settings toggle" to override the theme mode. So B26 and B27 stand. **Only the language switch is genuinely open**: no rule in the project mentions one, B28 has been narrowed to system-following with a French fallback, and the owner said only "the whole app in French and English" — which is satisfiable without a switch. Owner decision.
-- ⚠️ **Is there a reading-history size limit, and should the reader be able to clear it?** B17 promises a "useful number" of entries; the number is not established. Also: is history a feature the owner wants at all, or only an internal convenience? It was not on the agreed feature list in note 7.
-- ⚠️ **Is manual storage management required — a total size display, a cleanup screen, or "no limits"?** The interview mentions nothing about storage. Downloads are the product, there is no backup, and E20 assumes the app must handle running out of space. Whether the reader wants a visible storage figure is undecided.
-- ⚠️ **How broad is search — title only, or title plus author, tags and description?** The interview says "search within a site" with no fields. US-02's acceptance criteria only assume title.
-- ⚠️ **When the same novel title exists on two sites, or twice in one library, does the reader want to rename or alias entries to tell them apart?** The PRD assumes no: they stay distinct and unrenamed (B2, E17).
-- ⚠️ **Does the app need to warn before an irreversible removal?** E11 assumes the app states, at the point of removal, that the library is unrecoverable. The interview never asked for a confirmation step.
-- ⚠️ **How does the reader know which version of the app is installed?** US-17 requires this, but the interview said nothing about how it should be surfaced or reported back.
-- ⚠️ **Is it acceptable for downloads to continue with the screen off, and to run overnight?** The battery cost was never measured and this is undecided; it interacts with the unknown in §8.
-- ⚠️ **What is the actual performance target for the offline path?** §7.1 states the requirement qualitatively ("immediate, never waits on the network"). The owner has not given a number, and no target can be validated without one.
-- ⚠️ **Is there any expectation of a multi-site search?** The wedge is the reader's own list of sites, but the interview only ever specified search *within a site* (B15). Searching across all sites at once was never discussed in either direction.
-- ⚠️ **What should happen to the library when a site is removed entirely from the app?** B23 keeps stored chapters readable, but the interview never asked this.
+Twelve of the fourteen questions raised at draft have been resolved against **Mihon**, the declared reference project (`DECISIONS.md` ADR-008), and are now recorded as business rules or as notes on the rules they changed. Mihon's answers were adopted where the product is the same and deliberately not adopted where it is not — see B38 and §7.1.
 
----
+| # | Question | Resolved from Mihon | Where it landed |
+|---|---|---|---|
+| 1 | Do site categories / genres need browsing? | Yes, and it is the **source** that offers them, not the app — each source declares its own filters. The library has its own filter sheet (downloaded / unread / started / bookmarked / completed, every one a three-state toggle defaulting to off) and its own sort list. There is no genre filter in the library sheet; genre is only a search prefix. | B41, B42 |
+| 3 | When does the app check for new chapters? | **Off by default.** Never / 12 / 24 / 48 / 72 hours / weekly, plus a manual "update library" action. **Opening the app is not a trigger.** | B35, B36, B37, B39 |
+| 4 | "Download a whole novel" — which chapters? | Never "everything". Next chapter / next 5, 10, 25 / **all unread** / an explicit hand-picked set. | B18 |
+| 5 | In-app overrides for dark mode, text size, language? | Dark-mode and reader text-size overrides: **already required** by the project's own rules. App language: Mihon has a dedicated app-language screen, so the override is consistent with the reference — but our rules say system-following with a French fallback, and the owner's words ("the whole app in French and English") are satisfied either way. | B26, B27 stand; B28 narrowed to system-following |
+| 6 | Is reading history a feature, and is it bounded? | **Yes, it is a real feature** in Mihon — a top-level tab, not an internal convenience. The entry size is a Phase 4 detail. | history kept as a feature |
+| 7 | Is storage management required? | **Mihon does not show total downloaded size** — its "storage usage" screen shows whole-device free/total, not the app's own usage, and there is no bulk download deletion. We have no eviction-managed chapter cache to clear either, because we store chapters permanently. | **No storage screen in v1.** Deletion stays per novel and per chapter (B32, B33) |
+| 8 | How broad is search? | Site search is whatever the site supports — the app sends one opaque query and shows what returns. Field-scoped search exists only **locally**, in the library. | B41, B42 |
+| 9 | Same title on two sites — rename or alias? | **Mihon does neither.** There is no title field anywhere and no merge path; duplicates are detected by title similarity and merely warned about. | B40 |
+| 10 | Warn before an irreversible removal? | **Yes** — and Mihon never deletes downloads automatically, which is why B32 was corrected. There is no undo, so the confirmation matters more, not less. | B32 |
+| 11 | How does the reader know which version is installed? | A dedicated about screen. | B43 |
+| 12 | Do downloads continue with the screen off, overnight? | **Yes**, as a foreground job with a notification, surviving app death. | already covered by the download rules |
+| 14 | What happens to the library when a site is removed? | Downloads live under the source's own folder and disabling a source does not delete files. Stored chapters stay readable. | already covered by B23 |
+
+**Two remain genuinely open, and neither can be answered by reading Mihon.**
+
+- ⚠️ **What is the deadline for the Novel Fire terms-of-service decision, and what happens on a late confirmation?** This is a legal judgement that belongs to the owner, not a product question a reference project can answer. `C10` states the decision is the owner's. **Blocking for whether Novel Fire is in v1.**
+- ⚠️ **What is the performance target for the offline read path?** Mihon has no equivalent number to borrow — its reader is an image pager, not stored text. §7.1 states the requirement qualitatively and cannot be falsified until a number exists. **This needs one measurement on a real device**, which is also what closes Q-003.
 
 ## Gate checklist
 
