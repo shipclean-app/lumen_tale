@@ -322,7 +322,7 @@ Gate at the last commit: `forge-guard` clean except the proven `version_pins_agr
 
 - **Get the owner to approve `architecture.md`, then `set-status … deliverable architecture approved` and re-hash.** Phase 5 cannot start until it is `approved`, and `fast-track` re-checks it.
 - **Phase 5: 28 per-slice plans** from `templates/implementation-plan.md.tmpl`, via `forge-implementer`. Each slice's `path` already points at `.forge/plans/<key>.md` except `6-10`, which points at `.forge/plans/6-10.md` and has never existed.
-- **`6-10` needs a rule-to-slice home.** ADR-021 gives it B37, and § 3.2 lists it under US-10, but it was added after the coverage matrix was written. Re-run `coverage-check prd` expectations after B35's withdrawal.
+- **`6-10` needs a rule-to-slice home.** ADR-021 gives it B37 and § 3.2 lists it under US-10, but it was added after the coverage matrix was written, so `coverage.md` has not counted it. Its `state.json` `path` is `.forge/architecture.md`, matching every other slice — the plan file itself is Phase 5's job.
 - **Re-read `references/module-prioritization.md`** and re-run the plan-validator Q1–Q3 grid — the first run evaluated those questions from memory because the reference did not load.
 - **Decide MVP size.** The roadmap prices a 7-story lean alternative against the 11-story MVP if Waves 1–2 overrun. Not yet decided.
 - **Three §7.1 targets owe a number or a deletion**: list responsiveness, download-progress cadence, cancellation latency. Each is currently "not yet measurable", which is not a target.
