@@ -105,10 +105,10 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 | # | Component | Role | Source |
 |---|---|---|---|
 | 1 | `SourceRow` | One site: name, language, library reach, declared capabilities, last-known verdict, on/off | slice-local, assembled from the primitives below |
-| 2 | `StatusChip` | The state label — off, could not read, never checked | design-system § 2.5 |
+| 2 | `StatusChip` | The state label — off, could not read, never checked | `design-system.md` § 2.5 |
 | 3 | `Switch` | The enable/disable control, 48dp | Material 3 `Switch` (`09-widgets-ui.md` §Conventions); **no design-system section — see § 11** |
-| 4 | `EmptyState` | All-off is *not* an EmptyState — see § 4 | design-system § 2.7 |
-| 5 | `AppScaffold` | Holds the title bar, the list and the bottom nav | design-system § 2.8 |
+| 4 | `EmptyState` | All-off is *not* an EmptyState — see § 4 | `design-system.md` § 2.7 |
+| 5 | `AppScaffold` | Holds the title bar, the list and the bottom nav | `design-system.md` § 2.8 |
 
 **`StatusChip` parity on this screen.** `StatusChip` declares six variants and this screen renders exactly three of them: `failed` for a site that could not be read, `never-checked` for a site no check has ever reached, `local` (the neutral variant) for a site the reader has turned off. The other three do not apply and are not rendered in a disabled or placeholder form: `new` is a novel-row concept and a site is never new — it is either in the build or it is not; `downloaded` and `downloading` are states of *a novel's chapters*, which is what the row's meta line reports as a count, not a state the site itself is in. One component, one rendering.
 
@@ -118,7 +118,7 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 
 | State | Trigger | Rendering | Reader feedback |
 |---|---|---|---|
-| **Loading** | **A whole-screen loader is never a state here, and that is a decision.** Per ADR-013 the registry is compiled in and the last-known verdict is local, so no request is made on open. The only in-flight work is a **user-triggered check**, and loading exists **per row** | The row's check action becomes a 16dp spinner in place of the chip (`PrimaryButton` `loading`, § 2.3) — **and the previous verdict stays on screen beside it**. A spinner that replaced the verdict would hide the very fact the reader came to read | Check spinner replaces the row's action; the verdict line is untouched |
+| **Loading** | **A whole-screen loader is never a state here, and that is a decision.** Per ADR-013 the registry is compiled in and the last-known verdict is local, so no request is made on open. The only in-flight work is a **user-triggered check**, and loading exists **per row** | The row's check action becomes a 16dp spinner in place of the chip (`PrimaryButton` `loading`, `design-system.md` § 2.3) — **and the previous verdict stays on screen beside it**. A spinner that replaced the verdict would hide the very fact the reader came to read | Check spinner replaces the row's action; the verdict line is untouched |
 | **Filled** | The normal case: the registry, one row per source | Rows as in § 3. Name, meta, capability, verdict, switch. Every row shows a **last-checked line** — a date, or *never checked* (B49). Nothing is ever presented as fresh when it is not | — |
 | **Empty — never visited** | **Cannot occur, and this is worth saying rather than leaving blank.** B1 guarantees at least two sites in v1 and the registry is compiled in, so the list is never empty | Onboarding (`/onboarding`) is the app's only first-run surface (`flows.md` § 5), and this screen has no first-run variant: a welcome panel inside a list of three rows would be a second one | — |
 | **Empty — no data** | **Every source is turned off.** The list itself is still full — the rows are what the reader needs in order to turn one back on | The `StatusLine` is replaced by `AllOffNotice` in `--color-warning` `#8A5A12` / `#E0AC47`: an icon **and** the words *No site is on. Browse has nothing to show until you turn one on.* **No button.** The first row that is off carries its name in `--color-text-primary` rather than secondary, so the eye lands on the switch that fixes it. A button here would have to be a bulk "turn them all on" the reader did not ask for; the row is the action | The notice is persistent, not a snackbar — a condition, not an event |
@@ -161,10 +161,10 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, `--space-lg` 16dp margins, rows full-bleed with `--space-md` 12dp internal padding, switch right-aligned at the row's trailing edge | Nothing. This is the design target and the only width v1 ships (C3) |
-| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it, and § 1.7's `--bp-mobile` row says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The layout stops growing and centres |
+| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it, and `design-system.md` § 1.7's `--bp-mobile` row says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The layout stops growing and centres |
 | **Desktop** `1024–1439dp` | Same. Flutter desktop is out of scope (C3) | — |
 
-> **The conflict this screen records rather than resolves.** `design-system.md` § 4.2 lists a `Paged grid` layout whose usage column reads *"Browse results on ≥600dp; 3 columns at `--bp-desktop`"*. That row and § 1.7 / ADR-010 cannot both be implemented. This screen follows § 1.7 and ADR-010, because a ≥600dp layout cannot be a v1 layout when v1 is a phone (C3) and the owner excluded it — which means § 4.2's row is **unreachable in v1** rather than wrong. It is left in place here as a recorded tension for the design system's owner to strike, and it is **not** built. Nothing about this screen depends on the answer.
+> **The conflict this screen records rather than resolves.** `design-system.md` § 4.2 lists a `Paged grid` layout whose usage column reads *"Browse results on ≥600dp; 3 columns at `--bp-desktop`"*. That row and `design-system.md` § 1.7 / ADR-010 cannot both be implemented. This screen follows `design-system.md` § 1.7 and ADR-010, because a ≥600dp layout cannot be a v1 layout when v1 is a phone (C3) and the owner excluded it — which means `design-system.md` § 4.2's row is **unreachable in v1** rather than wrong. It is left in place here as a recorded tension for the design system's owner to strike, and it is **not** built. Nothing about this screen depends on the answer.
 
 - **Touch target**: 48dp minimum everywhere. The switch is 52×32dp visually and carries a 48dp hit area; the row's check action is 48dp even when it is a 16dp spinner; the snackbar's **Undo** is 48dp.
 - **Overflow**: guaranteed never to overflow. The row's text column is the only flexible element and wraps to a third line rather than clipping. A source name longer than one line truncates with an ellipsis at `--text-h4` and **the full name is the row's accessible label and the title bar of the next screen**, so truncation never costs the reader the name. At the largest OS text scale the row grows vertically — the fixed 64dp is a target height, not a clip box.
@@ -234,7 +234,7 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 
 - [x] All nine states described, with a concrete rendering. The four with nothing to render say **why** they have none.
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010, not an omission. The § 4.2 `Paged grid` tension is recorded rather than silently resolved.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010, not an omission. The `design-system.md` § 4.2 `Paged grid` tension is recorded rather than silently resolved.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated (no install, no update, no store, and the screen says so).
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.

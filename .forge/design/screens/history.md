@@ -105,10 +105,10 @@ AppScaffold (titleBar, bottomNav)
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `NovelRow` variant `history` | One opened chapter: novel, chapter, when | design-system § 2.1 |
-| 2 | `EmptyState` / `ErrorState` / `LoadingState` | Never-read, cleared, aged-out, unreadable store, first paint | design-system § 2.7 |
-| 3 | `TextButton` / `PrimaryButton` | The two inline notice actions and the empty state's one action | design-system § 2.3 |
-| 4 | `AppScaffold` | Title bar and bottom nav; **no** `persistentStatus`, because a running download is reported on the screen that started it | design-system § 2.8 |
+| 1 | `NovelRow` variant `history` | One opened chapter: novel, chapter, when | `design-system.md` § 2.1 |
+| 2 | `EmptyState` / `ErrorState` / `LoadingState` | Never-read, cleared, aged-out, unreadable store, first paint | `design-system.md` § 2.7 |
+| 3 | `TextButton` / `PrimaryButton` | The two inline notice actions and the empty state's one action | `design-system.md` § 2.3 |
+| 4 | `AppScaffold` | Title bar and bottom nav; **no** `persistentStatus`, because a running download is reported on the screen that started it | `design-system.md` § 2.8 |
 | 5 | `BoundNotice` | **slice-local**: the raised block carrying B46's sentence in prose and B47's two controls side by side. A composition of `Text` and two `TextButton`s on `--color-surface-raised`; promoted to the design system only if a second screen needs the same pair |
 | 6 | `DayGroupHeader` | **slice-local**: one `--text-overline` label per day, marked as a semantic header for screen readers |
 
@@ -184,7 +184,7 @@ AppScaffold (titleBar, bottomNav)
 - [x] **Both destinations reachable**: the row's primary action opens the chapter, and "Open the novel" is a named secondary semantic action on the same node.
 - [x] **Announcements for the two destructive paths**: clearing announces *History cleared. Your reading positions were kept*, so the reassurance is not a visual line the reader may have already scrolled past.
 - [x] **Text alternative for images**: there are none — `NovelRow`'s `history` variant has no cover slot, so nothing here needs a label.
-- [x] **Language and reading direction** correct: every string follows the app locale (B28) with French fallback; day headers are localised by the platform's date formatter rather than concatenated, and relative times are localised too. **Chapter titles are never translated** — they are the site's, as published (§ 7.4 of the PRD).
+- [x] **Language and reading direction** correct: every string follows the app locale (B28) with French fallback; day headers are localised by the platform's date formatter rather than concatenated, and relative times are localised too. **Chapter titles are never translated** — they are the site's, as published (`prd.md` § 7.4).
 - [x] **Reduce-motion honoured**: sheet and dialog appear instantly, press feedback becomes a state change with no tween, and the list has no insertion animation to disable.
 
 ---
@@ -278,7 +278,7 @@ Every value below is the one `design-system.md` declares, so `design-check token
 | `--color-background` | `#F5F2ED` | `#121315` | — | Page field behind the full-bleed rows |
 | `--color-surface` | `#FBF9F6` | `#1A1C1F` | — | Row strips, skeleton lines |
 | `--color-surface-raised` | `#FEFCF9` | `#232629` | — | Bound notice, `RetentionSheet`, the clear dialog, the snackbar |
-| `--color-surface-sunken` | `#EBE7E0` | `#0C0D0F` | — | Skeleton row lines, and a row in its `pressed` state (design-system § 2.1) |
+| `--color-surface-sunken` | `#EBE7E0` | `#0C0D0F` | — | Skeleton row lines, and a row in its `pressed` state (`design-system.md` § 2.1) |
 | `--color-text-primary` | `#1A1714` | `#E8E4DD` | **14.48:1** / **12.00:1** | Screen title, novel titles in rows, the notice's first sentence |
 | `--color-text-secondary` | `#5A524A` | `#A8A29A` | **6.22:1** / **6.01:1** | **Chapter titles (B10, verbatim)**, relative times, the notice's second sentence, the terminal line |
 | `--color-text-inverse` | `#FDFAF6` | `#17181A` | **5.54:1** / **7.27:1** | Label on the empty state's primary button and on the dialog's destructive button |

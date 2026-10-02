@@ -102,10 +102,10 @@ Sheet  --color-surface-raised, --shadow-sheet, radius --radius-lg
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `ChapterListTile` (variant `list`) | One chapter | design-system § 2.2 |
-| 2 | `ReaderControls` | The sheet's opener — `chapterListButton` | design-system § 2.6 |
-| 3 | `StatusChip` | Download state where a chip fits | design-system § 2.5 |
-| 4 | `--shadow-sheet` | The sheet's only shadow | design-system § 1.4 |
+| 1 | `ChapterListTile` (variant `list`) | One chapter | `design-system.md` § 2.2 |
+| 2 | `ReaderControls` | The sheet's opener — `chapterListButton` | `design-system.md` § 2.6 |
+| 3 | `StatusChip` | Download state where a chip fits | `design-system.md` § 2.5 |
+| 4 | `--shadow-sheet` | The sheet's only shadow | `design-system.md` § 1.4 |
 
 ---
 
@@ -219,7 +219,7 @@ Sheet  --color-surface-raised, --shadow-sheet, radius --radius-lg
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID appears in § 9
 - [x] `forge-guard placeholders` reports nothing here
-- [x] Consistent with `design-system.md`: `--shadow-sheet` is one of exactly two shadows and this is one of the two places it is used; `ChapterListTile` § 2.2 used as declared
+- [x] Consistent with `design-system.md`: `--shadow-sheet` is one of exactly two shadows and this is one of the two places it is used; `design-system.md` § 2.2 `ChapterListTile` used as declared
 - [x] **Tokens cited exist**, values below
 - [x] **Divergence from Mihon is declared and argued** in § 1, not silently introduced
 

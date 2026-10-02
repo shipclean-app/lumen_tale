@@ -127,15 +127,15 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `ChapterListTile` variant `list` | One chapter, 56dp, six states | design-system § 2.2 |
-| 2 | `ChapterListTile` variant `current` | The tile carrying the reading position's 3dp accent edge | design-system § 2.2 |
-| 3 | `StatusChip` | Carries B48's count and B49's verification state | design-system § 2.5 |
-| 4 | `PrimaryButton` / `SecondaryButton` / `TextButton` | The three action slots, and every dialog | design-system § 2.3 |
-| 5 | `NovelRow` variant `compact` | **not used here** — a novel is not listed on its own detail page; recorded because a generic implementation reaches for a related-novels strip and there is none | design-system § 2.1 |
-| 6 | `EmptyState` instance `no-chapters` | The genuine-empty case | design-system § 2.7 |
-| 7 | `ErrorState` | Distinguishes *could not read the site* from *nothing there* | design-system § 2.7 |
-| 8 | `LoadingState` | Tile-shaped skeleton | design-system § 2.7 |
-| 9 | `AppScaffold` | Title bar, bottom nav, `persistentStatus` | design-system § 2.8 |
+| 1 | `ChapterListTile` variant `list` | One chapter, 56dp, six states | `design-system.md` § 2.2 |
+| 2 | `ChapterListTile` variant `current` | The tile carrying the reading position's 3dp accent edge | `design-system.md` § 2.2 |
+| 3 | `StatusChip` | Carries B48's count and B49's verification state | `design-system.md` § 2.5 |
+| 4 | `PrimaryButton` / `SecondaryButton` / `TextButton` | The three action slots, and every dialog | `design-system.md` § 2.3 |
+| 5 | `NovelRow` variant `compact` | **not used here** — a novel is not listed on its own detail page; recorded because a generic implementation reaches for a related-novels strip and there is none | `design-system.md` § 2.1 |
+| 6 | `EmptyState` instance `no-chapters` | The genuine-empty case | `design-system.md` § 2.7 |
+| 7 | `ErrorState` | Distinguishes *could not read the site* from *nothing there* | `design-system.md` § 2.7 |
+| 8 | `LoadingState` | Tile-shaped skeleton | `design-system.md` § 2.7 |
+| 9 | `AppScaffold` | Title bar, bottom nav, `persistentStatus` | `design-system.md` § 2.8 |
 | 10 | `CollapsingCoverHeader` | **slice-local**: banner + collapsing bar + the pinned `ActionRow`. Declared here rather than in the design system because it composes three existing pieces; if a second screen ever collapses a header, it is promoted there |
 
 ---
@@ -190,7 +190,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 
 - **Focus / keyboard**: D-pad moves through the app-bar buttons, the three action slots, then tile to tile; the focus ring is 2dp `--color-border-focus` with a 2dp offset. `Enter` opens the focused chapter. In selection mode the menu key toggles the focused tile and `Esc` exits. Focus entering the list programmatically (Jump to current chapter) lands on the `current` tile, announced as the reading position.
 - **Gestures**: tap, long-press, vertical scroll, back swipe. No swipe on a tile — no swipe-to-download and no swipe-to-delete, because on a device with no backup (C8, ADR-010) the destructive gesture must never be the easy one (B32).
-- **Animations**: header collapse `--duration-normal` 200ms `--ease-standard`; sheet and dialog as in the library; **push into the reader has no animation** (design-system § 3.4); the determinate bar advances per chapter, not on a timer, so it never animates while nothing is happening. All durations become `0ms` under reduce-motion.
+- **Animations**: header collapse `--duration-normal` 200ms `--ease-standard`; sheet and dialog as in the library; **push into the reader has no animation** (`design-system.md` § 3.4); the determinate bar advances per chapter, not on a timer, so it never animates while nothing is happening. All durations become `0ms` under reduce-motion.
 - **Back**: system back pops; **no position is written on back**. Position is already saved on every scroll settle in the reader, so a back press here must not cost a write on the hot path.
 
 ---
@@ -221,7 +221,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 - [x] **Semantics for the pinned bar**: the three slots are labelled by their **current** function, not their origin — a slot that says *Continue* announces *"Continue, Chapter 214, at 41% of this chapter"*, so the reader learns what the button will do before pressing it.
 - [x] **Text alternative for the cover**: decorative, `excludeSemantics`, because the title beside it is the information; the 140dp banner is a picture of a book cover and announcing it as *"cover image"* would be noise on every one of the reader's visits.
 - [x] **Live region** on `persistentStatus` while a queue runs, so *212 of 480* is spoken as it changes; the completion message is announced too, because the reader is often in the chapter list rather than looking at the bar.
-- [x] **Language and reading direction** correct: all chrome strings follow the app locale (B28) with French fallback, and **chapter titles are never translated** — they are the site's, in the site's language, displayed as published (§ 7.4 of the PRD).
+- [x] **Language and reading direction** correct: all chrome strings follow the app locale (B28) with French fallback, and **chapter titles are never translated** — they are the site's, in the site's language, displayed as published (`prd.md` § 7.4).
 - [x] **Reduce-motion honoured**: the header collapse becomes instant, the jump becomes a jump, the skeleton stops shimmering.
 
 ---
@@ -335,7 +335,7 @@ Three properties make it a warning and not a merge prompt: it **names both sites
 
 B18's sixth bulk choice is *a set the user selected by hand*, so this screen has a chapter selection mode: long-press a tile, toggle tiles, and the action bar reads *n selected · Download · Cancel*.
 
-**`ChapterListTile` declares no `selected` state.** Its contract (design-system § 2.2) lists default · pressed · read · current · downloading · failed · offline-and-absent, and a selected chapter is none of those — a tile can be *read and selected*, or *unread and selected*, so selection is orthogonal to every state the component declares. Rather than invent a state, this screen renders selection with **the app's single selection grammar, `NovelRow`'s declared `selected` presentation**: a 2dp `--color-border-strong` leading edge plus a `--color-accent` 10% fill, identical to a selected library row. One grammar for one meaning across the app is worth more than a locally invented variant, and `design-check component-parity` will keep every screen honest about it.
+**`ChapterListTile` declares no `selected` state.** Its contract (`design-system.md` § 2.2) lists default · pressed · read · current · downloading · failed · offline-and-absent, and a selected chapter is none of those — a tile can be *read and selected*, or *unread and selected*, so selection is orthogonal to every state the component declares. Rather than invent a state, this screen renders selection with **the app's single selection grammar, `NovelRow`'s declared `selected` presentation**: a 2dp `--color-border-strong` leading edge plus a `--color-accent` 10% fill, identical to a selected library row. One grammar for one meaning across the app is worth more than a locally invented variant, and `design-check component-parity` will keep every screen honest about it.
 
 **The design system should gain the state**, and that is a decision for its owner rather than for this screen: adding `selected` to `ChapterListTile`'s state table, with the note that it composes with `read` rather than replacing it, would make this screen's borrowing unnecessary. Recorded here so that it is a known gap rather than an accident, and so that `component-parity` flags every other screen that has to make the same borrowing.
 

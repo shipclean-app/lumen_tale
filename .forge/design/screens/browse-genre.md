@@ -111,13 +111,13 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `EmptyState` instance `search-unsupported` | States that this site has no usable search and offers genres instead | design-system § 2.7 |
-| 2 | `EmptyState` | The variant for a site that declares neither search nor genres | design-system § 2.7 |
-| 3 | `ErrorState` | Names what failed and what still works | design-system § 2.7 |
-| 4 | `LoadingState` | Tile-shaped skeleton, never a centred spinner | design-system § 2.7 |
+| 1 | `EmptyState` instance `search-unsupported` | States that this site has no usable search and offers genres instead | `design-system.md` § 2.7 |
+| 2 | `EmptyState` | The variant for a site that declares neither search nor genres | `design-system.md` § 2.7 |
+| 3 | `ErrorState` | Names what failed and what still works | `design-system.md` § 2.7 |
+| 4 | `LoadingState` | Tile-shaped skeleton, never a centred spinner | `design-system.md` § 2.7 |
 | 5 | `GenreTile` | One declared genre or tag, as a control | **slice-local** — deliberately *not* a `StatusChip` |
 | 6 | `EntryRow` | The two reserved-scope entries | slice-local, `ListTile` |
-| 7 | `AppScaffold` | Title bar, content, bottom nav | design-system § 2.8 |
+| 7 | `AppScaffold` | Title bar, content, bottom nav | `design-system.md` § 2.8 |
 
 **`GenreTile` is not a `StatusChip`, and the difference is load-bearing.** `StatusChip` is "the small state label" that carries counts and verdicts — a label *about* something. A `GenreTile` is a navigation target, so it is a control: it takes focus, it has a pressed state, and it navigates. Reusing the chip would put a state label into the tap order, and `component-parity`'s purpose is precisely to stop one component having two renderings.
 
@@ -170,7 +170,7 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, `--space-lg` 16dp margins. `GenreGrid` is **2 columns** with a `--space-md` 12dp gap and a `--space-sm` 8dp row gap; tiles are at least 48dp tall and grow to fit a label of up to two lines | Nothing. This is the design target and the only width v1 ships (C3) |
-| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it, and § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The grid stays two columns, because widening it is the tablet layout that was excluded |
+| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it, and `design-system.md` § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The grid stays two columns, because widening it is the tablet layout that was excluded |
 | **Desktop** `1024–1439dp` | Same. Flutter desktop is out of scope (C3) | — |
 
 - **Touch target**: 48dp minimum for every tile and every entry row. A tile carrying a one-line label is 48dp tall; a tile carrying `contemporary-romance` over two lines grows to about 60dp rather than truncating, because a genre the reader cannot read is a genre the site does not have.

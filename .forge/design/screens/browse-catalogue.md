@@ -125,12 +125,12 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `NovelRow` variant `result` | One novel in this site's catalogue or in these results | design-system § 2.1 |
-| 2 | `TextField` | The query, in results mode only | design-system § 2.4 |
-| 3 | `EmptyState` | The genuinely-empty catalogue | design-system § 2.7 |
-| 4 | `ErrorState` | The site could not be read — the state that must not look like the one above | design-system § 2.7 |
-| 5 | `LoadingState` | Row-shaped skeleton | design-system § 2.7 |
-| 6 | `AppScaffold` | Title bar, content, bottom nav | design-system § 2.8 |
+| 1 | `NovelRow` variant `result` | One novel in this site's catalogue or in these results | `design-system.md` § 2.1 |
+| 2 | `TextField` | The query, in results mode only | `design-system.md` § 2.4 |
+| 3 | `EmptyState` | The genuinely-empty catalogue | `design-system.md` § 2.7 |
+| 4 | `ErrorState` | The site could not be read — the state that must not look like the one above | `design-system.md` § 2.7 |
+| 5 | `LoadingState` | Row-shaped skeleton | `design-system.md` § 2.7 |
+| 6 | `AppScaffold` | Title bar, content, bottom nav | `design-system.md` § 2.8 |
 
 ---
 
@@ -182,10 +182,10 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, `--space-lg` 16dp margins, rows full-bleed with `--space-md` 12dp internal padding. Covers 40dp, rows 64dp | Nothing. This is the design target and the only width v1 ships (C3) |
-| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it and § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses |
+| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it and `design-system.md` § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses |
 | **Desktop** `1024–1439dp` | Same. Flutter desktop is out of scope (C3) | — |
 
-> **`design-system.md` § 4.2 records a `Paged grid` for "Browse results on ≥600dp; 3 columns at `--bp-desktop`".** That row and § 1.7 / ADR-010 cannot both be built. This screen follows § 1.7 and ADR-010, because a ≥600dp layout cannot be a v1 layout when v1 is a phone (C3) — which makes that row unreachable in v1 rather than wrong. It is recorded here for the design system's owner to strike, and **it is not built**. See also `browse-sources.md` § 6, where the same tension is recorded for the same reason.
+> **`design-system.md` § 4.2 records a `Paged grid` for "Browse results on ≥600dp; 3 columns at `--bp-desktop`".** That row and `design-system.md` § 1.7 / ADR-010 cannot both be built. This screen follows `design-system.md` § 1.7 and ADR-010, because a ≥600dp layout cannot be a v1 layout when v1 is a phone (C3) — which makes that row unreachable in v1 rather than wrong. It is recorded here for the design system's owner to strike, and **it is not built**. See also `browse-sources.md` § 6, where the same tension is recorded for the same reason.
 
 - **Touch target**: 48dp minimum on every row, the chevron, the `AddAction`, the field, and the snackbar's **Undo**. The 40dp cover is inside the row's own target and is not separately tappable.
 - **Overflow**: guaranteed never to overflow. The row's text column is the only flexible element and wraps to a third line rather than clipping; the title truncates at **two lines** with an ellipsis and the **full title is the row's accessible label and the novel's own title on the details screen**, so truncation never costs the reader the name it is choosing. No row scrolls horizontally. The field's text truncates from the end at the cursor, which is the field's own behaviour and not a layout failure.
@@ -260,7 +260,7 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 
 - [x] All nine states described, with a concrete rendering. The two with nothing to render say **why** they have none.
 - [x] Every interactive element has a behaviour, a feedback, a resulting state and a rule ID.
-- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010, not an omission. The § 4.2 `Paged grid` tension is recorded, not silently resolved.
+- [x] Responsive defined at **every** breakpoint in the design system — and the two larger ones say "identical, stop widening", which is ADR-010, not an omission. The `design-system.md` § 4.2 `Paged grid` tension is recorded, not silently resolved.
 - [x] Anti-generic section checked **and justified**; the assumed choice is stated (broken and empty are two different page shapes, and adding a novel is a tap on a row rather than a gesture over a list).
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.

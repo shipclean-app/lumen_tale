@@ -54,7 +54,7 @@ These are not omissions. Several of them are *stronger* precisely because they h
 
 ### B42 — withdrawn
 
-Withdrawn in PRD § 9 and deliberately given no surface. Its ID is retained so the rule series is not renumbered.
+Withdrawn in `prd.md` § 9 and deliberately given no surface. Its ID is retained so the rule series is not renumbered.
 
 ## User stories — 17, all reaching at least one screen
 
@@ -93,5 +93,5 @@ Withdrawn in PRD § 9 and deliberately given no surface. Its ID is retained so t
 
 ## Open at the time of writing
 
-- **Three §7.1 targets are still "not yet measurable"** (list responsiveness, download-progress cadence, cancellation latency). Each owes a number or a deletion in Phase 4. They are not screen requirements and are not counted here.
+- **Three `roadmap.md` § 7.1 targets are still "not yet measurable"** (list responsiveness, download-progress cadence, cancellation latency). Each owes a number or a deletion in Phase 4. They are not screen requirements and are not counted here.
 - **Q-003** (no device) means SC-5 has no screen evidence and cannot get any until CI closes it.

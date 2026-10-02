@@ -125,11 +125,11 @@ OnboardingScaffold (no titleBar, no bottomNav, outside the shell)
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `OnboardingScaffold` | Page with **no** title bar and **no** bottom nav | design-system § 2.8, used with three slots empty |
+| 1 | `OnboardingScaffold` | Page with **no** title bar and **no** bottom nav | `design-system.md` § 2.8, used with three slots empty |
 | 2 | `StepDots` | Position only — two dots, one active | slice-local; `--radius-full`, 8dp |
-| 3 | `DisclosureBlock` | The E11 statement, recessed, with no icon | design-system § 2.7 idiom, `--color-surface-sunken`, **no icon** |
-| 4 | `PrimaryButton` / `TextButton` | `Next`, `Start reading`, `Skip` | design-system § 2.3 |
-| 5 | `GroupLabel` — used as `Kicker` | `--text-overline` uppercase step kicker | design-system § 1.2 |
+| 3 | `DisclosureBlock` | The E11 statement, recessed, with no icon | `design-system.md` § 2.7 idiom, `--color-surface-sunken`, **no icon** |
+| 4 | `PrimaryButton` / `TextButton` | `Next`, `Start reading`, `Skip` | `design-system.md` § 2.3 |
+| 5 | `GroupLabel` — used as `Kicker` | `--text-overline` uppercase step kicker | `design-system.md` § 1.2 |
 
 > **No icon is rendered on either step.** `EmptyState`, `ErrorState` and `LoadingState` are all absent — there is no empty, no error and no loading on this screen, and § 4 says why for each.
 
@@ -285,7 +285,7 @@ The disclosure is **translated in full and not shortened**, which is the one pla
 | Sign-in, account creation, "continue with…" | **B4** | There is no account. A first-run screen whose job is to create an identity is the wrong screen for a product whose entire claim is that it stores no identity |
 | A permissions screen, and any permission request | C11, B35 | **There is nothing to ask for.** Storage needs no runtime grant for the app's own directory, and the one permission that would ever be needed — notifications for the update check — belongs to a feature that is **off by default (B35)**, so it has no context at first run. A permissions screen here would be a lie about what the app needs in order to read a novel |
 | A source-install or source-authorisation flow | **ADR-013** | Sources are a **static registry**. There is no marketplace, no extension installer, no repository, no permission to grant a website. A screen asking the reader to trust a catalogue would be describing a product that does not exist |
-| A feature tour: discover, download, organise, statistics, sync | PRD § 9 | **There is almost nothing to tour.** No account, no source install, no permission, no sync, no social, no purchase. Five cards restating five features would teach the reader that they are early, which is the opposite of the one thing worth teaching |
+| A feature tour: discover, download, organise, statistics, sync | `prd.md` § 9 | **There is almost nothing to tour.** No account, no source install, no permission, no sync, no social, no purchase. Five cards restating five features would teach the reader that they are early, which is the opposite of the one thing worth teaching |
 | A "what's new" or changelog carousel | B34, C9 | No store, no remote channel, and nothing fetched — a first-run screen that needed a connection to show its own changelog would contradict step 1 |
 | A "rate the app" or "share the app" row | B30 | B30 governs what leaves the app, and B29 governs what is transmitted. There is no store to rate in and nothing to share |
 | Analytics consent, a crash-reporting opt-in, a "personalise your experience" toggle | **B29** | Consent implies something to consent to. Nothing is collected, so there is nothing to ask about, and a first-run toggle that starts **on** is the mechanism by which products acquire permission they were never given |

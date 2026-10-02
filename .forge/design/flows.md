@@ -12,7 +12,7 @@ derived_from:
 
 > Screens are specified one file each under `.forge/design/screens/`. This file specifies the **paths between them** — what a reader can do, what happens when it goes wrong, and what a first run looks like.
 >
-> `ux-designer` § 6 requires four kinds of flow: happy path, alternatives, errors, onboarding. All four are here, and the error flows are the substantial ones — because for this product the failure path *is* a requirement (B22, SC-6), not an appendix.
+> The Forge `ux-designer` agent § 6 requires four kinds of flow: happy path, alternatives, errors, onboarding. All four are here, and the error flows are the substantial ones — because for this product the failure path *is* a requirement (B22, SC-6), not an appendix.
 
 ## 0. The one-sentence loop
 
@@ -99,7 +99,7 @@ On return, `/updates` shows what changed. **B38: checking never downloads.** The
 
 ### 3.4 Reading while offline, deliberately
 
-`/library` → shelf → a stored chapter opens with **no network call at all** (§ 8 of `reader.md`). Unstored chapters offer a download action rather than a failure (E1).
+`/library` → shelf → a stored chapter opens with **no network call at all** (`reader.md` § 8). Unstored chapters offer a download action rather than a failure (E1).
 
 ### 3.5 A source that supports search
 
@@ -167,7 +167,7 @@ It teaches exactly one thing, because it is the one thing a new reader cannot gu
 
 Three panels maximum. **No permissions** (nothing to request). **No source install** (ADR-013). **No account** (B4). **No feature tour** — `archetypes.md` § 2 names "onboarding too long" as the trap for this archetype, and a tour of features is how it is sprung.
 
-Its "assumed, non-neutral choice" (§ 2.1): it ends on the empty Library rather than on a welcome-back screen, so the first thing the reader meets after dismissing it is the place the loop starts.
+Its "assumed, non-neutral choice" (`onboarding.md` § 2.1): it ends on the empty Library rather than on a welcome-back screen, so the first thing the reader meets after dismissing it is the place the loop starts.
 
 ---
 
@@ -191,7 +191,7 @@ These are absences with reasons. Per ADR-010 these are **excluded, not deferred*
 
 ## 7. Coverage of this file against the flows the phase requires
 
-| Required flow (ux-designer § 6) | Where |
+| Required flow (the Forge `ux-designer` agent § 6) | Where |
 |---|---|
 | Main / happy path | § 1 cold start, § 2 the warm loop |
 | Alternatives | § 3 — five legitimate variants |

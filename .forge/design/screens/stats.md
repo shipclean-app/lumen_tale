@@ -105,9 +105,9 @@ AppScaffold (titleBar = "Statistics")
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `StatRow` | One figure: label left, value right | § 2.10 |
-| 2 | `SourceBar` | A source's share of chapters read | § 2.10 |
-| 3 | `AppScaffold` | Title bar and bottom nav | design-system § 2.8 |
+| 1 | `StatRow` | One figure: label left, value right | `design-system.md` § 2.10 |
+| 2 | `SourceBar` | A source's share of chapters read | `design-system.md` § 2.10 |
+| 3 | `AppScaffold` | Title bar and bottom nav | `design-system.md` § 2.8 |
 
 ### 2.10 `StatRow` and `SourceBar`
 
@@ -220,7 +220,7 @@ AppScaffold (titleBar = "Statistics")
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID appears in § 9
 - [x] `forge-guard placeholders` reports nothing here
-- [x] Consistent with `design-system.md`: `EmptyState` § 2.7 and `ErrorState` § 2.7 used as declared; **no shadow and no card**, per § 1.4
+- [x] Consistent with `design-system.md`: `EmptyState` `design-system.md` § 2.7 and `ErrorState` `design-system.md` § 2.7 used as declared; **no shadow and no card**, per `design-system.md` § 1.4
 - [x] **Tokens cited exist**, values below
 
 ---

@@ -191,7 +191,7 @@ This does not change anything in our design — ADR-008 already chose `go_router
 | `SettingsSearchScreen`'s `WorkerInfoScreen`, `BackupSchemaScreen`, `DebugInfoScreen` | `…/screen/debug/*.kt` | **EXCLUDE** | — | Debug dumps |
 | `ClearDatabaseScreen` | `…/advanced/ClearDatabaseScreen.kt:69` | **EXCLUDE** | — | Bulk DB wipe per source. **B33's per-chapter delete covers the legitimate case**; a bulk wipe is a footgun in an app with no backup |
 | `AppLanguageScreen` | `…/appearance/AppLanguageScreen.kt:36` | **COPY** | `settings` | Language picker applying immediately. **B28** |
-| `AboutScreen` | `…/screen/about/AboutScreen.kt:66` | **ADAPT** | `settings-about` | Version row and check-for-updates survive (**B43**, **B31**). Open-source licences → we have 24 dependencies and do owe attribution, so this is kept. **Privacy policy, social icons and What's New excluded.** But **our about screen gains what Mihon's lacks: the guarantee that an upgrade never destroys the library (B31)**, which `benchmarks.md` § 2.3 shows is the competitor's single worst-documented failure |
+| `AboutScreen` | `…/screen/about/AboutScreen.kt:66` | **ADAPT** | `settings-about` | Version row and check-for-updates survive (**B43**, **B31**). Open-source licences → we have 24 dependencies and do owe attribution, so this is kept. **Privacy policy, social icons and What's New excluded.** But **our about screen gains what Mihon's lacks: the guarantee that an upgrade never destroys the library (B31)**, which `benchmarks.md` `design-system.md` § 2.3 shows is the competitor's single worst-documented failure |
 | `NewUpdateScreen` | `ui/more/NewUpdateScreen.kt:14` | **ADAPT** | `settings-about` | Mihon downloads and installs an update **in-app**. **Ours must not**: ADR-011 has CI produce an APK the owner installs themselves (**B31**). So the screen's job becomes *announcing* a build, not fetching one |
 
 ---
@@ -225,7 +225,7 @@ This does not change anything in our design — ADR-008 already chose `go_router
 | Our addition | Where | Why |
 |---|---|---|
 | **Reader chapter-list sheet** | `reader-chapter-sheet` | **A genuine Mihon absence.** Verified across all 616 lines of `ReaderActivity.kt`, all 17 files in `presentation/reader/**`, `ReaderAppBars.kt` and `ChapterNavigator.kt`: to change chapters from inside the reader you must tap the title, leave for `MangaScreen`, and pick a chapter. Mihon has only prev/next buttons and a page slider. For a 300-chapter novel on a small screen that is a real cost, and we add the sheet |
-| **Text-size control in the reader chrome** | `ReaderControls.sizeButton` | Mihon has no font-size control in the reader — only in settings. **B27 asks for an adjustable size, and the reader's own chrome is where a reader reaches for it.** Benchmarks § 2.2 records both competitors offering full text customisation in-reader |
+| **Text-size control in the reader chrome** | `ReaderControls.sizeButton` | Mihon has no font-size control in the reader — only in settings. **B27 asks for an adjustable size, and the reader's own chrome is where a reader reaches for it.** Benchmarks `benchmarks.md` § 2.2 records both competitors offering full text customisation in-reader |
 | **Theme switch in the reader chrome** | `ReaderControls.themeButton` | Mihon has reader theme in settings only. `benchmarks.md` § 2.2 records Dreame's dark mode being hard to find; one tap from the reading surface is the deliberate answer |
 | **Offline-first framing** | `reader` states | Mihon has no offline state at all. **It is our entire product** (SC-2) |
 
@@ -245,7 +245,7 @@ This does not change anything in our design — ADR-008 already chose `go_router
 
 ### The four decisions that removed most of it
 
-1. **ADR-010, personal use.** Removed backup, restore, export, security, trackers, support-us and the donation sheet — **24 screens and dialogs** with one decision. The cost is real: the reader has no safety net for their library, mitigated only by B31 guaranteeing the app never destroys it. `benchmarks.md` § 2.3 is the evidence that this is a cost worth paying and `coverage.md` records it as an absence with a reason.
+1. **ADR-010, personal use.** Removed backup, restore, export, security, trackers, support-us and the donation sheet — **24 screens and dialogs** with one decision. The cost is real: the reader has no safety net for their library, mitigated only by B31 guaranteeing the app never destroys it. `benchmarks.md` `design-system.md` § 2.3 is the evidence that this is a cost worth paying and `coverage.md` records it as an absence with a reason.
 2. **ADR-013, static source registry.** Removed the entire Extensions tree — **~14 surfaces** — and MigrateSource — **15 more**. It also converts Extensions' per-source enable/disable into the plain `sources` screen, which is source management wearing an extension costume.
 3. **ADR-009, continuous scroll only.** Removed the pager stack, all six reading modes, three mode/orientation selection sheets, and the entire Pager/Webtoon/WebGPU settings. **~20 surfaces.** This is the largest single deferral and it has a real cost: competitors ship three modes today.
 4. **B30 + no image content.** Removed every page action, custom cover, share, and every image-viewer setting. **~12 surfaces.**

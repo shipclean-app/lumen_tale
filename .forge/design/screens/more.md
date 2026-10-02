@@ -90,8 +90,8 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `MoreRow` | One destination: title, one-line consequence, optional live value | § 2.10 (below) |
-| 2 | `AppScaffold` | Holds the title bar and the bottom nav | design-system § 2.8 |
+| 1 | `MoreRow` | One destination: title, one-line consequence, optional live value | `design-system.md` § 2.10 (below) |
+| 2 | `AppScaffold` | Holds the title bar and the bottom nav | `design-system.md` § 2.8 |
 
 ### 2.10 `MoreRow` — declared here because it exists only for this screen
 
@@ -169,7 +169,7 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 - [x] **Focus ring `--color-border-focus`** at **6.07:1** / **8.86:1**, non-text, 2dp with 2dp offset.
 - [x] **Every row has an accessibility label** combining title, subtitle and live `value` — *Downloads, what is on the phone and what is not, 3 queued*. The three parts are one focus stop and must announce as one thing.
 - [x] **Language and reading direction** correct (B28); the row list does not assume LTR for the chevron.
-- [x] **No colour carries meaning alone** — there is no colour-only state on this screen at all, which is the design system § 0 anti-reference satisfied trivially.
+- [x] **No colour carries meaning alone** — there is no colour-only state on this screen at all, which is the `design-system.md` § 0 anti-reference satisfied trivially.
 
 ---
 

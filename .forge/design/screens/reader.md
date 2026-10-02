@@ -107,11 +107,11 @@ AppScaffold (no titleBar, no bottomNav, readerChrome slot set)
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `ProseColumn` | The measure-constrained text column | § 2.3 of the design system (not a card) |
-| 2 | `ReaderControls` | Tap-revealed cluster with progress, size, theme, chapter list | design-system § 2.6 |
-| 3 | `LoadingState` | Skeleton shaped like prose | design-system § 2.7 |
-| 4 | `ErrorState` | Distinguishes *broken* from *absent* | design-system § 2.7 |
-| 5 | `AppScaffold` | Holds chrome; sets `readerChrome` instead of `titleBar` | design-system § 2.8 |
+| 1 | `ProseColumn` | The measure-constrained text column | `design-system.md` § 2.3 of the design system (not a card) |
+| 2 | `ReaderControls` | Tap-revealed cluster with progress, size, theme, chapter list | `design-system.md` § 2.6 |
+| 3 | `LoadingState` | Skeleton shaped like prose | `design-system.md` § 2.7 |
+| 4 | `ErrorState` | Distinguishes *broken* from *absent* | `design-system.md` § 2.7 |
+| 5 | `AppScaffold` | Holds chrome; sets `readerChrome` instead of `titleBar` | `design-system.md` § 2.8 |
 
 ---
 
@@ -250,7 +250,7 @@ AppScaffold (no titleBar, no bottomNav, readerChrome slot set)
 
 page-turn and side-by-side modes · swipe-to-turn · rotation and orientation lock · colour filters (sepia, greyscale, inverted) · text justification · custom font selection · paragraph spacing control · line-height control.
 
-The v1 constraint is in the design system's § 2.6 `ReaderControls`: three buttons and a slider. The two modes Mihon ships are a v2 candidate, and `benchmarks.md` § 2.2 records that competitors offer all three — the parity gap is real, deliberate, and written down rather than forgotten.
+The v1 constraint is in the design system's `design-system.md` § 2.6 `ReaderControls`: three buttons and a slider. The two modes Mihon ships are a v2 candidate, and `benchmarks.md` `design-system.md` § 2.2 records that competitors offer all three — the parity gap is real, deliberate, and written down rather than forgotten.
 
 ---
 

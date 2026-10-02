@@ -839,9 +839,9 @@
       "path": ".forge/design/coverage.md",
       "type": "design-coverage",
       "status": "approved",
-      "content_hash": "sha256:306bf7349a1f",
+      "content_hash": "sha256:5df524bb4036",
       "headings": {},
-      "updated_at": "2026-10-02T17:34:27.669Z",
+      "updated_at": "2026-10-02T17:47:56.138Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -894,7 +894,7 @@
       "path": ".forge/design/flows.md",
       "type": "design-flows",
       "status": "approved",
-      "content_hash": "sha256:03f975faa2d5",
+      "content_hash": "sha256:e7d327c9a9be",
       "headings": {
         "0": "The one-sentence loop",
         "1": "Happy path — first ever read (cold start)",
@@ -914,7 +914,7 @@
         "4.3": "Failure in the middle of the work",
         "4.4": "The honest limitation in the download flow"
       },
-      "updated_at": "2026-10-02T17:34:27.984Z",
+      "updated_at": "2026-10-02T17:50:18.861Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md",
@@ -934,7 +934,7 @@
       "path": ".forge/design/screens/_mihon-verdicts.md",
       "type": "design-verdicts",
       "status": "approved",
-      "content_hash": "sha256:139a17963e05",
+      "content_hash": "sha256:668b474b5c3e",
       "headings": {
         "1": "Shell and navigation",
         "2": "Library",
@@ -950,7 +950,7 @@
         "6.3": "MigrateSource",
         "8.1": "What we add that Mihon does not have"
       },
-      "updated_at": "2026-10-02T17:34:28.206Z",
+      "updated_at": "2026-10-02T17:49:25.226Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md",
@@ -962,6 +962,60 @@
         "B9",
         "B30",
         "B32",
+        "B50"
+      ]
+    },
+    "architecture": {
+      "path": ".forge/architecture.md",
+      "type": "architecture",
+      "status": "draft",
+      "content_hash": "sha256:b65bbaa598af",
+      "headings": {
+        "1": "Overview",
+        "2": "Foundations",
+        "3": "Modules and slices",
+        "4": "Data models",
+        "5": "Contracts",
+        "6": "Dependency graph",
+        "7": "Architecture decisions",
+        "8": "Architectural risks",
+        "9": "Amendments",
+        "1.1": "Technical stack",
+        "1.2": "Target folder structure",
+        "2.1": "`local-store` — **implemented**",
+        "2.2": "`failure-discriminator`",
+        "2.3": "`apk-pipeline`",
+        "3.1": "Inventory",
+        "3.2": "Coverage against the PRD",
+        "4.1": "`novels`",
+        "4.2": "`chapters`",
+        "4.3": "The remaining four",
+        "4.4": "What is deliberately **not** in the database",
+        "4.5": "Constraints, and how they were proved",
+        "5.1": "The source contract",
+        "5.2": "The failure taxonomy",
+        "5.3": "What the app promises about the network",
+        "5.4": "Where the template's API table would have gone, and why it is empty",
+        "6.1": "Computed waves",
+        "6.2": "The critical path",
+        "6.3": "Why `impl_waves: 6` and not 11",
+        "6.4": "Parallelism",
+        "6.5": "Cycles"
+      },
+      "updated_at": "2026-10-02T17:44:31.975Z",
+      "derived_from": [
+        ".forge/prd.md"
+      ],
+      "requires": [
+        "B6",
+        "B7",
+        "B14",
+        "B18",
+        "B22",
+        "B31",
+        "B32",
+        "B41",
+        "B48",
         "B50"
       ]
     }
@@ -1113,7 +1167,7 @@
       "path": ".forge/design/screens/reader.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:d63fce8ba252",
+      "content_hash": "sha256:d5bbcaca2521",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1129,7 +1183,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T16:41:38.900Z",
+      "updated_at": "2026-10-02T17:49:25.097Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1139,7 +1193,7 @@
       "path": ".forge/design/screens/settings.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:d9a7017bf540",
+      "content_hash": "sha256:0cd2d6bdb31e",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1156,7 +1210,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:41:39.450Z",
+      "updated_at": "2026-10-02T17:49:24.694Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1166,7 +1220,7 @@
       "path": ".forge/design/screens/settings-reader.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:b9539392f513",
+      "content_hash": "sha256:fe833413c882",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1183,7 +1237,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:41:39.509Z",
+      "updated_at": "2026-10-02T17:49:24.735Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1193,7 +1247,7 @@
       "path": ".forge/design/screens/settings-about.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:137389f6e548",
+      "content_hash": "sha256:78b672b20587",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1210,7 +1264,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:41:39.568Z",
+      "updated_at": "2026-10-02T17:49:24.781Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1220,7 +1274,7 @@
       "path": ".forge/design/screens/browse-sources.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:f4515f252e1f",
+      "content_hash": "sha256:546b6e978c22",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1236,7 +1290,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T16:41:39.204Z",
+      "updated_at": "2026-10-02T17:49:24.503Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1246,7 +1300,7 @@
       "path": ".forge/design/screens/browse-genre.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:36614bf81b8d",
+      "content_hash": "sha256:2d716800c2cb",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1262,7 +1316,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T17:29:58.261Z",
+      "updated_at": "2026-10-02T17:49:24.545Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1272,7 +1326,7 @@
       "path": ".forge/design/screens/browse-catalogue.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:ab8f14acf576",
+      "content_hash": "sha256:7a15bb7bdc73",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1289,7 +1343,7 @@
         "1.1": "The two modes of one route",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T16:41:39.324Z",
+      "updated_at": "2026-10-02T17:50:03.503Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1299,7 +1353,7 @@
       "path": ".forge/design/screens/downloads.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:0654332d9ab7",
+      "content_hash": "sha256:e7efc1dbb086",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1316,7 +1370,7 @@
         "1.1": "Why this screen is in overflow and not a tab — the reason, argued",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T16:41:39.376Z",
+      "updated_at": "2026-10-02T17:49:24.636Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1326,7 +1380,7 @@
       "path": ".forge/design/screens/library.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:07773542c73b",
+      "content_hash": "sha256:65cc6d865461",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1344,7 +1398,7 @@
         "11.1": "`SortFilterSheet`",
         "11.2": "`BulkDownloadSheet` and `RemoveFromLibraryDialog`"
       },
-      "updated_at": "2026-10-02T16:41:38.949Z",
+      "updated_at": "2026-10-02T17:49:24.321Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1354,7 +1408,7 @@
       "path": ".forge/design/screens/novel-details.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:a08e588d30a4",
+      "content_hash": "sha256:f17314dfc346",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1373,7 +1427,7 @@
         "11.2": "The similar-title warning (B40)",
         "11.3": "Chapter selection, and a gap in the design system recorded rather than papered over"
       },
-      "updated_at": "2026-10-02T16:41:39.028Z",
+      "updated_at": "2026-10-02T17:49:24.364Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1383,7 +1437,7 @@
       "path": ".forge/design/screens/updates.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:f8e8da5af68a",
+      "content_hash": "sha256:b2f39dca03d0",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1401,7 +1455,7 @@
         "11.1": "`NovelActionSheet`",
         "11.2": "A note on the in-progress check state, and on a divergence in the design system"
       },
-      "updated_at": "2026-10-02T16:41:39.084Z",
+      "updated_at": "2026-10-02T17:49:24.413Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1411,7 +1465,7 @@
       "path": ".forge/design/screens/history.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:cc21faccdb13",
+      "content_hash": "sha256:4521184a5adc",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1428,7 +1482,7 @@
         "2.1": "Anti-generic — mandatory",
         "11.1": "`RetentionSheet` and the clear confirmation"
       },
-      "updated_at": "2026-10-02T16:41:39.147Z",
+      "updated_at": "2026-10-02T17:49:24.455Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1438,7 +1492,7 @@
       "path": ".forge/design/screens/source-unavailable.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:8029eed6ca45",
+      "content_hash": "sha256:0f145d71fa19",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1455,7 +1509,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:41:39.631Z",
+      "updated_at": "2026-10-02T17:49:24.828Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1465,7 +1519,7 @@
       "path": ".forge/design/screens/onboarding.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:95bdc11c0557",
+      "content_hash": "sha256:63959dccb7ff",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1482,7 +1536,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:41:39.698Z",
+      "updated_at": "2026-10-02T17:49:24.871Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1492,7 +1546,7 @@
       "path": ".forge/design/screens/more.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:9639e8459a94",
+      "content_hash": "sha256:0ba0424f4944",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1508,7 +1562,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`MoreRow` — declared here because it exists only for this screen"
       },
-      "updated_at": "2026-10-02T16:41:39.760Z",
+      "updated_at": "2026-10-02T17:49:24.920Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1518,7 +1572,7 @@
       "path": ".forge/design/screens/sources.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:278aadb2bee1",
+      "content_hash": "sha256:487459b1b3f2",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1534,7 +1588,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`SourceRow`"
       },
-      "updated_at": "2026-10-02T16:41:39.827Z",
+      "updated_at": "2026-10-02T17:49:24.961Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1544,7 +1598,7 @@
       "path": ".forge/design/screens/stats.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:54aa3913ad6d",
+      "content_hash": "sha256:b86a724a37b8",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1560,7 +1614,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`StatRow` and `SourceBar`"
       },
-      "updated_at": "2026-10-02T16:41:39.886Z",
+      "updated_at": "2026-10-02T17:49:25.009Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1570,7 +1624,7 @@
       "path": ".forge/design/screens/reader-chapter-sheet.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:d0d81a31d3a6",
+      "content_hash": "sha256:43287d54258e",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1585,7 +1639,7 @@
         "11": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T16:41:39.947Z",
+      "updated_at": "2026-10-02T17:50:03.561Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -2045,10 +2099,10 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 135,
+      "register": 198,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 72,
+      "status_change": 78,
       "gate_approved": 3,
       "phase_status": 3,
       "amend": 1,

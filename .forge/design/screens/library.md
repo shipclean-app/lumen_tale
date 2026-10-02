@@ -83,7 +83,7 @@ This screen must not resemble any of these defects:
 - [x] **Not uniform.** Three different scales in the first screenful: `--text-overline` 11/16 at 600 with 0.08em tracking for the *Continue reading* label, `--text-h4` 18/24 for a row title, `--text-body-sm` 14/20 for the author and `--text-caption` 12/16 for the timestamp. The shelf's own line-height carries the second break. Hierarchy is a ratio, not a constant gap.
 - [x] **No generic grey `#6B7280`** — neutrals are the paper-anchored ramp of `design-system.md` § 1.1.
 - [x] **No symmetric centring as the layout.** The shelf is a full-bleed card under `--space-lg` margins; the list below it is full-bleed rows with internal `--space-md` padding. Only the shelf's text block is left-aligned inside its card.
-- [x] **No generic spot illustration** — the two empty states are a sentence and one button. `EmptyState`'s `library-empty` instance has real copy and no image, per `design-system.md` § 2.7 and the anti-references in § 0.
+- [x] **No generic spot illustration** — the two empty states are a sentence and one button. `EmptyState`'s `library-empty` instance has real copy and no image, per `design-system.md` § 2.7 and the anti-references in `design-system.md` § 0.
 - [x] **Not one typeface at one weight** — one family (the platform sans), four scales and three weights, with tracking on the overlines. Nothing on this screen needs a second family: it is not prose, and pretending otherwise would cost APK weight for nothing (ADR-017's reasoning, inverted).
 
 **Assumed, non-neutral choice**: **the top of this screen is a resume, not a summary.** It carries exactly one novel — the last one read — rendered at its stored position: the novel in `NovelRow`'s `compact` variant, the site's own chapter title beneath it verbatim (B10), and a 2dp determinate bar showing how far through that chapter the reader got. Tapping it opens the reader at that position, with no intervening screen. There is no header line reading "42 novels · 96 unopened", no cover grid, and no "Continue reading" carousel of six cards: a carousel is a summary with extra taps, and ADR-018's requirement is that the Library *open the loop*. The whole shelf is below this one card, which is why the card exists at all. The second non-neutral choice, stated here because it is the one a generic list gets wrong: **a row's author is displayed and is not searchable.** B45 forbids searching, filtering or sorting by author because the app does not hold it as a searchable field — so the search field's placeholder reads *Search by title*, the filter sheet carries an explicit line saying so, and the author line under a title is marked as decoration. A field shown next to a search box teaches that the box searches it.
@@ -101,7 +101,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 │   └── CheckLibraryButton                  icon + label, tooltip "Check for new chapters" (B36)
 ├── ContinueReadingShelf                    --color-surface-raised, --radius-lg, --shadow-none
 │   ├── Overline "CONTINUE READING"         --text-overline 11/16 600, 0.08em
-│   ├── NovelRow variant compact            56dp, 32dp cover, title  (design-system § 2.1)
+│   ├── NovelRow variant compact            56dp, 32dp cover, title  (`design-system.md` § 2.1)
 │   ├── ResumeLine                          chapter title verbatim (B10) + "41% of this chapter"
 │   └── ProgressTrack                       2dp, --color-accent fill on --color-surface-sunken track
 ├── LibraryList                             full-bleed rows, --space-md padding, --color-border rules
@@ -110,18 +110,18 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 ├── SelectionActionBar                      contextual; Download · Mark as read · Remove (B11, B32, B33)
 ├── SortFilterSheet                         --color-surface-raised, --shadow-sheet, --radius-lg
 ├── ConfirmDialog                           --color-surface-raised, --shadow-dialog, --radius-lg
-├── EmptyState / ErrorState / LoadingState  design-system § 2.7
+├── EmptyState / ErrorState / LoadingState  `design-system.md` § 2.7
 └── SnackBarHost                            --color-surface-raised, --shadow-sheet
 ```
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `NovelRow` variant `library` | One kept novel, 72dp, title + author + status | design-system § 2.1 |
-| 2 | `NovelRow` variant `compact` | The one novel on the shelf | design-system § 2.1 |
-| 3 | `StatusChip` | The only place B48 and B49 are rendered | design-system § 2.5 |
-| 4 | `TextField` | The title-only search (B45) | design-system § 2.4 |
-| 5 | `EmptyState` / `ErrorState` / `LoadingState` | Empty, broken-store, first-paint | design-system § 2.7 |
-| 6 | `AppScaffold` | Title bar, bottom nav, `persistentStatus` | design-system § 2.8 |
+| 1 | `NovelRow` variant `library` | One kept novel, 72dp, title + author + status | `design-system.md` § 2.1 |
+| 2 | `NovelRow` variant `compact` | The one novel on the shelf | `design-system.md` § 2.1 |
+| 3 | `StatusChip` | The only place B48 and B49 are rendered | `design-system.md` § 2.5 |
+| 4 | `TextField` | The title-only search (B45) | `design-system.md` § 2.4 |
+| 5 | `EmptyState` / `ErrorState` / `LoadingState` | Empty, broken-store, first-paint | `design-system.md` § 2.7 |
+| 6 | `AppScaffold` | Title bar, bottom nav, `persistentStatus` | `design-system.md` § 2.8 |
 | 7 | `ContinueReadingShelf` | **slice-local**: a raised card wrapping `NovelRow` `compact` + `ResumeLine` + `ProgressTrack`. Declared here, not in the design system, because it is a layout of three existing pieces and not a new primitive |
 | 8 | `SelectionActionBar` | **slice-local**: the contextual bar `AppScaffold` shows in place of the title while a selection exists |
 
@@ -151,7 +151,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 
 | Element | Event | Behaviour | Visual feedback | Resulting state | Rule |
 |---|---|---|---|---|---|
-| Shelf tile | tap | **Open the reader directly at the stored position** — not the novel's detail screen. This is the one place in the app where a tap skips a screen, and it is the shortcut ADR-018 buys | None beyond the standard push; **no transition into the reader** (design-system § 3.4) | Reader at the stored offset | **B16**, ADR-018 |
+| Shelf tile | tap | **Open the reader directly at the stored position** — not the novel's detail screen. This is the one place in the app where a tap skips a screen, and it is the shortcut ADR-018 buys | None beyond the standard push; **no transition into the reader** (`design-system.md` § 3.4) | Reader at the stored offset | **B16**, ADR-018 |
 | Shelf tile | long-press | **Ignored.** The tile is not selectable, so a multi-select can never be anchored on it | — | Unchanged | — |
 | `NovelRow` (list) | tap | Push `/library/novel/:novelId` | `--duration-normal` 200ms slide, `--ease-standard` | Filled on the detail screen | — |
 | `NovelRow` (list) | long-press | Enter selection mode with that row selected | Row takes `selected`: `--color-border-strong` 2dp on the leading edge, `--color-accent` 10% fill; title bar cross-fades to `SelectionActionBar` over `--duration-fast` 120ms | Selection active | — |
@@ -169,11 +169,11 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 | List | pull-to-refresh | **Absent.** A downward flick that quietly visits every site is a gesture whose cost the reader cannot see, and B36's point is that *opening the app* is not a trigger. The explicit, labelled button is the only trigger on this screen | — | — | **B36**, **B35** |
 | List | scroll | The shelf scrolls away with the list. It **leads**; it does not pin. A pinned shelf spends the top third of the smallest screen on one row | — | Filled | ADR-018 |
 | Selection action bar | Back / `Esc` | Exits selection mode first, restoring the title bar; a second back leaves the screen | `--duration-fast` | Filled | — |
-| Tab switch | tap another destination | This branch keeps its scroll offset and its query (go_router shell routes, design-system § 3.5) | — | Filled | — |
+| Tab switch | tap another destination | This branch keeps its scroll offset and its query (go_router shell routes, `design-system.md` § 3.5) | — | Filled | — |
 
 - **Focus / keyboard**: D-pad moves between the four title-bar actions, the shelf tile, then row to row; the focus ring is 2dp `--color-border-focus` with a 2dp offset and is never removed. `Enter` opens. The menu key enters selection mode with the focused row selected. Every row's chevron hit area is padded to the 48dp minimum so the row is not the only target.
 - **Gestures**: tap, long-press, scroll. No swipe, no pull-to-refresh, no pinch — each is argued in the table above rather than omitted.
-- **Animations**: sheet slide and screen push `--duration-normal` 200ms `--ease-standard`; press feedback and chip select `--duration-fast` 120ms; **push into the reader has no animation**, per design-system § 3.4. Every duration becomes `0ms` under reduce-motion and the skeleton stops shimmering.
+- **Animations**: sheet slide and screen push `--duration-normal` 200ms `--ease-standard`; press feedback and chip select `--duration-fast` 120ms; **push into the reader has no animation**, per `design-system.md` § 3.4. Every duration becomes `0ms` under reduce-motion and the skeleton stops shimmering.
 - **Back**: exits selection mode, then clears an active query, then leaves. Nothing is saved on back — the query lives in the shell branch and survives, so a back press costs no write on the hot path.
 
 ---

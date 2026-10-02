@@ -120,11 +120,11 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `NovelRow` variant `library` | One kept novel with an unopened-chapter count | design-system § 2.1 |
-| 2 | `StatusChip` variants `new`, `never-checked`, `local`, `failed`, `downloading`, `downloaded` | The only place B48 and B49 are rendered | design-system § 2.5 |
-| 3 | `TextButton` / `SecondaryButton` | The check, and the two bulk actions | design-system § 2.3 |
-| 4 | `EmptyState` / `ErrorState` / `LoadingState` | Empty, unreadable store, first paint | design-system § 2.7 |
-| 5 | `AppScaffold` | Title bar, bottom nav, and the `persistentStatus` slot that carries a running check | design-system § 2.8 |
+| 1 | `NovelRow` variant `library` | One kept novel with an unopened-chapter count | `design-system.md` § 2.1 |
+| 2 | `StatusChip` variants `new`, `never-checked`, `local`, `failed`, `downloading`, `downloaded` | The only place B48 and B49 are rendered | `design-system.md` § 2.5 |
+| 3 | `TextButton` / `SecondaryButton` | The check, and the two bulk actions | `design-system.md` § 2.3 |
+| 4 | `EmptyState` / `ErrorState` / `LoadingState` | Empty, unreadable store, first paint | `design-system.md` § 2.7 |
+| 5 | `AppScaffold` | Title bar, bottom nav, and the `persistentStatus` slot that carries a running check | `design-system.md` § 2.8 |
 | 6 | `ScheduleNotice` | **slice-local**: the raised block stating B35's default and B36's no-trigger-on-open. A composition of `Text` and a `TextButton` on `--color-surface-raised`; promoted to the design system only if a second screen needs it |
 | 7 | `NovelActionSheet` | **slice-local**: the per-novel action sheet — see § 11 |
 
@@ -302,7 +302,7 @@ There is deliberately **no remove, no keep and no share** in it. Removing from t
 
 **The check in progress reuses the `never-checked` presentation** — the information token, wording only — because it is the same class of fact: *the app does not currently know what the site has*. Inventing a seventh `StatusChip` variant for a transient that lasts seconds and that the reader can cancel would add a component state no other screen needs, and the design system is explicit that screens must not invent components. The per-novel position during a check lives in `persistentStatus` as a counter, which is where a screen-level fact belongs.
 
-**One divergence found, recorded rather than silently resolved.** `design-system.md` § 1.1 lists `never-checked` under `--color-warning`'s usage column, while § 2.5 declares `StatusChip`'s `never-checked` variant as **info**. This screen follows § 2.5, the component contract, because it is the more specific claim and because *info* is the right register for "we have not looked" — a warning colour would present the reader's own default (B35) as a fault. The colour table's usage cell is the thing that should change; this is left to the design system's owner rather than decided here.
+**One divergence found, recorded rather than silently resolved.** `design-system.md` § 1.1 lists `never-checked` under `--color-warning`'s usage column, while `design-system.md` § 2.5 declares `StatusChip`'s `never-checked` variant as **info**. This screen follows `design-system.md` § 2.5, the component contract, because it is the more specific claim and because *info* is the right register for "we have not looked" — a warning colour would present the reader's own default (B35) as a fault. The colour table's usage cell is the thing that should change; this is left to the design system's owner rather than decided here.
 
 ---
 

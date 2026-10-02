@@ -117,13 +117,13 @@ AppScaffold (titleBar + content + bottomNav)
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `ChapterListTile` variant `list` | One chapter inside the sheet a long-press opens, and the shape the running row borrows | design-system § 2.2 |
-| 2 | `StatusChip` | `downloading` on the library row, `failed` here — **not** on this screen's own rows, which say their status in words | design-system § 2.5 |
-| 3 | `PrimaryButton` / `TextButton` | **Resume**, **Check again**, **Retry**; `TextButton` for Pause and Cancel | design-system § 2.3 |
-| 4 | `EmptyState` | Both empty variants | design-system § 2.7 |
-| 5 | `ErrorState` | The records could not be read | design-system § 2.7 |
-| 6 | `LoadingState` | Never used whole-screen here — see § 4 | design-system § 2.7 |
-| 7 | `AppScaffold` | Title bar, content, bottom nav, `persistentStatus` | design-system § 2.8 |
+| 1 | `ChapterListTile` variant `list` | One chapter inside the sheet a long-press opens, and the shape the running row borrows | `design-system.md` § 2.2 |
+| 2 | `StatusChip` | `downloading` on the library row, `failed` here — **not** on this screen's own rows, which say their status in words | `design-system.md` § 2.5 |
+| 3 | `PrimaryButton` / `TextButton` | **Resume**, **Check again**, **Retry**; `TextButton` for Pause and Cancel | `design-system.md` § 2.3 |
+| 4 | `EmptyState` | Both empty variants | `design-system.md` § 2.7 |
+| 5 | `ErrorState` | The records could not be read | `design-system.md` § 2.7 |
+| 6 | `LoadingState` | Never used whole-screen here — see § 4 | `design-system.md` § 2.7 |
+| 7 | `AppScaffold` | Title bar, content, bottom nav, `persistentStatus` | `design-system.md` § 2.8 |
 
 **Where progress is shown, so it is shown once.** `design-system.md` § 3.2 lists three surfaces for progress — the library row, the novel's page, and the persistent status bar — and this screen is where the reader *goes*, not a fourth place a bar is duplicated into. The `persistentStatus` bar carries the same determinate line while it is visible; this screen is what it opens.
 
@@ -184,7 +184,7 @@ AppScaffold (titleBar + content + bottomNav)
 | Breakpoint | Behaviour | What collapses or disappears |
 |---|---|---|
 | **Mobile** `< 600dp` | Single column, `--space-lg` 16dp margins, rows full-bleed with `--space-md` 12dp internal padding. Queue actions are a trailing `Pause` / `Cancel` pair, each 48dp | Nothing. This is the design target and the only width v1 ships (C3) |
-| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it and § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The sections stop growing and centre |
+| **Tablet** `600–1023dp` | Identical single column, **centred and capped at the mobile measure**. **Explicitly not a tablet layout** — ADR-010 excluded it and `design-system.md` § 1.7 says `< 600dp` is *the only layout v1 ships* | Nothing collapses. The sections stop growing and centre |
 | **Desktop** `1024–1439dp` | Same. Flutter desktop is out of scope (C3) | — |
 
 - **Touch target**: 48dp minimum on every row, every trailing action, every section-level button and the snackbar's **Open** and **Undo**. A disabled action — and there is exactly one class of them, a `Pause` on a queue that is not running — stays **48dp tall** so the row does not jump under the reader's finger.
@@ -285,7 +285,7 @@ AppScaffold (titleBar + content + bottomNav)
 | Any "downloads continue in the background" wording, notification, or progress-while-closed | **E7.** There is no background executor in v1. `benchmarks.md` § 3 records background download as **absent**, against both benchmarks |
 | Auto-resume when the connection returns | E7 says the reader resumes. Auto-resume is the promise that turns an interrupted queue into a silent data cost |
 | A single aggregate progress bar | B18 — the queue is serial. A bar over the whole novel would claim parallelism the app does not have |
-| Concurrent downloads, a speed figure, an ETA | Not in any rule, and not measurable from a serial in-process queue (§ 7.1's honest "not yet measurable") |
+| Concurrent downloads, a speed figure, an ETA | Not in any rule, and not measurable from a serial in-process queue (`roadmap.md` § 7.1's honest "not yet measurable") |
 | Download scheduling — "download novel X overnight" | Same reason as the above, stated once more: there is nothing running at 3am |
 | Free storage space display | It would need a platform channel the app has not earned (`09-widgets-ui.md`), and a stale number is worse than none. The screen says *the phone is out of storage* and tells the reader to free space |
 | Undo on a deleted chapter | C8 — no backup, no export. An Undo would be a promise to refetch content that may have changed or vanished |

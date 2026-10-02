@@ -97,10 +97,10 @@ AppScaffold (titleBar = "Sources")
 
 | # | Component | Role | Source |
 |---|---|---|---|
-| 1 | `SourceRow` | One source: name, language, status, consequence, enable switch | § 2.10 |
-| 2 | `Switch` (setting) | Enable / disable, saving on change with no Save button | design-system § 2.9 |
-| 3 | `StatusChip` | Carries the status word — never colour alone | design-system § 2.5 |
-| 4 | `ErrorState` | The per-source failure, when one has been detected | design-system § 2.7 |
+| 1 | `SourceRow` | One source: name, language, status, consequence, enable switch | `design-system.md` § 2.10 |
+| 2 | `Switch` (setting) | Enable / disable, saving on change with no Save button | `design-system.md` § 2.9 |
+| 3 | `StatusChip` | Carries the status word — never colour alone | `design-system.md` § 2.5 |
+| 4 | `ErrorState` | The per-source failure, when one has been detected | `design-system.md` § 2.7 |
 
 ### 2.10 `SourceRow`
 
@@ -231,7 +231,7 @@ AppScaffold (titleBar = "Sources")
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID appears in § 9
 - [x] `forge-guard placeholders` reports nothing here
-- [x] Consistent with `design-system.md`: `Switch` § 2.9 and `StatusChip` § 2.5 are both used as declared, including `Switch`'s deliberate **absence** of a loading state
+- [x] Consistent with `design-system.md`: `Switch` `design-system.md` § 2.9 and `StatusChip` `design-system.md` § 2.5 are both used as declared, including `Switch`'s deliberate **absence** of a loading state
 - [x] **Tokens cited exist**, values below
 
 ---
