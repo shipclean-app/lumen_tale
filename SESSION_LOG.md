@@ -297,7 +297,7 @@ Phases 0–3 approved. `architecture.md` drafted with 29 slices + 5 foundations,
 - **Royal Road / Novel Fire search reachability unmeasured.** v1 claims genre browsing for all three sites and search for none.
 - **`architecture.md` remains `draft`.** The gate is not closed and the owner has not approved it.
 
-### THE FINDINGS
+### THE FINDINGS — ROUND ONE
 
 Three critical, thirteen major, plus a cascade neither pass predicted.
 
@@ -312,11 +312,24 @@ Three critical, thirteen major, plus a cascade neither pass predicted.
 
 `lib/core/database/app_database.dart` + generated, `schema.json`; `test/core/database/app_database_test.dart` (13 → 16 tests); `.forge/architecture.md`; `.forge/prd.md`; `.forge/roadmap.md`; `.forge/benchmarks.md`; `.forge/design/{design-system,coverage,flows}.md`; 13 files under `.forge/design/screens/`; `DECISIONS.md` (ADR-019, 021, 022, 023 + ADR-012 and ADR-020 supersessions); `.forge/state.json`; `LEARNINGS.md` (+5 corrections).
 
+### THE FINDINGS — ROUND TWO (two reviewers, after the fixes above)
+
+A plan-validator re-run — with `references/module-prioritization.md` loaded, which the first pass could not find — returned **BLOCK**. A coverage auditor returned **REVISE**. Every structural check had been green throughout both passes, which is the finding underneath all of them.
+
+- **§ 1.1 contradicted § 3.1 and § 6.1** about which slice builds B37. § 1.1 is the dependency table and the first thing an implementer reads.
+- **SC-6 was proved by nothing.** The PRD created it for this product's top risk; `roadmap.md` asked for "a captured fixture of a changed layout", which is unobtainable on demand. Now manufactured: `0-1` produces a real captured page with its content container renamed. **Waited-for evidence is not a plan; manufactured evidence is.**
+- **No slice owned the app shell.** 14 routes, a five-item nav, and a `MaterialApp` with no `home:`. `2-4` — the offline read proof — had nothing to mount it.
+- **`6-3 → 5-2` was a false edge**, pushing SC-3's local half from W2 to W9 of 12. Removing it took the wave count **down**, which is what makes a wave count mean anything.
+- **B39 was the same defect one rule over** — a live rule about *automatic* checks, which ADR-023 had removed.
+- **My own sweep created a critical.** The 42-citation `ADR-010 → ADR-019` rewrite turned `not ADR-010` into `not ADR-019`, producing two sentences that named the same ADR on both sides of a contrast. **A blanket string replacement cannot see the word *not*.**
+- **The project's own law was wrong in five places, and the plans were right.** `09-widgets-ui.md` rule 6 ordered a `NavigationRail` and a tablet test target — the exact opposite of ADR-019, which eighteen screen files implement. `06-database.md` said `downloaded` was a boolean. `07-downloads-offline.md` rule 11 said removing a novel deletes its folder, which is **the opposite of B32**. One uncorrected rule file against eighteen correct ones, and every check green throughout.
+- **§ 7.1's debt is discharged.** The 10 000-chapter list is numbered against B9's own figure; the 500ms progress cadence is numbered *and provable in CI*; cancellation latency is **deleted** rather than given a number nobody could fail.
+
 ### STATUS
 
-Phases 0–3 approved. Phase 4 drafted, red-teamed, and repaired; gate open pending owner approval. 28 scheduled slices + 5 foundations, graph recomputed: **33 nodes, 36 edges, 12 waves, 0 cycles, 0 orphans, 0 dead deps.** `fast-track` ready (7/7 conditions, `autonomy: full`).
+Phases 0–3 approved. Phase 4 drafted, red-teamed by three agents, and repaired; gate open pending owner approval. **30 scheduled slices + 5 foundations**, graph recomputed: **35 nodes, 49 edges, 10 waves, 0 cycles, 0 orphans, 0 dead deps.** `fast-track` ready (7/7 conditions, `autonomy: full`).
 
-Gate at the last commit: `forge-guard` clean except the proven `version_pins_agree` false positive; `consistency-check` clean; `design-check` all four PASS with **48 states read** (not 0); `dependency-check --full` pass; `flutter analyze` 0 issues; `flutter test` **24 passing**.
+Gate at the last commit: `forge-guard` clean except the proven `version_pins_agree` false positive; `consistency-check` clean; `design-check` all four PASS with **48 states read** (not 0); `dependency-check --full` pass; `flutter analyze` 0 issues; `flutter test` **29 passing**.
 
 ### NEXT SESSION SHOULD
 
@@ -335,3 +348,7 @@ Gate at the last commit: `forge-guard` clean except the proven `version_pins_agr
 - **Do not treat `component-parity`, `version_pins_agree` or `coverage-check prd` as evidence without first proving which way they fail.** Two of the three read nothing useful and reported a clean or near-clean result for a whole phase.
 - **Do not translate a document to satisfy a tool.**
 - **Do not edit generated code, weaken a lint, or edit a test to make a failing behaviour pass.** The schema tests caught a genuine double-insert bug this session and the PK caught it first.
+- **Do not run a blanket string replacement over a document that contains the word *not*.** 42 correct citation swaps produced two nonsense sentences, and I called the sweep done. After any bulk rewrite, read the lines that contain *not*, *except*, *only* and *never* back.
+- **Do not trust a rule file over the code.** Five of this session's findings were the *rules* being stale while eighteen screens and the schema were right. A rule file nobody has re-read since the plan changed is a liability, not a law.
+- **Do not declare an annotation and assume it applied.** `@TableIndex` inside a class body emits nothing and drift does not warn; a wrong column name emits `CREATE INDEX x ON t ()`. Both happened, both were silent, and both were caught only because a test read `sqlite_master` rather than trusting the declaration.
+- **Do not leave a gate owed a number.** § 7.1's three "not yet measurable" targets survived three phases. Two got numbers, one got deleted — and the section had meanwhile started claiming a fourth requirement it no longer stated.
