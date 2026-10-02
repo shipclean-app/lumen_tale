@@ -40,7 +40,7 @@ Resolved versions are read from `pubspec.lock` at implementation time; this tabl
 | Icons | Material Icons (bundled) | — | Ships with Flutter; no icon dependency |
 | Unit tests | flutter_test | — | `10-testing.md` |
 | Component tests | flutter_test widget tests | — | `10-testing.md` §Priorities P2 |
-| E2E tests | À DÉCIDER EN PHASE 4 | — | Blocked on a device or emulator: this environment has no Android SDK and no Xcode (Q-003). Choosing an E2E framework is deferred until the target can actually run |
+| E2E tests | **`integration_test`** (the Flutter SDK package, `sdk: flutter`) | SDK | **Decided 2026-10-02.** The choice is the *absence* of a third-party framework: `integration_test` is first-party, ships with the SDK, and adds nothing to the reader's APK. **The trap is real and was hit:** `flutter pub add dev:integration_test` resolves a same-named **pub.dev** package that predates null safety and fails to solve — the SDK form is `flutter pub add 'dev:integration_test:{"sdk":"flutter"}'`. Still **blocked on a device** (**Q-008**): an E2E test that cannot be executed is not a test, so §11.4 entries are written and marked unrun until a phone exists |
 | Lint | flutter_lints + a project rule set | 6.0.0 | `analysis_options.yaml` adds `strict-casts`, `strict-inference`, `strict-raw-types`. Cite rule names, never counts |
 | Format | `dart format` | — | Part of the definition of done in `AGENTS.md` |
 | Package manager | pub, via `flutter pub add` / `remove` | — | **Hand-editing `pubspec.yaml` is forbidden.** `08-coding-standards.md` §Dependencies, `17-security.md` rule 12 |

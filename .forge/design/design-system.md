@@ -578,7 +578,8 @@ Cf. `references/design-quality.md`.
 
 **Tokens**
 - [x] Every token has a concrete value; no "to be defined" anywhere.
-- [x] No `{{PLACEHOLDER}}` — `forge-guard placeholders` reports none.
+- [x] **No unresolved template placeholder anywhere in this file** — `forge-guard placeholders` reports none.
+      > **Reworded 2026-10-02, and the guard is the reason.** This line used to *quote* the literal placeholder token in order to assert that none remained, and `no_unresolved_placeholders` duly reported **this very line**. A checklist that asserts the absence of a string while containing it is not a subtle failure — it is a claim the tool cannot distinguish from an instance, and it had been sitting green because nobody ran the check against the file that made the claim. **Every 'no TODO' / 'no placeholder' checklist line ever written has this shape**, and the honest phrasing is to describe the condition without reproducing the token.
 - [x] Palette covers default, pressed, focused, disabled, error, success, warning, info.
 - [x] Not a default palette: no `#3B82F6`, `#6B7280`, `#EF4444`, `#10B981`. Accent is `#8A4B12` / `#E3A857`.
 - [x] Background is `#F5F2ED` / `#121315` — **not** `#FFFFFF`.
