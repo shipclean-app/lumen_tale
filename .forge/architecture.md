@@ -282,6 +282,7 @@ Six tables. Every field below exists because a rule requires it; the authority f
 | `isRead` | `is_read` | INTEGER (bool) | no | `false` | — | **B13**: new until opened. **The unread count is derived from this — there is no `unreadCount` column** | `0` |
 | `readAt` | `read_at` | INTEGER (datetime) | **yes** | — | — | Null while unread | `1780000000000` |
 | `ordinal` | `ordinal` | INTEGER | no | — | — | **B9**: reading order is the site's order, stored explicitly. Re-sorting by `number` would reorder volumes, side stories and numeric gaps | `411` |
+| `downloadedAt` | `downloaded_at` | INTEGER (datetime) | **yes** | — | — | **B6's mark.** Null = not downloaded. **Written after the atomic rename, never before** — see ADR-022. The ordering is the whole of B6's intent: a crash between the two leaves a file with no mark, which is the safe direction, and a mark with no file is unreachable | `1780000000000` |
 
 ### 4.3 `reading_positions`
 
@@ -354,6 +355,7 @@ The app's **local** state of each compiled-in source. Not a copy of the registry
 | Cover **image** | disk cache via `cached_network_image` | Never a row. A missing cover degrades to title initials and must not block a read |
 | Reading **settings** | `shared_preferences` | Not relational. `theme-type` owns them |
 | Source **registry** | Dart code | ADR-013: a static registry, not rows. `sources` holds only the app's *local state* of each compiled-in source |
+| Any **file-existence probe** | nothing — `chapters.downloadedAt` is the mark | ADR-022: B33 deletes one chapter's copy, so a probe could not distinguish *deleted on purpose* from *file lost*, and B9 requires 10 000 chapters visibly marked, which is not a list operation |
 | Any **unread count** | derived: `count(chapters.is_read = 0)` | B48. A stored count is a second source of truth free to disagree with the rows it counts — B14 violated by construction |
 
 **Storage location** (§ 4.7): application **support** directory, never cache. The OS may evict a cache directory, and B7 requires a stored chapter to stay readable.
@@ -376,10 +378,15 @@ The app's **local** state of each compiled-in source. Not a copy of the registry
 | Unparseable ≠ 0 | Default `-1`, `0` still reachable | `the default is -1 and 0 stays reachable` |
 | Snapshot matches the live schema | Compare SQLite's tables to `schema.json` | `the committed snapshot matches the schema that actually runs` |
 | Snapshot still records B32's `RESTRICT` | Read the constraint out of the snapshot | `the snapshot still records B32's RESTRICT` |
+| **B6's mark defaults to absent** | Insert a chapter, read `downloadedAt` | `downloadedAt defaults to null: not downloaded` |
+| **B33 clears one mark, not the novel's** | Two chapters, mark one, clear one | `B33 — deleting one chapter clears only that chapter's mark` |
+| **The mark is independent of `isRead`** | Mark a chapter downloaded, never read it | `the unread count is unaffected by the download mark` |
 
 **The drift guard was proven able to fail.** Adding a column and regenerating without re-dumping produces exactly `columns drifted on chapters`; restoring returns it to green. A guard never seen red is a decoration — and this project has already been bitten by a gate that reported zero and passed.
 
 **One declared guard that cannot be declared here.** The template's `forge:ddl-refuse` mechanism proves a *constraint* refuses an operation by executing it. Two of the above are declared that way (`RESTRICT` refuses the delete). The rest are behaviour tests rather than DDL guards, because the DDL itself does not express them — the no-concurrency-column rule and the derived-count rule are absences, and an absence has no statement to refuse.
+
+**And one property that no test in this table can prove, stated because the table looks complete.** B6's safety comes from the **ordering** — the atomic rename in slice `2-3` happens *before* `downloadedAt` is written — not from the column. The three tests above prove the column behaves (absent by default, cleared per-chapter by B33, independent of `isRead`); none of them can prove that no code path writes the mark first. That is a property of `2-3`'s write sequence and it belongs to **slice `2-3`'s** test plan, not to the schema's. Recorded here so that a reader of a full-green table does not conclude B6 is fully discharged when half of it lives two slices away.
 
 ---
 

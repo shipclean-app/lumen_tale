@@ -485,3 +485,4 @@
 {"ts":"2026-10-02T20:56:20.729Z","type":"hash","kind":"screen","entry":"reader-chapter-sheet","content_hash":"sha256:bd53325ba8f1"}
 {"ts":"2026-10-02T20:56:47.016Z","type":"status_change","kind":"deliverable","key":"prd","from":"stale","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/prd.md","from":"stale","to":"approved"}}
 {"ts":"2026-10-02T20:56:47.071Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:06a42579d8ed"}
+{"ts":"2026-10-02T20:58:24.862Z","type":"hash","kind":"deliverable","entry":"architecture","content_hash":"sha256:a4e57064abd1"}

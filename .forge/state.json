@@ -977,7 +977,7 @@
       "path": ".forge/architecture.md",
       "type": "architecture",
       "status": "draft",
-      "content_hash": "sha256:256b63365a70",
+      "content_hash": "sha256:a4e57064abd1",
       "headings": {
         "1": "Overview",
         "2": "Foundations",
@@ -1014,7 +1014,7 @@
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-02T20:56:19.275Z",
+      "updated_at": "2026-10-02T20:58:24.860Z",
       "derived_from": [
         ".forge/prd.md"
       ],
