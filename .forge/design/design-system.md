@@ -223,11 +223,11 @@ Named, not "a nice transition".
 | Token | Range | v1 layout policy |
 |---|---|---|
 | `--bp-mobile` | `< 600dp` | **The only layout v1 ships.** Single column, `--bp-mobile` is the design target. |
-| `--bp-tablet` | `600–1023dp` | Single column, **capped and centred** — `--reader-md` measure, nothing wider. Explicitly not a tablet layout (ADR-010). |
+| `--bp-tablet` | `600–1023dp` | Single column, **capped and centred** — `--reader-md` measure, nothing wider. Explicitly not a tablet layout (**ADR-019**). |
 | `--bp-desktop` | `1024–1439dp` | Same single column, centred. Flutter desktop is out of scope. |
 | `--bp-wide` | `≥ 1440dp` | Same single column, centred. |
 
-**This is not a tablet layout and must not be built as one.** The owner excluded it. The policy above is what "adapts" instead: past 600dp the layout stops growing and centres. `13-error-handling` and `09-widgets-ui` both forbid widening the reader column past the measure, because the failure mode is a 1400dp line of prose.
+**This is not a tablet layout and must not be built as one.** The owner excluded it (**ADR-019**, a platform decision — *not* ADR-010, which is a legal-posture decision about sharing, export and backup). The policy above is what "adapts" instead: past 600dp the layout stops growing and centres. `13-error-handling` and `09-widgets-ui` both forbid widening the reader column past the measure, because the failure mode is a 1400dp line of prose.
 
 **Touch target**: **48dp minimum** on every tappable element, including the reader's tap zones and list-row chevrons.
 
@@ -479,7 +479,7 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 > The order of navigation entries **is a statement of priority**. It follows the frequency of the work loop, not the org chart of the domain. `references/module-prioritization.md` — this section is not optional.
 
 - **Type**: bottom nav
-- **Responsive behaviour**: ≥600dp the bar stays at the bottom and stays 5 items. It does not become a rail. ADR-010.
+- **Responsive behaviour**: ≥600dp the bar stays at the bottom and stays 5 items. It does not become a rail. **ADR-019**, not ADR-010: tablet exclusion is a platform decision, and ADR-010 is about sharing, export and backup.
 - **Plateau**: 5 items. The rest is overflow.
 
 | Rank | Module | Label (EN / FR) | Freq. | Centrality | Why here and not elsewhere |
@@ -494,7 +494,7 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 
 1. It has the highest frequency — a reader opens the app to resume, and resume means their own shelf.
 2. It is the only screen that can **open the loop** rather than summarise it. `archetypes.md` § 2 names the trap precisely: *"écran d'accueil qui est un sommaire"*. So the Library is **not** a list of covers with chapter counts. It leads with a **continue-reading shelf** — the last read novel, at its position — and the list is below it. A library that is only a list has put a summary where a home should be.
-3. It is the screen the app must open *from* after a download or a new-chapter notification lands — so it is where the loop re-enters.
+3. It is the screen the app must open *from* after a download completes — so it is where the loop re-enters. **Not** after a new-chapter notification: v1 has none, and cannot have one while B35 keeps automatic checking opt-in (ADR-020).
 
 **Overflow (« More »)** — everything here is configuration or a transfer, never part of the reading loop:
 
@@ -549,7 +549,7 @@ Single column, `--space-lg` (16dp) horizontal margin, `--space-3xl` (48dp) top m
 | Reader | prose column, no title bar, chrome on tap | Reader |
 | Result grid | 2 columns, 96dp cells, `--space-md` gap | Browse and search results. **The column count does not change with width** — see below |
 
-> **Why the result grid does not gain columns.** An earlier draft of this table said *2 columns below 600dp, 3 at `--bp-desktop`*, which is a tablet layout, and ADR-010 excludes those. A grid that changes its column count with width is also the grid that makes the reader hunt: the same novel sits in a different place on a tablet. Two columns everywhere keeps a result list learnable, and on a wide screen it centres rather than spreading.
+> **Why the result grid does not gain columns.** An earlier draft of this table said *2 columns below 600dp, 3 at `--bp-desktop`*, which is a tablet layout, and **ADR-019** excludes those. A grid that changes its column count with width is also the grid that makes the reader hunt: the same novel sits in a different place on a tablet. Two columns everywhere keeps a result list learnable, and on a wide screen it centres rather than spreading.
 | Settings | grouped rows with section labels, no icons | Settings and its sub-screens |
 | Sheet | handle, title, content, actions | Chapter list, filters, sort, reader options |
 

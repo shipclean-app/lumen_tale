@@ -67,17 +67,18 @@ They cannot fix it, because their library lives on their server and is coupled t
 | Capability | Mihon | Dreame / Webnovel | Lumen Tale v1 | v2 |
 |---|---|---|---|---|
 | Continuous scroll | — (image pager) | yes | **yes** | yes |
-| Paged / slide modes | yes | yes (all 3) | no | **yes** (ADR-009) |
+| Paged / slide modes | yes | yes (all 3) | **no** | **yes** (ADR-009) |
 | Reading modes + orientation + colour filter | yes | partial | no | **yes** |
 | Offline reading | yes | yes | **yes — the product** | yes |
 | Background download | yes (foreground service) | yes | **no — in-process queue, no background executor (E7)** | yes |
 | New-chapter detection | yes, off by default | yes | **yes, off by default** | yes |
 | Cloud sync / account | no | **yes** | **no — deliberate** | reconsider |
 | Social / comments / rewards | no | **yes** | **no — out of scope** | no |
+| New-chapter notification | yes | **yes** | **no — forced by B35** (ADR-020) | yes |
 | In-app purchases / coins | no | **yes** | **no — personal use** | no |
 | Localisation | many locales via i18n | EN + many | **FR + EN** | more |
 | Library survives reinstall | yes (local) | **no — the top complaint** | **yes, guaranteed (B31)** | yes |
-| Tablet layout | partial | yes | no | possible |
+| Tablet layout | partial | yes | **no — phones only, single column capped and centred** | possible (ADR-019) |
 
 ## 4. Divergences we assume, and their cost
 
@@ -88,6 +89,19 @@ They cannot fix it, because their library lives on their server and is coupled t
 | Reading modes beyond scroll | Reader must wait for v2 for a feature competitors ship today | ADR-009: the reader is the largest subsystem and feeds the pipeline. v1 scroll-only is the lowest-risk order |
 | Second-source depth | Three sites in v1 (B1) triples the scraping surface | ADR-013 makes sources adapters over one contract, so a second site is selectors, not a rewrite |
 | Store distribution | No other users; every fix is a manual reinstall | ADR-011. Removes a paid account and a review process |
+
+## 4b. Costs of the capabilities v1 declines
+
+> `§ 3` records *whether* a capability ships. A `no` there with no cost recorded here is a divergence nobody has paid for. These are the ones the parity grid marked `no` and the earlier draft of this file had not costed.
+
+| Declined | What it costs the reader | Why v1 declines it |
+|---|---|---|
+| **New-chapter notification** | **A serialised novel's reader must open the app to learn a chapter is out.** For a title that updates daily that is a daily visit they may not have made | **Forced, not chosen.** ADR-020: B35 makes automatic checking opt-in, so with the default running there is nothing to detect and therefore nothing to announce. Reachable as soon as the reader opts into a schedule; slice `6-4` owns it |
+| **Background download** | **The reader must keep the app alive for a queue to progress.** The comparison at § 2.2 says this of Dreame verbatim — *"Dreame's offline access felt clunkier, requiring you to stay on a specific screen"* — and we are on the wrong side of that line | E7: the queue is in-process with no background executor. A real cost, accepted rather than papered over |
+| **Paged and slide reading modes** | Long sessions in the only modes our competitors' most-used feature offers are unavailable. Both commercial apps ship three modes | ADR-009: the reader is the largest subsystem and feeds the pipeline; scroll-only is the lowest-risk order. The position is stored as a **scroll offset**, so v2 resumes rather than converts |
+| **Tablet layout** | A reader on a tablet gets a phone layout, centred. Not broken — not adapted | ADR-019: phones only. Past `--bp-mobile` the layout stops growing rather than reflowing |
+| **Social, comments, rewards** | The reader has nobody to discuss a serial with. For a hobby that is social, that is the whole social half | Out of scope (ADR-010). Refused along with gamification generally — `stats.md` § 2.1 gives six mechanics we declined, streak first |
+| **In-app purchases** | Nothing — and that is the point | ADR-010: personal use. Also the reason our library cannot suffer the failure in § 2.3 |
 
 ## 5. What this changes about our sequencing
 

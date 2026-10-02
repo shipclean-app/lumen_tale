@@ -46,7 +46,7 @@ Versions are the **resolved** ones, verified against `pubspec.lock`. The table i
 | Markdown rendering | `flutter_markdown_plus` | 1.0.12 | ADR-006: `flutter_markdown` is discontinued |
 | Local storage | `shared_preferences` | 2.5.5 | Settings only. **Never** chapter content — see § 4.4 |
 | Filesystem | `path_provider` + `path` | 2.1.6 / 1.9.1 | Application **support** directory, not cache — § 4.4 |
-| Networking (background) | `workmanager` | 0.10.10 | B37's foreground job. **Deferred** — see `Wave 6` slice `6-4` |
+| Networking (background) | `workmanager` | 0.10.10 | B37's foreground job. **No v1 slice implements it** — the earlier note pointed at `6-4`, which is the *manual* update and does not carry it. `6-4` owns B37 only if the `roadmap.md` § 3.5 reduction is refused. See `benchmarks.md` § 4b |
 | Internationalisation | `flutter_localizations` + `gen_l10n` | SDK | FR primary, EN complete. Fallback chain is FR (B28) |
 | Images | `cached_network_image` | 4.0.4 | Covers only. A missing cover degrades to initials — never blocks a read |
 | Tests | `flutter_test` + `mocktail` | SDK / 1.0.5 | `mocktail`, not `mockito`: no codegen, no build-runner coupling in tests |
@@ -110,7 +110,7 @@ Five transverse foundations. Everything else depends on at least one.
 
 The one foundation already built. Two parts, and the second is the one that bites:
 
-**Part 1 — the relational store.** `lib/core/database/app_database.dart`, six tables, drift/SQLite. § 4 defines them field by field. Committed snapshot at `lib/core/database/schema.json`; `test/core/database/schema_snapshot_test.dart` fails when the snapshot and the live schema disagree.
+**Part 1 — the relational store.** `lib/core/database/app_database.dart`, six tables, drift/SQLite. § 4 defines them field by field. Committed snapshot at `lib/core/database/schema.json`; `test/core/database/schema_snapshot_test.dart` fails when the snapshot and the live schema disagree. § 4.8 is the assertion list.
 
 **Part 2 — the chapter files, which are not in the database.** A chapter body is a Markdown file on disk, keyed by path, written atomically. B6 requires a chapter to be *wholly present or wholly absent*, and that is a filesystem property, not a row property:
 
@@ -165,21 +165,21 @@ This foundation exists before any feature because **Q-003** blocks every device 
 
 ### 3.1 Inventory
 
-32 items: 5 foundations + 27 slices. `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
+34 items: 5 foundations + 29 slices. `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
 
 | Slice | Key | Wave | Depends on | Responsibility |
 |---|---|---|---|---|
 | `0.1` | `0-1` | 0 | — | Freeze real FanMTL fixtures with capture dates |
 | `0.2` | `0-2` | 1 | `0-1` | Record whether FanMTL has an explicit empty-result signal |
 | `0.3` | `0-3` | 1 | `0-1` | Freeze Royal Road fixtures |
-| `0.4` | `0-4` | 1 | `0-1` | Separate chapter content from furniture, from the real pages |
+| `0.4` | `0-4` | 1 | `0-1` | Separate chapter content from furniture, from the real pages. Consumed by `2-2` |
 | `1.1` | `apk-pipeline` | 0 | — | **Foundation.** Versioned APK on merge |
 | `1.2` | `local-store` | 0 | — | **Foundation.** drift schema + atomic chapter files |
 | `1.3` | `failure-discriminator` | 2 | `0-1`, `0-2` | **Foundation.** Broken ≠ empty (B22, B24) |
 | `1.4` | `localisation` | 0 | — | **Foundation.** ARB plumbing, FR fallback |
 | `1.5` | `theme-type` | 0 | — | **Foundation.** Colours, text, reader scale, override |
 | `2.1` | `2-1` | 3 | `0-1`, `local-store`, `failure-discriminator` | FanMTL adapter: catalogue → novel → chapter list → chapter page |
-| `2.2` | `2-2` | 4 | `2-1` | Clean and convert a chapter page to text |
+| `2.2` | `2-2` | 4 | `2-1`, `0-4` | Clean and convert a chapter page to text. **Also waits on `0-4`** — see § 6.6 |
 | `2.3` | `2-3` | 5 | `2-2` | Store a chapter atomically |
 | `2.4` | `2-4` | 6 | `2-3` | **Read a stored chapter, local only — the wow moment** |
 | `2.5` | `2-5` | 4 | `local-store`, `2-1` | Library add/remove/list/open; removing keeps downloads |
@@ -201,6 +201,23 @@ This foundation exists before any feature because **Q-003** blocks every device 
 | `6.5` | `6-5` | 2 | `2-6` | History, time-bounded |
 | `6.6` | `6-6` | 10 | `6-3` | Unread badge, similar-title warning, title-only search |
 | `6.7` | `6-7` | 1 | `localisation` | English translations, including every error string |
+| `6.8` | `6-8` | 3 | `6-5` | **Reading statistics** — plain counts, plainly labelled. The `stats` screen and `/more/stats` route exist in the design system, so a slot without a slice would be an empty module |
+| `6.9` | `6-9` | 4 | `local-store`, `2-1` | **Source management** — the list and the enable switch. B1's `enabled` behaviour has a column (§ 4.6) and a route but no slice to make it reachable |
+
+### 3.1b Verification gates — not slices, and not optional
+
+Two **drills**, from the roadmap's milestone waves. They are verification, not implementation, so they carry no slice key — but they are the only proof two claims rest on, and an architecture that listed neither would let a reader assume they were covered by `3-5`.
+
+| Gate | When | What it proves | Why it cannot be a slice |
+|---|---|---|---|
+| **MVP gate** | Roadmap Wave 4 | One live network run, then **connectivity physically off**, one chapter read. Plus **the upgrade-safety drill** below. Plus a number for list responsiveness, or its deletion (`roadmap.md` § 4.3) | Requires a physical device and a hand-off — **Q-003**. No test can stand in for it |
+| **V1 gate** | Roadmap Wave 7 | **50 chapters downloaded and read with the connection off** (SC-2). Plus **the upgrade-safety drill run a second time, with a larger library** | Same |
+
+**The upgrade-safety drill, stated as an acceptance criterion** because `benchmarks.md` § 2.3 makes it the product's one structural advantage and it is otherwise only asserted:
+
+> With a library entry, downloaded chapters, reading positions and a history in place, **install the next APK over the previous one and assert every one of those is intact afterwards.** The downloaded chapter *files* are checked, not just the database rows — B31's guarantee is about what survives on the phone, and a migration that drops a table would pass a rows-only check.
+
+No slice carries this. `apk-pipeline` builds the APK and `local-store` owns the schema; **the drill is what joins them**, and it only exists once Q-003 closes.
 
 ### 3.2 Coverage against the PRD
 
@@ -223,6 +240,8 @@ This foundation exists before any feature because **Q-003** blocks every device 
 | US-15 My text size | `theme-type`, `2-8` | B27, ADR-017 |
 | US-16 Told when a site breaks | `failure-discriminator`, `3-1` | B22, B24, C6, C7 |
 | US-17 A new version as a file | `apk-pipeline`, `3-5` | B31, B34, B43 |
+| US-01 Browse a source *(enabling/disabling it)* | `6-9` | B1 |
+| US-12 Review what I read *(as figures)* | `6-8` | B17, B46, B47 |
 
 **All 17 stories have at least one slice.** `coverage.md` records the other direction: which of the 49 rules are non-visual, and why.
 
@@ -232,52 +251,101 @@ This foundation exists before any feature because **Q-003** blocks every device 
 
 Six tables. Every field below exists because a rule requires it; the authority for a field's *behaviour* is the rule cited in `app_database.dart`'s own comment beside it.
 
+> **Two names per field, and this is not redundancy.** The `Field` column is the **Dart getter** — what the code writes. The `Column` column is the **SQL name** — what `schema.json`, a raw query and a migration use. They differ by case (`sourceId` → `source_id`), and a reader comparing this section against the committed snapshot would otherwise conclude that five columns of `novels` were undocumented. Both are given for every field, and `schema_snapshot_test.dart` is what keeps the second column true.
+
+> **Renumbering note.** § 4.3–4.6 were added and § 4.4–4.5 shifted to § 4.7–4.8. This document is still `draft`, so nothing is renumbered for real — but the rule in § 9 is real, and the *only* reason this was safe is that no external document cited § 4.4 or § 4.5 yet. `grep` confirmed zero citations outside this file before the change. That check is not optional next time; see § 9.
+
 ### 4.1 `novels`
 
-| Field | Type | Null | Default | Constraint | Description | Example |
-|---|---|---|---|---|---|---|
-| `id` | TEXT | no | — | **PK** | MD5 of `name/lang/versionId` + source id. B3: stable across restarts. Never hand-written | `a3f1…9c02` |
-| `sourceId` | TEXT | no | — | — | **B2**: the one site this novel came from. Part of the identity, never derived from the title | `fanmtl` |
-| `url` | TEXT | no | — | — | Relative path + query. `03-source-system.md` rule 3: never a full URL | `/novel/ke383028.html` |
-| `title` | TEXT | no | — | — | Displayed **verbatim** as the site presents it | `Hurtful Reunion` |
-| `status` | TEXT | no | `''` | — | Mapped into `NovelStatus`. `''` means the site did not say | `ongoing` |
-| `coverUrl` | TEXT | **yes** | — | — | Null means *this novel has no cover*, not *we failed* | `https://…/1.jpg` |
-| `inLibrary` | INTEGER (bool) | no | `false` | — | **B11**: keeping and following are one act, so one flag | `1` |
-| `lastCheckedAt` | INTEGER (datetime) | **yes** | — | — | **B49**: null means *never checked*, and B48 forbids presenting a local count as if it came from a check | `1780000000000` |
-| `addedAt` | INTEGER (datetime) | **yes** | — | — | Null while `inLibrary` is false | `1779500000000` |
+| Field | Column | Type | Null | Default | Constraint | Description | Example |
+|---|---|---|---|---|---|---|---|
+| `id` | `id` | TEXT | no | — | **PK** | MD5 of `name/lang/versionId` + source id. B3: stable across restarts. Never hand-written | `a3f1…9c02` |
+| `sourceId` | `source_id` | TEXT | no | — | — | **B2**: the one site this novel came from. Part of the identity, never derived from the title | `fanmtl` |
+| `url` | `url` | TEXT | no | — | — | Relative path + query. `03-source-system.md` rule 3: never a full URL | `/novel/ke383028.html` |
+| `title` | `title` | TEXT | no | — | — | Displayed **verbatim** as the site presents it | `Hurtful Reunion` |
+| `status` | `status` | TEXT | no | `''` | — | Mapped into `NovelStatus`. `''` means the site did not say | `ongoing` |
+| `coverUrl` | `cover_url` | TEXT | **yes** | — | — | Null means *this novel has no cover*, not *we failed* | `https://…/1.jpg` |
+| `inLibrary` | `in_library` | INTEGER (bool) | no | `false` | — | **B11**: keeping and following are one act, so one flag | `1` |
+| `lastCheckedAt` | `last_checked_at` | INTEGER (datetime) | **yes** | — | — | **B49**: null means *never checked*, and B48 forbids presenting a local count as if it came from a check | `1780000000000` |
+| `addedAt` | `added_at` | INTEGER (datetime) | **yes** | — | — | Null while `inLibrary` is false | `1779500000000` |
 
 ### 4.2 `chapters`
 
-| Field | Type | Null | Default | Constraint | Description | Example |
-|---|---|---|---|---|---|---|
-| `id` | TEXT | no | — | **PK** | B3: derived from the novel's id + the chapter's url | `a3f1…:412` |
-| `novelId` | TEXT | no | — | **FK → `novels.id` `ON DELETE CASCADE`** | A chapter record cannot outlive its novel | `a3f1…9c02` |
-| `name` | TEXT | no | — | — | **B10**: displayed exactly as the site presents it | `Chapter 412 – A Debt Repaid` |
-| `number` | REAL | no | `-1` | — | **B10**: `-1` = unparseable and must render as an em dash. **`0` is a real chapter number** (extra, omake) and the two must stay distinguishable | `412` |
-| `url` | TEXT | no | — | — | Relative, per rule 3 | `/novel/ke383028_412.html` |
-| `isRead` | INTEGER (bool) | no | `false` | — | **B13**: new until opened. **The unread count is derived from this — there is no `unreadCount` column** | `0` |
-| `readAt` | INTEGER (datetime) | **yes** | — | — | Null while unread | `1780000000000` |
-| `ordinal` | INTEGER | no | — | — | **B9**: reading order is the site's order, stored explicitly. Re-sorting by `number` would reorder volumes, side stories and numeric gaps | `411` |
+| Field | Column | Type | Null | Default | Constraint | Description | Example |
+|---|---|---|---|---|---|---|---|
+| `id` | `id` | TEXT | no | — | **PK** | B3: derived from the novel's id + the chapter's url | `a3f1…:412` |
+| `novelId` | `novel_id` | TEXT | no | — | **FK → `novels.id` `ON DELETE CASCADE`** | A chapter record cannot outlive its novel | `a3f1…9c02` |
+| `name` | `name` | TEXT | no | — | — | **B10**: displayed exactly as the site presents it | `Chapter 412 – A Debt Repaid` |
+| `number` | `number` | REAL | no | `-1` | — | **B10**: `-1` = unparseable and must render as an em dash. **`0` is a real chapter number** (extra, omake) and the two must stay distinguishable | `412` |
+| `url` | `url` | TEXT | no | — | — | Relative, per rule 3 | `/novel/ke383028_412.html` |
+| `isRead` | `is_read` | INTEGER (bool) | no | `false` | — | **B13**: new until opened. **The unread count is derived from this — there is no `unreadCount` column** | `0` |
+| `readAt` | `read_at` | INTEGER (datetime) | **yes** | — | — | Null while unread | `1780000000000` |
+| `ordinal` | `ordinal` | INTEGER | no | — | — | **B9**: reading order is the site's order, stored explicitly. Re-sorting by `number` would reorder volumes, side stories and numeric gaps | `411` |
 
-### 4.3 The remaining four
+### 4.3 `reading_positions`
 
-**`reading_positions`** — B16, one row per chapter. `chapterId` **PK** + FK `CASCADE` · `offset` REAL default `0` · `updatedAt` INTEGER.
+One row per chapter the reader has opened.
 
-> `offset` is a **scroll offset**, not a page index and not a page number (ADR-009). It is the only representation a future paged mode can resume from without conversion.
+| Field | Column | Type | Null | Default | Constraint | Description | Example |
+|---|---|---|---|---|---|---|---|
+| `chapterId` | `chapter_id` | TEXT | no | — | **PK**, FK → `chapters.id` `ON DELETE CASCADE` | B16: a position cannot outlive its chapter | `a3f1…:412` |
+| `offset` | `offset` | REAL | no | `0` | — | **B16 / ADR-009**: a **scroll offset**, not a page index and not a page number | `1240.5` |
+| `updatedAt` | `updated_at` | INTEGER (datetime) | no | — | — | Last write. B16's "reopening resumes from here" | `1780000000000` |
 
-**`history_entries`** — B17, most recent first. `id` **PK** · `novelId` FK `ON DELETE RESTRICT` · `chapterId` FK `ON DELETE CASCADE` · `openedAt` INTEGER.
-
-> The asymmetry is the whole point. **B32 requires that removing a novel keeps its downloaded chapters, and the history of what was read survives that too.** A `CASCADE` on `novelId` would delete the reader's record as a side effect of a library operation — B32's exact failure, expressed as a schema default. Bounded by **time** (B47), so there is no `position` column and no `LIMIT`.
-
-**`queue_items`** — B18. `id` **PK** · `chapterId` FK `CASCADE` · `state` TEXT via `DownloadStateConverter`, stored **by name** · `queuePosition` INTEGER · `addedAt` · `startedAt`? · `finishedAt`? · `attempts` INTEGER default `0` (B20 — distinguishes a resume from a fresh fetch) · `errorCode` TEXT default `''` (B24 — a typed code, so a failure is never bare).
-
-> **No concurrency column.** B18 makes concurrency a constant of one. A constant expressed as a column is something an implementation could change, so a test asserts the column's **absence**.
+> `offset` is a **scroll offset** because ADR-009 defers paged modes to v2, and an offset is the only representation a future paged mode can resume from without converting it. A page index would need re-deriving the moment a text size or a line height changed.
 >
-> `DownloadState` stores `queued | downloading | done | failed` **by name, not ordinal** — reordering the enum would otherwise silently re-map persisted history.
+> **This table is written on every scroll settle and is never read as a record of what was read** — that is `history_entries`, and B46 keeps the two apart.
 
-**`sources`** — B49, B1. `id` **PK** · `enabled` INTEGER default `true` · `lastCheckedAt`? (null = never checked) · `lastErrorCode` TEXT default `''` (B22, so `sources` can render `unavailable` without a fresh fetch) · `settings` TEXT default `'{}'` (`ConfigurableSource`, opaque: B41's "the platform never interprets a source's values" applies here too).
+### 4.4 `history_entries`
 
-### 4.4 What is deliberately **not** in the database
+B17: recently opened chapters, most recent first.
+
+| Field | Column | Type | Null | Default | Constraint | Description | Example |
+|---|---|---|---|---|---|---|---|
+| `id` | `id` | TEXT | no | — | **PK** | Generated. B47 bounds rows by **time**, so there is no sequence column | `h9c2…` |
+| `novelId` | `novel_id` | TEXT | no | — | FK → `novels.id` **`ON DELETE RESTRICT`** | **B32**: the history survives the novel | `a3f1…9c02` |
+| `chapterId` | `chapter_id` | TEXT | no | — | FK → `chapters.id` `ON DELETE CASCADE` | The chapter that was opened | `a3f1…:412` |
+| `openedAt` | `opened_at` | INTEGER (datetime) | no | — | — | **B17**: the ordering column, descending | `1780000000000` |
+
+> **The asymmetry is the whole point.** `novelId` is `RESTRICT` while `chapterId` is `CASCADE`. **B32 requires that removing a novel keeps its downloaded chapters, and the record of what was read survives that too.** A `CASCADE` on `novelId` would delete the reader's history as a side effect of a library operation — B32's exact failure expressed as a schema default, and it would have been invisible in review because `CASCADE` looks correct everywhere else in this schema.
+>
+> **No `position` column, and no `LIMIT` anywhere in access** — B47 bounds by time. There is deliberately no way to ask for "the last 50" by count, because a count bound is the behaviour B47 rejects.
+
+### 4.5 `queue_items`
+
+B18: the download queue.
+
+| Field | Column | Type | Null | Default | Constraint | Description | Example |
+|---|---|---|---|---|---|---|---|
+| `id` | `id` | TEXT | no | — | **PK** | Generated per enqueue | `q1` |
+| `chapterId` | `chapter_id` | TEXT | no | — | FK → `chapters.id` `ON DELETE CASCADE` | What is being fetched | `a3f1…:412` |
+| `state` | `state` | TEXT | no | `'queued'` | via `DownloadStateConverter` | `queued \| downloading \| done \| failed`, stored **by name** | `failed` |
+| `queuePosition` | `queue_position` | INTEGER | no | — | — | **B18**: insertion order. This, not `chapters.ordinal`, is what the queue reads, so a hand-picked order is honoured | `7` |
+| `addedAt` | `added_at` | INTEGER (datetime) | no | — | — | When it was enqueued | `1780000000000` |
+| `startedAt` | `started_at` | INTEGER (datetime) | **yes** | — | — | Null until it begins | `1780000010000` |
+| `finishedAt` | `finished_at` | INTEGER (datetime) | **yes** | — | — | Null until it ends, either way | `1780000040000` |
+| `attempts` | `attempts` | INTEGER | no | `0` | — | **B20**: what distinguishes a resume from a fresh fetch | `2` |
+| `errorCode` | `error_code` | TEXT | **yes** | `''` | — | **B24**: a typed code from § 5.2, so a failure is never bare | `source_layout_changed` |
+
+> **No concurrency column.** B18 makes concurrency a constant of one. A constant expressed as a column is something an implementation could change, so `app_database_test.dart` asserts the column's **absence** — the only way to notice one being added.
+>
+> **Stored by name, not by ordinal.** Reordering the `DownloadState` enum would otherwise silently re-map persisted history: a row written as `downloading` (index 1) would start reading as `done` (index 1) after the enum changed.
+>
+> `errorCode` defaults to `''` rather than `NULL` because `NULL` and "no error" are different claims, and only one of them is true for a row that has not failed.
+
+### 4.6 `sources`
+
+The app's **local** state of each compiled-in source. Not a copy of the registry — that is code (ADR-013).
+
+| Field | Column | Type | Null | Default | Constraint | Description | Example |
+|---|---|---|---|---|---|---|---|
+| `id` | `id` | TEXT | no | — | **PK** | The registry's id, never hand-written (`03-source-system.md` rule 1) | `fanmtl` |
+| `enabled` | `enabled` | INTEGER (bool) | no | `true` | — | B1: hiding a source hides its novels from browsing and **keeps every download** | `1` |
+| `lastCheckedAt` | `last_checked_at` | INTEGER (datetime) | **yes** | — | — | **B49**: null means *never checked*, which is a different claim from *checked at epoch* | `1780000000000` |
+| `lastErrorCode` | `last_error_code` | TEXT | **yes** | `''` | — | **B22**: lets `sources` render `unavailable` without attempting a fresh fetch | `source_layout_changed` |
+| `settings` | `settings` | TEXT | no | `'{}'` | — | `ConfigurableSource` values as JSON. **Opaque to the platform** — B41's "never interprets a source's values" applies to a source's settings as much as to its filters | `{"mirror":"eu"}` |
+
+### 4.7 What is deliberately **not** in the database
 
 | Not stored | Where it lives | Why |
 |---|---|---|
@@ -287,9 +355,9 @@ Six tables. Every field below exists because a rule requires it; the authority f
 | Source **registry** | Dart code | ADR-013: a static registry, not rows. `sources` holds only the app's *local state* of each compiled-in source |
 | Any **unread count** | derived: `count(chapters.is_read = 0)` | B48. A stored count is a second source of truth free to disagree with the rows it counts — B14 violated by construction |
 
-**Storage location**: application **support** directory, never cache. The OS may evict a cache directory, and B7 requires a stored chapter to stay readable.
+**Storage location** (§ 4.7): application **support** directory, never cache. The OS may evict a cache directory, and B7 requires a stored chapter to stay readable.
 
-### 4.5 Constraints, and how they were proved
+### 4.8 Constraints, and how they were proved
 
 `ddl-exec.js` drives **PostgreSQL** through pglite. This project targets SQLite, so that engine would test the wrong database. The substitute is stronger: the schema is **executed against real SQLite** and its constraints are asserted as behaviour.
 
@@ -403,8 +471,9 @@ Eleven waves, computed by `dependency-check.js`, not asserted:
 W 0  0-1, apk-pipeline, local-store, localisation, theme-type
 W 1  0-2, 0-3, 0-4, 2-6, 3-5, 6-7
 W 2  6-5, failure-discriminator
+W 3  6-8                          ← new; depends only on 6-5 (W 2)
 W 3  2-1
-W 4  2-2, 2-5, 3-1, 6-1
+W 4  2-2, 2-5, 3-1, 6-1, 6-9     ← 2-2 also waits on 0-4 (W 1)
 W 5  2-3, 3-2, 3-4, 6-2
 W 6  2-4, 3-3
 W 7  2-7, 5-1
@@ -449,6 +518,16 @@ Browse UI is available *first* by topology. Following milestones puts the offlin
 
 **None detected.** Verified by `dependency-check.js check`, which refuses a dependency that would close a cycle.
 
+### 6.6 What the risk posture found in this graph
+
+`dependency-check` proves the graph is *well-formed*. It does not prove the graph is *right* — the missing edge in this section was well-formed too, and no cycle checker would ever see it.
+
+**`0-4` had zero dependents, and should have had one.** Wave 0's slice `0-4` records *which parts of a chapter page are content and which are furniture*, and the roadmap names its consumer: "the cleaning rules". The cleaner is `2-2` — and `2-2` declared only `2-1`. So the converter could have been written before anyone read a real chapter page closely enough to know what to strip, which is precisely the research `0-4` exists to do.
+
+The general form, and the reason this is recorded rather than quietly fixed: **a research slice whose declared purpose is "informs X" and whose dependency list is empty is the most dangerous kind of leaf.** It looks like a tidy terminal node, nothing else in the graph is affected by it, and no structural check can tell an intentional leaf from a forgotten edge. Fan-in of zero is a question to answer, not a result to accept.
+
+Now declared: `2-2 → 0-4`. Fan-in of `0-4` is 1; wave counts are unchanged, because `0-4` lands in W1 and `2-2` in W4.
+
 ---
 
 ## 7. Architecture decisions
@@ -466,7 +545,8 @@ Full text in `DECISIONS.md`. The ones that shape the structure above:
 | ADR-016 | Day is warm paper, night is **cool ink** | `theme-type`'s two independently designed palettes, not one inverted |
 | ADR-017 | Reader prose is serif via a preference chain; **nothing bundled** | `theme-type` ships no asset |
 | ADR-009 | v1 continuous scroll; position stored as an **offset** | § 4.3's `offset`, and why it is not a page index |
-| ADR-010 | Personal use: no account, sync, export, backup | § 5.4's exclusion table |
+| ADR-020 | **No new-chapter notification in v1** | § 5.4's exclusion table and `benchmarks.md` § 4b's first cost row. **Forced by B35**, not chosen: opt-in checks → no automatic check → nothing to detect → nothing to announce. The chain matters more than the absence — see ADR-020 for why a design decision cannot override an approved business rule silently |
+| ADR-010 | Personal use: no account, sync, export, backup | § 5.4's exclusion table. It removes 24 screens from Mihon's inventory (`screens/_mihon-verdicts.md` § 2) and costs the reader **any safety net for their library** — mitigated only by B31, which `benchmarks.md` § 2.3 shows is the failure their competitors cannot fix |
 
 ---
 
@@ -482,8 +562,9 @@ Full text in `DECISIONS.md`. The ones that shape the structure above:
 | Sequential downloads make a 900-chapter novel slow | HIGH | LOW | B18 makes it a constant. Accepted and documented, not optimised away — a concurrency column is what would let it drift |
 | One implementer, one device, one person who can repair a scraper | HIGH | HIGH | Stated plainly in the roadmap. The MVP+V1 total is 32 slices and the roadmap prices a 7-story reduction if Waves 1–2 overrun |
 | **Q-004** — Novel Fire's terms unread | MED | LOW | Gates one source only. Ships when confirmed, never otherwise |
+| **No new-chapter notification in v1** — a serial's reader must open the app to learn a chapter is out | HIGH | **MED** | ADR-020: forced by B35's opt-in checking, not chosen. Both commercial apps use progress notifications as their primary re-engagement, so this is a real parity gap. `benchmarks.md` § 4b states the cost; `6-4` reaches it the moment the reader opts into a schedule |
 | Royal Road / Novel Fire search unmeasured | MED | LOW | `6-2` is per-source and conditional. v1 claims genre browsing for all three and search for none — a passing v1, not a gap |
-| Chapter bodies as files drift from the database | MED | MED | § 4.4 gives files their own key space and B6 their own atomicity. A mismatch is detectable: the row exists, the file does not |
+| Chapter bodies as files drift from the database | MED | MED | § 4.7 gives files their own key space and B6 their own atomicity. A mismatch is detectable: the row exists, the file does not |
 
 ---
 
