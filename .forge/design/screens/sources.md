@@ -3,13 +3,25 @@ type: screen
 slug: sources
 title: Sources
 module: more
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B1, B5, B22, B23, B28, B32, B41, B50]
-edge_case_ids: [E4, E8, E9, E20]
+rule_ids:
+  - B1
+  - B5
+  - B22
+  - B23
+  - B28
+  - B32
+  - B41
+  - B50
+edge_case_ids:
+  - E4
+  - E8
+  - E9
+  - E20
 flow: settings-flow
 ---
 

@@ -3,13 +3,21 @@ type: screen
 slug: more
 title: More
 module: more
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B1, B29, B30, B34, B43, B50]
-edge_case_ids: [E9, E19]
+rule_ids:
+  - B1
+  - B29
+  - B30
+  - B34
+  - B43
+  - B50
+edge_case_ids:
+  - E9
+  - E19
 flow: settings-flow
 ---
 

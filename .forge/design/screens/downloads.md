@@ -3,13 +3,33 @@ type: screen
 slug: downloads
 title: More — Downloads
 module: more
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B5, B18, B19, B20, B21, B22, B23, B24, B28, B32, B33, B38, C4, C8, C11]
-edge_case_ids: [E6, E7, E15, E18, E20]
+rule_ids:
+  - B5
+  - B18
+  - B19
+  - B20
+  - B21
+  - B22
+  - B23
+  - B24
+  - B28
+  - B32
+  - B33
+  - B38
+  - C4
+  - C8
+  - C11
+edge_case_ids:
+  - E6
+  - E7
+  - E15
+  - E18
+  - E20
 flow: download-loop
 ---
 

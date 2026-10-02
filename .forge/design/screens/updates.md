@@ -3,13 +3,37 @@ type: screen
 slug: updates
 title: Updates
 module: updates
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B11, B13, B14, B15, B16, B17, B22, B24, B26, B28, B35, B36, B37, B38, B39, B48, B49]
-edge_case_ids: [E4, E5, E8, E9, E12, E16, E20]
+rule_ids:
+  - B11
+  - B13
+  - B14
+  - B15
+  - B16
+  - B17
+  - B22
+  - B24
+  - B26
+  - B28
+  - B35
+  - B36
+  - B37
+  - B38
+  - B39
+  - B48
+  - B49
+edge_case_ids:
+  - E4
+  - E5
+  - E8
+  - E9
+  - E12
+  - E16
+  - E20
 flow: update-loop
 ---
 

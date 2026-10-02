@@ -3,13 +3,24 @@ type: screen
 slug: reader-chapter-sheet
 title: Reader chapter sheet
 module: reader
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B9, B10, B13, B14, B16, B17, B48, B49]
-edge_case_ids: [E5, E10, E20]
+rule_ids:
+  - B9
+  - B10
+  - B13
+  - B14
+  - B16
+  - B17
+  - B48
+  - B49
+edge_case_ids:
+  - E5
+  - E10
+  - E20
 flow: read-loop
 ---
 

@@ -3,13 +3,43 @@ type: screen
 slug: novel-details
 title: Novel details
 module: library
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B9, B10, B11, B12, B13, B14, B15, B18, B19, B22, B24, B26, B28, B32, B33, B40, B48, B49]
-edge_case_ids: [E1, E2, E3, E4, E5, E6, E8, E9, E10, E12, E16, E20]
+rule_ids:
+  - B9
+  - B10
+  - B11
+  - B12
+  - B13
+  - B14
+  - B15
+  - B18
+  - B19
+  - B22
+  - B24
+  - B26
+  - B28
+  - B32
+  - B33
+  - B40
+  - B48
+  - B49
+edge_case_ids:
+  - E1
+  - E2
+  - E3
+  - E4
+  - E5
+  - E6
+  - E8
+  - E9
+  - E10
+  - E12
+  - E16
+  - E20
 flow: library-loop
 ---
 

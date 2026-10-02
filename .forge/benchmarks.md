@@ -1,6 +1,6 @@
 ---
 type: benchmarks
-status: draft
+status: approved
 generated_at: 2026-10-02
 ---
 

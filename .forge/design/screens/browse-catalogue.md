@@ -3,13 +3,32 @@ type: screen
 slug: browse-catalogue
 title: Browse — Catalogue and results
 module: browse
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B2, B5, B11, B12, B22, B23, B24, B28, B40, B41, B50, C11, C12]
-edge_case_ids: [E4, E5, E8, E9, E17, E19]
+rule_ids:
+  - B2
+  - B5
+  - B11
+  - B12
+  - B22
+  - B23
+  - B24
+  - B28
+  - B40
+  - B41
+  - B50
+  - C11
+  - C12
+edge_case_ids:
+  - E4
+  - E5
+  - E8
+  - E9
+  - E17
+  - E19
 flow: discover-loop
 ---
 

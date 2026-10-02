@@ -3,13 +3,23 @@ type: screen
 slug: settings-reader
 title: Reader settings
 module: more
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B25, B26, B27, B28, B44, B46]
-edge_case_ids: [E12, E13, E14, E22]
+rule_ids:
+  - B25
+  - B26
+  - B27
+  - B28
+  - B44
+  - B46
+edge_case_ids:
+  - E12
+  - E13
+  - E14
+  - E22
 flow: settings-flow
 ---
 

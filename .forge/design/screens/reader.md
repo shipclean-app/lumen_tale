@@ -3,13 +3,32 @@ type: screen
 slug: reader
 title: Reader
 module: reader
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B7, B10, B13, B16, B25, B26, B27, B44, B46, B30]
-edge_case_ids: [E1, E2, E3, E7, E10, E12, E14, E15, E19]
+rule_ids:
+  - B7
+  - B10
+  - B13
+  - B16
+  - B25
+  - B26
+  - B27
+  - B44
+  - B46
+  - B30
+edge_case_ids:
+  - E1
+  - E2
+  - E3
+  - E7
+  - E10
+  - E12
+  - E14
+  - E15
+  - E19
 flow: read-loop
 ---
 

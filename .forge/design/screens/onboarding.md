@@ -3,13 +3,24 @@ type: screen
 slug: onboarding
 title: Onboarding
 module: onboarding
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B4, B7, B13, B26, B28, B29, B30, B35]
-edge_case_ids: [E11, E12, E14]
+rule_ids:
+  - B4
+  - B7
+  - B13
+  - B26
+  - B28
+  - B29
+  - B30
+  - B35
+edge_case_ids:
+  - E11
+  - E12
+  - E14
 flow: first-run
 ---
 

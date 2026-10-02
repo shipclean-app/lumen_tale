@@ -3,13 +3,19 @@ type: screen
 slug: stats
 title: Reading statistics
 module: more
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B28, B30, B46, B47]
-edge_case_ids: [E5, E12]
+rule_ids:
+  - B28
+  - B30
+  - B46
+  - B47
+edge_case_ids:
+  - E5
+  - E12
 flow: settings-flow
 ---
 

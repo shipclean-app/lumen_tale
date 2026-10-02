@@ -3,13 +3,30 @@ type: screen
 slug: browse-sources
 title: Browse — Sources
 module: browse
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B1, B2, B22, B23, B24, B28, B32, B39, B50, C4, C11, C12, C14]
-edge_case_ids: [E4, E5, E9, E21]
+rule_ids:
+  - B1
+  - B2
+  - B22
+  - B23
+  - B24
+  - B28
+  - B32
+  - B39
+  - B50
+  - C4
+  - C11
+  - C12
+  - C14
+edge_case_ids:
+  - E4
+  - E5
+  - E9
+  - E21
 flow: discover-loop
 ---
 

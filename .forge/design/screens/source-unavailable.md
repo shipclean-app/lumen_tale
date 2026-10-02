@@ -3,13 +3,30 @@ type: screen
 slug: source-unavailable
 title: Source unavailable
 module: browse
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B2, B5, B7, B22, B23, B24, B28, B30, B50]
-edge_case_ids: [E2, E3, E4, E5, E8, E9, E18, E19]
+rule_ids:
+  - B2
+  - B5
+  - B7
+  - B22
+  - B23
+  - B24
+  - B28
+  - B30
+  - B50
+edge_case_ids:
+  - E2
+  - E3
+  - E4
+  - E5
+  - E8
+  - E9
+  - E18
+  - E19
 flow: error-flow
 ---
 

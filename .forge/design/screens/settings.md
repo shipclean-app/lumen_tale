@@ -3,13 +3,27 @@ type: screen
 slug: settings
 title: Settings
 module: more
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
-rule_ids: [B4, B26, B27, B28, B30, B35, B36, B38, B47, B46]
-edge_case_ids: [E11, E12, E13, E14]
+rule_ids:
+  - B4
+  - B26
+  - B27
+  - B28
+  - B30
+  - B35
+  - B36
+  - B38
+  - B47
+  - B46
+edge_case_ids:
+  - E11
+  - E12
+  - E13
+  - E14
 flow: settings-flow
 ---
 
