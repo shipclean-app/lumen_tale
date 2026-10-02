@@ -29,3 +29,7 @@
 {"ts":"2026-10-02T12:34:06.271Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:fc1b108808aa"}
 {"ts":"2026-10-02T12:34:15.481Z","type":"status_change","kind":"deliverable","key":"prd","from":"draft","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/prd.md","from":"draft","to":"approved"}}
 {"ts":"2026-10-02T12:34:15.524Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:fc1b108808aa"}
+{"ts":"2026-10-02T12:53:07.593Z","type":"status_change","kind":"deliverable","key":"prd","from":"approved","to":"draft","mirrored":{"mirrored":true,"changed":true,"path":".forge/prd.md","from":"approved","to":"draft"}}
+{"ts":"2026-10-02T13:07:11.697Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:a4ee5ae6498e"}
+{"ts":"2026-10-02T13:08:06.298Z","type":"status_change","kind":"deliverable","key":"prd","from":"draft","to":"draft","mirrored":{"mirrored":true,"changed":false,"path":".forge/prd.md","status":"draft"}}
+{"ts":"2026-10-02T13:08:06.354Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:a4ee5ae6498e"}

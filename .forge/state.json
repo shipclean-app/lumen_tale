@@ -106,8 +106,8 @@
     "prd": {
       "path": ".forge/prd.md",
       "type": "prd",
-      "status": "approved",
-      "content_hash": "sha256:fc1b108808aa",
+      "status": "draft",
+      "content_hash": "sha256:a4ee5ae6498e",
       "headings": {
         "1": "Executive summary",
         "2": "Users and personas",
@@ -131,7 +131,7 @@
         "7.4": "Internationalization",
         "7.5": "Availability / resilience"
       },
-      "updated_at": "2026-10-02T12:34:15.523Z",
+      "updated_at": "2026-10-02T13:08:06.352Z",
       "version": "1"
     }
   },
@@ -151,7 +151,7 @@
       "register": 4,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 2,
+      "status_change": 4,
       "gate_approved": 1
     }
   },
