@@ -89,8 +89,15 @@ Until both remaining sites are measured, v1 can claim **genre browsing for all t
 - **Scope**: English web novels. Verified live: catalogue at `/fictions/best-rated`, `/fictions/latest-updates`; fiction page at `/fiction/<id>/<slug>`; chapter at `/fiction/<id>/<slug>/chapter/<chapterId>/<slug>`. Pagination and filter parameters to be discovered during implementation.
 - **Cloudflare: present, not challenging.** Measured 2026-10-02 on the home page, the best-rated catalogue, and a real chapter page (`/fiction/21220/mother-of-learning/chapter/301778/1-good-morning-brother`): **200 with no `cf-mitigated` header and no Turnstile markup, under both an honest and a browser-like User-Agent.** No bypass needed.
 - **Last verified**: 2026-10-02
-- **Quirks**: none blocking — not yet implemented.
-- **Pending promotion**: none.
+- **Quirks**: two, both measured live on 2026-10-02 while writing the `6-1` plan, and **both are load-bearing** rather than incidental:
+
+  | Finding | Where | Why it matters more than a quirk |
+  |---|---|---|
+  | **`table#chapters` carries `data-chapters="109"`** | the fiction page's chapter table | **This makes B9 mechanically checkable instead of asserted.** B9 requires the chapter list to be the site's complete order; the site publishes its own count, so "40 rows parsed but the attribute says 109" is a detectable truncation rather than something a reviewer has to notice. This is the only source so far that offers its own completeness witness — FanMTL does not |
+  | **A `200` with zero rows carries the site's own empty signal** | `div.fiction-list#result > div.text-center > h3`, text `There is nothing here :(` | **This is what makes B22's third state available for Royal Road.** B22 requires *could not read* and *no results* to be different screens, and a site that volunteers an empty-result marker is the only way to tell them apart without guessing. FanMTL's equivalent is unmeasured — that is `0-2`'s whole job |
+
+  **Promotion**: both belong in `18-external-contracts.md` because they are per-site facts that will change without notice, and a selector is not the place to record why a selector exists. The **cross-site rule** they add: *a source must record whether the site publishes its own empty-result signal, and must not infer one from an empty parse.* That rule is what `0-2` is measuring for FanMTL and what `6-11` will measure for search reachability.
+- **Pending promotion**: the two rules above, once `2-1`/`6-1` land and `0-2`/`6-11` report.
 
 ### Novel Fire — https://novelfire.net
 
