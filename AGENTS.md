@@ -77,8 +77,9 @@ Detail: `03-source-system.md`. Conversion: `04-html-to-markdown.md`.
 | `flutter analyze` | Static analysis — must report zero issues |
 | `flutter test` | Tests — must pass |
 | `flutter gen-l10n` | Regenerate localizations after editing an ARB file |
-| `dart run build_runner build --delete-conflicting-outputs` | Regenerate riverpod / freezed / json_serializable / drift code |
-| `dart run drift_dev schema dump lib/core/database` | Export a drift schema snapshot after a table change |
+| `dart run build_runner build` | Regenerate riverpod / freezed / json_serializable / drift code. **No flag** — `--delete-conflicting-outputs` was removed and is silently ignored, so passing it prints a warning and does nothing |
+| `dart run drift_dev schema dump lib/core/database/app_database.dart lib/core/database/schema.json` | Export the drift schema snapshot after a table change. **Two** arguments — with one it prints usage and exits 0, so it looks like it ran |
+| `dart run drift_dev identify-databases` | List the drift databases in the project and their schema version |
 | `flutter build apk` | Android build — **unvalidated here**, no Android SDK (Q-003) |
 
 Flutter lives at `/home/codespace/flutter/bin`. Generated files (`*.g.dart`, `*.freezed.dart`, `*.drift.dart`, `lib/l10n/generated/`) are committed and excluded from analysis.

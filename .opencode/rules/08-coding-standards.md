@@ -47,7 +47,7 @@ The mechanical half is enforced by lint and needs no prose here: `only_throw_err
 ## Codegen (build_runner)
 
 - `freezed`, `riverpod_generator`, `json_serializable`, and `drift_dev` generate code — never hand-write what codegen produces (no hand-written `copyWith` / `==` / providers for annotated classes).
-- Regenerate with `dart run build_runner build --delete-conflicting-outputs`. Generated files are committed and excluded from analysis — `analysis_options.yaml` excludes `**/*.g.dart`, `**/*.freezed.dart`, and `**/*.drift.dart`. A generator output that is *not* in that exclude list will be analyzed; add the glob, don't silence the file.
+- Regenerate with `dart run build_runner build` — `--delete-conflicting-outputs` is removed and silently ignored. Generated files are committed and excluded from analysis — `analysis_options.yaml` excludes `**/*.g.dart`, `**/*.freezed.dart`, and `**/*.drift.dart`. A generator output that is *not* in that exclude list will be analyzed; add the glob, don't silence the file.
 - Do not mix hand-written and generated models for the same type.
 
 ## Style

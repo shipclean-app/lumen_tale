@@ -4,7 +4,7 @@ Riverpod covers both **state management** and **dependency injection**.
 
 ## Conventions
 
-1. **Codegen first**: use `riverpod_annotation` (`@riverpod`) and run `dart run build_runner build --delete-conflicting-outputs`. Hand-written providers only when codegen does not apply.
+1. **Codegen first**: use `riverpod_annotation` (`@riverpod`) and run `dart run build_runner build` (the old `--delete-conflicting-outputs` flag is removed and silently ignored). Hand-written providers only when codegen does not apply.
 2. **Provider families** for parameterized state: e.g. `novelProvider(novelId)` via `@riverpod`.
 3. **Async values**: use `FutureProvider` / `AsyncNotifier` for anything async. Expose `AsyncValue` and let the UI handle `loading / error / data`.
 4. **Streams**: use `StreamProvider` for drift-backed reactive data (library, chapters, history).
