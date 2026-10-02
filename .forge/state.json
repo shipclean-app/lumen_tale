@@ -767,7 +767,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "draft",
-      "content_hash": "sha256:d2f0507113f4",
+      "content_hash": "sha256:5a7e813e0251",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -792,6 +792,9 @@
         "2.7": "`EmptyState`, `ErrorState`, `LoadingState`",
         "2.8": "`AppScaffold`",
         "2.9": "`Switch`",
+        "2.10": "`SettingsRow`",
+        "2.11": "`SettingsSwitchRow`",
+        "2.12": "`SettingsChoiceSheet`",
         "3.1": "Structure",
         "3.2": "Main navigation",
         "3.3": "Breadcrumbs",
@@ -800,7 +803,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-02T16:27:45.147Z",
+      "updated_at": "2026-10-02T16:34:43.864Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -987,7 +990,7 @@
       "path": ".forge/design/screens/settings.md",
       "type": "screen",
       "status": "draft",
-      "content_hash": "sha256:9bcb142fda5c",
+      "content_hash": "sha256:d9a7017bf540",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1001,9 +1004,10 @@
         "10": "Gate checklist",
         "11": "Deliberately absent — and why that is not a gap",
         "12": "Tokens this screen cites",
-        "2.1": "Anti-generic — mandatory"
+        "2.1": "Anti-generic — mandatory",
+        "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:27:44.582Z",
+      "updated_at": "2026-10-02T16:35:14.307Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1013,7 +1017,7 @@
       "path": ".forge/design/screens/settings-reader.md",
       "type": "screen",
       "status": "draft",
-      "content_hash": "sha256:9e24c77bd750",
+      "content_hash": "sha256:b9539392f513",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1027,9 +1031,10 @@
         "10": "Gate checklist",
         "11": "Deliberately absent (ADR-009, ADR-017) — and why that is not a gap",
         "12": "Tokens this screen cites",
-        "2.1": "Anti-generic — mandatory"
+        "2.1": "Anti-generic — mandatory",
+        "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:27:44.653Z",
+      "updated_at": "2026-10-02T16:32:31.951Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1039,7 +1044,7 @@
       "path": ".forge/design/screens/settings-about.md",
       "type": "screen",
       "status": "draft",
-      "content_hash": "sha256:5337c61ac810",
+      "content_hash": "sha256:137389f6e548",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1053,9 +1058,10 @@
         "10": "Gate checklist",
         "11": "Deliberately absent — and why that is not a gap",
         "12": "Tokens this screen cites",
-        "2.1": "Anti-generic — mandatory"
+        "2.1": "Anti-generic — mandatory",
+        "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:27:44.718Z",
+      "updated_at": "2026-10-02T16:32:32.012Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1283,7 +1289,7 @@
       "path": ".forge/design/screens/source-unavailable.md",
       "type": "screen",
       "status": "draft",
-      "content_hash": "sha256:aff5c806a1f2",
+      "content_hash": "sha256:8029eed6ca45",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1297,9 +1303,10 @@
         "10": "Gate checklist",
         "11": "Deliberately absent — and why that is not a gap",
         "12": "Tokens this screen cites",
-        "2.1": "Anti-generic — mandatory"
+        "2.1": "Anti-generic — mandatory",
+        "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:27:44.773Z",
+      "updated_at": "2026-10-02T16:35:14.222Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1309,7 +1316,7 @@
       "path": ".forge/design/screens/onboarding.md",
       "type": "screen",
       "status": "draft",
-      "content_hash": "sha256:d7a88ffc6ba7",
+      "content_hash": "sha256:95bdc11c0557",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1323,9 +1330,10 @@
         "10": "Gate checklist",
         "11": "Deliberately absent — and why that is not a gap",
         "12": "Tokens this screen cites",
-        "2.1": "Anti-generic — mandatory"
+        "2.1": "Anti-generic — mandatory",
+        "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T16:27:44.833Z",
+      "updated_at": "2026-10-02T16:32:32.199Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1446,7 +1454,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 79,
+      "register": 92,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 7,

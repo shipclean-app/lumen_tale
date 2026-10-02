@@ -62,7 +62,7 @@ This screen must not resemble any of these defects:
 - [x] **No generic spot illustration** — none. The one non-row element, the E11 disclosure, is **a recessed block of words with no icon at all**, because an icon would make a permanent fact look like an incident.
 - [x] **Not one typeface at one weight** — sans throughout in chrome, three weights in use (600 group labels, 600 row labels, 400 value lines), and the reader's serif appears nowhere on this screen: the reader scale is prose-only (`design-system.md` § 1.2).
 
-**Assumed, non-neutral choice**: **this screen has no leading icons, and a chevron appears on six of its eleven rows — and on nothing else.** That is the decision the screen exists to make, and it is argued rather than assumed. A leading icon column on a settings list is 24dp of gutter plus 8dp of space per row — 32dp of a 360dp screen, one ninth of the width — spent on glyphs that carry no information: none of `Sources`, `Language`, `Reading history` or `Check for new chapters` is identifiable by a picture, and the reader already knows what each one is from its label. Worse, it makes the screen a recognisable imitation of a platform settings list, which is the generic outcome this design system refuses by name. The chevron is therefore **information, not decoration**: it is the only mark on the screen that means *there is a decision here you cannot see in this row* — five rows navigate to a screen, and the retention row's five time windows do not fit in a value line. It is spent on those six and withheld from the other five. The consequence is that the reader learns this screen's grammar in one glance: *a row with a value and no chevron is something I change right here; a row with a chevron has more to it than this row can show*.
+**Assumed, non-neutral choice**: **this screen has no leading icons, and a chevron appears if and only if the row cannot show its whole answer — on nothing else.** That is the decision the screen exists to make, and it is argued rather than assumed. A leading icon column on a settings list is 24dp of gutter plus 8dp of space per row — 32dp of a 360dp screen, one ninth of the width — spent on glyphs that carry no information: none of `Sources`, `Language`, `Reading history` or `Check for new chapters` is identifiable by a picture, and the reader already knows what each one is from its label. Worse, it makes the screen a recognisable imitation of a platform settings list, which is the generic outcome this design system refuses by name. The chevron is therefore **information, not decoration**: it is the only mark on the screen that means *there is a decision here you cannot see in this row* — five rows navigate to a screen, and the retention row's five time windows do not fit in a value line. The count that follows this rule is an observation, not the rule: as written this screen spends it on six rows and withholds it from five, and adding a row will change that arithmetic without weakening the argument. The consequence is that the reader learns this screen's grammar in one glance: *a row with a value and no chevron is something I change right here; a row with a chevron has more to it than this row can show*.
 
 **Three more decisions on this screen, stated because they are contestable:**
 
@@ -156,6 +156,80 @@ AppScaffold (titleBar "Settings", bottomNav kept — this is a sub-page of More)
 | **Success** | `Clear reading history` completed | Three things happen, in this order. (1) The dialog dismisses. (2) The snackbar reads **"Reading history cleared. Your reading positions were kept."** — the second clause is mandatory and is the entire success message, because B46 makes position the thing the reader must believe survived. (3) The `Reading history` row's value updates immediately to `0 entries`. **There is no confetti, no toast with a tick, no account of the deletion** — anti-references forbid the celebration | A generic "History cleared" leaves the reader fearing they lost their place, which is the app's core promise (B16). The confirmation names the half that was *kept* |
 | **Offline / permissions** | No connection at all | **Identical to Filled.** This screen makes **zero network calls**, so there is nothing to degrade and nothing to disable. The one exception is deliberate and visible: **`Check now` stays live offline** and, when tapped with no connection, produces the Load-error rendering worded for the network — *"No connection. Nothing on this screen is affected."* Separately, and only if the reader has already turned the schedule on: if Android's **notification permission** is denied, the schedule row carries a `--color-warning` line with an icon and words — *"The check will run, but Android will not show its notification, so nothing will tell you when it finishes."* — plus a text action **Open notification settings**, which deep-links to the OS settings rather than re-prompting in a loop | Offline is not announced anywhere in this app, and this is not the place to start. The notification case is a genuine one and it is reported **in words with an icon**, because `--color-warning`'s meaning is "something is not doing what you asked and it is not broken" — the exact condition here — and because colour alone is forbidden from carrying it |
 | **Read-only** | Nothing. **No permission, no role, no sign-in state and no app condition makes this screen read-only** | Every row here is a control the reader owns. What the row list does contain is read-only *content* beside controls — the `Language` row and the E11 disclosure — and the rule that separates them is typographic and mechanical: **read-only content carries no chevron, no ripple, no toggle, and no pressed state.** A row the reader cannot act on is visually inert by absence, not by greying | This is where B4 is visible. There is no account row to disable, no profile to view, no "sign out" to grey out. The screen has no state in which the reader's own configuration is held for them by anything |
+
+### 4.1 User-visible copy — both languages (B28)
+
+Every string on this screen, in both languages, as it will be keyed in the ARB. French is not a translation pass here: it is the **other** half of the copy, and where a French string is longer than its English — which happens, and which is why the row's value line truncates rather than the label — the truncation is a design consequence, not a bug.
+
+| Key | English | Français |
+|---|---|---|
+| `group.reading` | `READING` | `LECTURE` |
+| `group.library` | `LIBRARY` | `BIBLIOTHÈQUE` |
+| `group.downloads` | `DOWNLOADS` | `TÉLÉCHARGEMENTS` |
+| `group.history` | `HISTORY` | `HISTORIQUE` |
+| `group.app` | `APP` | `APPLICATION` |
+| `row.appearance.label` | `Reader appearance` | `Apparence du lecteur` |
+| `row.appearance.value` | `{theme} · {size} ({pt} pt)` | `{thème} · {taille} ({pt} pt)` |
+| `theme.day` | `Day` | `Jour` |
+| `theme.night` | `Night` | `Nuit` |
+| `theme.system` | `Follow the phone` | `Suivre le téléphone` |
+| `size.sm` | `Small` | `Petit` |
+| `size.md` | `Medium` | `Moyen` |
+| `size.lg` | `Large` | `Grand` |
+| `size.xl` | `Larger` | `Plus grand` |
+| `size.xxl` | `Largest` | `Le plus grand` |
+| `row.sources.label` | `Sources` | `Sources` |
+| `row.sources.value` | `{enabled} of {total} sites enabled` | `{actifs} sites activés sur {total}` |
+| `row.check.label` | `Check for new chapters` | `Rechercher les nouveaux chapitres` |
+| `row.check.consequenceOff` | `Off — nothing is checked unless you ask.` | `Désactivé — rien n'est vérifié sauf à votre demande.` |
+| `row.check.consequenceNever` | `Off — nothing is checked on its own, ever.` | `Désactivé — rien ne sera vérifié automatiquement.` |
+| `row.check.consequenceInterval` | `Checks every {interval}. You can cancel a running check from its notification.` | `Vérifie toutes les {interval}. Vous pouvez annuler une vérification en cours depuis sa notification.` |
+| `interval.never` | `Never` | `Jamais` |
+| `interval.12h` | `Every 12 hours` | `Toutes les 12 heures` |
+| `interval.24h` | `Every 24 hours` | `Toutes les 24 heures` |
+| `interval.48h` | `Every 48 hours` | `Toutes les 48 heures` |
+| `interval.72h` | `Every 72 hours` | `Toutes les 72 heures` |
+| `interval.weekly` | `Weekly` | `Chaque semaine` |
+| `interval.note.neverDownloads` | `Checking only reads chapter lists. It never downloads anything.` | `La vérification ne lit que les listes de chapitres. Elle ne télécharge jamais rien.` |
+| `row.checkNow.label` | `Check now` | `Vérifier maintenant` |
+| `row.checkNow.lastOk` | `Checked {relative} · nothing new.` | `Vérifiée {relative} · rien de nouveau.` |
+| `row.checkNow.never` | `Never checked` | `Jamais vérifiée` |
+| `row.checkNow.failed` | `Could not check {relative}. {cause}` | `Vérification impossible {relative}. {cause}` |
+| `row.removeAfterReading.label` | `Remove after reading` | `Supprimer après lecture` |
+| `row.removeAfterReading.consequence` | `When on, a chapter's stored copy is deleted once you have finished it. There is no backup of it.` | `Activé, la copie stockée d'un chapitre est supprimée dès que vous l'avez terminé. Il n'en existe aucune sauvegarde.` |
+| `dialog.removeAfterReading.title` | `Delete chapters after reading?` | `Supprimer les chapitres après lecture ?` |
+| `dialog.removeAfterReading.body` | `Finish reading a chapter and its stored copy is deleted. There is no backup of it — it cannot be brought back.` | `Terminez la lecture d'un chapitre et sa copie stockée est supprimée. Il n'en existe aucune sauvegarde : elle ne peut pas être récupérée.` |
+| `dialog.removeAfterReading.confirm` | `Turn on` | `Activer` |
+| `row.history.label` | `Reading history` | `Historique de lecture` |
+| `row.history.value` | `{count} entries · oldest {relative}` | `{count} entrées · la plus ancienne {relative}` |
+| `row.history.value.empty` | `0 entries` | `0 entrée` |
+| `row.retention.label` | `Keep history for` | `Conserver l'historique pendant` |
+| `retention.1w` | `1 week` | `1 semaine` |
+| `retention.1m` | `1 month` | `1 mois` |
+| `retention.3m` | `3 months` | `3 mois` |
+| `retention.1y` | `1 year` | `1 an` |
+| `retention.2y` | `2 years` | `2 ans` |
+| `row.clearHistory.label` | `Clear reading history` | `Effacer l'historique de lecture` |
+| `dialog.clearHistory.title` | `Clear {count} entries?` | `Effacer {count} entrées ?` |
+| `dialog.clearHistory.body` | `Reading positions are not part of this list and will not be touched.` | `Les positions de lecture ne font pas partie de cette liste et ne seront pas touchées.` |
+| `dialog.clearHistory.confirm` | `Clear` | `Effacer` |
+| `snack.historyCleared` | `Reading history cleared. Your reading positions were kept.` | `Historique de lecture effacé. Vos positions de lecture ont été conservées.` |
+| `row.language.label` | `Language` | `Langue` |
+| `row.language.hint` | `Follows your phone. Change it in Android's language settings.` | `Suit votre téléphone. Changez-la dans les paramètres de langue d'Android.` |
+| `row.onboarding.label` | `How this app works` | `Comment fonctionne cette application` |
+| `row.onboarding.value` | `Show the two introduction screens again` | `Revoir les deux écrans d'introduction` |
+| `row.about.label` | `About Lumen Tale` | `À propos de Lumen Tale` |
+| `row.about.value` | `Version {buildName} · build {buildNumber}` | `Version {buildName} · build {buildNumber}` |
+| `disclosure.e11` | `Nothing here is backed up. If you uninstall Lumen Tale or lose this phone, your library, your downloads and your reading positions are gone, and no copy exists anywhere.` | `Rien ici n'est sauvegardé. Si vous désinstallez Lumen Tale ou perdez ce téléphone, votre bibliothèque, vos téléchargements et vos positions de lecture sont perdus, et aucune copie n'existe ailleurs.` |
+| `disclosure.e11.footer` | `The app cannot warn you at the moment you uninstall — the phone does that, outside the app. So it is said here, before, rather than after.` | `L'application ne peut pas vous avertir au moment où vous désinstallez : c'est le téléphone qui le fait, en dehors de l'application. C'est donc dit ici, avant, plutôt qu'après.` |
+| `disclosure.aboutLink` | `What survives an update` | `Ce qui survit à une mise à jour` |
+| `error.load` | `This screen's settings could not be read from the phone. Your library, your downloads and your reading positions are untouched — they are stored separately.` | `Les paramètres de cet écran n'ont pas pu être lus depuis le téléphone. Votre bibliothèque, vos téléchargements et vos positions de lecture ne sont pas touchés : ils sont stockés séparément.` |
+| `error.write` | `This setting could not be saved. Nothing was changed.` | `Ce paramètre n'a pas pu être enregistré. Rien n'a été modifié.` |
+| `error.countUnavailable` | `Count unavailable` | `Nombre indisponible` |
+| `warning.notifications` | `The check will run, but Android will not show its notification, so nothing will tell you when it finishes.` | `La vérification s'exécutera, mais Android n'affichera pas sa notification : rien ne vous dira quand elle se termine.` |
+| `warning.notifications.action` | `Open notification settings` | `Ouvrir les paramètres de notification` |
+| `button.retry` | `Try again` | `Réessayer` |
+| `button.cancel` | `Cancel` | `Annuler` |
 
 > Three of the nine have an unusually thin rendering, and each says why: the page-level **Loading** does not exist because nothing on this page is fetched; **Empty — never visited** has no distinct appearance because the defaults *are* the state; **Read-only** has no variant because the screen is unconditionally writable. A blank cell would read as an unimplemented state; a row that explains why there is nothing to implement is a decision.
 

@@ -67,6 +67,8 @@ This screen must not resemble any of these defects:
 > **EN** — *Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.*
 > **FR** — *Vérifiez vous-même : passez le téléphone en mode avion, puis ouvrez l'application. Votre bibliothèque, vos téléchargements et vos positions de lecture sont tous là. Il ne manque rien, parce que rien n'a jamais été envoyé.*
 
+**And the copy is falsifiable because it is the app's own promise.** B29 claims nothing leaves; B7 and C14 claim the app works with the radio off. Those are the same measurement, so a reader who runs the test does not take a statement on trust — they watch the app do the thing it said it would do, in the one condition where doing it would be impossible if anything had ever been sent. This is the only screen in the app where a privacy claim can be **tested rather than trusted**, and the test costs thirty seconds and no data.
+
 This is the assumed, non-neutral part, and it is contestable. Every app claims not to track you; the claim costs the reader nothing to disbelieve and is impossible to falsify from the UI. Here the claim is made **falsifiable by the product's own behaviour**: the app's entire value is that it works with the radio off (B7, C14, SC-2), so the privacy guarantee and the product promise are *the same measurement*. If B29 were ever violated, this sentence would stop being true — the app would start needing the connection it claims not to need. The screen does not ask to be believed; it hands over a test that costs no data and takes half a minute.
 
 **Three more decisions, stated because each could have gone the other way:**
@@ -154,6 +156,48 @@ AppScaffold (titleBar "About Lumen Tale", bottomNav kept)
 | **Success** | The check completed and returned a version | Two outcomes. **(a) Nothing newer:** the action's value line becomes a durable statement — *"Checked 14:32 · you have the latest version."* — with the timestamp, and **no auto-dismissal**: C12 requires a message that can be read later and reported back in words, and a claim that fades is a claim that was not made. **(b) Something newer:** the `UpdateBlock` appears above everything else with its guarantee line, and it does **not auto-dismiss either** | Both outcomes are states the reader can return to and re-read. There is no celebration in either — anti-references forbid it, and "an update exists" is not good news in a product whose install path is a file the reader must fetch by hand |
 | **Offline / permissions** | No connection at all | **Identical to Filled**, with one deliberate difference: the `Check for a new version` action stays **live** and produces the Submit-error wording above when tapped. **No permission is ever requested by this screen.** Installing an APK hands off to the **OS install flow**, and the OS prompts; the app asks for nothing, has no install permission to request, and cannot grant itself one | This is the only place in the app where handing the reader to another app is correct, and it is a hand-off, not a permission screen. The OS's own prompt is the reader's, and the app must not restate or re-ask it |
 | **Read-only** | The three data counts, and only the counts | **They are evidence, and evidence that responds to a tap is not evidence.** The counts carry no chevron, no ripple, no pressed state and no leading icon: they are read as text and they are not interactive. Every other element on this screen is either a control or a button | The counts are the only read-only surface here, and they are read-only **by design rather than by limitation**. They are the reference the reader takes before installing an update and compares after — and a control that could be pressed would make that comparison a lie |
+
+### 4.1 User-visible copy — both languages (B28)
+
+| Key | English | Français |
+|---|---|---|
+| `about.title` | `Lumen Tale` | `Lumen Tale` |
+| `about.version` | `Version {buildName} · build {buildNumber}` | `Version {buildName} · build {buildNumber}` |
+| `about.provenance` | `Android phone · built automatically · no store` | `Téléphone Android · compilé automatiquement · aucun magasin` |
+| `about.copyVersion` | `Copy version number` | `Copier le numéro de version` |
+| `snack.copied` | `Version number copied.` | `Numéro de version copié.` |
+| `about.versionUnreadable` | `The installed version number could not be read.` | `Le numéro de version installé n'a pas pu être lu.` |
+| `about.check.label` | `Check for a new version` | `Rechercher une nouvelle version` |
+| `about.check.never` | `Never checked` | `Jamais vérifiée` |
+| `about.check.uptodate` | `Checked {time} · you have the latest version.` | `Vérifiée à {heure} · vous avez la dernière version.` |
+| `about.check.failed` | `The version could not be checked. There may be no connection.` | `La version n'a pas pu être vérifiée. Il n'y a peut-être pas de connexion.` |
+| `about.check.retry` | `Try again` | `Réessayer` |
+| `update.title` | `Version {version} is available.` | `La version {version} est disponible.` |
+| `update.installed` | `You have {version}.` | `Vous avez la version {version}.` |
+| `update.guarantee` | `Installing it keeps your library, your downloads, your reading positions and your history. Nothing is replaced or re-downloaded.` | `L'installation conserve votre bibliothèque, vos téléchargements, vos positions de lecture et votre historique. Rien n'est remplacé ni retéléchargé.` |
+| `update.download` | `Download the file` | `Télécharger le fichier` |
+| `update.downloading` | `Downloading · {percent}% of {size}` | `Téléchargement · {pourcent} % de {taille}` |
+| `update.install` | `Install the update` | `Installer la mise à jour` |
+| `update.dismiss` | `Not now` | `Pas maintenant` |
+| `update.failed` | `The file could not be downloaded. Nothing on this phone was changed.` | `Le fichier n'a pas pu être téléchargé. Rien sur ce téléphone n'a été modifié.` |
+| `data.label` | `YOUR DATA ON THIS DEVICE` | `VOS DONNÉES SUR CE TÉLÉPHONE` |
+| `data.library` | `Library` | `Bibliothèque` |
+| `data.downloaded` | `Downloaded chapters` | `Chapitres téléchargés` |
+| `data.positions` | `Reading positions` | `Positions de lecture` |
+| `data.countUnavailable` | `—` | `—` |
+| `data.e11` | `Nothing here is backed up anywhere. If you uninstall Lumen Tale or lose this phone, all three numbers go to zero and no copy exists. Installing a new version over this one does not touch them — that is the only guarantee this app makes about your data.` | `Rien ici n'est sauvegardé nulle part. Si vous désinstallez Lumen Tale ou perdez ce téléphone, ces trois nombres tombent à zéro et aucune copie n'existe. Installer une nouvelle version par-dessus celle-ci n'y touche pas : c'est la seule garantie que cette application fait sur vos données.` |
+| `privacy.label` | `WHAT LEAVES THIS DEVICE` | `CE QUI QUITTE CE TÉLÉPHONE` |
+| `privacy.sent1` | `A chapter's page — but only after you asked for it.` | `La page d'un chapitre — mais seulement après que vous l'avez demandée.` |
+| `privacy.sent2` | `One request to check whether a newer version exists — only if you tap "Check for a new version".` | `Une requête pour savoir si une nouvelle version existe — uniquement si vous touchez « Rechercher une nouvelle version ».` |
+| `privacy.never1` | `Your library` | `Votre bibliothèque` |
+| `privacy.never2` | `Your reading positions` | `Vos positions de lecture` |
+| `privacy.never3` | `Your history` | `Votre historique` |
+| `privacy.never4` | `Your error logs` | `Vos journaux d'erreurs` |
+| `privacy.never5` | `Crash reports` | `Rapports de plantage` |
+| `privacy.never6` | `Analytics` | `Suivi d'audience` |
+| `privacy.never7` | `A device identifier` | `Un identifiant d'appareil` |
+| `privacy.verify` | `Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.` | `Vérifiez vous-même : passez le téléphone en mode avion, puis ouvrez l'application. Votre bibliothèque, vos téléchargements et vos positions de lecture sont tous là. Il ne manque rien, parce que rien n'a jamais été envoyé.` |
+| `delivery.body` | `This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.` | `Cette application fonctionne uniquement sur les téléphones Android. Une nouvelle version est produite à chaque modification fusionnée, et vous l'installez depuis le fichier, à la main. Il n'y a ni magasin d'applications ni compte de magasin.` |
 
 > Three of the nine have a thin rendering and each says why: **Loading** exists only for three local figures and never blocks the static content; **Empty — never visited** is *absence of a block*, which is the honest rendering of "not checked"; **Read-only** has exactly one read-only element and it is deliberate.
 

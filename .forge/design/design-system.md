@@ -102,7 +102,7 @@ It also keeps the file honest for the checkers. Written as two separate tables, 
 | `--color-text-inverse` | `#FDFAF6` | `#17181A` | **5.54:1** / **7.27:1** | Text on a fill. See § 0.0. |
 | `--color-accent` | `#8A4B12` | `#E3A857` | **5.50:1** / **7.25:1** | Primary action, focus ring, active tab, links |
 | `--color-success` | `#40713A` | `#7FBE72` | **4.68:1** / **6.89:1** | Download complete, source healthy |
-| `--color-warning` | `#8A5A12` | `#E0AC47` | **4.80:1** / **7.36:1** | Partial or interrupted download |
+| `--color-warning` | `#8A5A12` | `#E0AC47` | **4.80:1** / **7.36:1** | **Not a failure, but needs attention.** Partial or interrupted download · a site refusing or rate-limiting · a permission denied. Never *never checked* — that is `--color-info`, because an absence of information must not borrow the colour that means something went wrong |
 | `--color-error` | `#8A3228` | `#EE8B76` | **6.64:1** / **6.22:1** | Failed download, broken source (B22) |
 | `--color-info` | `#426986` | `#7FB3DA` | **4.74:1** / **6.78:1** | Neutral notices, and the **"never checked"** state (B49) — *never checked* is an absence of information, so it must not borrow the colour that means *something went wrong* |
 | `--color-border` | `#D9D3C9` | `#2E3237` | exempt | Rule between list rows. `exempt` per § 0.0. |
@@ -411,6 +411,58 @@ Every component below declares its variants, sizes, **all** states and its slots
 | `consequence` | no | One line saying what ON actually does — mandatory for the four settings where the effect is not obvious |
 
 **Why there is no `loading` state**, which is the component's whole design decision: a switch that shows a spinner is asking the reader to believe a write is in progress. Ours writes to `shared_preferences` synchronously and **fails loudly instead of pretending** — if the write throws, the switch snaps back and the row says so. A setting that cannot be saved is a bug the reader should see immediately, not a state to design around.
+
+### 2.10 `SettingsRow`
+
+**Role**: one line in a settings list. Declared here because **three separate screens had each defined their own** — which is precisely the failure this design system exists to prevent: the same row with two renderings, and no check that would catch it.
+
+**Variantes**
+
+| Variant | Appearance | Usage |
+|---|---|---|
+| `action` | Label left, value right-aligned, **no chevron** | A setting changed in place. The absence of a chevron is the information |
+| `navigate` | Label left, value right, chevron `--color-text-disabled` at the far right | The row cannot show the whole answer; it goes somewhere |
+
+**Tailles**: one size, 56dp row. A settings row with two heights is a settings list that cannot be scanned.
+
+**États** — every state this component must render:
+
+| État | Declencheur | Apparence |
+|---|---|---|
+| `default` | — | Label `--text-h4`, value `--text-body-sm`, `--color-text-secondary` |
+| `pressed` | finger down | Row fills `--color-surface-sunken` |
+| `focused` | keyboard / D-pad | 2dp `--color-border-focus` ring |
+| `disabled` | the setting is unavailable here | Label `--color-text-disabled`, value hidden, **chevron still shown** — a row that hides its chevron when disabled implies there is nothing there |
+
+**Slots**
+
+| Slot | Required | Content |
+|---|---|---|
+| `label` | yes | What the setting is |
+| `value` | no | Current state, right-aligned, max 1 line |
+| `consequence` | no | One line under the row. **Mandatory on every switch row** — see `Switch` § 2.9 |
+| `chevron` | no | Present iff variant is `navigate` |
+
+### 2.11 `SettingsSwitchRow`
+
+`SettingsRow` (variant `action`) hosting a `Switch`, with `consequence` **required**. It exists as its own entry because the mandatory `consequence` is the whole point: a switch whose effect is not obvious is a switch the reader has to guess about, and **B35's "off by default" is meaningless if the reader cannot see what turning it on would do**.
+
+### 2.12 `SettingsChoiceSheet`
+
+**Role**: the single-value picker for a `navigate` row — theme (3 values), text size (5 values), history retention (5 values), language (2). One component for all of them, so every choice in the app is made the same way.
+
+**États** — every state this component must render:
+
+| État | Declencheur | Apparence |
+|---|---|---|
+| `default` | open | Rows of label + checkmark; the current value checked |
+| `pressed` | finger down on a row | `--color-surface-sunken` |
+| `focused` | keyboard | 2dp `--color-border-focus` ring; arrow keys move, `Enter` selects |
+| `disabled` | a value is unavailable | Label `--color-text-disabled`, not selectable |
+
+**Slots**: `title` · `value` · `rows` (label + optional description) · `selectedValue`.
+
+**No "forever" option on any bounded list.** B47 requires the history to be bounded by time, and a settings list that offers an unbounded value next to bounded ones teaches the reader the bounds are negotiable.
 
 **Why every setting switch carries a `consequence` line.** The four settings most likely to be misunderstood are: *checking for new chapters* (off by default, **B35**), *remove after reading* (**B33** makes deletion per-chapter and explicit, so this stays off), *history retention* (**B47**, one year), and *theme* (**B26**). A switch with a label but no consequence is a switch the reader has to guess about, and B35's "off by default" is meaningless if the reader cannot see what turning it on would do. The reader has no title bar at all — its title lives in the revealed controls, so the first thing on screen when a chapter opens is prose.
 

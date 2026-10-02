@@ -2,7 +2,7 @@
 type: screen
 slug: source-unavailable
 title: Source unavailable
-module: more
+module: browse
 status: draft
 generated_at: 2026-10-02
 derived_from:
@@ -138,6 +138,58 @@ AppScaffold (titleBar = the source's own name, e.g. "FanMTL" — never "Error")
 | **Success** | A retry succeeds | The `CauseBlock` is **replaced** by a resolution: `Icons.check_circle` in `--color-success`, `--text-h3` *"FanMTL is working again."*, and a `primary` **Open FanMTL**. **No celebration** — anti-references forbid gamification, and "an update exists" / "the site is back" is not good news to mark. The `StillWorksBlock` **disappears**, because it is no longer news; and beneath the resolution, one `--text-caption` line records **when this source was last checked**, in the same words `Updates` uses per novel (B49) | The last-checked line matters after a success as much as after a failure: it is what stops the app, or the reader, from concluding there is nothing new. The count is local and was always right (B48); only the verification changes |
 | **Offline / permissions** | **This is the screen's most common state.** The `no-connection` cause *is* the offline case, and it is not dressed as anything else | The `no-connection` block, and the `StillWorksBlock` **already showing the offline truth**: the library opens right now, with the numbers it has. **No offline banner, no dimming, no "you are offline" chrome anywhere** — consistent with `reader.md` § 4, where offline reading is also unannounced. **No permission is requested here.** Per ADR-014 the app carries no WebView challenge bypass, so a site serving an interactive anti-bot challenge is reported as the `site-unavailable` cause with the evidence line *"the site returned an anti-bot challenge"* — because that is the truthful class, and it is one a reader can repeat to the owner | The offline case is not a special case here; it is one of the four, with its own kicker and its own icon, and **no other screen in the app needs to say "you are offline"** |
 | **Read-only** | The cause record, and nothing else on this page | **A cause, once concluded, is never edited.** A later attempt **appends an observation** — a timestamp, an outcome, a possible new cause — and the block renders the latest one. The reader cannot dismiss a cause, cannot mark it "seen", and cannot annotate it: the record exists so that the owner, alone (C5), can read a device and see what happened, and a record the reader can quietly tidy is not a record. **Beyond that, no control on this screen mutates anything**: every action either navigates or re-requests exactly one page | Read-only by design, and it is what makes C5 work — one person's repair depends on the failure history being whatever the device actually saw |
+
+### 4.1 User-visible copy — both languages (B28)
+
+Every cause has its own wording. The four kickers are the **load-bearing part**: they are the only place in the app where a diagnosis is named in four words rather than implied, and a reader who has seen two of the four will recognise the other two by the pattern.
+
+| Key | English | Français |
+|---|---|---|
+| `cause.noConnection.kicker` | `NO CONNECTION` | `AUCUNE CONNEXION` |
+| `cause.noConnection.title` | `{source} could not be reached from this phone.` | `{source} n'a pas pu être joint depuis ce téléphone.` |
+| `cause.noConnection.body` | `The phone has no usable connection. The app cannot tell whether {source} is working, so it does not guess.` | `Le téléphone n'a pas de connexion exploitable. L'application ne peut pas savoir si {source} fonctionne : elle ne devine pas.` |
+| `cause.noConnection.evidence` | `Transport error — no connection was made to {host}.` | `Erreur de transport — aucune connexion à {hôte}.` |
+| `cause.noConnection.retry` | `Try again later.` | `Réessayer plus tard.` |
+| `cause.layoutChanged.kicker` | `THIS SITE'S PAGES HAVE CHANGED` | `LES PAGES DE CE SITE ONT CHANGÉ` |
+| `cause.layoutChanged.title` | `{source}'s pages can no longer be read.` | `Les pages de {source} ne peuvent plus être lues.` |
+| `cause.layoutChanged.body` | `The site answered, but the structure this app reads has changed. This is a fault in the app's copy of {source} — not in {source}, and not in anything you did. Until a new version of Lumen Tale fixes it, this site cannot be read.` | `Le site a répondu, mais la structure que l'application lit a changé. C'est une faute dans la copie que l'application a de {source} — pas dans {source}, et rien n'est dû à votre utilisation. Tant qu'une nouvelle version de Lumen Tale ne l'aura pas corrigé, ce site reste illisible.` |
+| `cause.layoutChanged.evidence` | `The page loaded (HTTP {status}) and none of the expected elements were found.` | `La page a été chargée (HTTP {statut}) et aucun des éléments attendus n'a été trouvé.` |
+| `cause.layoutChanged.dictation` | `Say: {source} cannot be read. The app loaded the page and found none of the elements it looks for.` | `Dites : {source} est illisible. L'application a chargé la page et n'a trouvé aucun des éléments qu'elle cherche.` |
+| `cause.layoutChanged.retryNote` | `Sometimes this fixes itself while the site finishes a change. Usually it does not.` | `Parfois cela se résout tout seul pendant que le site termine une modification. Rarement.` |
+| `cause.siteUnavailable.kicker` | `THE SITE IS NOT SERVING REQUESTS` | `LE SITE NE RÉPOND PAS` |
+| `cause.siteUnavailable.title` | `{source} is busy, or is refusing requests from this app.` | `{source} est occupé, ou refuse les requêtes de cette application.` |
+| `cause.siteUnavailable.body` | `This is on {source}'s side and is usually temporary. Trying again immediately is more likely to be refused than accepted — wait a while.` | `Cela vient de {source} et dure d'ordinaire peu de temps. Réessayer tout de suite a plus de chances d'être refusé qu'accepté : attendez un moment.` |
+| `cause.siteUnavailable.evidence.status` | `{source} answered HTTP {status}.` | `{source} a répondu HTTP {statut}.` |
+| `cause.siteUnavailable.evidence.challenge` | `{source} returned an anti-bot challenge. This app does not attempt to get past one.` | `{source} a renvoyé un défi anti-robot. Cette application n'essaie pas de le franchir.` |
+| `cause.siteUnavailable.countdown` | `Available again in {mm:ss}` | `De nouveau disponible dans {mm:ss}` |
+| `cause.contentRemoved.kicker` | `REMOVED AT THE SOURCE` | `RETIRÉ DE LA SOURCE` |
+| `cause.contentRemoved.title` | `{novel} is no longer at {source}.` | `{roman} n'existe plus sur {source}.` |
+| `cause.contentRemoved.body` | `{source} answered and confirmed this title is gone. Everything already downloaded from it is still on this phone, and still opens.` | `{source} a répondu et confirme que ce titre a disparu. Tout ce qui en a déjà été téléchargé reste sur ce téléphone, et s'ouvre toujours.` |
+| `cause.contentRemoved.evidence` | `{source} answered HTTP {status} and the page carries the site's own "not found" signal.` | `{source} a répondu HTTP {statut} et la page porte le signal « introuvable » du site.` |
+| `cause.contentRemoved.noRetry` | `There is nothing to retry here.` | `Il n'y a rien à réessayer ici.` |
+| `cause.contentRemoved.openNovel` | `Open the novel` | `Ouvrir le roman` |
+| `cause.contentRemoved.browseOthers` | `Browse other sites` | `Parcourir les autres sites` |
+| `cause.generic.kicker` | `THIS SITE COULD NOT BE READ` | `CE SITE N'A PAS PU ÊTRE LU` |
+| `cause.generic.title` | `This site could not be read, and the details of why were lost.` | `Ce site n'a pas pu être lu, et les détails de la raison ont été perdus.` |
+| `cause.generic.body` | `The app will not guess which of the four causes it was. Try again, and the reason will be recorded this time.` | `L'application ne devinera pas laquelle des quatre causes il s'agissait. Réessayez : la raison sera enregistrée cette fois.` |
+| `stillWorks.label` | `WHAT STILL WORKS` | `CE QUI MARCHE TOUJOURS` |
+| `stillWorks.offline` | `Your {library} kept novels and {downloaded} downloaded chapters open with no connection.` | `Vos {library} romans conservés et vos {downloaded} chapitres téléchargés s'ouvrent sans connexion.` |
+| `stillWorks.otherSource` | `{source} is unaffected — keep reading from it.` | `{source} n'est pas concerné : continuez à y lire.` |
+| `stillWorks.positions` | `Your {positions} reading positions are untouched.` | `Vos {positions} positions de lecture ne sont pas touchées.` |
+| `stillWorks.openLibrary` | `Open the library` | `Ouvrir la bibliothèque` |
+| `stillWorks.openOtherSource` | `Open {source}` | `Ouvrir {source}` |
+| `retry.again` | `Try again` | `Réessayer` |
+| `retry.againSame` | `It failed again at {time}. Same cause: {cause}.` | `Cela a encore échoué à {heure}. Même cause : {cause}.` |
+| `retry.changedCause` | `This is a different problem from last time.` | `C'est un problème différent de la dernière fois.` |
+| `copy.message` | `Copy this message` | `Copier ce message` |
+| `copy.done` | `Message copied.` | `Message copié.` |
+| `button.back` | `Go back` | `Revenir` |
+| `resolved.title` | `{source} is working again.` | `{source} fonctionne de nouveau.` |
+| `resolved.open` | `Open {source}` | `Ouvrir {source}` |
+| `resolved.lastChecked` | `Last checked {relative}.` | `Dernière vérification {relative}.` |
+| `resolved.neverChecked` | `Never checked.` | `Jamais vérifiée.` |
+
+> **Two strings that must never appear on this screen, in either language**: `0 results` / `0 résultat`, and `No results` / `Aucun résultat`. They belong to the site's own empty-result signal, which renders on the browse surface in `EmptyState` and never routes here. SC-6 is only demonstrable if the two states share no vocabulary at all, and this is where that is enforced — a reviewer testing SC-6 will be reading these two strings before the other twenty.
 
 > Three of the nine are unusually shaped, and each says why: **Loading** exists only for a cold-start read of the cause record; **Empty — never visited** is unreachable and redirects; **Empty — no data** is a *routing invariant*, because this screen does not exist for the genuine-empty case and that is the strongest form of the guarantee.
 
@@ -298,3 +350,5 @@ Every value below is the one the design system declares, so `design-check tokens
 | `--color-surface-raised` | `#FEFCF9` | `#232629` | — | The snackbar host only |
 
 Non-colour tokens cited: `--text-overline` `#11/16` at 600 with `letter-spacing 0.08em`, set uppercase — **the only uppercase label in the app**, used here for the cause kicker and for the two block labels; `--text-h3` `#20/26` at 600 (the cause title, the resolution headline); `--text-h4` `#18/24` at 600 (the three `StillWorksBlock` lines); `--text-body` `#16/24` at 400 (the cause sentence); `--text-caption` `#12/16` at 400 (the evidence line, the dictation line, the no-retry line, the countdown caption, the since/last-checked line); `--space-sm` `8dp` (between the three `StillWorksBlock` lines); `--space-md` `12dp` (block internal padding); `--space-lg` `16dp` (page margin); `--space-xl` `24dp` (icon to kicker, sentence to actions); `--space-2xl` `32dp` (between the two blocks); `--space-3xl` `48dp` (page top margin); `--border-width` `1dp` (the `--color-border` rule is **not** used on this screen — separation between the two blocks is space, per § 1.4); `--shadow-none` on both blocks; `--shadow-sheet` `0 8 24 rgba(0,0,0,0.18)` (snackbar); `--radius-lg` `16dp` (both blocks); `--duration-normal` `200ms` (push/pop, the cause cross-fade, the loading shimmer); `--ease-standard` `cubic-bezier(0.2, 0, 0, 1)`; `--bp-mobile` `< 600dp`, `--bp-tablet` `600–1023dp`, `--bp-desktop` `1024–1439dp`; touch target `48dp`.
+
+**Two places where this screen uses a semantic colour beyond the usage the design system records, and why.** `--color-warning`'s declared usage is *Partial or interrupted download*; here it marks **the site refusing or rate-limiting** (`Icons.hourglass_empty`) and **the novel removed at the source** (`Icons.block`). The token's semantics are "something the app wanted did not complete, and it is not the app's own bug" — both causes are exactly that, and neither is a partial download. `--color-error` is **withheld** from them deliberately: a refusing site and a removed novel are things happening on the reader's side of the world, and colouring them the same brick red as a changed layout would tell the reader the app is at fault when in one case it is the site and in the other it is the site's author. The token's meaning is extended, not overridden, and it is recorded here rather than left for the next reader of the design system to discover as a drift. `--color-info`, by contrast, needs no extension: the design system already assigns it "neutral notices, and the *never checked* state — an absence of information, so it must not borrow the colour that means *something went wrong*", and **no connection is the same kind of fact** — an absence, not a failure — which is why it is the one cause that is not red and not amber.

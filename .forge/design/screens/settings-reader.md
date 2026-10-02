@@ -123,6 +123,36 @@ AppScaffold (titleBar "Reader settings", bottomNav kept)
 | **Offline / permissions** | No connection, or any permission state | **Identical to Filled, with zero variation.** This screen makes **no network call at all** and requests **no permission**. Storage needs no runtime grant for the app's own directory, and `POST_NOTIFICATIONS` is requested at the moment the reader turns the update schedule on in Settings — which this screen does not own and does not mention | A permission prompt here would be a lie about what the reader needs in order to change their font size: nothing |
 | **Read-only** | The specimen, and only the specimen | **The specimen is a type specimen, not a reader.** It has no tap zones, no progress slider, no chapter navigation, no scroll position, no stored position, and its text is **never written to disk as a chapter**. It is inert by construction, and it must stay inert: a specimen that responds to taps is indistinguishable from the reader at a glance, and the reader would tap it expecting a chapter | Nothing else on this screen is read-only — there is no condition under which a size or a theme becomes unselectable. The specimen is the whole read-only surface, and it is read-only because it is evidence, not because it is disabled |
 
+### 4.1 User-visible copy — both languages (B28)
+
+| Key | English | Français |
+|---|---|---|
+| `group.size` | `TEXT SIZE` | `TAILLE DU TEXTE` |
+| `size.sm` | `Small` · `16pt` | `Petit` · `16 pt` |
+| `size.md` | `Medium` · `18pt` | `Moyen` · `18 pt` |
+| `size.lg` | `Large` · `20pt` | `Grand` · `20 pt` |
+| `size.xl` | `Larger` · `23pt` | `Plus grand` · `23 pt` |
+| `size.xxl` | `Largest` · `26pt` | `Le plus grand` · `26 pt` |
+| `group.theme` | `THEME` | `THÈME` |
+| `theme.system` | `Follow the phone` | `Suivre le téléphone` |
+| `theme.day` | `Day` | `Jour` |
+| `theme.night` | `Night` | `Nuit` |
+| `specimen.credit` | `From "{novel}" · {chapter}` | `Extrait de « {roman} » · {chapitre}` |
+| `specimen.empty.title` | *(no title — the stand-in stands alone)* | — |
+| `specimen.empty.note` | `You have not downloaded anything yet — this is what the reader will look like.` | `Vous n'avez encore rien téléchargé : c'est ainsi que le lecteur se comportera.` |
+| `specimen.seedFailed` | `A chapter saved on this phone could not be read. Showing a sample instead.` | `Un chapitre enregistré sur ce téléphone n'a pas pu être lu. Un exemple est affiché à la place.` |
+| `group.deferred` | `NOT IN THIS VERSION` | `PAS DANS CETTE VERSION` |
+| `deferred.modes` | `No reading modes — reading is one continuous scroll.` | `Pas de mode de lecture : la lecture est un défilement continu unique.` |
+| `deferred.swipe` | `No swipe or tap page-turn.` | `Pas de changement de page par balayage ou toucher.` |
+| `deferred.orientation` | `No orientation or rotation lock.` | `Pas de verrouillage d'orientation.` |
+| `deferred.filters` | `No colour filters — sepia, greyscale, inverted.` | `Pas de filtres de couleur : sépia, niveaux de gris, inversé.` |
+| `deferred.justification` | `No text justification. Justified prose at this measure creates rivers, and rivers are worse than a ragged edge.` | `Pas de justification du texte. Un texte justifié à cette longueur de ligne crée des rivières, bien pires qu'une bordure irrégulière.` |
+| `deferred.paragraphSpacing` | `No paragraph spacing control — the 1.72 line-height already sets the rhythm.` | `Pas de réglage de l'espacement des paragraphes : l'interligne de 1,72 fixe déjà le rythme.` |
+| `deferred.lineHeight` | `No line-height control. It is held at 1.72 at every size on purpose, so the rhythm does not change when the size does.` | `Pas de réglage d'interligne. Il est maintenu à 1,72 à toutes les tailles, volontairement, pour que le rythme ne change pas avec la taille.` |
+| `deferred.fonts` | `No font picker — the reader uses a serif, decided once. A reading face you can choose is a v2 candidate, not a v1 control.` | `Pas de choix de police : le lecteur utilise un serif, décidé une fois. Une face de lecture au choix est une candidate pour la v2, pas un contrôle de la v1.` |
+| `error.write` | `This could not be saved. Nothing was changed.` | `Cela n'a pas pu être enregistré. Rien n'a été modifié.` |
+| `button.retry` | `Try again` | `Réessayer` |
+
 > Two of the nine have no distinct rendering, and each says why: **Empty — no data** is the same fact as **Empty — never visited** (B6), and **Success** has no state because the specimen is itself the feedback. The page-level **Loading** exists only for the specimen's disk read and is rendered *inside* the specimen rather than as a skeleton over the page.
 
 ---
@@ -244,6 +274,8 @@ The following are **absent from this screen: not disabled, not greyed out, not m
 | **Custom font, font family, Dyslexic face** | ADR-017. v1 uses a **serif preference chain with no bundled font** — `Noto Serif` → `Roboto Slab` → platform serif — precisely so that no font picker exists and no licence is carried. Bundling is an **explicit v2 candidate** recorded in the ADR, and the Dyslexic face is named there as a genuine accessibility option that v1 declines on scope grounds |
 
 The list above is rendered on the screen itself, as seven lines of `--text-body-sm` `--color-text-secondary` prose under the group label `NOT IN THIS VERSION`. That is the one place in this app where absence is drawn: a reader who has read a competitor's settings and does not see a justification mode here is entitled to know it was decided rather than forgotten. Each line names **why**, not just what — a list of seven absent controls with no reasons reads as an unfinished screen, and one with reasons reads as a decision.
+
+**One reconciliation with design-system § 2.9.** That section names four settings whose effect is not obvious and requires each to carry a `consequence` line: *checking for new chapters*, *remove after reading*, *history retention* and *theme*. The first, second and third are switches or choice rows on Settings root, which is where they appear. **Theme is not a switch here — it is a three-segment control**, and it needs no `consequence` line because the control names all three of its values at once: the reader can see that `Follow the phone`, `Day` and `Night` exist before choosing, rather than reading a sentence explaining what a two-state control would do. A switch with a consequence line is the design system's answer for an effect that is *hidden*; a segmented control is the answer for an effect that is *enumerable*, and this one is enumerable. Both routes reach the same stored `themeOverride`, and the reader's `themeButton` cycles the same three values in the same order.
 
 ---
 

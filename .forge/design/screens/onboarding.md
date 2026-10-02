@@ -138,6 +138,27 @@ OnboardingScaffold (no titleBar, no bottomNav, outside the shell)
 | **Offline / permissions** | No connection, or any OS permission state | **Identical to Filled, with zero variation and zero network calls.** And **no permission is requested, ever, here** — which is the decision this row defends. The app needs no storage permission for its own directory; `POST_NOTIFICATIONS` is requested at the moment the reader turns the update schedule on, in Settings; and because **B35 makes that schedule off by default**, at first run there is nothing the reader has yet decided they want. **A first-run permissions screen would therefore be requesting something the reader has not asked for** — and on Android 13+ a request shown before its context is a request the reader is primed to refuse, which is how an app ends up without the one permission it will later need | The strongest argument for this screen's length is a permission argument: **B35's off-by-default schedule is what proves that permissions do not belong on first run.** There is no permission to ask for, so a screen asking is a lie |
 | **Read-only** | Step 1, entirely | **Step 1 has no controls that configure anything.** There is no toggle, no picker, no choice, no consent box — the two sentences are read and either believed or not, and the reader moves on. Nothing on either step writes a preference | Read-only because a first-run screen that collects answers is how a product acquires consent nobody requested. This screen collects **no** answer, which is also why it needs no settings screen for them to land in |
 
+### 4.1 User-visible copy — both languages (B28)
+
+The disclosure is **translated in full and not shortened**, which is the one place in this app where a compressed translation would be a weaker disclosure. Everything else is short by design and translates without loss.
+
+| Key | English | Français |
+|---|---|---|
+| `step1.kicker` | `LUMEN TALE` | `LUMEN TALE` |
+| `step1.headline` | `It reads with no signal.` | `Il lit sans réseau.` |
+| `step1.body` | `Keep a novel here once and it opens with the connection switched off — on a train, on a plane, with no data used. Nothing is uploaded: there is no account, no server, and nothing is sent anywhere.` | `Gardez un roman ici une fois et il s'ouvre, connexion coupée — dans un train, dans un avion, sans DATA consommée. Rien n'est envoyé : il n'y a pas de compte, pas de serveur, et rien ne part.` |
+| `step2.kicker` | `BEFORE YOU START` | `AVANT DE COMMENCER` |
+| `step2.headline` | `There is no backup.` | `Il n'y a aucune sauvegarde.` |
+| `step2.disclosure` | `Nothing here is backed up. If you uninstall Lumen Tale or lose this phone, your library, your downloads and your reading positions are gone, and no copy exists anywhere.` | `Rien ici n'est sauvegardé. Si vous désinstallez Lumen Tale ou perdez ce téléphone, votre bibliothèque, vos téléchargements et vos positions de lecture sont perdus, et aucune copie n'existe ailleurs.` |
+| `step2.footnote` | `The app cannot warn you at the moment you uninstall — the phone does that, outside the app. So it is said here, before, rather than after.` | `L'application ne peut pas vous avertir au moment où vous désinstallez : c'est le téléphone qui le fait, en dehors de l'application. C'est donc dit ici, avant, plutôt qu'après.` |
+| `button.next` | `Next` | `Suivant` |
+| `button.start` | `Start reading` | `Commencer à lire` |
+| `button.skip` | `Skip` | `Passer` |
+| `button.replayLabel` | `How this app works` | `Comment fonctionne cette application` |
+| `button.replayValue` | `Show the two introduction screens again` | `Revoir les deux écrans d'introduction` |
+
+> The `step1.body` sentence is the product's one-line promise from the PRD, carried verbatim in meaning and reworded for a first run: *read a web novel once, and it stays readable without a signal*. It is the only marketing sentence in the app, and it is a promise about behaviour rather than a claim about the app's qualities.
+
 > **Four of the nine have no rendering, and each says why**: nothing loads, there is no data to be empty, there is no submission that can fail visibly to the reader, and the screen's read-only half is read-only by choice. What remains — the promise, the disclosure, two buttons, and where they lead — is the whole of what a new reader cannot guess.
 
 ---
