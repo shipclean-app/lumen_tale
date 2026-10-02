@@ -982,7 +982,7 @@
       "path": ".forge/architecture.md",
       "type": "architecture",
       "status": "approved",
-      "content_hash": "sha256:3a2f1e9ab245",
+      "content_hash": "sha256:8054099b7289",
       "headings": {
         "1": "Overview",
         "2": "Foundations",
@@ -1020,7 +1020,7 @@
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-02T21:29:01.331Z",
+      "updated_at": "2026-10-02T22:14:27.736Z",
       "derived_from": [
         ".forge/prd.md"
       ],
@@ -1456,7 +1456,7 @@
       "path": ".forge/design/screens/downloads.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:cb0d6ff96823",
+      "content_hash": "sha256:62501ebcac3f",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1473,7 +1473,7 @@
         "1.1": "Why this screen is in overflow and not a tab — the reason, argued",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T21:25:43.145Z",
+      "updated_at": "2026-10-02T22:14:27.795Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1865,6 +1865,7 @@
       ],
       "edge_case_ids": [
         "E1",
+        "E3",
         "E4",
         "E22"
       ]
@@ -1887,6 +1888,7 @@
       ],
       "edge_case_ids": [
         "E2",
+        "E4",
         "E8"
       ]
     },
@@ -1925,9 +1927,7 @@
       ],
       "impl_wave": 1,
       "rule_ids": [],
-      "edge_case_ids": [
-        "E1"
-      ]
+      "edge_case_ids": []
     },
     "2-1": {
       "path": ".forge/architecture.md",
@@ -1964,10 +1964,9 @@
         "E2",
         "E3",
         "E4",
-        "E5",
         "E8",
-        "E16",
-        "E21"
+        "E10",
+        "E16"
       ]
     },
     "2-2": {
@@ -1991,7 +1990,8 @@
       ],
       "edge_case_ids": [
         "E1",
-        "E10",
+        "E3",
+        "E18",
         "E22"
       ]
     },
@@ -2038,9 +2038,7 @@
         "B7",
         "B25"
       ],
-      "edge_case_ids": [
-        "E14"
-      ]
+      "edge_case_ids": []
     },
     "2-5": {
       "path": ".forge/architecture.md",
@@ -2063,7 +2061,7 @@
         "B40"
       ],
       "edge_case_ids": [
-        "E6"
+        "E17"
       ]
     },
     "2-6": {
@@ -2083,9 +2081,7 @@
         "B16",
         "B27"
       ],
-      "edge_case_ids": [
-        "E11"
-      ]
+      "edge_case_ids": []
     },
     "2-7": {
       "path": ".forge/architecture.md",
@@ -2105,7 +2101,7 @@
         "B27"
       ],
       "edge_case_ids": [
-        "E10"
+        "E14"
       ]
     },
     "2-8": {
@@ -2125,8 +2121,9 @@
         "B27"
       ],
       "edge_case_ids": [
-        "E10",
-        "E12"
+        "E12",
+        "E13",
+        "E14"
       ]
     },
     "3-1": {
@@ -2152,10 +2149,9 @@
       ],
       "edge_case_ids": [
         "E1",
-        "E2",
-        "E4",
         "E5",
-        "E8"
+        "E8",
+        "E19"
       ]
     },
     "3-2": {
@@ -2180,7 +2176,7 @@
       ],
       "edge_case_ids": [
         "E3",
-        "E6"
+        "E10"
       ]
     },
     "3-3": {
@@ -2204,9 +2200,7 @@
         "B33"
       ],
       "edge_case_ids": [
-        "E14",
-        "E15",
-        "E20"
+        "E6"
       ]
     },
     "3-4": {
@@ -2264,7 +2258,8 @@
         "B19"
       ],
       "edge_case_ids": [
-        "E14",
+        "E6",
+        "E7",
         "E15"
       ]
     },
@@ -2286,8 +2281,8 @@
         "B21"
       ],
       "edge_case_ids": [
-        "E15",
-        "E19"
+        "E7",
+        "E15"
       ]
     },
     "5-3": {
@@ -2307,8 +2302,7 @@
         "B24"
       ],
       "edge_case_ids": [
-        "E17",
-        "E18",
+        "E7",
         "E20"
       ]
     },
@@ -2336,10 +2330,14 @@
       "edge_case_ids": [
         "E1",
         "E2",
+        "E3",
         "E4",
         "E5",
         "E8",
+        "E10",
         "E16",
+        "E18",
+        "E19",
         "E21"
       ]
     },
@@ -2361,7 +2359,8 @@
       ],
       "edge_case_ids": [
         "E5",
-        "E8"
+        "E8",
+        "E19"
       ]
     },
     "6-3": {
@@ -2387,7 +2386,6 @@
         "B49"
       ],
       "edge_case_ids": [
-        "E8",
         "E9"
       ]
     },
@@ -2412,7 +2410,8 @@
       "edge_case_ids": [
         "E4",
         "E8",
-        "E9"
+        "E9",
+        "E16"
       ]
     },
     "6-5": {
@@ -2432,9 +2431,7 @@
         "B46",
         "B47"
       ],
-      "edge_case_ids": [
-        "E13"
-      ]
+      "edge_case_ids": []
     },
     "6-6": {
       "path": ".forge/architecture.md",
@@ -2454,8 +2451,7 @@
         "B45"
       ],
       "edge_case_ids": [
-        "E6",
-        "E7"
+        "E17"
       ]
     },
     "6-7": {
@@ -2510,7 +2506,9 @@
         "B50"
       ],
       "edge_case_ids": [
-        "E8"
+        "E4",
+        "E8",
+        "E21"
       ]
     },
     "0-5": {
@@ -2541,6 +2539,7 @@
         "B30"
       ],
       "edge_case_ids": [
+        "E11",
         "E12"
       ]
     }

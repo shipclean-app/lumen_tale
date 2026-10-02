@@ -1,21 +1,10 @@
 ---
 type: architecture
-status: draft
+status: approved
 generated_at: 2026-10-02
 derived_from: .forge/prd.md
 impl_waves: 6
-impl_waves_rationale: >-
-  Coarser than the computed topological minimum of 10, and deliberately so.
-  The 10 waves are what the dependency graph *permits*; six are the roadmap's
-  milestone waves, which is what it *intends*. They differ because the graph
-  allows cheap slices that touch only foundations — 2-6 (reading position), 3-5
-  (about), 6-7 (English) — to start in wave 1, while the roadmap holds them for
-  later milestones. Declaring 10 would erase the milestone grouping, and
-  declaring nothing would leave `dependency-check --write` free to overwrite the
-  distinction without saying so. The difference that matters: browse UI (3-1) is
-  topologically available at wave 4, but milestone Wave 2 completes the whole
-  offline chain ending at 2-4, so following the milestones puts the offline read
-  proof BEFORE any browse UI exists.
+impl_waves_rationale: "Coarser than the computed topological minimum of 10, and deliberately so. The 10 waves are what the dependency graph *permits*; six are the roadmap's milestone waves, which is what it *intends*. They differ because the graph allows cheap slices that touch only foundations — 2-6 (reading position), 3-5 (about), 6-7 (English) — to start in wave 1, while the roadmap holds them for later milestones. Declaring 10 would erase the milestone grouping, and declaring nothing would leave `dependency-check --write` free to overwrite the distinction without saying so. The difference that matters: browse UI (3-1) is topologically available at wave 4, but milestone Wave 2 completes the whole offline chain ending at 2-4, so following the milestones puts the offline read proof BEFORE any browse UI exists."
 ---
 
 # Architecture — Lumen Tale
@@ -77,8 +66,13 @@ lib/
 │   └── sources/                  SourceManager, the static registry
 ├── sources/
 │   └── implementations/          fanmtl_source.dart, royalroad_source.dart + registry
-└── features/                     library, browse, reader, updates, history,
-                                  downloads, sources, settings, onboarding
+├── features/                     library, browse, reader, updates, history,
+│                                  downloads, sources, settings, onboarding
+├── tool/                          one-off Dart CLIs, run with `dart run tool/<x>.dart`
+│                                  and NOT shipped. `6-11` measures source searchability
+│                                  from here: it writes into 18-external-contracts.md and
+│                                  must leave no trace in lib/ or test/
+└── test/                          mirrors lib/ one-for-one
 ```
 
 **Layer rules, enforced by review, not by tooling** (`02-architecture.md`):
@@ -473,10 +467,10 @@ abstract class Source {
   bool get supportsSearch;             // ADR-015: a promise, not a guess
   FilterList get filterList;           // declared by the source, interpreted by the source
 
-  Future<NovelsPage> getPopularNovels(int page);
-  Future<NovelsPage> getLatestNovels(int page);
-  Future<NovelsPage> searchNovels(int page, String query, FilterList filters);
-  Future<NovelUpdate> getNovelUpdate(Novel novel, List<Chapter> chapters, {
+  Future<BrowseOutcome<NovelsPage>> getPopularNovels(int page);
+  Future<BrowseOutcome<NovelsPage>> getLatestNovels(int page);
+  Future<BrowseOutcome<NovelsPage>> searchNovels(int page, String query, FilterList filters);
+  Future<BrowseOutcome<NovelUpdate>> getNovelUpdate(Novel novel, List<Chapter> chapters, {
     required bool fetchDetails, required bool fetchChapters,
   });
   Future<BrowseOutcome<Novel>> getNovelDetails(Novel novel);

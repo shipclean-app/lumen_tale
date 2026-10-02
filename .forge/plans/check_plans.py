@@ -138,16 +138,23 @@ def check(path, rules, edges, is_foundation):
         elif eid not in s6:
             fail(path, f'{eid} appears but NOT in § 6')
 
-    # --- § 2 must be real Dart ------------------------------------------
+    # --- § 2 must contain real Dart -------------------------------------
+    # NOT every block: a plan legitimately includes a signature table, a
+    # doc-entry template (6-11 writes one into 18-external-contracts.md), or
+    # a prose note inside a fence. The requirement is that § 2 contains AT
+    # LEAST ONE Dart block that declares real types — otherwise a plan can
+    # pass by quoting the architecture in prose.
     s2 = secs.get(2, '')
     fences = re.findall(r'```(\w*)\n(.*?)```', s2, re.S)
     if not fences:
         fail(path, '§ 2 has no code block')
-    for lang, body in fences:
-        if lang.lower() not in ('dart', 'yaml'):
-            fail(path, f'§ 2 code block tagged `{lang}` — expected dart')
-        elif lang.lower() == 'dart' and not DART_SHAPE.search(body):
-            fail(path, '§ 2 dart block declares no type and no `=>`')
+    dart_with_types = [
+        body for lang, body in fences
+        if lang.lower() == 'dart' and DART_SHAPE.search(body)
+    ]
+    if not dart_with_types:
+        fail(path, '§ 2 has no Dart block declaring a real type — the contracts '
+                   'must be code, not the architecture quoted back')
 
     # --- § 3 must be pseudocode, not prose ------------------------------
     s3 = secs.get(3, '')
@@ -171,10 +178,19 @@ def check(path, rules, edges, is_foundation):
         if word in s10.lower():
             warn(path, f'§ 10 non-verifiable wording: {word!r}')
 
-    # --- § 11 names a test path -----------------------------------------
+    # --- § 11 names a test path, OR refuses with a reason ----------------
+    # A slice may legitimately have no test: `6-11` measures a live site and
+    # `10-testing.md` rule 7 forbids a test that reaches the internet. But
+    # "no tests" is exactly the kind of omission that reads as thoroughness,
+    # so a bare "Aucun" does not pass — it must be justified AND cite the rule
+    # or question it rests on. Otherwise this is gameable by writing one word.
     s11 = secs.get(11, '')
     if 'test/' not in s11:
-        fail(path, '§ 11 names no test file path')
+        has_refusal = re.search(r'\b(Aucun|deliberate|délibéré)\b', s11, re.I)
+        cites_basis = re.search(r'\b\d\d-rule\b|\bB\d+\b|\bQ-\d+\b|\bC\d+\b', s11)
+        if not (has_refusal and cites_basis):
+            fail(path, '§ 11 names no test file path, and does not refuse tests '
+                       'with both a stated reason and a cited rule or question')
 
     # --- ADR-019: no rail, no two-pane, no tablet -----------------------
     for bad in ('NavigationRail', 'NavigationDrawer', 'two-pane'):
@@ -204,7 +220,48 @@ def check(path, rules, edges, is_foundation):
         warn(path, 'coverage-check.js cannot verify a foundation (F-003)')
 
 
+# ══ corpus checks ═══════════════════════════════════════════════════════
+# Facts that live in MORE THAN ONE document, where fixing one copy has
+# already left the other behind four separate times this project. Each is
+# asserted mechanically, because "I fixed it" has meant "I fixed one of
+# them" more than once.
+
+# A Source method returning a bare Future<...> cannot distinguish an empty
+# result from a failure. B22 and SC-6 are that distinction.
+BARE_RETURN = re.compile(r'^\s*Future<(?!BrowseOutcome)')
+# The seven contract signatures, as they must appear. Bare variants are
+# matched by the regex above; this catches a signature quietly deleted.
+CONTRACT_METHODS = [
+    'getPopularNovels', 'getLatestNovels', 'searchNovels', 'getNovelUpdate',
+    'getNovelDetails', 'getChapterList', 'fetchChapterContent',
+]
+
+
+def check_corpus():
+    targets = [
+        ROOT / '.forge/architecture.md',
+        ROOT / '.opencode/rules/03-source-system.md',
+    ]
+    for path in targets:
+        if not path.exists():
+            continue
+        for i, line in enumerate(path.read_text(encoding='utf-8').split('\n'), 1):
+            # An amendment note quoting the old text is legitimate; a live
+            # signature is not. Blockquoted lines are the notes.
+            if line.lstrip().startswith('>'):
+                continue
+            if BARE_RETURN.search(line):
+                fail(path, f'line {i}: bare Future<…> return in the Source contract '
+                           f'— every method returns BrowseOutcome<T> (B22, SC-6): '
+                           f'{line.strip()[:70]!r}')
+        text = path.read_text(encoding='utf-8')
+        for m in CONTRACT_METHODS:
+            if m not in text:
+                warn(path, f'contract method {m} does not appear at all')
+
+
 def main():
+    check_corpus()
     state = json.loads((ROOT / '.forge/state.json').read_text())
     wanted = {k: (v.get('rule_ids', []), v.get('edge_case_ids', []), False)
               for k, v in state['slices'].items()}

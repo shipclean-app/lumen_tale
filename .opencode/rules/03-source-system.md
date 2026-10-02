@@ -24,17 +24,17 @@ abstract class Source {
   /// Empty list = no filters. The platform never interprets their states.
   FilterList get filterList;
 
-  Future<NovelsPage> getPopularNovels(int page);
-  Future<NovelsPage> getLatestNovels(int page);
-  Future<NovelsPage> searchNovels(int page, String query, FilterList filters);
-  Future<NovelUpdate> getNovelUpdate(
+  Future<BrowseOutcome<NovelsPage>> getPopularNovels(int page);
+  Future<BrowseOutcome<NovelsPage>> getLatestNovels(int page);
+  Future<BrowseOutcome<NovelsPage>> searchNovels(int page, String query, FilterList filters);
+  Future<BrowseOutcome<NovelUpdate>> getNovelUpdate(
     Novel novel,
     List<Chapter> chapters, {
     required bool fetchDetails,
     required bool fetchChapters,
   });
-  Future<Novel> getNovelDetails(Novel novel);
-  Future<List<Chapter>> getChapterList(Novel novel);
+  Future<BrowseOutcome<Novel>> getNovelDetails(Novel novel);
+  Future<BrowseOutcome<List<Chapter>>> getChapterList(Novel novel);
 }
 
 abstract class HttpSource extends Source {
@@ -58,8 +58,31 @@ abstract class ParsedHttpSource extends HttpSource {
   //   chapterContentSelector          -> article body
 
   /// Raw HTML of a chapter. This replaces Mihon's getPageList (images).
-  Future<String> fetchChapterContent(Chapter chapter);
+  Future<BrowseOutcome<String>> fetchChapterContent(Chapter chapter);
 }
+```
+
+> **`BrowseOutcome<T>` on every method, and it is not optional — amended 2026-10-02.**
+> The signatures above previously returned bare `Future<NovelsPage>`, `Future<Novel>`,
+> `Future<List<Chapter>>` and `Future<String>`. **Seven statements across two documents**
+> (`architecture.md` § 5.1 and this file) said the opposite — the prose immediately below
+> the block read *"Every one of these returns `BrowseOutcome<T>`, not a bare list"*, over a
+> code block that returned bare lists. A first fix corrected **three of seven** and was
+> called done; the other four survived until a plan author read this file and reported it.
+>
+> **Why it matters mechanically.** `BrowseOutcome<T>` is what makes **B22** expressible:
+> *a site that cannot be read is reported, never presented as empty*. With a bare
+> `Future<List<Chapter>>` an empty list and a failed fetch are **the same value**, and no
+> amount of discipline at the call site fixes that — a caller that forgets to check cannot
+> be caught by a reviewer. **SC-6** is this distinction. Returning `null` and letting the
+> caller decide is the specific thing § 2.2's `Prohibited` list forbids, because it is
+> the same defect with an extra nullable in the middle.
+>
+> **The general form, and why this recurred four times in one session:** *adding or
+> correcting a fact does not remove its copies.* A guard now asserts it — see
+> `check_plans.py`'s corpus section.
+}
+
 ```
 
 ## Rules

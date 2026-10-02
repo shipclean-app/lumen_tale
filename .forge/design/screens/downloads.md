@@ -215,10 +215,10 @@ AppScaffold (titleBar + content + bottomNav)
 |---|---|---|---|---|
 | `queue.novelId` | `String` | local | yes | Never absent — a queue without a novel is dropped and logged locally, never rendered as an orphan row |
 | `queue.chapterIds` | `List<String>` | local, **in reading order** | yes | Empty → the queue section is not rendered; the reader is told nothing, because there is nothing running |
-| `queue.status` | `enum(running, paused, stopped, interrupted)` | local | yes | `interrupted` is the state after the process died and is **always** reset to `paused` on open, never to `running` (E7, E15) |
+| ~~`queue.status`~~ | `enum(running, paused, stopped, interrupted)` | **derived, not a column** | yes | **Not stored.** `queue_items` has `state`, `error_code` and `attempts` — nothing else, and `app_database.dart`'s `DownloadState` comment forbids adding one. The four-valued status is computed by `5-2` from `state` plus `error_code`; `interrupted` is derived from "`state = queued` **and** `startedAt != null`", which is what a process death leaves behind. Declaring a column here would have meant a migration this project does not need |eset to `paused` on open, never to `running` (E7, E15) |
 | `queue.doneCount` | `int` | local | yes | Counted from stored chapters, **never an estimate** (C8, and B14's logic applied to a queue) |
 | `queue.totalCount` | `int` | local | yes | Absent → the header drops the *of N* and shows the count alone. `0` is never substituted for unknown |
-| `queue.stopReason` | `enum(no_connection, out_of_storage, cancelled)` | local | no | Absent → the generic stopped sentence, which says nothing is downloading and does not guess why |
+| ~~`queue.stopReason`~~ | `enum(no_connection, out_of_storage, cancelled)` | **derived from `queue_items.error_code`** | no | **Not a column.** `error_code` already exists and already holds the distinction; `5-2` maps it to one of these three words. Absent → the generic stopped sentence, which says nothing is downloading and does not guess why |
 | `activeChapter.title` | `String` | the site, verbatim | yes | Displayed exactly as the site presents it (B10) |
 | `activeChapter.progress` | `double` 0..1 | the fetch | yes | Reported monotonically; a reported value that moves backwards re-renders from the record rather than animating backwards |
 | `activeChapter.bytes` | `int` | the fetch | no | Absent → the byte figure is omitted rather than showing `0`, which is a claim |
