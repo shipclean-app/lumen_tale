@@ -13,7 +13,9 @@ Every string that came from a scraped website — a chapter name, a novel title,
 
 ## Network posture
 
-5. **Identify honestly.** Send a descriptive User-Agent naming the app and offering a contact path. Never impersonate a browser or another reader to evade a site's blocking — if a site blocks us, that is a decision by the site.
+5. **Identify honestly.** Send a descriptive User-Agent naming the app and offering a contact path — `Mozilla/5.0 (compatible; LumenTale/0.1; personal reader)`. **Never impersonate a browser or another reader to evade a site's blocking.** This is not caution, it is measured: on Novel Fire the honest UA gets **200 and the full page**, while a Chrome/Android string gets **403 with `cf-mitigated: challenge` and Turnstile markup** (ADR-014). Pretending to be a browser is what triggers the block. FanMTL and Royal Road serve both without a challenge, so nothing in v1 needs a bypass.
+   - **Do not port Mihon's Cloudflare WebView bypass.** It loads the URL in a real `WebView` to harvest a `cf_clearance` cookie. It is well-judged code — it aborts on interactive challenges rather than defeating them — and it is still wrong here: it would add `webview_flutter` and a hidden-WebView path no current site exercises, and its User-Agent is the one Novel Fire rejects. ADR-014.
+   - **If a site ever challenges our honest UA**: record it in `18-external-contracts.md`, then **stop and ask the owner.** The contract promises we escalate to nobody without asking. The answer is *drop the source* or *amend this rule with a new ADR* — never a silent implementation detail.
 6. **Rate limit and back off.** Shared rate limiting lives in `core/network/`. Respect `Retry-After`, and stop hammering a site that is failing rather than retrying in a loop.
 7. **TLS only.** No plain-HTTP fetch, no disabled certificate validation, no trust-all `dio` interceptor. There is no legitimate reason for any of these in a reader app.
 

@@ -54,22 +54,22 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 
 ### Q-004 — Does Novel Fire's terms permit a scraper?
 
-- **What is not known**: Novel Fire's robots.txt and terms of service have not been read, and unlike Royal Road its permission status is genuinely unknown. The site is also an aggregator whose chapter pages may be proxied from origin sites, so permission from Novel Fire may not cover the origin.
-- **What the answer determines**: whether the Novel Fire source is implemented at all in v1. Its scraper is blocked until this closes.
-- **Closes when**: the project owner confirms Novel Fire's terms permit it — at that moment, record it in `18-external-contracts.md` and, if the answer is yes, also confirm whether proxied origin content is in scope.
-- **Status**: Open
+- **Status**: **Open — Cloudflare concern resolved, terms still unconfirmed.**
+- **Resolved by measurement (ADR-014):** the "probably blocked by Cloudflare" worry is **wrong**. An honest UA gets 200; only a browser-impersonating UA gets challenged. No bypass is needed and none will be built.
+- **Still unknown**: Novel Fire's terms of service have not been read. It is also an aggregator whose chapter pages may be proxied from origin sites, so permission from Novel Fire may not cover the origin.
+- **What the answer determines**: whether the Novel Fire source ships in v1. It is in scope (ADR-013) but its scraper stays unbuilt until this closes.
+- **Closes when**: the owner reads and confirms the terms. At that moment, record it in `18-external-contracts.md` and confirm whether proxied origin content is in scope.
+
+### Q-006 — Is the default branch `master` or `main`?
+
+- **Status**: **Closed 2026-10-02** — `master` **is** the main branch.
+- **Resolution**: the owner's "main branch" meant the principal branch, which in this repository is `master`. ADR-011 as written is correct and needs no change. The CI `on:` trigger is `master`.
 
 ### Q-005 — Are Royal Road and Novel Fire still in v1 now that FanMTL is first?
 
 - **Status**: **Closed 2026-10-02** — **all three sites are in v1.** FanMTL first, then Royal Road and Novel Fire.
 - **Resolution**: FanMTL, Royal Road, and Novel Fire are all v1 sources. Novel Fire remains **individually blocked on Q-004** (its terms are unconfirmed) — being in scope is not permission to implement. Per ADR-013 the platform contract is built against FanMTL first and the other two are added as adapters over the same contract, so a source blocked on permissions does not block the slice.
 
-### Q-006 — Is the default branch `master` or `main`?
-
-- **What is not known**: ADR-011 says builds trigger "on merge to `main`", which is what the owner asked for. The repository's actual default branch is **`master`**, and `feat/basics` tracks nothing yet.
-- **What the answer determines**: the `on:` trigger of the GitHub Actions workflow. A workflow pointed at a branch that does not exist **never runs and reports success** — the same failure shape as an `instructions` glob that matches nothing, which this repo already has a correction about.
-- **Closes when**: the owner renames the default branch to `main`, or says keep `master`. Until then the ADR is written against `master` because that is the branch that exists.
-- **Status**: Open
 
 ## Questions tranchées / Resolved questions
 
@@ -225,3 +225,20 @@ A closed question leaves this section and **becomes an ADR**, carrying the decis
   | Permission | permitted, verified | permitted, verified | **unconfirmed — Q-004** |
 
 - **Consequences**: `04-html-to-markdown.md`'s per-source override mechanism is load-bearing from day one, not a convenience — it is how the second and third source get added without touching the contract. The `<br><br>` paragraph rule and the `.chapter-content` selector are already promoted from the FanMTL record for this reason. A source whose markup has no `<p>` at all is the hard case, and the first site happens to be that hard case, which is fortunate.
+
+### ADR-014: Mihon's Cloudflare WebView bypass is NOT ported — and impersonating a browser measurably makes things worse
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: The owner noted that some Mihon sources sit behind Cloudflare and that Mihon has a workaround, and suggested we would likely need it for Novel Fire. Mihon's mechanism is `core/common/.../network/interceptor/CloudflareInterceptor.kt`: detect the challenge by the official signal (`cf-mitigated: challenge` + `Server: cloudflare*`), then load the URL in a **real Android `WebView`** off-screen, wait up to 30 seconds for a fresh `cf_clearance` cookie, replay the request with it, and — importantly — **abort on interactive/Turnstile challenges** rather than defeating them. The Flutter port would need `webview_flutter`, a heavy platform plugin.
+- **Measurement, 2026-10-02** — every site tested twice, once honest and once with a Chrome/Android browser string:
+
+  | Site | Honest UA | Browser-like UA |
+  |---|---|---|
+  | FanMTL | 200, no challenge | 200, no challenge |
+  | Royal Road (home, best-rated catalogue, real chapter) | 200, no `cf-mitigated`, no Turnstile | 200, no `cf-mitigated`, no Turnstile |
+  | **Novel Fire** | **200, full page** | **403, `cf-mitigated: challenge`, Turnstile markup** |
+
+- **Decision**: Do not port the WebView bypass. None of the three v1 sites challenges an honestly-identified client, and on Novel Fire **browser impersonation is the thing that triggers the block**. `17-security.md` rule 5 stays as written, and this measurement is promoted into it as the worked example.
+- **Alternatives considered**: (a) Port Mihon's interceptor — rejected on measurement: it would add `webview_flutter` and a hidden-WebView code path that is **never exercised** by any current site, and on Novel Fire the User-Agent it would present to the challenge page is precisely the one that gets a 403. (b) Ask the sites for whitelisting — not pursued; it is a relationship cost for a personal-use app, and the honest client already works. (c) Honest identification only (chosen).
+- **Consequences**: `webview_flutter` is **not** added. The path back is narrow and explicit: if a site starts serving `cf-mitigated: challenge` to our honest UA, that is a finding for `18-external-contracts.md`, the contract says we ask the owner rather than escalate, and the answer is either *drop the source* or *amend `17-security.md` rule 5 with a new ADR*. It is never an implementation detail. This decision is the concrete case behind the ADR-008 rule that a Mihon pattern is a starting point, not an authority — copying this one faithfully would have broken a source we can otherwise read fine.

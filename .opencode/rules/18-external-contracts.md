@@ -45,7 +45,7 @@ Two sites were selected for v1 on 2026-10-02. **FanMTL** is now the **first** so
 ### FanMTL — https://www.fanmtl.com — **FIRST SOURCE**
 
 - **Permission**: permitted. Its `robots.txt` is an **EmpireCMS** file whose `User-agent: *` block disallows only `/d/`, `/e/class/`, `/e/config/`, `/e/data/`, `/e/enews/`, `/e/update/` — CMS and admin directories. **Novel and chapter content live under `/novel/` and `/list/`, neither of which is disallowed.** The site also publishes `/terms-of-service.html` and `/dmca.html`; re-read both before shipping. Re-check `robots.txt` on every release and honour a change.
-- **Cloudflare: present, and not blocking.** Every response carried `server: cloudflare` and a `cf-ray` header — Cloudflare **is** in front of this site. But with an honest, self-identifying User-Agent (`Mozilla/5.0 (compatible; LumenTale/0.1; personal reader)`) no challenge or block was served on any request. `17-security.md` rule 5 stands: identify honestly, and if Cloudflare ever starts challenging us, that is a decision by the site — do not escalate to browser impersonation.
+- **Cloudflare: present, and not blocking.** Every response carried `server: cloudflare` and a `cf-ray` header — Cloudflare **is** in front of this site. But with an honest, self-identifying User-Agent (`Mozilla/5.0 (compatible; LumenTale/0.1; personal reader)`) no challenge or block was served on any request, on the home page, the novel page or a chapter page. `17-security.md` rule 5 stands: identify honestly, and if Cloudflare ever starts challenging us, that is a decision by the site — do not escalate to browser impersonation, and do **not** port Mihon's WebView bypass (ADR-014).
 - **Scope**: fan-fiction / web novels. Genre taxonomy is Chinese-derived: `xianxia`, `xuanhuan`, `shounen`, `shoujo`, `romance`, `contemporary-romance`, `action`.
 - **Last verified**: 2026-10-02
 - **URL structure** (verified by fetching, not guessed):
@@ -73,17 +73,26 @@ Two sites were selected for v1 on 2026-10-02. **FanMTL** is now the **first** so
 ### Royal Road — https://www.royalroad.com
 
 - **Permission**: permitted for a user-installed reader. Its `robots.txt` (`User-agent: *`) disallows only `/fiction/chapter/*/vote`, `/fictions/review/`, `/forums/report/*`, `/report/*` — voting, reviews and reports. **Fiction listings and chapter content are not disallowed.** The AI-training crawlers (GPTBot, CCBot, Google-Extended, ClaudeBot, Bytespider, …) are disallowed in separate blocks; that is a training-crawler rule, not a reader rule, and does not apply to a client the user installed.
-- **Status**: no longer the first source. **Confirm before implementing.**
-- **Scope**: English web novels, `/fictions/*` catalogue + `/fiction/<slug>/<chapter>` chapter pages. Expect Cloudflare in front of it.
-- **Last verified**: 2026-10-02 (HTTP 200, ~162 KB)
-- **Quirks**: none — not implemented.
+- **Status**: **in v1** (ADR-013), second source, an adapter over the platform contract.
+- **Scope**: English web novels. Verified live: catalogue at `/fictions/best-rated`, `/fictions/latest-updates`; fiction page at `/fiction/<id>/<slug>`; chapter at `/fiction/<id>/<slug>/chapter/<chapterId>/<slug>`. Pagination and filter parameters to be discovered during implementation.
+- **Cloudflare: present, not challenging.** Measured 2026-10-02 on the home page, the best-rated catalogue, and a real chapter page (`/fiction/21220/mother-of-learning/chapter/301778/1-good-morning-brother`): **200 with no `cf-mitigated` header and no Turnstile markup, under both an honest and a browser-like User-Agent.** No bypass needed.
+- **Last verified**: 2026-10-02
+- **Quirks**: none blocking — not yet implemented.
 - **Pending promotion**: none.
 
 ### Novel Fire — https://novelfire.net
 
 - **Permission**: unknown. **Blocked on the project owner confirming terms** (Q-004).
-- **Domain volatility — confirmed.** The site has moved across domains repeatedly. On 2026-10-02: `novelfire.net` → HTTP 200 ("Novel Fire - Read Web Novels Online Free"), `novelfire.xyz` → HTTP 200, and `novelfire.bz`, `novelfire.one`, `novelfire.la`, `novelfire.info` → **NXDOMAIN**. A domain given in a URL, an issue, or an old document is not evidence the site is there.
-- **Status**: no longer the first source. **Confirm before implementing.**
+- **Cloudflare: present — and impersonating a browser makes it WORSE.** Measured 2026-10-02 against the home page:
+
+  | User-Agent | Result |
+  |---|---|
+  | `Mozilla/5.0 (compatible; LumenTale/0.1; personal reader)` | **200**, full page, no challenge |
+  | Chrome/Android browser string | **403**, `cf-mitigated: challenge`, Turnstile markup |
+
+  The honest client is let through; the one pretending to be a browser is challenged. This is the empirical justification for `17-security.md` rule 5, and the reason Mihon's WebView bypass must **not** be ported here. See ADR-014.
+- **Domain volatility — confirmed.** The site has moved across domains repeatedly. On 2026-10-02: `novelfire.net` → HTTP 200, `novelfire.xyz` → HTTP 200, and `novelfire.bz`, `novelfire.one`, `novelfire.la`, `novelfire.info` → **NXDOMAIN**. A domain given in a URL, an issue, or an old document is not evidence the site is there.
+- **Status**: **in v1** (ADR-013), implemented as an adapter over the platform contract. Still blocked on Q-004.
 - **Last verified**: 2026-10-02
-- **Quirks**: domain churn (above). Aggregator — its chapter pages may be proxied from origin sites, so chapter HTML may differ per fiction and the converter's per-source overrides will earn their keep here.
-- **Pending promotion**: `17-security.md` rule 6 — treat an NXDOMAIN as a finding to record, not as a transient to retry.
+- **Quirks**: domain churn (above). Cloudflare that punishes browser impersonation (above). Aggregator — chapter pages may be proxied from origin sites, so chapter HTML may differ per fiction and the converter's per-source overrides will earn their keep here.
+- **Pending promotion**: `17-security.md` rule 5 — the Novel Fire measurement is general enough to become the worked example there.
