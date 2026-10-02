@@ -800,7 +800,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:0702842b150d",
+      "content_hash": "sha256:8be1f3deb8e6",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -836,7 +836,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-02T22:50:47.159Z",
+      "updated_at": "2026-10-02T22:51:56.868Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -873,7 +873,7 @@
       "path": ".forge/design/screens/reader.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:620789447f0f",
+      "content_hash": "sha256:c778a7c9a8ef",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -889,7 +889,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T22:48:22.770Z",
+      "updated_at": "2026-10-02T22:52:22.372Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1042,7 +1042,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:0702842b150d",
+      "content_hash": "sha256:8be1f3deb8e6",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -1078,7 +1078,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-02T22:50:47.211Z",
+      "updated_at": "2026-10-02T22:51:56.912Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1274,7 +1274,7 @@
       "path": ".forge/design/screens/reader.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:620789447f0f",
+      "content_hash": "sha256:c778a7c9a8ef",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1290,7 +1290,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T22:48:23.044Z",
+      "updated_at": "2026-10-02T22:52:22.328Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"

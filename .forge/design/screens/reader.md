@@ -23,12 +23,8 @@ edge_case_ids:
   - E1
   - E2
   - E3
-  - E7
   - E10
-  - E12
   - E14
-  - E15
-  - E19
 flow: read-loop
 ---
 
@@ -49,7 +45,7 @@ flow: read-loop
 | **Users** | the reader, in the one session they open the app for |
 | **User stories served** | US-04, US-05, US-11, US-14, US-15 |
 | **Business rules** | B7 B10 B13 B16 B25 B26 B27 B44 B46 B30 |
-| **Edge cases** | E1 E2 E3 E7 E10 E12 E14 E15 E19 |
+| **Edge cases** | E1 E2 E3 E10 E14 — **corrected 2026-10-02.** This row also claimed E7, E12, E15 and E19, and none of them has a subject on this screen: E7 is *connection lost mid-queue* (`5-1`/`5-2`/`5-3`), E15 is *a fifty-chapter download interrupted* (`2-3`/`5-1`/`5-2`), E19 is *a search that genuinely matches nothing* (`6-2`, and conditional on `6-11`), and E12 is *the phone's language switching* (`0-5`/`2-8`/`6-7`). A traceability row listing cases the screen cannot render teaches a reader that the reader handles a queue, a search and a locale switch |
 
 **In one sentence**: this screen lets the reader read a chapter of a novel they kept, uninterrupted, whether or not there is a signal.
 
