@@ -20,3 +20,8 @@
 {"ts":"2026-10-02T10:45:35.730Z","type":"hash","kind":"deliverable","entry":"contract","content_hash":"sha256:4940f415e5b4"}
 {"ts":"2026-10-02T10:45:35.769Z","type":"hash","kind":"deliverable","entry":"conventions","content_hash":"sha256:b0e5bcbcec97"}
 {"ts":"2026-10-02T10:46:03.180Z","type":"gate_approved","phase":"0_bootstrap","next_phase":"1"}
+{"ts":"2026-10-02T11:25:42.955Z","type":"register","deliverable":"prd","path":".forge/prd.md","kind":"deliverable"}
+{"ts":"2026-10-02T11:25:43.002Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:5ad1e2140523"}
+{"ts":"2026-10-02T11:27:01.573Z","type":"register","deliverable":"contract","path":".forge/contract.md","kind":"deliverable"}
+{"ts":"2026-10-02T11:27:01.620Z","type":"hash","kind":"deliverable","entry":"contract","content_hash":"sha256:4940f415e5b4"}
+{"ts":"2026-10-02T11:27:01.664Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:5ad1e2140523"}
