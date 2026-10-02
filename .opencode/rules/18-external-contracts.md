@@ -36,4 +36,54 @@ These are in `03-source-system.md` (contract) and `17-security.md` (posture); th
 
 ## Open items
 
-Nothing is recorded yet — no source is implemented yet. The first entry is created when the first source lands. Record `Permission` **before** writing the scraper, not after.
+Two sites were selected for v1 on 2026-10-02. **FanMTL** is now the **first** source. Royal Road and Novel Fire status: see Q-004 / the ADR-011 note below.
+
+---
+
+## Recorded sites
+
+### FanMTL — https://www.fanmtl.com — **FIRST SOURCE**
+
+- **Permission**: permitted. Its `robots.txt` is an **EmpireCMS** file whose `User-agent: *` block disallows only `/d/`, `/e/class/`, `/e/config/`, `/e/data/`, `/e/enews/`, `/e/update/` — CMS and admin directories. **Novel and chapter content live under `/novel/` and `/list/`, neither of which is disallowed.** The site also publishes `/terms-of-service.html` and `/dmca.html`; re-read both before shipping. Re-check `robots.txt` on every release and honour a change.
+- **Cloudflare: present, and not blocking.** Every response carried `server: cloudflare` and a `cf-ray` header — Cloudflare **is** in front of this site. But with an honest, self-identifying User-Agent (`Mozilla/5.0 (compatible; LumenTale/0.1; personal reader)`) no challenge or block was served on any request. `17-security.md` rule 5 stands: identify honestly, and if Cloudflare ever starts challenging us, that is a decision by the site — do not escalate to browser impersonation.
+- **Scope**: fan-fiction / web novels. Genre taxonomy is Chinese-derived: `xianxia`, `xuanhuan`, `shounen`, `shoujo`, `romance`, `contemporary-romance`, `action`.
+- **Last verified**: 2026-10-02
+- **URL structure** (verified by fetching, not guessed):
+
+  | Purpose | Pattern | Example |
+  |---|---|---|
+  | Novel detail + chapter list | `/novel/<id>.html` | `/novel/ke383028.html` |
+  | Chapter body | `/novel/<id>_<n>.html` | `/novel/ke383028_1.html` |
+  | Catalogue / tag / pagination | `/list/<tag>/<sort>-<page>.html` | `/list/xianxia/all-lastdotime-0.html` |
+  | Latest chapters | `/updates/` | |
+  | Search | `/search.html` | |
+
+  The trailing integer in `/list/...` is the **0-based page number** — note this differs from the 1-based `page` argument in the `Source` contract. Convert at the boundary.
+
+- **Quirks** — all confirmed against live HTML, all of which the implementation must handle:
+
+  1. **Prose is NOT in `<p>` elements.** A chapter contains **0 `<p>` tags**; paragraphs are bare text nodes separated by `<br><br>`. Our converter's paragraph rule must therefore be *"`br br` → paragraph break"*, not only *"`<p>` → paragraph"*. Getting this wrong turns a whole chapter into one run-on block, and it will still look superficially correct in a smoke test.
+  2. **`#chapter-article` contains the chrome, not the article.** It wraps `<header class="chapter-header">` (novel title `h1`, chapter title `h2`) and `<aside class="control-action">` (font selector — Default/Dyslexic/Roboto/Lora — plus Prev/Next and night-mode). The **body is `<div class="chapter-content">`**, nested inside `<section class="page-in content-wrap">`. Select `.chapter-content`, not `#chapter-article`, or the reader ships with a font-picker in the text.
+  3. **An ad `<script>` sits inside the content div**: `<div align="center"><script src=/d/js/ad/page_01.js></script></div>`. The cleaner already drops `<script>` elements. Note the path is under `/d/`, which robots.txt disallows — we must never *fetch* it, and dropping the tag is what prevents that.
+  4. **`&nbsp;` is not used**; separators are plain `<br><br>`. Whitespace normalisation has no entity to decode here.
+  5. **Cloudflare, as above** — present, currently not challenging.
+
+- **Pending promotion**: `04-html-to-markdown.md` §The converter is ours §Required behaviour — the `<br><br>` → paragraph rule and the `.chapter-content` selector are **general** enough to promote. Site-specific selectors stay here.
+
+### Royal Road — https://www.royalroad.com
+
+- **Permission**: permitted for a user-installed reader. Its `robots.txt` (`User-agent: *`) disallows only `/fiction/chapter/*/vote`, `/fictions/review/`, `/forums/report/*`, `/report/*` — voting, reviews and reports. **Fiction listings and chapter content are not disallowed.** The AI-training crawlers (GPTBot, CCBot, Google-Extended, ClaudeBot, Bytespider, …) are disallowed in separate blocks; that is a training-crawler rule, not a reader rule, and does not apply to a client the user installed.
+- **Status**: no longer the first source. **Confirm before implementing.**
+- **Scope**: English web novels, `/fictions/*` catalogue + `/fiction/<slug>/<chapter>` chapter pages. Expect Cloudflare in front of it.
+- **Last verified**: 2026-10-02 (HTTP 200, ~162 KB)
+- **Quirks**: none — not implemented.
+- **Pending promotion**: none.
+
+### Novel Fire — https://novelfire.net
+
+- **Permission**: unknown. **Blocked on the project owner confirming terms** (Q-004).
+- **Domain volatility — confirmed.** The site has moved across domains repeatedly. On 2026-10-02: `novelfire.net` → HTTP 200 ("Novel Fire - Read Web Novels Online Free"), `novelfire.xyz` → HTTP 200, and `novelfire.bz`, `novelfire.one`, `novelfire.la`, `novelfire.info` → **NXDOMAIN**. A domain given in a URL, an issue, or an old document is not evidence the site is there.
+- **Status**: no longer the first source. **Confirm before implementing.**
+- **Last verified**: 2026-10-02
+- **Quirks**: domain churn (above). Aggregator — its chapter pages may be proxied from origin sites, so chapter HTML may differ per fiction and the converter's per-source overrides will earn their keep here.
+- **Pending promotion**: `17-security.md` rule 6 — treat an NXDOMAIN as a finding to record, not as a transient to retry.

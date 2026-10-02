@@ -1,0 +1,22 @@
+{"ts":"2026-10-02T10:04:18.975Z","type":"init","anchor":"/workspaces/lumen_tale","anchor_source":"project_marker","product":"Lumen Tale","references":[]}
+{"ts":"2026-10-02T10:05:10.265Z","type":"init","anchor":"/workspaces/lumen_tale","anchor_source":"project_marker","product":"Lumen Tale","references":["/tmp/opencode/mihon"]}
+{"ts":"2026-10-02T10:05:36.093Z","type":"guard_failure","message":"anchor command did NOT refuse the declared reference project: run from /tmp/opencode/mihon it resolved mihon as anchor with reference_projects=[] — the guard reads only the candidate's own state.json, so cross-project protection depends on staying in the project dir","origin":"skill"}
+{"ts":"2026-10-02T10:10:25.291Z","type":"register","deliverable":"conventions","path":".forge/conventions.md","kind":"deliverable"}
+{"ts":"2026-10-02T10:15:45.152Z","type":"register","deliverable":"contract","path":".forge/contract.md","kind":"deliverable"}
+{"ts":"2026-10-02T10:17:59.393Z","type":"hash","kind":"deliverable","entry":"contract","content_hash":"sha256:adbc2dfaad99"}
+{"ts":"2026-10-02T10:19:29.337Z","type":"guard_failure","message":"version_pins_agree is a false positive on a Dart project: it reads .dart_tool/package_graph.json, treats the literal key 'version' as a package named 'version', and reports 140+ distinct pins as conflicts. Verified independently that all 24 direct dependency versions agree across pubspec.yaml, pubspec.lock and AGENTS.md.","origin":"skill"}
+{"ts":"2026-10-02T10:19:29.399Z","type":"hash","kind":"deliverable","entry":"conventions","content_hash":"sha256:b0e5bcbcec97"}
+{"ts":"2026-10-02T10:19:29.440Z","type":"hash","kind":"deliverable","entry":"contract","content_hash":"sha256:adbc2dfaad99"}
+{"ts":"2026-10-02T10:37:29.148Z","type":"hash","kind":"deliverable","entry":"contract","content_hash":"sha256:5b575ce0289d"}
+{"ts":"2026-10-02T10:37:48.087Z","type":"client_point","message":"C-001 decision — Pas de publication sur le Play Store ni l'App Store — l'application reste un APK construit automatiquement et installé manuellement"}
+{"ts":"2026-10-02T10:37:48.138Z","type":"client_point","message":"C-002 decision — Pas de mise en page tablette — telephone uniquement"}
+{"ts":"2026-10-02T10:37:48.188Z","type":"client_point","message":"C-003 decision — Construction automatique des APK par GitHub Actions a chaque fusion sur la branche principale, avec numero de version"}
+{"ts":"2026-10-02T10:38:07.719Z","type":"client_answer","message":"C-001 → Non — aucune publication en magasin, définitivement"}
+{"ts":"2026-10-02T10:38:07.790Z","type":"client_answer","message":"C-002 → Non — telephone uniquement pour le moment"}
+{"ts":"2026-10-02T10:38:07.847Z","type":"client_answer","message":"C-003 → Oui — GitHub Actions construit les APK a chaque fusion sur main, avec versionnement"}
+{"ts":"2026-10-02T10:45:23.850Z","type":"client_point","message":"C-004 decision — Les trois sites (FanMTL, Royal Road, Novel Fire) restent dans la version 1"}
+{"ts":"2026-10-02T10:45:35.600Z","type":"client_answer","message":"C-004 → Oui — les trois sites sont en v1, FanMTL en premier"}
+{"ts":"2026-10-02T10:45:35.678Z","type":"status_change","kind":"deliverable","key":"contract","from":"draft","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/contract.md","from":"draft","to":"approved"}}
+{"ts":"2026-10-02T10:45:35.730Z","type":"hash","kind":"deliverable","entry":"contract","content_hash":"sha256:4940f415e5b4"}
+{"ts":"2026-10-02T10:45:35.769Z","type":"hash","kind":"deliverable","entry":"conventions","content_hash":"sha256:b0e5bcbcec97"}
+{"ts":"2026-10-02T10:46:03.180Z","type":"gate_approved","phase":"0_bootstrap","next_phase":"1"}

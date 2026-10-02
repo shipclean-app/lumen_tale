@@ -29,6 +29,7 @@ So the conversion is written directly against `package:html`, which is already a
 - Walk the `Element` tree from the extracted article node; emit Markdown as a `StringBuffer`.
 - Inline: `p`, `br` → hard break, `h1`–`h6`, `em`/`i`, `strong`/`b`, `code`, `a` (resolve `href` against `baseUrl`), `img` (resolve `src`, subject to the image rule below), `del`/`s`.
 - Block: headings, paragraphs, `blockquote`, `ul`/`ol` (nested, with correct indentation), `pre`/`code` fences, `hr`, `table` (pipe tables; fall back to paragraph text if the table is too irregular to represent).
+- **Paragraphs are not only `<p>`.** A bare text node delimited by **two consecutive `<br>`** is a paragraph, and sites rely on it heavily — FanMTL emits chapters with **zero `<p>` elements**, prose separated only by `<br><br>`. Handle both: `<p>` → paragraph, and `br br` → paragraph break (a single `br` → line break). A converter that only knows `<p>` renders an entire chapter as one run-on paragraph, and it still looks plausible in a smoke test — so this rule has its own fixture.
 - Drop by default: `script`, `style`, `noscript`, `iframe`, `object`, `embed`, `svg`, `nav`, `aside`, `footer`, `form`, `button`, and every node a source marked as removable.
 - **Escaping:** escape Markdown-reserved characters in text nodes only, and only where an escape would otherwise change meaning. Never escape inside `pre`/`code`.
 - **Whitespace:** collapse runs of whitespace in text nodes; trim block edges; never emit more than one consecutive blank line.

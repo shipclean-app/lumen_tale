@@ -20,9 +20,10 @@ abstract class Source {
 
   Future<NovelsPage> getPopularNovels(int page);
   Future<NovelsPage> getLatestNovels(int page);
-  Future<NovelsPage> searchNovels(int page, String query, List<Filter> filters);
+  Future<NovelsPage> searchNovels(int page, String query, FilterList filters);
   Future<NovelUpdate> getNovelUpdate(
-    Novel novel, {
+    Novel novel,
+    List<Chapter> chapters, {
     required bool fetchDetails,
     required bool fetchChapters,
   });
@@ -37,6 +38,11 @@ abstract class HttpSource extends Source {
 }
 
 abstract class ParsedHttpSource extends HttpSource {
+  // OPTIONAL convenience, not the contract. Mihon deprecated its equivalent
+  // ("the helper functions are inherently limiting and hides the underlying
+  // implementation"), so keep this thin: selectors + mappers only, no hidden
+  // request building, no implicit retry policy. A source that needs different
+  // behaviour implements Source/HttpSource directly instead.
   // Declarative CSS selectors (package:html) + Element mappers:
   //   popularNovelsSelector / novelFromElement
   //   searchSelector / novelFromElement
@@ -69,8 +75,9 @@ abstract class ParsedHttpSource extends HttpSource {
 
 - `Novel` — url, title, author, artist?, status (enum), description?, genres (List<String>), coverUrl?, initialized, updateStrategy, memo.
 - `Chapter` — url, name, number (double, `-1` if unknown), scanlator?, dateUpload (DateTime), memo.
-- `NovelUpdate` — novel + chapters (result of `getNovelUpdate`).
+- `NovelUpdate` — novel + chapters. `getNovelUpdate` receives the **existing** chapters so the source can return only what changed; a source must not re-emit chapters the caller already holds.
 - `NovelsPage` — novels + hasNextPage (drives pagination; page numbers are 1-based).
 - `Page` — used only when a chapter is split across pages: index, url, html/markdown, imageUrl?. **The order of the list is authoritative** — ignore indexes coming from the source.
-- `Filter` — sealed class: Header, Separator, Select, Text, CheckBox, TriState, Sort.
+- `Filter<T>` — **generic** sealed class carrying `name` + a typed `state: T`. The parameter is the point: `Select<V>`→`int` (index), `Text`→`String`, `CheckBox`→`bool`, `TriState`→`int` (with a `stateIgnore` constant), `Group<V>`→`List<V>`, `Sort`→`Selection(index, ascending)`. Subclasses: `Header`, `Separator`, `Select<V>`, `Text`, `CheckBox`, `TriState`, `Group<V>`, `Sort`. `Group<V>` is a list-valued filter and is **not** optional — Mihon ships it and sources use it.
+- `FilterList` — implements `List<Filter<Object?>>` by delegation, so a source's declared filters can be iterated directly.
 - `UpdateStrategy` — AlwaysUpdate | OnlyFetchOnce.

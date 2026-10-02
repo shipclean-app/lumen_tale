@@ -35,10 +35,8 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 
 ### Q-001 — Which sites may Lumen Tale scrape, and who grants permission?
 
-- **What is not known**: no site has been chosen, and `18-external-contracts.md` records `Permission: unknown` for every candidate. Whether the sites the user reads are scrapable at all is unverified.
-- **What the answer determines**: whether a source implementation is even lawful/ethical to write, and what `18-external-contracts.md` records per site.
-- **Closes when**: the first source is selected for implementation — at that moment, ask the project owner for permission before writing the scraper, not after.
-- **Status**: Open
+- **Status**: **Closed 2026-10-02** → became ADR-008 (sites) and the `18-external-contracts.md` records.
+- **Resolution**: **FanMTL** (https://www.fanmtl.com) is the **first and primary** source — a fan-fiction / web-novel site whose robots.txt permits reading content and whose chapter text is server-rendered. **Royal Road** and **Novel Fire** were named earlier; after FanMTL became the first source their v1 status is **unconfirmed** — see Q-005. Novel Fire's terms remain unconfirmed regardless (Q-004).
 
 ### Q-002 — Must the download queue survive app death?
 
@@ -52,6 +50,25 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 - **What is not known**: the stack uses `sqlite3` 3.x, which compiles the native library through Dart's build hooks (`native_toolchain_c`). `dart run drift_dev` works, so the hooks execute here — but no Android or iOS build has been run, because this environment has no Android SDK and no Xcode.
 - **What the answer determines**: whether the database layer is proven to build on a real target, or only that it type-checks.
 - **Closes when**: an Android SDK is installed and `flutter build apk` succeeds.
+- **Status**: Open
+
+### Q-004 — Does Novel Fire's terms permit a scraper?
+
+- **What is not known**: Novel Fire's robots.txt and terms of service have not been read, and unlike Royal Road its permission status is genuinely unknown. The site is also an aggregator whose chapter pages may be proxied from origin sites, so permission from Novel Fire may not cover the origin.
+- **What the answer determines**: whether the Novel Fire source is implemented at all in v1. Its scraper is blocked until this closes.
+- **Closes when**: the project owner confirms Novel Fire's terms permit it — at that moment, record it in `18-external-contracts.md` and, if the answer is yes, also confirm whether proxied origin content is in scope.
+- **Status**: Open
+
+### Q-005 — Are Royal Road and Novel Fire still in v1 now that FanMTL is first?
+
+- **Status**: **Closed 2026-10-02** — **all three sites are in v1.** FanMTL first, then Royal Road and Novel Fire.
+- **Resolution**: FanMTL, Royal Road, and Novel Fire are all v1 sources. Novel Fire remains **individually blocked on Q-004** (its terms are unconfirmed) — being in scope is not permission to implement. Per ADR-013 the platform contract is built against FanMTL first and the other two are added as adapters over the same contract, so a source blocked on permissions does not block the slice.
+
+### Q-006 — Is the default branch `master` or `main`?
+
+- **What is not known**: ADR-011 says builds trigger "on merge to `main`", which is what the owner asked for. The repository's actual default branch is **`master`**, and `feat/basics` tracks nothing yet.
+- **What the answer determines**: the `on:` trigger of the GitHub Actions workflow. A workflow pointed at a branch that does not exist **never runs and reports success** — the same failure shape as an `instructions` glob that matches nothing, which this repo already has a correction about.
+- **Closes when**: the owner renames the default branch to `main`, or says keep `master`. Until then the ADR is written against `master` because that is the branch that exists.
 - **Status**: Open
 
 ## Questions tranchées / Resolved questions
@@ -122,3 +139,89 @@ A closed question leaves this section and **becomes an ADR**, carrying the decis
 - **Decision**: `AGENTS.md` §Definition of Done is the single owner, alongside §Priority Order and §Commands. Rule files carry only domain-specific additions and cross-reference it.
 - **Alternatives considered**: (a) Keep the per-file block from the template — 18 duplicated copies on a target that cannot scope them, which the audit checklist names as a "second, condensed restatement layer". (b) Merge `11` and `12` into one workflow file — rejected: git conventions and agent operating rules are genuinely different concerns and both files keep substantial unique content; cross-referencing preserves all of it.
 - **Consequences**: `11` and `12` no longer restate the sequence. Conflicts between rule files are resolved by `AGENTS.md` §Priority Order, which is referenced rather than reasserted.
+
+### ADR-008: Mihon is the declared reference project — copy structure, re-derive code
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: Lumen Tale's rules were written as a transposition of Mihon's `source-api`, but no reference was ever pinned, so every divergence was invisible and the rules silently drifted from both Mihon and from this project's own stack. Mihon was cloned for inspection (`/tmp/opencode/mihon`, `db45dda`). Comparing them surfaced divergences that "copy Mihon" would have inherited without anyone noticing.
+- **Decision**: Mihon is the reference for **product scope, screen inventory, and feature structure**. It is **not** the reference for implementation. Mihon is Kotlin/Compose; this project is Flutter/Dart. Every Mihon pattern is evaluated for a Flutter equivalent first, and a divergence is recorded as an ADR rather than silently tolerated.
+- **Alternatives considered**: (a) Port Mihon's architecture literally — rejected; there is no Kotlin-to-Dart translation that preserves the decisions, only the surface. (b) Ignore Mihon and design from the product need alone — rejected; it discards a validated feature decomposition and 60+ screens' worth of interaction design. (c) Reference-with-verification (chosen): Mihon's *what* and *why* are inherited; its *how* is re-derived against Flutter.
+- **Divergences deliberately kept** (do not "fix" these back toward Mihon):
+
+  | Concern | Mihon | Lumen Tale | Why |
+  |---|---|---|---|
+  | Domain layout | feature-first (`domain/chapter/{model,repository,interactor,service}`) | **layer-first** (`domain/{models,repositories,interactors}`) | Chosen by the owner. `02-architecture.md` is authoritative. |
+  | Persistence | SQLDelight | **drift** | ADR-005. |
+  | Navigation | Voyager (`cafe.adriel.voyager`) | **go_router** + centralized route constants | Voyager is Compose-only; `09-widgets-ui.md` rule 10 already mandates centralized paths. |
+  | Async | `suspend` + RxJava | `Future` + Riverpod `AsyncValue` | Idiomatic Dart. |
+  | `Source.id` | `Long` (MD5 first 8 bytes) | `String` (full MD5 hex) | Readable in logs and debuggable; no Mihon-compat requirement exists. |
+
+- **Upstream deprecations that do transfer**: Mihon has deprecated `ParsedHttpSource` and most of `HttpSource`'s helpers — *"the helper functions are inherently limiting and hides the underlying implementation."* That critique applies to any language, so our `ParsedHttpSource` survives as an **optional, thin** convenience (`03-source-system.md` §Contract) rather than the contract itself.
+- **Contract corrections made from this comparison**: `Filter<T>` is generic with a typed `state`; `Filter.Group<V>` was missing from our model list and is added; `getNovelUpdate` takes the caller's existing `chapters` so a source returns only what changed.
+- **Consequences**: `18-external-contracts.md` holds site facts. Divergences get an ADR, not a quiet edit. `.forge/` is where scope and slices are planned — it holds *what to build and where we are*, never *what to follow*, which stays in `AGENTS.md` and `.opencode/rules/`.
+
+### ADR-009: The reader is continuous-scroll in v1; paged mode and reading modes are v2
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: The target is parity with the commercial web-novel mobile apps, which offer continuous **and** paged reading, plus reading modes (scroll, horizontal, vertical, dual-page), orientation control, and per-page colour filters. Mihon's reader mirrors that (`ReaderActivity`, `ReadingModeSelectDialog`, `OrientationSelectDialog`, `ChapterTransition`, `ColorFilterPage`, `ReadingModePage`). Shipping all of it in v1 would put the most complex subsystem of the app on the critical path before the pipeline it feeds is proven.
+- **Decision**: v1 is **continuous scroll only**, restoring scroll position on reopen. Paged mode, reading modes, orientation selection, page transitions, and colour filters are explicitly v2, and the reader's state model must not preclude them.
+- **Alternatives considered**: (a) Build the full reader up front — rejected: it is the largest single subsystem and its output feeds the pipeline, so building it first inverts the risk order. (b) Scroll-only forever — rejected; parity with the reference apps is a stated goal, so this would be a permanent gap rather than a deferral.
+- **Consequences**: `09-widgets-ui.md` §Reader UX mandates continuous scroll for v1. A chapter's position is stored as a scroll offset, **not** a page index, so v2 paged mode can resume the same reading position — changing that later means migrating stored positions. Colour-filter and reading-mode settings are therefore v2 surfaces of `SettingsReaderScreen`.
+
+### ADR-010: v1 scope is personal-use only
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: The app reads third-party sites. Whether redistribution or export surfaces may be built affects the legal posture and the design of download, sharing, and backup features.
+- **Decision**: v1 is **personal use only**. No sharing, no export to a portable format, no backup/restore of downloaded content, no public catalogue sharing.
+- **Alternatives considered**: (a) Allow export in v1 — rejected: it converts a personal reader into a redistribution tool and pulls in provenance/licensing questions that are out of scope. (b) Say nothing and leave it open — rejected; an unstated default reads as permission.
+- **Consequences**: Mihon's backup/restore screens and its `.cbz`/archive handling are excluded in v1. Downloaded Markdown is readable by the app and nothing else in v1. Revisiting export requires a new ADR.
+
+### ADR-011: Builds are produced by GitHub Actions on merge to `main`, never distributed through a store
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: The owner requires versioning so that merging into `main` produces the APK builds automatically. No Play Store (ADR-010's exclusion, now confirmed as the permanent answer to the §5 question). No tablet layout in the current scope.
+- **Decision**: A GitHub Actions workflow builds the APKs on merge to the repository's **default branch — which is currently `master`**, not `main`. The owner asked for `main`; the branch does not exist, and a workflow whose `on:` names a nonexistent branch **never runs and reports success**, which is the same silent-green failure shape as an instruction glob that matches nothing. Written against `master` so it is true today; Q-006 tracks renaming the branch, and if it is renamed the trigger follows.
+- **Decision (continued)**: There is **no store listing**, so there is no store version to keep in step and no review gate. `pubspec.yaml` `version: <major.minor.patch>+<build>` is the single source of truth; the workflow overrides `--build-name` and `--build-number` from the git tag and the Actions run number, so two builds of the same commit are never indistinguishable.
+- **Alternatives considered**: (a) Play Store / App Store — rejected: needs a paid developer account, a review process, and a build proven on hardware we do not have; it would also couple every release to store policy. (b) Local builds only, no CI — rejected: the owner asked for builds to appear automatically on merge. (c) F-Droid style rolling channel — rejected as unnecessary indirection for a personal-use app.
+- **Details still open, and deliberately so**: which exact APK variants to publish (split-per-abi vs universal), whether a debug artifact is uploaded alongside, and whether `main` is merged directly or via PR. These are cheap, reversible packaging choices — see §4 of the contract — and they are settled when the workflow is written, not now.
+- **Consequences**: No Play Store code, no signing-for-store config, no store metadata work in any slice. `07-downloads-offline.md` is unaffected. The Android SDK becomes a **CI** dependency rather than a local one, which changes the shape of Q-003: the build is verifiable without a developer machine having an SDK.
+
+### ADR-012: v1 success criteria
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: No success criterion was ever stated. Phase 2 measures scope against it, so leaving it undefined lets the roadmap set its own target.
+- **Decision**: v1 is done when **all** of the following hold:
+
+  1. **FanMTL and Royal Road** are browsable, searchable, and their chapters readable end to end. **Novel Fire** as well, if its terms are confirmed before the §5 deadline — otherwise it does not count against v1 (Q-004).
+  2. **Fifty chapters** can be downloaded and then read **with the network off**, verified by actually disabling connectivity — not by asserting the file exists.
+  3. Library, history, and unread badges are correct.
+  4. **French and English** are both complete — every user-visible string, including errors.
+  5. **One verified install on the owner's own phone**, from a CI-produced APK.
+
+- **Alternatives considered**: (a) "It builds and the tests pass" — rejected: says nothing about whether a person can read a novel. (b) A user-count target — rejected: this is personal-use, so there is no audience to grow into. (c) Feature-parity with Mihon — rejected: Mihon's scope is larger and explicitly excluded here.
+- **Consequences**: Item 5 means Q-003 closes through CI, not through a local SDK install. Item 2 makes the offline promise falsifiable, which is the product's core claim. Criterion 1 names two sites rather than "the site", so success cannot be met by a single lucky integration.
+
+### ADR-013: All three v1 sources are adapters over one platform contract; FanMTL is built first
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: Q-005 closed with all three sites in v1 (FanMTL first, then Royal Road and Novel Fire). That creates a coupling risk: Novel Fire is individually blocked on unconfirmed terms (Q-004). If the platform contract is designed around whichever source happens to be first, the second and third sources become rewrites.
+- **Decision**: The platform contract — `Source`, `HttpSource`, `Filter<T>`, `Novel`, `Chapter`, `NovelsPage`, and the HTML→Markdown pipeline — is written and tested against **FanMTL**, and FanMTL is the reference fixture. Royal Road and Novel Fire are **adapters over that same contract**: new selectors, new URL shapes, new per-source conversion overrides, no changes to the contract. A source blocked on permission therefore does not block the contract slice.
+- **Alternatives considered**: (a) One source per slice with the contract split per site — rejected: it multiplies the contract by three and guarantees drift. (b) Wait for all three permissions before designing anything — rejected: it stalls the whole project on a question only the owner can answer. (c) FanMTL-specific contract — rejected: that is the divergence ADR-008 exists to prevent, applied to ourselves.
+- **What each site forces that the others do not** — already verified, so Phase 4 does not have to discover them:
+
+  | Concern | FanMTL | Royal Road | Novel Fire |
+  |---|---|---|---|
+  | Article selector | `div.chapter-content` | to be discovered | to be discovered |
+  | Paragraph delimiter | `<br><br>`, **zero `<p>`** | to be discovered | to be discovered |
+  | Catalogue / pagination | `/list/<tag>/<sort>-<page>.html`, **0-based page** | `/fictions/*` | to be discovered |
+  | Chapter URL | `/novel/<id>_<n>.html` | `/fiction/<slug>/<chapter>` | to be discovered |
+  | Cloudflare | present, not challenging | expected present | unknown |
+  | Permission | permitted, verified | permitted, verified | **unconfirmed — Q-004** |
+
+- **Consequences**: `04-html-to-markdown.md`'s per-source override mechanism is load-bearing from day one, not a convenience — it is how the second and third source get added without touching the contract. The `<br><br>` paragraph rule and the `.chapter-content` selector are already promoted from the FanMTL record for this reason. A source whose markup has no `<p>` at all is the hard case, and the first site happens to be that hard case, which is fortunate.
