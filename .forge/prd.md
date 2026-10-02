@@ -130,6 +130,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 - **So that** I can read without connectivity and without spending mobile data
 
 **Priority**: P1 *(the "wow" moment — the single most important story in this document)*
+- [x] A chapter whose page contains a script tag, an inline handler, or an image pointing at a third-party host is still read as plain text: nothing runs, and no request leaves the app except the chapter and the images the app itself decides to fetch (B44).
 **Dependencies**: US-06, US-07, US-04
 
 **Acceptance criteria**:
@@ -199,6 +200,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 - **So that** I find them again in one place
 
 **Priority**: P2
+- [x] Typing part of a novel title narrows the library to matching entries. The library offers no author, genre or description filter, because it does not hold those fields (B45).
 **Dependencies**: US-03
 
 **Acceptance criteria**:
@@ -216,13 +218,14 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 - **So that** I know what is new without visiting each site
 
 **Priority**: P2
+- [x] Every novel in the library is visited by an automatic check — none is skipped — and each shows its exact unopened count beside when it was last checked (B39, B48, B49).
 **Dependencies**: US-09
 
 **Acceptance criteria**:
 - [x] A single view lists every library novel that has at least one chapter the reader has not opened, showing that count. The list does **not** depend on whether a check has run: a novel never checked appears with its count and "never checked" beside it (B48, B49).
 - [x] The counts come from the chapters themselves, so opening any chapter clears its new marker and the counts update across the app accordingly (B13). Opening the novel's page does not itself mark chapters as seen.
-- [x] With the connection off, the view shows the last known result and says it may be out of date; it never claims there is nothing new (B15).
-- [x] A novel whose site cannot be reached is visibly marked as unverified rather than counted as having no new chapters (B22).
+- [x] With the connection off, the view still shows each novel's exact count, and shows when that novel was last checked or that it never has been; it never claims there is nothing new (B15, B48, B49).
+- [x] A novel whose site cannot be reached still shows its exact count — losing contact never changes a local number. What changes is the **verification** state beside it, which reads "could not check" rather than "no new chapters" (B22, B48, B49).
 
 ---
 
@@ -233,6 +236,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 - **So that** I never lose my place
 
 **Priority**: P2
+- [x] Clearing the reading history, or waiting a year for entries to age out, never removes a reading position: a novel still resumes at the same paragraph (B46, B47).
 **Dependencies**: US-04
 
 **Acceptance criteria**:
@@ -256,7 +260,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 - [x] A history view lists recently opened chapters, most recent first, each identifying its novel and its chapter title (B17).
 - [x] Opening an entry from history opens that chapter, following the same resume behaviour as US-11 (B16).
 - [x] The history is readable with the connection off (C14).
-- [x] The list keeps at most 200 entries, dropping the oldest first, and offers to clear the list entirely (B46); the cap is 200 entries (B46).
+- [x] The list keeps only entries from the last year, dropping older ones first, and offers to clear it entirely (B47). Clearing the list never removes a reading position (B46).
 
 ---
 
@@ -365,9 +369,9 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 | B12 | A novel enters the library only through an explicit user action on a novel the user opened from a site. | US-09 | |
 | B13 | A chapter counts as new until the user has opened it; opening it clears its new marker. | US-10 | |
 | B14 | The number of new chapters shown for a novel equals the chapters in it that the user has not opened. The count is never an estimate and never a stale number presented as fresh. | US-09, US-10 | Success criterion SC-3 |
-| B15 | Checking a library novel for new chapters requires a connection. With no connection the app shows the last known result and labels it as possibly out of date; it never presents "no new chapters" as a fresh answer. | US-10 | |
+| B15 | Checking a library novel for new chapters requires a connection. With no connection the app shows the last known result **and says when that novel was last checked, or that it never has been**. The staleness applies to *that timestamp*, never to the count, which is local and always exact (B48, B49). It never presents "no new chapters" as a fresh answer. | US-10 | |
 | B16 | The reading position is remembered separately for each chapter, and reopening a read chapter returns to that position. | US-05, US-11 | |
-| B17 | Reading history lists recently opened chapters in reverse order, most recent first, and returning to a novel offers the most recently read chapter of that novel. | US-11, US-12 | Capped at **200 entries**, oldest dropped first, and clearable by the reader |
+| B17 | Reading history lists recently opened chapters in reverse order, most recent first. **The most recently read chapter of a novel comes from the reading-position record, not from this list** — the list is bounded by B47 and can be cleared, while the position never is (B46). | US-11, US-12 | The history **list** is bounded by time, not count (B47); reading position is never trimmed (B46) |
 | B18 | Downloading a novel enqueues its chapters one at a time in reading order. The bulk choices offered are: the next chapter, the next 5 / 10 / 25 chapters, **all unread chapters**, or an explicit set the user selected by hand. There is no "download every chapter including ones already read" shortcut — that is reachable only by selecting every chapter deliberately. | US-07 | Resolved from Mihon: a 6-option download menu plus multi-select download |
 | B19 | A download queue can be paused and cancelled. Paused, cancelled and unfinished chapters are never marked as downloaded, and a cancellation takes effect without a further action, and no further chapter is fetched after it. | US-07, US-08 | |
 | B20 | A download interrupted by loss of connection or by the app closing leaves the affected chapter unstorable-as-complete; the chapter is fetched again from the start rather than completed from a partial state. | US-06, US-08 | |
@@ -391,15 +395,15 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 | B36 | A manual action — "update library" — is available whether or not the schedule is on. **Opening the app is not a trigger for a check.** | US-10 | Mihon has no foreground/app-open trigger at all; we inherit that gap rather than close it |
 | B37 | A scheduled or manual check runs as a foreground job with a visible notification the user can cancel. Cancelling one run does not disable the schedule. | US-10 | Mihon `LibraryUpdateWorker`: foreground service, notification with a cancel action |
 | B38 | **A new-chapter check never starts downloading.** Checking and downloading are separate and never overlap: the check reads chapter lists and nothing else. It never enqueues, defers or triggers a download — a download starts only when the user asks for one (B5). | US-07, US-10 | **The highest-value Mihon invariant for this product.** Mihon's own stated reason: "We don't want to start downloading while the library is updating, because websites may not like it and they could ban the user." See C7 |
-| B39 | An automatic check visits every novel in the library **except those the reader has completed**, which it skips as a courtesy to the site. A novel is never skipped because it has unread chapters, and never because it has not been read yet. | US-10 | **Rewritten to remove the B14 conflict.** Mihon skips "has unread", because there the user is actively reading and will meet the chapters anyway. That reasoning inverts for us: the download queue is the product, so the novels being read are exactly the ones whose new chapters matter most. Skipping them would leave a reader's own download queue silently stale |
+| B39 | **An automatic check visits every novel in the library.** No novel is skipped for any reason. | US-10 | **Skip rule deleted by red-team.** The previous version skipped novels "the reader has completed" — a state no rule, story, criterion or glossary entry defined, so the check silently skipped an unknowable subset. Mihon can key on it because it has a real completed flag; we have none, and inventing one is a feature, not a correction. Politeness toward the site is handled where it actually belongs: checks are off by default (B35) and rate-limited (C7) |
 | B40 | Library entries are **never renamed, aliased or merged.** Two novels with the same or a similar title stay separate. Adding one that resembles an existing entry warns and offers to open the existing entry or add anyway — nothing is ever merged. | US-09 | Mihon has no title field at all and no merge path; it only warns |
 | B41 | Searching inside a site searches whatever that site searches. The app does not split a query into title, author and description, nor decide which of those a site matches; it passes the reader's words to the site. | US-02 | Mihon passes one opaque query string per source, with no app-level field decomposition |
 
 | B43 | The app shows which version is installed, on a dedicated about screen. | US-17 | Mihon `AboutScreen` |
-| B44 | **Content read from a site is only ever text.** Markup, styling, script, or any URL supplied by a site is never executed, never loaded, and never followed as an instruction — it is shown as literal characters or discarded. A site cannot make the app fetch anything, run anything, or change any setting by what it returns. | US-05, US-16 | **Added by red-team:** scraped content is the most likely hostile input to a scraper and the document did not mention it. Enforces C1/C4 in §7.2 |
-| B45 | The library search covers the fields the app actually stores — title, author, and genre where the site provided them — and nothing more. It never claims to search a field the app does not hold. | US-09 | **Rewritten by red-team:** B42 promised a search over fields no requirement established were stored |
-| B47 | **The history list is bounded by time, not by count.** Entries older than **one year** are dropped, oldest first. The reader may change that window or clear the list entirely. | US-12 | **Standard, not a guess.** Mihon bounds nothing — its history table has no `LIMIT` and no retention window, cleared only by hand — so there is no precedent to copy. Every platform that does bound activity history bounds it by **time** (Safari and Chrome offer "delete history older than…"; Google account activity defaults to 18 months; Android usage stats keeps about a year). **Time, not count, because a count cap punishes heavy readers — precisely our user — while time bounds unbounded growth without punishing use.** One year is the longest default any of those platforms uses and is long enough that no real reader ever reaches it: the cap exists to bound a pathological table, not to be felt. |
-| B48 | **The new-chapter count is a local fact and never depends on a check.** It is the number of chapters the reader has not opened. The app always knows this number exactly, because it counts what it has stored — it is never an estimate and never goes stale. | US-10, US-11 | **This is what dissolves the B14/B39 conflict.** Once the count is purely local, a skipped novel's count is still correct; nothing about the count can be made wrong by whether a check ran |
+| B44 | **Content inside a fetched page is only ever text.** Markup, styling, script, or embedded instructions that arrive *inside* a document the app fetched are never executed, never interpreted as commands, and never cause the app to fetch anything outside its own declared request paths. **A URL the app finds in a page is not forbidden — following it is how pagination and covers work.** What is forbidden is treating page content as a command: a page cannot make the app run code, change a setting, reach an address the app was not already going to request, or read anything outside its own storage. | US-05, US-16 | **Narrowed by red-team.** The first wording forbade loading any site-supplied URL, making covers (US-01, US-09) and multi-page chapters (B8, E3) unimplementable. Fetching is the product; *executing what a page says* is the threat. Enforced by §7.2, which states the same rule in the same words |
+| B45 | The library can be searched **by novel title only**. It never searches, filters or sorts on author, genre or description, because the app does not require itself to hold those — so it must not imply it can. | US-09 | **Reduced to title only by red-team.** B42 was withdrawn for asserting author/genre are stored; B45 repeated the same unproven premise. Title is the one field every rule does establish (B3, B12) |
+| B47 | **The history list is bounded by time, not by count.** Entries older than **one year** are dropped, oldest first. The reader may change that window or clear the list entirely. | US-12 | **Standard, not a guess.** Mihon bounds nothing — its history table has no `LIMIT` and no retention window, cleared only by hand — so there is no precedent to copy. Every platform that does bound activity history bounds it by **time** (Safari and Chrome offer "delete history older than…"; Google account activity defaults to 18 months; Android usage stats keeps about a year). **Time, not count, because a count cap punishes heavy readers — precisely our user — while time bounds unbounded growth without punishing use.** One year is chosen as the conservative end of that range — an order of magnitude beyond what any real reader reaches — so the cap bounds a pathological table without ever being felt. The point of the standard is the **shape** (bound by time, configurable, clearable), not the number. |
+| B48 | **The new-chapter count is a local fact and never depends on a check.** It is the number of chapters the reader has not opened. This is B14 restated as a property that makes the B39 conflict impossible: the count is computed over stored **chapter-list metadata**, not over downloaded bodies, so a novel never downloaded still counts correctly. It is never an estimate and never goes stale. | | US-10, US-11 | **This is what dissolves the B14/B39 conflict.** Once the count is purely local, a skipped novel's count is still correct; nothing about the count can be made wrong by whether a check ran |
 | B49 | A novel also shows **when it was last checked against its site**, or "never checked" if it has not been. The app never implies there is nothing new for a novel it has not checked — it says it has not looked. | US-10 | Closes B15: staleness is made **visible** rather than denied. Two separate facts, two separate displays: how many you have not opened, and how recently we confirmed what exists |
 | B46 | **Reading position and reading history are different things and are never conflated.** The position — which chapter, and how far into it — is held for every novel forever and is **never trimmed by any retention rule**, because it is what "pick up where you left off" depends on and there is no backup of it. The history *list* — a log of what was opened, browsable by date — is bounded separately (B47). | US-11, US-12 | **Split by red-team finding:** one rule was covering both, and any cap applied to it would have quietly destroyed reading positions |
 ## 5. Constraints
@@ -446,7 +450,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 | E13 | Dark/light mode changes mid-read | The user flips the phone's theme while a chapter is open | The change applies immediately and the reading position is preserved (B26) | low |
 | E14 | Font size changes mid-read | The user changes the phone's font size while a chapter is open | The reader's text resizes immediately, no text is clipped or overlapped, and the reading position is preserved (B27) | low |
 | E15 | The app is closed or the phone restarts mid-queue | A fifty-chapter download is interrupted by the app being closed or the phone rebooting | The queue continues from the chapter it reached when the app is opened again; it does not restart the novel (B21) | high |
-| E16 | A library novel gains new chapters between visits | The site publishes a chapter after the user last checked | The new chapters appear as new on the next successful check; every already-stored chapter is unchanged and remains readable (B13, B14) | medium |
+| E16 | A site publishes a chapter | The site publishes a chapter after the app last looked | The app cannot know about it until a check finds it. Until then the novel shows its existing count and when it was last checked, and **never** implies there is nothing new (B48, B49). Once found, it is counted immediately like any other unopened chapter — the count itself never waited for the check. Every already-stored chapter is unchanged and stays readable (B13, B14) | medium |
 | E17 | Two novels with the same title, from different sites | The library or a catalogue holds two identically titled novels | They remain two distinct novels, each opening its own site; they are never merged (B2) | low |
 | E18 | A chapter page contains no real text | The site returns a page whose article element is absent, empty, or holds only placeholders | **A chapter is "no real text" when nothing readable survives cleaning** — no paragraph, no line break, and fewer than 100 characters of text in total. Below that threshold the chapter is not stored as complete; it is reported as a failure with a retry (B6, B22). The threshold exists because a legitimately short chapter is common on these sites — end notes, an "Extra", an author's afterword — and must never be mistaken for a broken one (see E22) | high |
 | E19 | A search genuinely matches nothing | The search is well-formed and the site has no match | An explicit "no results" message, visibly distinct from a failure message (B22, US-02) | medium |
@@ -480,7 +484,7 @@ Consequently:
 - No account, no sign-in, and no credential of any kind is stored or exchanged (B4, C2).
 - No data leaves the device: no library, no progress, no history, no diagnostics, no telemetry, no crash reports (B29, C2).
 - Downloaded content stays in the app's own storage, and nothing else on the device can read it (C4, B30). **Removing a novel or a chapter from the library does not delete what has been downloaded** — that is a separate, explicit choice (B32, B33).
-- Nothing the app reads from a site is treated as a trusted instruction to the device; content read from a site can only become text the reader sees (C1, C4).
+- Nothing the app reads from a site is treated as a trusted instruction to the device: content inside a fetched page is only ever text, and a page can never make the app run code, change a setting, or reach an address it was not already going to request (C1, C4, B44). Fetching what a page points at — covers, next chapter — is expected; obeying what a page says is not.
 - The app is not distributed through any store and has no public entry point (C3, C9).
 
 ### 7.3 Accessibility
@@ -592,8 +596,8 @@ Consequently:
 | **Library** | The list of novels the reader has chosen to keep. It is also the "followed" list — there is no second concept (B11). |
 | **New / unread chapter** | A chapter the reader has not opened yet. Opening it clears the marker (B13). |
 | **Download queue** | The ordered list of chapters being fetched, one at a time, in reading order (B18). |
-| **Reading position** | Where the reader stopped inside one chapter, remembered per chapter (B16). |
-| **History** | The reverse-chronological list of chapters the reader opened recently (B17). |
+| **Reading position** | Where the reader stopped inside one chapter, remembered per chapter, never trimmed by any retention rule, and the source of "continue where you left off" (B16, B46). |
+| **History** | The reverse-chronological list of chapters the reader opened recently. Bounded to one year by default, configurable and clearable — a different thing from reading position, and clearing it never costs a position (B17, B46, B47). |
 | **Reader** | The screen the chapter text is read in. Continuous scroll, no page-turn, no colour filter (B25). |
 | **Offline** | With no usable network connection. Nothing on the read path may require the network (C14). |
 | **The "wow" moment** | A downloaded novel opens with no signal. It is the reason the app exists and it is the highest-priority outcome (US-05). |
@@ -604,7 +608,7 @@ Consequently:
 
 <!-- Every unresolved ambiguity. Never mixed into the established facts above. -->
 
-**None outstanding.** All fourteen questions raised at draft are now closed:
+**No product question is outstanding.** All fourteen questions raised at draft are closed — twelve by reading Mihon, one by the owner removing a deadline, one by published performance standards. **Three things are nonetheless deferred and are recorded here so this claim is not read as more than it is:** three measurable targets in §7.1 (list responsiveness, download-progress cadence, cancellation latency) are explicitly labelled *"not yet measurable"* and are owed either a number or a deletion in Phase 4; and **Q-003** — proving the app on a real device — is still open and is what turns the §7.1 targets from definitions into measurements. The resolutions were:
 
 - **Twelve were answered by reading Mihon**, the declared reference project (`DECISIONS.md` ADR-008), and are recorded as business rules or as notes on the rules they changed. The table of which question landed where has been folded into each rule's own note.
 - **The Novel Fire deadline** — removed by the owner. There is no deadline: FanMTL is the first source and does not wait on it, and Novel Fire ships whenever its terms are confirmed or never (C10, SC-1).
@@ -617,9 +621,9 @@ Three contradictions between the PRD's own sections were found and fixed during 
 - [x] The problem is defined concretely, not in jargon.
 - [x] All user types are identified, including admin, support, moderator — including their explicit absence.
 - [x] Every user story has verifiable acceptance criteria.
-- [x] Every business rule has a stable ID (B1–B43), contiguous, none reused.
-- [x] Every identified edge case has a stable ID (E1–E21).
-- [x] Every constraint has a stable ID (C1–C14).
+- [x] Every business rule has a stable ID, B1–B49, none reused. One ID (B42) is retained as a withdrawal in §9 rather than deleted, so the series is intentionally not contiguous.
+- [x] Every identified edge case has a stable ID, E1–E22, contiguous, none reused.
+- [x] Every constraint has a stable ID, C1–C14, contiguous, none reused.
 - [x] Non-functional requirements cover performance, security, accessibility, internationalisation and availability.
 - [x] Risks and unknowns are listed.
 - [x] Out of scope is explicit.

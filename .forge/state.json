@@ -107,7 +107,7 @@
       "path": ".forge/prd.md",
       "type": "prd",
       "status": "draft",
-      "content_hash": "sha256:00ba9622fdf5",
+      "content_hash": "sha256:8b732386a0ad",
       "headings": {
         "1": "Executive summary",
         "2": "Users and personas",
@@ -131,7 +131,7 @@
         "7.4": "Internationalization",
         "7.5": "Availability / resilience"
       },
-      "updated_at": "2026-10-02T14:23:39.480Z",
+      "updated_at": "2026-10-02T14:38:28.274Z",
       "version": "1"
     }
   },
