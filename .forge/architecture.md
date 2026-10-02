@@ -686,7 +686,8 @@ An amendment is recorded with `state.js amend`, which **refuses** the renumberin
 - [x] The template's "every endpoint lists its error codes" is satisfied **by § 5's honest substitution**: there is no API, the failure taxonomy is enumerated with its recovery, and the excluded surfaces are listed with reasons rather than left blank
 - [x] Dependency graph has no cycles — § 6.5, verified by `dependency-check`
 - [x] Implementation order is consistent with the dependencies — § 6.1–6.3, and the milestone-vs-topology divergence is declared with its reason
-- [x] Non-trivial architecture decisions are recorded as ADRs — § 7, **eleven** (ADR-003, 005, 008, 009, 010, 013, 014, 015, 016, 017, 019, 020 — twelve rows once ADR-009 is counted), with `DECISIONS.md` as the authority
+- [x] Non-trivial architecture decisions are recorded as ADRs — § 7, **fifteen rows**, with `DECISIONS.md` as the authority: ADR-003, 005, 008, 009, 010, 013, 014, 015, 016, 017, 018, 019, 020, 021, 022
+      > **Corrected 2026-10-02 — this line counted itself wrong and then corrected itself in a parenthesis**, which is the worst of both: it said *eleven*, listed twelve, and admitted the discrepancy rather than resolving it. Four ADRs that shape the plan were missing from the list and from the table — **ADR-018** (the nav order, which ADR-021 and ADR-023 both reference), **ADR-019**, **ADR-021** and **ADR-022**. All four are now rows, and the count is derived from the table rather than typed beside it.
 - [x] The DDL **executes** — against real SQLite rather than pglite, with 15 constraints asserted as behaviour, and the drift guard proven red once
 - [x] `consistency-check references`: zero broken
 
