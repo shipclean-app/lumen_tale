@@ -380,3 +380,5 @@
 {"ts":"2026-10-02T17:50:03.563Z","type":"register","deliverable":"reader-chapter-sheet","path":".forge/design/screens/reader-chapter-sheet.md","kind":"screen"}
 {"ts":"2026-10-02T17:50:18.822Z","type":"register","deliverable":"design-flows","path":".forge/design/flows.md","kind":"deliverable"}
 {"ts":"2026-10-02T17:50:18.865Z","type":"status_change","kind":"deliverable","key":"design-flows","from":"approved","to":"approved","mirrored":{"mirrored":true,"changed":false,"path":".forge/design/flows.md","status":"approved"}}
+{"ts":"2026-10-02T17:51:23.365Z","type":"register","deliverable":"screen-reader","path":".forge/design/screens/reader.md","kind":"deliverable"}
+{"ts":"2026-10-02T17:51:23.412Z","type":"status_change","kind":"deliverable","key":"screen-reader","from":"approved","to":"approved","mirrored":{"mirrored":true,"changed":false,"path":".forge/design/screens/reader.md","status":"approved"}}

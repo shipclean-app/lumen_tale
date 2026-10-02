@@ -859,7 +859,7 @@
       "path": ".forge/design/screens/reader.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:d63fce8ba252",
+      "content_hash": "sha256:d5bbcaca2521",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -875,7 +875,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T17:34:27.841Z",
+      "updated_at": "2026-10-02T17:51:23.407Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -2099,10 +2099,10 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 198,
+      "register": 199,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 78,
+      "status_change": 79,
       "gate_approved": 3,
       "phase_status": 3,
       "amend": 1,
