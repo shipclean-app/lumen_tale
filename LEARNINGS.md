@@ -47,6 +47,15 @@ The **contrast** is the form, and it is not decorative. "There was a problem wit
 - 2026-10-02 — Don't port a rule set's content along with its patterns: strip symbols that belong to the source project and re-derive the rule for this one. ShadCN (`flutter_shadcn_ui`, `ShadButton`, `ShadCard`, `ShadSheet`) appeared in four rule files while being absent from the declared stack, so any session following them would search for widgets that were never installed.
   → domain: `02-architecture.md` | Seen: git history `chore: enrich project rules from keyed_rent conventions`, 2026-10-02
 
+- 2026-10-02 — Don't fix a defect at the point you discover it: sweep for that **class** of defect before moving on. Three contradictions in the PRD were repaired where they were found, and a red-team pass then found seven more of the same class plus twenty-four further problems. The question that catches all of them is *"where else does this exact sentence appear?"* — and it is cheap; the sweep that would have found them was one grep wider than the one actually run.
+  → domain: `12-ai-agent-workflow.md` | Seen: PRD red-team pass after signing, 2026-10-02
+
+- 2026-10-02 — Don't sign a document that contains cross-section contradictions: a green structural check is not a coherent document. Placeholders, ID contiguity and cross-reference resolution all passed on a PRD that simultaneously said library removal deletes downloads and does not. Coherence is a separate property, and it needs a separate pass by a reader who did not write it.
+  → domain: `12-ai-agent-workflow.md` | Seen: seven critical contradictions in an approved PRD, 2026-10-02
+
+- 2026-10-02 — Don't trust an audit check whose comparison was never tested against a known-bad input. Two integrity scripts reported seventy-plus "missing" IDs that all existed, because they compared a bare number against a prefixed string. A verifier that cries wolf gets switched off, and a switched-off verifier protects nothing.
+  → domain: `17-security.md` | Seen: PRD integrity audit flagging every B/E/C/US ID as missing, 2026-10-02
+
 ## Promotion
 
 Promotion is the path that moves a correction from the journal into a rule. It happens once the rule set exists.
