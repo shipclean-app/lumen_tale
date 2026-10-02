@@ -804,6 +804,18 @@
         ".forge/prd.md",
         ".forge/benchmarks.md"
       ]
+    },
+    "design-coverage": {
+      "path": ".forge/design/coverage.md",
+      "type": "design-coverage",
+      "status": "draft",
+      "content_hash": "sha256:306bf7349a1f",
+      "headings": {},
+      "updated_at": "2026-10-02T15:49:12.307Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
     }
   },
   "index": {
@@ -871,7 +883,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 7,
+      "register": 8,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 7,
