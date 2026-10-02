@@ -65,7 +65,7 @@ Until both remaining sites are measured, v1 can claim **genre browsing for all t
   | Chapter body | `/novel/<id>_<n>.html` | `/novel/ke383028_1.html` |
   | Catalogue / tag / pagination | `/list/<tag>/<sort>-<page>.html` | `/list/xianxia/all-lastdotime-0.html` |
   | Latest chapters | `/updates/` | |
-  | Genre index | `/browsetags/` | 9 tags, the primary discovery path |
+  | Genre index | `/browsetags/` | **8 genres** plus an `all` pseudo-entry — the primary discovery path |
   | Search | `/search.html` (form) → posts to `/e/search/index.php` — **both unreachable, see quirk 6**. Do not implement. | |
 
   The trailing integer in `/list/...` is the **0-based page number** — note this differs from the 1-based `page` argument in the `Source` contract. Convert at the boundary.

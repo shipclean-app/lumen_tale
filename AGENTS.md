@@ -92,7 +92,12 @@ A change is complete when **all** of these hold, in this order. This is the sing
 2. `flutter analyze` — **zero issues**, including zero `info`. Weakening a lint to go green is not a fix.
 3. `flutter test` — all tests pass. Never edit a test to make a failing behaviour pass.
 4. Generated code is committed: if you changed an annotated class or an ARB file, the regenerated output is in the same commit.
-5. Committed with a Conventional Commits message (`11-git-workflow.md`).
+5. `SESSION_LOG.md` has an entry covering this work, or the commit extends an entry already written for this session.
+6. Committed with a Conventional Commits message (`11-git-workflow.md`).
+
+**Why item 5 is in the list and not in a reminder.** This session made **nine commits with no log entry**, and the log only got written when the owner asked why it was so far behind. The cause was not forgetting the rule — it was treating the log as a closing chore because each commit message felt self-documenting. A commit message carries *what changed*; the log carries *what was rejected, what is blocked, and what the next session must not re-litigate*, and nothing found that was lost cheaply. Findings that went unlogged here included `component-parity` verifying nothing, and SQLite not enforcing the foreign keys that hold B32.
+
+So it is item 5 of the Definition rather than advice in a memory index, because **a definition is checked and a reminder is not**. An entry already open for the current session counts — the point is that the work is written down, not that a new heading appears per commit.
 
 ## When blocked
 

@@ -188,3 +188,78 @@ Phase 3 — design and UI/UX. Read `agents/ui-designer.md` and `references/modul
 - Do not claim search for Royal Road or Novel Fire. Both are **unmeasured**, and the file says so explicitly. Measuring them is cheap; asserting them is not.
 - Do not treat the three §7.1 targets marked "not yet measurable" (list responsiveness, download-progress cadence, cancellation latency) as settled. Each owes a number or a deletion in Phase 4.
 - Do not apply Forge's section-reference repair mechanically. `§X` appears mid-sentence often enough that a blind replace mangled six lines of the roadmap and had to be repaired by hand.
+
+---
+
+## 2026-10-02 — Session 4: Phase 3 closed, Phase 4 opened, and a constraint that was not holding
+
+### STARTED FROM
+
+Session 3's end state: PRD approved, Q-007 closed as ADR-015, Phase 2 complete, `benchmarks.md` and `roadmap.md` written. Three screen-writing batches running in parallel; the Mihon inventory agent still outstanding.
+
+### DECIDED
+
+- **Phase 3 closed with 18 screens.** Four written directly (`more`, `sources`, `stats`, `reader-chapter-sheet`); fourteen by three parallel batches, each briefed with `reader.md` as the quality bar.
+- **Navigation order argued, not inherited.** ADR-018: Library first because it has the highest frequency *and* is the only screen that can open the loop rather than summarise it. Browse-first rejected despite being the literal reading of the archetype's loop, because the loop is entered through the reader's own shelf. Downloads kept out of the tabs because it is a *state* of library novels, not a destination.
+- **ADR-016** — the two themes are deliberately **not** inversions: day is warm paper, night is **cool ink carrying warm-white text**. A reader at night turns the brightness down, which is exactly when warm text on a warm field blooms. ADR-017 — reader prose is serif, chrome is sans, via a preference chain rather than a bundled font.
+- **`stats` refuses six mechanics**: no streak, no score, no goal, no percentage, no period-over-period, no personal best. Each with a reason. The empty state is a sentence, because a table of zeroes looks like a measurement.
+- **`sources` fails open.** If the settings read fails, switches stay **on** and the row says so — forcing them off would make browse empty, and an empty browse screen is indistinguishable from "you turned everything off", which is B22's confusion reached by another route.
+- **Dependency graph declared**: 27 slices + 5 foundations, **11 topological waves, no cycles, no dead dependencies**. The critical path runs `0.1 → 1.3 → 2.1 → 2.2 → 2.3 → 2.4` — the offline read proof.
+- **`impl_waves` deliberately left undeclared.** The graph permits *more* parallelism than the roadmap intends (browse UI is topologically available at wave 4; the offline proof lands at wave 6), and the roadmap's **milestone** grouping is what enforces the intent. Declaring a wave count would hide that; documenting it keeps it visible.
+
+### REJECTED
+
+- **Declaring a fake dependency to force the offline path earlier.** Browse UI does not actually need the offline read proven, so a dependency saying otherwise would be a lie that reads as a plan. The roadmap's milestone grouping does the real work instead.
+- **Committing `drift_dev schema generate` output.** It emits `static const versions = const []` — an untyped `List<dynamic>` passed to an `Iterable<int>` parameter — so **drift's own generated code does not compile** at schema version 1. Removing it was the only option consistent with the DoD: editing generated code and adding an ignore are the two things `08-coding-standards.md` forbids.
+- **Inventing a missing section to satisfy a broken cross-reference.** The roadmap cited `benchmarks.md § 5.4` and four roadmap sections `§7.3`/`§7.4` that do not exist; those pointers were deleted rather than aimed at an arbitrary section.
+- **Fabricating session boundaries to make the log look current.** What follows Session 3 was one continuous session; it is written as one entry rather than as three tidy ones.
+
+### BLOCKED
+
+- **Q-003** — no Android SDK or Xcode, so no device build; SC-5 unprovable until CI runs. Unchanged.
+- **Q-004** — Novel Fire's terms of service still unread.
+- **Q-007 closed.** Royal Road and Novel Fire search reachability still **unmeasured**, so v1 claims genre browsing for all three sites and search for none.
+- **Three §7.1 targets** still "not yet measurable" — list responsiveness, download-progress cadence, cancellation latency.
+- **`forge-guard version_pins_agree`** — unchanged known Dart false positive.
+
+### THE FINDINGS
+
+Three of these are the reason this entry exists rather than a list of commits.
+
+1. **`component-parity` was verifying nothing.** It reported `states: 0` for all eight components and said PASS, because the state tables' name column was unbackticked and the heading was the English `States` where the template specifies `États`. It is the **only** gate that asks whether a component gained a state and every screen renders it — so the defence against a component having two renderings was reading nothing while looking like proof. Fixed by complying with the template: **0 → 48 states across 10 components**.
+2. **SQLite was not enforcing the foreign keys that hold B32.** Foreign-key enforcement is off by default per connection and is not part of the file format. Two tests failed against a schema that read correctly: `chapters.novelId` was meant to `CASCADE` and did not, and `historyEntries.novelId` was meant to `RESTRICT` and the delete **succeeded** — which would have silently destroyed the reader's history on removing a novel. B32 would have read correctly in the schema, the review and the documentation **while not holding**. This is SKILL.md §4.5's failure in a harder form: silent rather than loud.
+3. **Three screens had each defined their own settings row.** `SettingsRow`, `SettingsSwitchRow` and `SettingsChoiceSheet` were slice-local in three files — the exact failure `component-parity` exists to prevent, committed three times before it was noticed. Lifted into the design system as §2.10–2.12.
+
+Also: FanMTL has **eight** genres, not nine (the `all` pseudo-entry had been counted as one) — and that correction took **four** passes across **four** files, because the count had been copied into the URL table, the scope line, a quirk, and the screen that renders the taxonomy. Worse, `browse-genre.md`'s anti-generic argument was *built on the wrong number*: it claimed nine tags leave a ragged last row, and eight fill a two-column grid exactly, so the argument collapsed rather than being mistyped. Restated for the general case, since the second source's count is unmeasured; the design system's result-grid row said columns grow at desktop, which is a tablet layout ADR-010 excludes; `never-checked` was `warning` in one table and `info` in another, resolved to **info** because an absence of information must not borrow the colour that means something went wrong; and a delegation brief of mine told an agent to file `source-unavailable` under `module: more` with a `/browse` route — it flagged the contradiction instead of silently picking one.
+
+### FILES TOUCHED
+
+- `.forge/design/` — `design-system.md`, `coverage.md`, `flows.md`, `coverage.md`, and 18 files under `screens/` including `_mihon-verdicts.md`.
+- `lib/core/database/app_database.dart` + generated, `lib/core/database/schema.json` — six tables, drift/SQLite.
+- `test/core/database/` — `app_database_test.dart` (13 tests), `schema_snapshot_test.dart` (3 tests).
+- `AGENTS.md`, `LEARNINGS.md`, `.opencode/rules/{03,06,08,09,18}`, `DECISIONS.md` (ADR-016/017/018).
+- `.forge/audit/run-log.jsonl` — 11 findings logged, including the FK defect at HIGH.
+
+### STATUS
+
+Phases 0–3 complete and approved. Phase 4 in progress: the dependency graph is declared and clean, and the `local-store` foundation is implemented, tested and snapshot-guarded. `architecture.md` is not written, which is why `current_phase_has_deliverables` correctly still fails.
+
+Gate at the last commit: `forge-guard` clean except the known Dart false positive and the correctly-failing Phase-4 check; `consistency-check` clean; `design-check` all four PASS; `flutter analyze` 0 issues; `flutter test` 21 passing.
+
+### NEXT SESSION SHOULD
+
+Finish Phase 4 — write `.forge/architecture.md`, then the two-perspective review and the gate. § 5 of the template is **API contracts** and this app has no API: it scrapes sites. That section has to be honestly re-scoped to the source and network contracts, and the substitution stated rather than quietly dropped.
+
+Carry these forward, all verified and none cheap to re-derive:
+- **Royal Road and Novel Fire search reachability is unmeasured.** v1 may claim genre browsing for all three sites and search for none.
+- **The drift guard has been seen red once** (`columns drifted on chapters`). Keep it that way; re-run `drift_dev schema dump` with **two** arguments after any table change.
+- **`PRAGMA foreign_keys = ON` is load-bearing and per-connection.** A second connection must repeat it or B32 silently stops holding.
+- **B31 remains the structural advantage and it is a drill, not a claim** — Wave 4 and Wave 7 both run it.
+
+### NEXT SESSION SHOULD NOT
+
+- Do not trust a gate that reports zero work. `component-parity` did exactly that for a whole phase and nobody noticed until an agent asked for a component that did not exist.
+- Do not trust a declared constraint without executing it. The foreign keys read correctly in the schema, in review and in the documentation, and did not hold.
+- Do not use `drift_dev schema generate` at schema version 1; its output does not compile.
+- Do not edit generated code or add an ignore to make generated code green. Delete it and record the defect instead.
+- Do not re-open the navigation order or the theme decision — ADR-016/017/018 argue both, and ADR-016's halation argument is the reason.

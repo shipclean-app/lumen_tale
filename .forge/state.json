@@ -69,7 +69,18 @@
       "status": "approved",
       "content_hash": "sha256:b0e5bcbcec97",
       "headings": {},
-      "updated_at": "2026-10-02T16:42:08.452Z"
+      "updated_at": "2026-10-02T17:32:25.309Z",
+      "derived_from": [
+        ".forge/contract.md",
+        ".forge/prd.md"
+      ],
+      "requires": [
+        "B4",
+        "B29",
+        "B30",
+        "C5",
+        "C13"
+      ]
     },
     "contract": {
       "path": ".forge/contract.md",
@@ -654,7 +665,15 @@
         "2.2": "Dreame / Webnovel — the competitive baseline",
         "2.3": "The gap we can actually exploit"
       },
-      "updated_at": "2026-10-02T16:42:08.517Z"
+      "updated_at": "2026-10-02T17:34:27.422Z",
+      "requires": [
+        "B1",
+        "B28",
+        "B30",
+        "C1",
+        "C2",
+        "C10"
+      ]
     },
     "roadmap": {
       "path": ".forge/roadmap.md",
@@ -803,10 +822,17 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-02T16:41:38.668Z",
+      "updated_at": "2026-10-02T17:34:27.548Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
+      ],
+      "requires": [
+        "B26",
+        "B27",
+        "B28",
+        "B44",
+        "C13"
       ]
     },
     "design-coverage": {
@@ -815,10 +841,18 @@
       "status": "approved",
       "content_hash": "sha256:306bf7349a1f",
       "headings": {},
-      "updated_at": "2026-10-02T16:41:38.730Z",
+      "updated_at": "2026-10-02T17:34:27.669Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
+      ],
+      "requires": [
+        "B1",
+        "B22",
+        "B31",
+        "B47",
+        "B48",
+        "B49"
       ]
     },
     "screen-reader": {
@@ -841,10 +875,19 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T16:42:08.567Z",
+      "updated_at": "2026-10-02T17:34:27.841Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
+      ],
+      "requires": [
+        "B7",
+        "B10",
+        "B16",
+        "B25",
+        "B26",
+        "B27",
+        "B44"
       ]
     },
     "design-flows": {
@@ -871,11 +914,20 @@
         "4.3": "Failure in the middle of the work",
         "4.4": "The honest limitation in the download flow"
       },
-      "updated_at": "2026-10-02T16:41:38.786Z",
+      "updated_at": "2026-10-02T17:34:27.984Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md",
         ".forge/design/coverage.md"
+      ],
+      "requires": [
+        "B5",
+        "B7",
+        "B22",
+        "B23",
+        "B24",
+        "B35",
+        "B38"
       ]
     },
     "design-verdicts": {
@@ -898,11 +950,19 @@
         "6.3": "MigrateSource",
         "8.1": "What we add that Mihon does not have"
       },
-      "updated_at": "2026-10-02T16:41:38.839Z",
+      "updated_at": "2026-10-02T17:34:28.206Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md",
         ".forge/design/design-system.md"
+      ],
+      "requires": [
+        "B1",
+        "B2",
+        "B9",
+        "B30",
+        "B32",
+        "B50"
       ]
     }
   },
@@ -1186,7 +1246,7 @@
       "path": ".forge/design/screens/browse-genre.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:609c5490f90a",
+      "content_hash": "sha256:36614bf81b8d",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1202,7 +1262,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T16:41:39.263Z",
+      "updated_at": "2026-10-02T17:29:58.261Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1985,10 +2045,10 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 124,
+      "register": 135,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 64,
+      "status_change": 72,
       "gate_approved": 3,
       "phase_status": 3,
       "amend": 1,

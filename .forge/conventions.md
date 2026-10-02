@@ -2,6 +2,9 @@
 type: conventions
 status: approved
 generated_at: 2026-10-02
+derived_from:
+  - .forge/contract.md
+  - .forge/prd.md
 ---
 
 # Conventions techniques — Lumen Tale

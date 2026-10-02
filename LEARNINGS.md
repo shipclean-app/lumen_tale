@@ -58,6 +58,18 @@ The **contrast** is the form, and it is not decorative. "There was a problem wit
 
 ## Promotion
 
+- 2026-10-02 — Don't treat a session log as a closing chore, because a self-documenting commit message is not the log: the log's job is the part a commit cannot carry — what was rejected, what is blocked, and what a next session must not re-litigate. Nine commits went unlogged across Phases 3 and 4, including the finding that `component-parity` was verifying nothing and the finding that SQLite was not enforcing the foreign keys that hold B32.
+  → domain: `AGENTS.md` (Definition of Done) | Seen: the owner asked why SESSION_LOG.md was "so far behind that it is not funny", 2026-10-02
+
+- 2026-10-02 — Don't trust a green gate that reports zero work: a check which reads nothing and passes is worse than no check, because a reviewer stops looking. `component-parity` reported `states: 0` for all eight components and said PASS, because the state tables' name column was unbackticked and the heading was the English `States` where the template specifies `États`.
+  → domain: `09-widgets-ui.md` | Seen: the browse screens agent asked for a component that did not exist, and separately the component-parity output showed `states: 0`, 2026-10-02
+
+- 2026-10-02 — Don't declare a database constraint and assume it holds; execute it. SQLite disables foreign-key enforcement per connection by default and it is not part of the file format, so `CASCADE` and `RESTRICT` in a drift schema are inert unless every connection sets the pragma. `history_entries.novelId` was `RESTRICT` — the only enforcement of B32 — and deleting a novel succeeded.
+  → domain: `06-database.md` | Seen: two schema tests failing against a schema that read correctly, 2026-10-02
+
+- 2026-10-02 — Don't write a drift guard and call it a guard until you have seen it fail: a test that has only ever been green is a decoration. The snapshot-drift test was proven red by adding a column without re-dumping (`columns drifted on chapters`) and green again on restore.
+  → domain: `10-testing.md` | Seen: applying the "reports zero and passes" correction to my own new test, 2026-10-02
+
 Promotion is the path that moves a correction from the journal into a rule. It happens once the rule set exists.
 
 - **Correction → rule.** When the rule set changes, every entry in `## Corrections` is re-read: if it is still true, it is turned into a rule in the file that owns the named domain, and the entry says so in one line. If it is no longer true, it is struck from `## Corrections` with a note on why.
