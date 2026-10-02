@@ -38,10 +38,16 @@ void main() {
         jsonDecode(File('lib/core/database/schema.json').readAsStringSync())
             as Map<String, dynamic>;
 
+    // Only entities of type `table` carry a `columns` list. Indexes are
+    // recorded in the same snapshot and were simply absent from it until
+    // 2026-10-02, when `06-database.md` rule 7's five hot-path indexes were
+    // declared. Reading `columns` off an index entity throws, which is how this
+    // loop learned the snapshot had grown a category it had never handled.
     final declared = <String, Set<String>>{};
     for (final entity in snapshot['entities'] as List<dynamic>) {
-      final data =
-          (entity as Map<String, dynamic>)['data'] as Map<String, dynamic>;
+      final e = entity as Map<String, dynamic>;
+      if (e['type'] != 'table') continue;
+      final data = e['data'] as Map<String, dynamic>;
       final cols = (data['columns'] as List<dynamic>)
           .map((c) => (c as Map<String, dynamic>)['name'] as String)
           .toSet();

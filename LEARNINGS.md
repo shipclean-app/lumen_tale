@@ -90,7 +90,7 @@ Promotion is the path that moves a correction from the journal into a rule. It h
 
 ## Constats non promus / Unpromoted findings
 
-A finding with no promotion domain is not a correction — it is an observation with nowhere to be applied. Those live in `DECISIONS.md` as **open questions** (Q-002 … Q-004), each with the trigger that will close it.
+A finding with no promotion domain is not a correction — it is an observation with nowhere to be applied. Those live in `DECISIONS.md` as **open questions**, each with the trigger that will close it. **Q-002 was the cautionary case**: it sat on that list for three sessions while **E7**, **B21**, ADR-021 and `15-performance.md` had all answered it. Nothing was wrong except that nobody closed the item, so a session reading `DECISIONS.md` found a live question that four other documents treated as settled. **An open question nothing cites is usually already answered** — check the register against the corpus, not just the trigger.
 
 Two tool-level observations are recorded in `.forge/audit/run-log.jsonl` instead, because they belong to Forge's machinery rather than to this project's rules, and no rule file here governs a third-party CLI:
 

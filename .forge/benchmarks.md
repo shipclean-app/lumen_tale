@@ -71,7 +71,7 @@ They cannot fix it, because their library lives on their server and is coupled t
 | Reading modes + orientation + colour filter | yes | partial | no | **yes** |
 | Offline reading | yes | yes | **yes — the product** | yes |
 | Background download | yes (foreground service) | yes | **no — in-process queue, no background executor (E7)** | yes |
-| New-chapter detection | yes, off by default | yes | **yes, off by default** | yes |
+| New-chapter detection | yes, off by default | yes | **yes — manual only** (B35 withdrawn, ADR-023) | yes |
 | Cloud sync / account | no | **yes** | **no — deliberate** | reconsider |
 | Social / comments / rewards | no | **yes** | **no — out of scope** | no |
 | New-chapter notification | yes | **yes** | **no — scope, not derivation** (ADR-020 superseded, ADR-023) | yes |

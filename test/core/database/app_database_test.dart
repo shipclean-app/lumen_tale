@@ -218,6 +218,155 @@ void main() {
     );
   });
 
+  group(
+    'ADR-024 — author and description are stored, displayed, never searched',
+    () {
+      test(
+        'they default to null, because the site may publish neither',
+        () async {
+          final n = await db
+              .into(db.novels)
+              .insertReturning(
+                NovelsCompanion.insert(
+                  id: 'n1',
+                  sourceId: 's',
+                  url: '/a',
+                  title: 'A',
+                ),
+              );
+          expect(n.author, isNull);
+          expect(
+            n.description,
+            isNull,
+            reason:
+                'absent and blank are different states — an em dash would be a '
+                'lie about a value nobody gave us',
+          );
+        },
+      );
+
+      test(
+        'B45 — neither column is indexed, so neither is searchable',
+        () async {
+          final rows = await db
+              .customSelect(
+                "SELECT name FROM sqlite_master WHERE type = 'index' "
+                "AND name NOT LIKE 'sqlite_%'",
+              )
+              .get();
+          final names = rows.map((r) => r.read<String>('name')).toSet();
+          expect(names.where((n) => n.contains('author')), isEmpty);
+          expect(names.where((n) => n.contains('description')), isEmpty);
+          expect(
+            names,
+            contains('idx_novels_title'),
+            reason: 'B45 — title only, and the index is how that is enforced',
+          );
+        },
+      );
+
+      test(
+        'B44 — a description round-trips as plain text with no markup',
+        () async {
+          await db
+              .into(db.novels)
+              .insert(
+                NovelsCompanion.insert(
+                  id: 'n1',
+                  sourceId: 's',
+                  url: '/a',
+                  title: 'A',
+                  description: const Value(
+                    'A debt repaid. No tags, no markup.',
+                  ),
+                ),
+              );
+          final back = await (db.select(
+            db.novels,
+          )..where((n) => n.id.equals('n1'))).getSingle();
+          expect(back.description, 'A debt repaid. No tags, no markup.');
+          expect(
+            back.description,
+            isNot(contains('<')),
+            reason:
+                'B44 — markup is never executed and never stored, so there is '
+                'nothing here to sanitise at render time',
+          );
+        },
+      );
+    },
+  );
+
+  group('06-database rule 7 — the hot-path indexes exist', () {
+    // Read from `sqlite_master`, not from the snapshot. The snapshot *does*
+    // record indexes — but it recorded **none at all** until today, because
+    // there were none, and an empty category in a snapshot reads exactly like a
+    // covered one. `schema_snapshot_test.dart` now skips non-table entities, so
+    // a *removed* index is caught there; this test catches an index that was
+    // declared in Dart and never created, which is a different failure.
+    const expected = {
+      'idx_novels_title', // B45 — title-only search
+      'idx_chapters_novel_ordinal', // B9 — the complete chapter list
+      'idx_chapters_novel_read', // B14 / B48 — the derived unread count
+      'idx_history_opened_at', // B17 — most recent first
+      'idx_queue_state', // the paused/queued filter
+    };
+
+    test('every declared index is present in the live database', () async {
+      final rows = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'index' "
+            "AND name NOT LIKE 'sqlite_%'",
+          )
+          .get();
+      final live = rows.map((r) => r.read<String>('name')).toSet();
+      expect(
+        live,
+        containsAll(expected),
+        reason:
+            'a declared index was never created. Drift does not warn about '
+            'this, and the schema snapshot does not record it.',
+      );
+    });
+
+    test('the count is derived by SQL, not by a per-row loop', () async {
+      // 06-database rule 8. Three chapters, one read: the aggregate returns 2
+      // without the reader ever seeing three rows.
+      await db
+          .into(db.novels)
+          .insert(
+            NovelsCompanion.insert(
+              id: 'n1',
+              sourceId: 's',
+              url: '/a',
+              title: 'A',
+            ),
+          );
+      for (var i = 0; i < 3; i++) {
+        await db
+            .into(db.chapters)
+            .insert(
+              ChaptersCompanion.insert(
+                id: 'c$i',
+                novelId: 'n1',
+                name: 'C$i',
+                url: '/c$i',
+                ordinal: i,
+                isRead: Value(i == 0),
+              ),
+            );
+      }
+      final count = await db
+          .customSelect(
+            'SELECT COUNT(*) AS c FROM chapters '
+            'WHERE novel_id = ? AND is_read = 0',
+            variables: const [Variable('n1')],
+          )
+          .getSingle();
+      expect(count.read<int>('c'), 2, reason: 'B14 / B48');
+    });
+  });
+
   group('B6 — the download mark is a column, not a probe', () {
     test('downloadedAt defaults to null: not downloaded', () async {
       await db

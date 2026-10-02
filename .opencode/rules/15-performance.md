@@ -29,7 +29,7 @@
 Two mechanisms, two owners — they are not interchangeable:
 
 - **The download queue runs in-process**, owned by `07-downloads-offline.md`. It is cancellable, reports per-chapter progress through a Riverpod provider, and is driven by the user from `features/downloads/`.
-- **`workmanager` runs only scheduled library updates** (the periodic "check my novels for new chapters" job). It must not perform a user-initiated download, and a background job must never mutate provider state read by a live screen.
+- **`workmanager` runs library-update checks and nothing else** — and in v1 there is exactly one: **the manual *Check for updates*, as B37's foreground job** (slice `6-10`). It must not perform a user-initiated download, and a background job must never mutate provider state read by a live screen.
 
 Both must keep heavy work off the UI isolate. Do not describe `workmanager` as "outside the UI isolate" — it is a separate platform callback, and the rule is the constraint (don't block the render thread), not the mechanism.
 

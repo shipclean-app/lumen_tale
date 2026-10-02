@@ -56,6 +56,26 @@
             "dsl_features": []
           },
           {
+            "name": "author",
+            "getter_name": "author",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "description",
+            "getter_name": "description",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
             "name": "status",
             "getter_name": "status",
             "moor_type": "string",
@@ -603,6 +623,109 @@
           "id"
         ]
       }
+    },
+    {
+      "id": 6,
+      "references": [
+        0
+      ],
+      "type": "index",
+      "data": {
+        "on": 0,
+        "name": "idx_novels_title",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "title",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "references": [
+        1
+      ],
+      "type": "index",
+      "data": {
+        "on": 1,
+        "name": "idx_chapters_novel_ordinal",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "novel_id",
+            "order_by": null
+          },
+          {
+            "column": "ordinal",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "references": [
+        1
+      ],
+      "type": "index",
+      "data": {
+        "on": 1,
+        "name": "idx_chapters_novel_read",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "novel_id",
+            "order_by": null
+          },
+          {
+            "column": "is_read",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "references": [
+        3
+      ],
+      "type": "index",
+      "data": {
+        "on": 3,
+        "name": "idx_history_opened_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "opened_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "references": [
+        4
+      ],
+      "type": "index",
+      "data": {
+        "on": 4,
+        "name": "idx_queue_state",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "state",
+            "order_by": null
+          }
+        ]
+      }
     }
   ],
   "fixed_sql": [
@@ -611,7 +734,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"novels\" (\"id\" TEXT NOT NULL, \"source_id\" TEXT NOT NULL, \"url\" TEXT NOT NULL, \"title\" TEXT NOT NULL, \"status\" TEXT NOT NULL DEFAULT '', \"cover_url\" TEXT NULL, \"in_library\" INTEGER NOT NULL DEFAULT 0 CHECK (\"in_library\" IN (0, 1)), \"last_checked_at\" INTEGER NULL, \"added_at\" INTEGER NULL, PRIMARY KEY (\"id\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"novels\" (\"id\" TEXT NOT NULL, \"source_id\" TEXT NOT NULL, \"url\" TEXT NOT NULL, \"title\" TEXT NOT NULL, \"author\" TEXT NULL, \"description\" TEXT NULL, \"status\" TEXT NOT NULL DEFAULT '', \"cover_url\" TEXT NULL, \"in_library\" INTEGER NOT NULL DEFAULT 0 CHECK (\"in_library\" IN (0, 1)), \"last_checked_at\" INTEGER NULL, \"added_at\" INTEGER NULL, PRIMARY KEY (\"id\"));"
         }
       ]
     },
@@ -657,6 +780,51 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE TABLE IF NOT EXISTS \"sources\" (\"id\" TEXT NOT NULL, \"enabled\" INTEGER NOT NULL DEFAULT 1 CHECK (\"enabled\" IN (0, 1)), \"last_checked_at\" INTEGER NULL, \"last_error_code\" TEXT NULL DEFAULT '', \"settings\" TEXT NOT NULL DEFAULT '{}', PRIMARY KEY (\"id\"));"
+        }
+      ]
+    },
+    {
+      "name": "idx_novels_title",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_novels_title ON novels (title)"
+        }
+      ]
+    },
+    {
+      "name": "idx_chapters_novel_ordinal",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_chapters_novel_ordinal ON chapters (novel_id, ordinal)"
+        }
+      ]
+    },
+    {
+      "name": "idx_chapters_novel_read",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_chapters_novel_read ON chapters (novel_id, is_read)"
+        }
+      ]
+    },
+    {
+      "name": "idx_history_opened_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_history_opened_at ON history_entries (opened_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_queue_state",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_queue_state ON queue_items (state)"
         }
       ]
     }

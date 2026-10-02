@@ -132,9 +132,9 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 |---|---|---|---|---|---|
 | `MoreRow` | tap | Push the destination route | Standard `--duration-normal` slide | Destination's own screen | — |
 | `MoreRow` → Downloads | tap | Push `/more/downloads`; `value` shows the live queue state | — | `downloads` | **B5** |
-| `MoreRow` → Sources | tap | Push `/sources`; `value` shows *N sources* | — | `sources` | **B1** |
-| `MoreRow` → Stats | tap | Push `/stats` | — | `stats` | — |
 | `MoreRow` → History retention | tap | Push `/settings`, scrolled to the History section | — | `settings` | **B47** |
+
+> **Two rows removed, and the removal is the point.** `Sources` and `Stats` were `MoreRow`s here until 2026-10-02. Their slices — `6-9` and `6-8` — were withdrawn because **no success criterion SC-1..SC-6 requires either**: B1 says which sites ship and says nothing about hiding one, and US-12's four criteria are a history list, resume, offline and retention, with no figures in them. **A nav row with no slice behind it is the same defect as a designed control with no slice**, which is what ADR-023 removed from `settings.md`. The rows come back whole in v2; the screens and their designs are untouched.
 | `MoreRow` → Settings | tap | Push `/settings` | — | `settings` | **B26 B27 B28** |
 | `MoreRow` → About | tap | Push `/settings-about` | — | `settings-about` | **B43** |
 | Bottom-nav More (re-tap) | tap | **No-op that scrolls to top** — Mihon pushes Settings on re-tap (`MoreTab.kt:56-58`) | — | Filled | — |

@@ -9,7 +9,7 @@ version: 1
 # Roadmap — Lumen Tale
 
 > This document defines **WHAT will be delivered and in what order**.
-> It derives from `.forge/prd.md` (approved, v2), `.forge/benchmarks.md` and `.forge/state.json`.
+> It derives from `.forge/prd.md` (**approved, v3** — B35 withdrawn to § 9 and B39 reworded by `state.js amend`, then re-approved), `.forge/benchmarks.md` and `.forge/state.json`.
 > Every business rule, edge case and constraint cited carries its PRD identifier (B*, E*, C*), so any row
 > here can be traced back to an approved requirement and forward to a slice and a test.
 >
@@ -125,7 +125,7 @@ acceptance criteria that are *not* met at the MVP gate, and that is stated rathe
 | US-09 | Keep a novel in the library | 5 | 3 | US-03 | MED — B32: removal must never destroy downloads, and there is no backup (C8) | no — but it carries B32 | **part** (add / remove / list / open, B11, B12, B32, B33) | badge + B40 + B45 → **V1** |
 | US-11 | Resume exactly where I stopped | 5 | 2 | US-04 | LOW — but B46/B47 are a live trap: any retention rule that touches positions is unrecoverable | partial (with B31 → the wedge) | **full** | — |
 | US-16 | Be told when a site stops working | 5 | 2 | none | LOW build risk, **HIGH** design risk — B22's "genuine nothing" vs "could not read" discriminator is subtle and site-specific (see §7.2) | **YES (weakly)** — competitors show empty | **full** | — |
-| US-17 | Get a new version as a file | 5 | 2 | US-16 | MED — the CI build has never been exercised; SC-5 is unproven (Q-003) | no (but it carries **B31, the wedge**) | **full** | — |
+| US-17 | Get a new version as a file | 5 | 2 | US-16 | MED — the CI build has never been exercised; SC-5 is unproven (Q-008) | no (but it carries **B31, the wedge**) | **full** | — |
 | US-03 | Novel details + full chapter list | 4 | 3 | US-01, US-16 | MED — 10 000 chapters must list completely and in order (B9, E1) | no | **full** | — |
 | US-01 | Browse a site's catalogue | 3 | 3 | US-16 | MED — site layout churn (C7); entry point for any real use | no | **part** — one source, list with title and cover where offered; **no** description, **no** search, no paging polish | description/paging polish → **V1** with US-02 |
 | US-14 | Read at night in dark mode | 4 | 2 | US-04 | LOW | no — table stakes, both competitors ship it (`benchmarks.md` § 3 and § 5) | **full** | — |
@@ -168,7 +168,7 @@ That is large for an MVP, and §2.4 says so rather than pretending otherwise.
 
 | Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
-| **Q-003 — no real-device verification.** The MVP exit criterion is physically impossible without a phone in the loop, and no document in `.forge/` records that one exists. | HIGH | **HIGH** — every exit criterion in §2.1 becomes unverifiable, and the §7.1 performance targets stay definitions | §7.1 places this at Wave 1 (build the APK) and at the MVP gate. If it has not resolved by the MVP gate, **the honest outcome is that the MVP gate cannot be held** — not that the MVP ships on emulator evidence. |
+| **Q-008 — no real-device verification.** The MVP exit criterion is physically impossible without a phone in the loop, and no document in `.forge/` records that one exists. | HIGH | **HIGH** — every exit criterion in §2.1 becomes unverifiable, and the §7.1 performance targets stay definitions | §7.1 places this at Wave 1 (build the APK) and at the MVP gate. If it has not resolved by the MVP gate, **the honest outcome is that the MVP gate cannot be held** — not that the MVP ships on emulator evidence. |
 | **The HTML→clean→text conversion does not produce readable text on the first real site** | MEDIUM | **HIGH** — US-04 is the largest single slice and everything renders through it | Wave 0 captures real fixtures before any code. The E18/E22 threshold rules are specified in the PRD precisely because "short" and "broken" must not be confused. |
 | **B22 has no site-provided discriminator to build on.** B22 requires distinguishing "genuinely nothing" from "could not read" **using the site's own explicit empty-result signal**. If FanMTL has none, B22 as written is not implementable for that source. | MEDIUM | **HIGH** — B22 underpins US-16, and SC-6 exists only to verify it | Raised as an open premise in §7.2 — **this is a PRD premise that must be checked against FanMTL's real pages in Wave 0**, and it may require amending B22 before US-16 is specified. Not resolved here: scoping does not rewrite approved rules. |
 | A stored chapter turns out to be unrepresentable at the phone's largest text size | LOW | MEDIUM — a reader-side fix, but late | US-15 is in the MVP, not deferred, precisely so this surfaces at Wave 2 with the reader, not after V1. |
@@ -191,8 +191,9 @@ like an empty one), delivery (SC-5), reader comfort (the hypothesis test), and i
 versioning (B3, B31 — positions must survive an upgrade). Each of those is individually small and jointly
 irreducible.
 
-**A leaner MVP exists, and I recommend against it.** Cutting US-14, US-15, US-01(b) and US-09(b) gives a
-**7-story MVP** at roughly 9–11 slices, size M. What it costs: the MVP no longer tests "will she actually read
+**A leaner MVP exists, and I recommend against it** — but the arithmetic below was wrong twice and is corrected here rather than at the gate. Cutting US-14, US-15, US-01(b) and US-09(b) does **not** give a 7-story MVP: **US-01(b) and US-09(b) are sub-features of rows already in § 2.1, not stories of their own**, so 11 − 2 = **9 stories**, not 7. And 9–11 slices is **size L** by § 6's own scale (L = 8–12), **not M**. Both ends were mispriced, which made the §2.4 trade look cheaper than it was.
+
+Corrected: **the lean MVP is 9 stories and removes exactly 2 slices** — `2-7` and `2-8`, because `theme-type`'s only dependent is `2-8`. What it costs is therefore **not a product shape but the third MVP hypothesis**: *"will Anaïs actually read a long session in this reader"*, the only thing testing whether the reader exists at all. Night is a separately designed palette (ADR-016) and cannot be retrofitted cheaply. What it costs: the MVP no longer tests "will she actually read
 in it", the first offline demo happens on a phone that may be in light mode, and the owner judges comfort
 later than she would have. What it buys: two to four weeks of apparent progress. **This is the owner's call at
 the gate, not mine** — it is recorded here so the option is visible and priced rather than quietly taken.
@@ -223,7 +224,7 @@ V2.
 | US-09(b) — unread badge on library entries, similar-title warning, title-only search | B14, B40, B45 | B40 is the anti-merge guarantee (two identically-titled novels from two sites stay two novels, B2/E17); B45 promises only the field the app actually holds. Both are cheap once US-10's counting model exists. | **SC-3** |
 | **The upgrade-safety drill, run a second time** | **B31**, C8 | §0.1: this is the wedge. Running it once in the MVP proves the mechanism; running it again in V1 proves it **with a real library, real downloads, real positions and a real history** — the actual claim the competition cannot make. | the differentiation claim |
 
-**V1 must also carry, unchanged from the MVP, and re-verified at the V1 gate:** the three §7.1 performance
+**V1 must also carry, unchanged from the MVP, and re-verified at the V1 gate:** the §7.1 performance
 targets (§4.0), SC-6 (a broken site reported, verified against a captured fixture of a changed layout), and the
 "no network call on the read path" property (C14).
 
@@ -248,7 +249,7 @@ targets (§4.0), SC-6 (a broken site reported, verified against a captured fixtu
 | The update subsystem (US-10) is the most expensive and least verifiable part of V1 | MEDIUM | HIGH — it needs a real device, a real OS scheduler and real battery behaviour | §3.5 proposes reducing US-10 to manual-only for V1. Recommend the reduction. |
 | Royal Road proves to have a different page shape that invalidates the source contract | MEDIUM | MEDIUM-HIGH — the cost is a contract amendment, not a rewrite, **if** the contract was built as a contract (ADR-013) | Wave 0 captures Royal Road fixtures alongside FanMTL's, before the contract is frozen. |
 | A 50-chapter queue fills the phone's storage | LOW | MEDIUM — E20 handles it, but it is only handled correctly if it is tested | E20 is an explicit test case in the V1 gate, not an assumption. |
-| **B37's foreground notification is built and turns out to be unkillable/unclearable on the owner's device** | MEDIUM | MEDIUM | Only relevant if the §3.5 reduction is refused. Build it last in V1, after the manual path, so it can be dropped without cost. |
+| **B37's foreground notification is built and turns out to be unkillable/unclearable on the owner's device** | MEDIUM | MEDIUM | **Now unconditional** — ADR-021 decided to build it, so this is a risk of the plan rather than of a reduction. If it proves unclearable on a real device (Q-008), the fallback is a **determinate in-app progress surface** with no OS notification, which would need a PRD amendment rather than a design change |
 
 ### 3.4 Inter-version dependencies
 
@@ -260,7 +261,7 @@ targets (§4.0), SC-6 (a broken site reported, verified against a captured fixtu
 | Identity stability from the MVP (B3) | technical | **yes** — the queue resumes by identity; unstable IDs restart the novel (B21) |
 | Reader-position storage from the MVP (B16, B46) | product | **yes** — US-12's history is defined *relative to* positions (B17) |
 | The APK pipeline from the MVP (C9, ADR-011) | delivery | **yes** — V1 has nothing to be delivered by |
-| **A real device (Q-003)** | external | **yes** — the queue's persistence (B21/E15), storage exhaustion (E20) and background behaviour cannot be verified in CI |
+| **A real device (Q-008)** | external | **yes** — the queue's persistence (B21/E15), storage exhaustion (E20) and background behaviour cannot be verified in CI |
 | FanMTL + Royal Road still working on the day of the gate | external | **yes** for SC-1 — and uncontrollable (C7) |
 | Owner availability to make the Q-004 legal judgement | external | no — v1's success excludes Novel Fire (B1) |
 
@@ -334,11 +335,17 @@ document can honestly say, and it is enough to stop the items being forgotten.
 
   **What actually shipped, so "reversed" is not overclaiming:** 4 filter chips, **5 sorts** (not 10), and **no Display tab**. The reversal is real and partial. Any future session reading "not adopting" in this file would now be wrong, which is why it is struck rather than deleted. Recorded here so it is visibly a decision and not an oversight.
 
-### 4.3 The three §7.1 targets that are "not yet measurable" — where each gets a number, or is deleted
+### 4.3 The §7.1 targets that were "not yet measurable" — **all three now have numbers**
 
-`.forge/prd.md` §7.1 marks three targets as not yet measurable and owes each "a number or a deletion". A deferral
-nobody discharges is a deferral that becomes a lie. Each is assigned a **trigger event** and a **deletion
-deadline**:
+`**Closed 2026-10-02 — this table existed to discharge a debt, and the debt is discharged.** `.forge/prd.md` § 7.1 owed each unmeasurable target "a number or a deletion". What each got, and what it cost:
+
+| Target | Resolution |
+|---|---|
+| **Long-list responsiveness** (E1, B9) | **Numbered.** 10 000 chapters — B9's own figure — open and scroll with no dropped frame, at half the refresh period, via `addTimingsCallback` with `totalSpan` checked separately. The list must be **lazy**; a column of 10 000 widgets passes on a fast phone and fails on a slow one. *Still needs **Q-008** to verify, like every other frame target — but a number is now a number* |
+| **Download-progress cadence** (US-08) | **Numbered, at 500ms**, and — the useful part — **measurable without a device**. It is a widget test over the queue's state stream, so it is the one §7.1 target that can be *proven in CI*. "Not only at the end" is a behaviour, and a behaviour is a test |
+| **Cancellation latency** (B19) | **Deleted from `prd.md`.** Not numbered. It was the only one of the three whose bound depends on in-flight HTTP abort behaviour rather than on a stated threshold, and B19 already requires the cancellation to be honoured without naming a latency. Inventing a number here would have been a number nobody could fail |
+
+The original triggers and deadlines, kept because they explain the reasoning:
 
 | Target | When it must be resolved | What a number would look like | If the trigger is missed |
 |---|---|---|---|
@@ -348,7 +355,7 @@ deadline**:
 
 **One line applies to all three:** the §7.1 frame-budget targets that *are* numbered (16 / 11 / 8ms against the
 device's own refresh rate, measured with the SDK's own frame timings) are **targets, not measurements**, and
-they stay that way until Q-003 closes. §7.1 is not discharged by writing numbers in it; it is discharged by a
+they stay that way until Q-008 closes. §7.1 is not discharged by writing numbers in it; it is discharged by a
 device.
 
 ---
@@ -427,9 +434,9 @@ the 7-story alternative rather than hiding it.
 | **FanMTL and Royal Road remaining readable** on the day of any gate | MVP, V1 | Uncontrollable (C7) | Medium — a site broken on gate day does not fail the roadmap, it produces a **B22 failure to demonstrate honestly**, and the demo is rescheduled. SC-6 can still be verified with a captured broken fixture. |
 | **The resolved Flutter/Dart toolchain and its packages** (settled in Phase 0 conventions) | All | Resolved, unproven by any slice | Low — but the first slice that uses each package is where an unproven dependency first fails. |
 
-### 7.1 Where Q-003 and Q-004 land in the sequence
+### 7.1 Where Q-008 and Q-004 land in the sequence
 
-**Q-003 — no real-device verification — is the first thing that must unblock, and the last thing that can be
+**Q-008 — no real-device verification — is the first thing that must unblock, and the last thing that can be
 assumed.**
 
 | Position in the sequence | What happens |
@@ -439,7 +446,7 @@ assumed.**
 | **Wave 4 — the MVP gate** | **The gate cannot be held without a device.** This is the pivot point of the whole roadmap: the offline claim is proven here or it is not proven at all. |
 | **V1 (Waves 5–7)** | The queue's restart survival (B21/E15), storage exhaustion (E20), connection loss mid-queue (E7) and every §7.1 performance target are device-only. None of them can be verified in CI. |
 
-**If Q-003 resolves badly** — no phone in the loop, no way to install, no time to test — then:
+**If Q-008 resolves badly** — no phone in the loop, no way to install, no time to test — then:
 
 - The MVP **does not ship** and does not get declared. An MVP verified only on an emulator has proven nothing
   that SC-2, SC-5 or SC-6 claim: emulator storage is not phone storage, emulator connectivity is not a radio,
@@ -498,7 +505,7 @@ them will inherit them.
 
 | # | Item | Depends on | Blocks |
 |---|---|---|---|
-| 1.1 | **APK built automatically on merge, with a version number** (C9, B34, ADR-011) | — | SC-5, Q-003, everything measurable |
+| 1.1 | **APK built automatically on merge, with a version number** (C9, B34, ADR-011) | — | SC-5, Q-008, everything measurable |
 | 1.2 | Local persisted store, with schema versioning and a migration path | — | B31, B3, everything persisted |
 | 1.3 | The failure-vs-empty discriminator (B22, B24, C6, C7) | 0.1, 0.2 | US-16, SC-6 |
 | 1.4 | Localisation catalogue with French and a French fallback — **mechanism only, no English yet** (B28) | — | US-13, SC-4 |
@@ -590,15 +597,15 @@ roadmap that cannot be corrected cheaply.
 2. **The MVP is still probably too big, and §2.4 is an admission rather than a defence.** Eleven stories at size
    L is at the top of the legitimate range. I have argued that the "wow moment" being a *guarantee* rather than
    a *feature* is what makes it irreducible — which is true — and it is also exactly the kind of argument that
-   justifies any size. The lean 7-story MVP is priced and available; if the first two waves overrun, taking it
+   justifies any size. The lean MVP is priced and available (**9 stories, 2 slices — not 7 stories**, see §2.4). **The trigger was aimed at the wrong place and is corrected: take it only if the overrun is in `2-7`, reader presentation.** Waves 0–1 are fixtures and foundations, and neither can overrun in a way that removing `2-7`/`2-8` would have saved — `2-7`/`2-8` sit at W7–W8 topologically, near the end. An overrun in `2-2`/`2-3` is the *other* case and cutting theme would not help either: §9.1 says a chapter-format change invalidates the comfort work anyway, so the two risks have to be priced separately
    is the correct response and not a defeat.
 3. **V1 is XL and the most likely place to break is SC-3.** SC-3 ("library, history and unread badges are
    correct") drags in the update subsystem, which is the least verifiable, most device-dependent part of the
-   project and the one Q-003 most directly gates. I have recommended a reduction (§3.5) rather than pretend the
+   project and the one Q-008 most directly gates. I have recommended a reduction (§3.5) rather than pretend the
    problem away. If that reduction is refused, my honest judgement is that V1 is **not** achievable at quality
    by one person, and the response is to renegotiate SC-3 — not to ship a badge fed by a subsystem that was
    never verified.
-4. **Every exit criterion in this document depends on one unresolved input.** Q-003 is assumed to resolve early
+4. **Every exit criterion in this document depends on one unresolved input.** Q-008 is assumed to resolve early
    and quietly. If it resolves late, nothing in §2.1, §3.1 or §4.3 is checkable, and the honest state is that
    the project has been written and not finished.
 
@@ -616,8 +623,8 @@ roadmap that cannot be corrected cheaply.
 - [x] **No absolute dates.** Versions are defined by exit criteria and ordering (§0, Rule 1).
 - [x] The document contains no implementation jargon — slices are named only as a size unit, and no framework, storage engine or package is prescribed; architecture belongs to Phase 4.
 - [x] Every V1 item traces to a success criterion, and every MVP item traces to an approved rule or edge case.
-- [x] The three §7.1 "not yet measurable" targets each have a trigger event and a deletion deadline — §4.3.
-- [x] Q-003 and Q-004 each have a stated position in the sequence and a stated consequence — §7.1.
+- [x] The §7.1 "not yet measurable" targets each have a number or are deleted — §4.3. **Done 2026-10-02**: two were numbered, and the third (*cancellation latency*) was deleted from `prd.md` § 7.1 rather than left claimed and unstated.
+- [x] Q-008 and Q-004 each have a stated position in the sequence and a stated consequence — §7.1.
 - [x] B31 appears as an explicit, repeatable drill at both gates — §2.1, §3.1, Wave 4, Wave 7.
 
 **Status**: `draft` → awaiting validation.
@@ -625,5 +632,5 @@ roadmap that cannot be corrected cheaply.
 **Gate questions for the owner** (three decisions this roadmap cannot make for itself):
 
 1. **Is the 11-story MVP accepted, or do we take the 7-story lean MVP priced in §2.4?** This is the single largest scope decision in the document, and it is cheaper to make now than after Wave 2.
-2. **Is the V1 reduction in §3.5 accepted** — new-chapter checks as manual-only in V1, with the interval picker and the foreground notification in V2+? If not, V1 is XL and I think that is not achievable by one person at quality, and SC-3 should be renegotiated instead.
-3. **Who resolves Q-003, and when?** It is the precondition for the MVP gate and for every §7.1 target. Nothing on this roadmap is verifiable without it.
+2. ~~**Is the V1 reduction in §3.5 accepted**~~ — **ANSWERED WITHOUT THE OWNER, 2026-10-02, and whether that was right is itself the question.** ADR-021 put B37's foreground notification **in** v1; ADR-023 withdrew the interval picker entirely. The reduction this question offered is no longer on the table in that form, so re-asking it would ask the owner to decide against a decision already taken. **What remains open is narrower and is the real question: does SC-3 stay as written?** SC-3 is *"the app's own records are correct"*, and every one of its rules is either local or manual-only, so it is satisfiable — but §9.1 already warns SC-3 is the criterion most likely to break, and nothing in the plan renegotiates it if it does. **A live decision, not a re-ask of a settled one.**
+3. **Who resolves Q-008, and when?** A real Android phone, and a way to install an APK on it. It is the precondition for the MVP gate, for `gate:upgrade-safety`, for SC-5 and for every §7.1 target. **Q-008 is the SDK half** — ADR-011 already made the build a CI dependency, so the SDK is not what is missing. Split 2026-10-02 because one ID for both let a session close the easy half and believe v1 was verifiable.

@@ -46,6 +46,26 @@ class $NovelsTable extends Novels with TableInfo<$NovelsTable, NovelRow> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _authorMeta = const VerificationMeta('author');
+  @override
+  late final GeneratedColumn<String> author = GeneratedColumn<String>(
+    'author',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
@@ -111,6 +131,8 @@ class $NovelsTable extends Novels with TableInfo<$NovelsTable, NovelRow> {
     sourceId,
     url,
     title,
+    author,
+    description,
     status,
     coverUrl,
     inLibrary,
@@ -157,6 +179,21 @@ class $NovelsTable extends Novels with TableInfo<$NovelsTable, NovelRow> {
       );
     } else if (isInserting) {
       context.missing(_titleMeta);
+    }
+    if (data.containsKey('author')) {
+      context.handle(
+        _authorMeta,
+        author.isAcceptableOrUnknown(data['author']!, _authorMeta),
+      );
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
     }
     if (data.containsKey('status')) {
       context.handle(
@@ -216,6 +253,14 @@ class $NovelsTable extends Novels with TableInfo<$NovelsTable, NovelRow> {
         DriftSqlType.string,
         data['${effectivePrefix}title'],
       )!,
+      author: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}author'],
+      ),
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}status'],
@@ -263,6 +308,32 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
   /// normalised, title-cased or trimmed beyond leading/trailing whitespace.
   final String title;
 
+  /// **Displayed, never searched** (ADR-024). Five screen files bind
+  /// `novel.author`, and `novel-details.md` says outright that it is *stored*,
+  /// so the design had a field with no column to hold it.
+  ///
+  /// **Nullable, because the site may publish none.** `library.md` specifies
+  /// that an absent author makes the subtitle line collapse rather than show an
+  /// em dash, so an empty string here would be a lie about a value nobody gave
+  /// us. Absent and blank are different states and this is where they differ.
+  ///
+  /// **No index, and that is the point.** B45 promises library search is title
+  /// only, and `idx_novels_title` exists so that promise is enforced by the
+  /// *absence* of an index here rather than by a rule nobody reads. **B42** was
+  /// withdrawn for assuming author and genre were stored *as searchable fields*;
+  /// storing them for display does not revive that premise, because nothing
+  /// queries them.
+  final String? author;
+
+  /// **Displayed, never searched** (ADR-024) — the novel-details blurb.
+  ///
+  /// **B44: markup is never executed and never stored.** The site may publish
+  /// this as HTML; the converter writes plain text here and drops the tags, so
+  /// there is no markup in this database to sanitise later. Storing raw HTML
+  /// and sanitising at render time is the shape that produces an XSS bug three
+  /// releases after the field was added.
+  final String? description;
+
   /// `03-source-system.md` rule 8 — site-specific strings mapped into the
   /// shared enum. Empty means the site did not say.
   final String status;
@@ -288,6 +359,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
     required this.sourceId,
     required this.url,
     required this.title,
+    this.author,
+    this.description,
     required this.status,
     this.coverUrl,
     required this.inLibrary,
@@ -301,6 +374,12 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
     map['source_id'] = Variable<String>(sourceId);
     map['url'] = Variable<String>(url);
     map['title'] = Variable<String>(title);
+    if (!nullToAbsent || author != null) {
+      map['author'] = Variable<String>(author);
+    }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || coverUrl != null) {
       map['cover_url'] = Variable<String>(coverUrl);
@@ -321,6 +400,12 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
       sourceId: Value(sourceId),
       url: Value(url),
       title: Value(title),
+      author: author == null && nullToAbsent
+          ? const Value.absent()
+          : Value(author),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
       status: Value(status),
       coverUrl: coverUrl == null && nullToAbsent
           ? const Value.absent()
@@ -345,6 +430,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
       sourceId: serializer.fromJson<String>(json['sourceId']),
       url: serializer.fromJson<String>(json['url']),
       title: serializer.fromJson<String>(json['title']),
+      author: serializer.fromJson<String?>(json['author']),
+      description: serializer.fromJson<String?>(json['description']),
       status: serializer.fromJson<String>(json['status']),
       coverUrl: serializer.fromJson<String?>(json['coverUrl']),
       inLibrary: serializer.fromJson<bool>(json['inLibrary']),
@@ -360,6 +447,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
       'sourceId': serializer.toJson<String>(sourceId),
       'url': serializer.toJson<String>(url),
       'title': serializer.toJson<String>(title),
+      'author': serializer.toJson<String?>(author),
+      'description': serializer.toJson<String?>(description),
       'status': serializer.toJson<String>(status),
       'coverUrl': serializer.toJson<String?>(coverUrl),
       'inLibrary': serializer.toJson<bool>(inLibrary),
@@ -373,6 +462,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
     String? sourceId,
     String? url,
     String? title,
+    Value<String?> author = const Value.absent(),
+    Value<String?> description = const Value.absent(),
     String? status,
     Value<String?> coverUrl = const Value.absent(),
     bool? inLibrary,
@@ -383,6 +474,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
     sourceId: sourceId ?? this.sourceId,
     url: url ?? this.url,
     title: title ?? this.title,
+    author: author.present ? author.value : this.author,
+    description: description.present ? description.value : this.description,
     status: status ?? this.status,
     coverUrl: coverUrl.present ? coverUrl.value : this.coverUrl,
     inLibrary: inLibrary ?? this.inLibrary,
@@ -397,6 +490,10 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
       sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
       url: data.url.present ? data.url.value : this.url,
       title: data.title.present ? data.title.value : this.title,
+      author: data.author.present ? data.author.value : this.author,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       status: data.status.present ? data.status.value : this.status,
       coverUrl: data.coverUrl.present ? data.coverUrl.value : this.coverUrl,
       inLibrary: data.inLibrary.present ? data.inLibrary.value : this.inLibrary,
@@ -414,6 +511,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
           ..write('sourceId: $sourceId, ')
           ..write('url: $url, ')
           ..write('title: $title, ')
+          ..write('author: $author, ')
+          ..write('description: $description, ')
           ..write('status: $status, ')
           ..write('coverUrl: $coverUrl, ')
           ..write('inLibrary: $inLibrary, ')
@@ -429,6 +528,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
     sourceId,
     url,
     title,
+    author,
+    description,
     status,
     coverUrl,
     inLibrary,
@@ -443,6 +544,8 @@ class NovelRow extends DataClass implements Insertable<NovelRow> {
           other.sourceId == this.sourceId &&
           other.url == this.url &&
           other.title == this.title &&
+          other.author == this.author &&
+          other.description == this.description &&
           other.status == this.status &&
           other.coverUrl == this.coverUrl &&
           other.inLibrary == this.inLibrary &&
@@ -455,6 +558,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
   final Value<String> sourceId;
   final Value<String> url;
   final Value<String> title;
+  final Value<String?> author;
+  final Value<String?> description;
   final Value<String> status;
   final Value<String?> coverUrl;
   final Value<bool> inLibrary;
@@ -466,6 +571,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
     this.sourceId = const Value.absent(),
     this.url = const Value.absent(),
     this.title = const Value.absent(),
+    this.author = const Value.absent(),
+    this.description = const Value.absent(),
     this.status = const Value.absent(),
     this.coverUrl = const Value.absent(),
     this.inLibrary = const Value.absent(),
@@ -478,6 +585,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
     required String sourceId,
     required String url,
     required String title,
+    this.author = const Value.absent(),
+    this.description = const Value.absent(),
     this.status = const Value.absent(),
     this.coverUrl = const Value.absent(),
     this.inLibrary = const Value.absent(),
@@ -493,6 +602,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
     Expression<String>? sourceId,
     Expression<String>? url,
     Expression<String>? title,
+    Expression<String>? author,
+    Expression<String>? description,
     Expression<String>? status,
     Expression<String>? coverUrl,
     Expression<bool>? inLibrary,
@@ -505,6 +616,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
       if (sourceId != null) 'source_id': sourceId,
       if (url != null) 'url': url,
       if (title != null) 'title': title,
+      if (author != null) 'author': author,
+      if (description != null) 'description': description,
       if (status != null) 'status': status,
       if (coverUrl != null) 'cover_url': coverUrl,
       if (inLibrary != null) 'in_library': inLibrary,
@@ -519,6 +632,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
     Value<String>? sourceId,
     Value<String>? url,
     Value<String>? title,
+    Value<String?>? author,
+    Value<String?>? description,
     Value<String>? status,
     Value<String?>? coverUrl,
     Value<bool>? inLibrary,
@@ -531,6 +646,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
       sourceId: sourceId ?? this.sourceId,
       url: url ?? this.url,
       title: title ?? this.title,
+      author: author ?? this.author,
+      description: description ?? this.description,
       status: status ?? this.status,
       coverUrl: coverUrl ?? this.coverUrl,
       inLibrary: inLibrary ?? this.inLibrary,
@@ -554,6 +671,12 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
+    }
+    if (author.present) {
+      map['author'] = Variable<String>(author.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
@@ -583,6 +706,8 @@ class NovelsCompanion extends UpdateCompanion<NovelRow> {
           ..write('sourceId: $sourceId, ')
           ..write('url: $url, ')
           ..write('title: $title, ')
+          ..write('author: $author, ')
+          ..write('description: $description, ')
           ..write('status: $status, ')
           ..write('coverUrl: $coverUrl, ')
           ..write('inLibrary: $inLibrary, ')
@@ -880,7 +1005,8 @@ class ChapterRow extends DataClass implements Insertable<ChapterRow> {
   /// Without this column the mark was a per-row filesystem probe, and that was
   /// the defect: B33 deletes one chapter's copy, so a probe could not
   /// distinguish "deleted on purpose" from "file lost", and probing 10 000 rows
-  /// put B9's complete-list requirement at risk (see ADR-021).
+  /// put B9's complete-list requirement at risk (see ADR-022 — not ADR-021, which is
+  /// the B37 foreground-notification decision).
   final DateTime? downloadedAt;
 
   /// B9 — reading order is the site's order, so it is an explicit ordinal and
@@ -2779,6 +2905,26 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $HistoryEntriesTable historyEntries = $HistoryEntriesTable(this);
   late final $QueueItemsTable queueItems = $QueueItemsTable(this);
   late final $SourcesTable sources = $SourcesTable(this);
+  late final Index idxNovelsTitle = Index(
+    'idx_novels_title',
+    'CREATE INDEX idx_novels_title ON novels (title)',
+  );
+  late final Index idxChaptersNovelOrdinal = Index(
+    'idx_chapters_novel_ordinal',
+    'CREATE INDEX idx_chapters_novel_ordinal ON chapters (novel_id, ordinal)',
+  );
+  late final Index idxChaptersNovelRead = Index(
+    'idx_chapters_novel_read',
+    'CREATE INDEX idx_chapters_novel_read ON chapters (novel_id, is_read)',
+  );
+  late final Index idxHistoryOpenedAt = Index(
+    'idx_history_opened_at',
+    'CREATE INDEX idx_history_opened_at ON history_entries (opened_at)',
+  );
+  late final Index idxQueueState = Index(
+    'idx_queue_state',
+    'CREATE INDEX idx_queue_state ON queue_items (state)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2790,6 +2936,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     historyEntries,
     queueItems,
     sources,
+    idxNovelsTitle,
+    idxChaptersNovelOrdinal,
+    idxChaptersNovelRead,
+    idxHistoryOpenedAt,
+    idxQueueState,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2830,6 +2981,8 @@ typedef $$NovelsTableCreateCompanionBuilder =
       required String sourceId,
       required String url,
       required String title,
+      Value<String?> author,
+      Value<String?> description,
       Value<String> status,
       Value<String?> coverUrl,
       Value<bool> inLibrary,
@@ -2843,6 +2996,8 @@ typedef $$NovelsTableUpdateCompanionBuilder =
       Value<String> sourceId,
       Value<String> url,
       Value<String> title,
+      Value<String?> author,
+      Value<String?> description,
       Value<String> status,
       Value<String?> coverUrl,
       Value<bool> inLibrary,
@@ -2918,6 +3073,16 @@ class $$NovelsTableFilterComposer
 
   ColumnFilters<String> get title => $composableBuilder(
     column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get author => $composableBuilder(
+    column: $table.author,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3026,6 +3191,16 @@ class $$NovelsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get author => $composableBuilder(
+    column: $table.author,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnOrderings(column),
@@ -3072,6 +3247,14 @@ class $$NovelsTableAnnotationComposer
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get author =>
+      $composableBuilder(column: $table.author, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
@@ -3173,6 +3356,8 @@ class $$NovelsTableTableManager
                 Value<String> sourceId = const Value.absent(),
                 Value<String> url = const Value.absent(),
                 Value<String> title = const Value.absent(),
+                Value<String?> author = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> coverUrl = const Value.absent(),
                 Value<bool> inLibrary = const Value.absent(),
@@ -3184,6 +3369,8 @@ class $$NovelsTableTableManager
                 sourceId: sourceId,
                 url: url,
                 title: title,
+                author: author,
+                description: description,
                 status: status,
                 coverUrl: coverUrl,
                 inLibrary: inLibrary,
@@ -3197,6 +3384,8 @@ class $$NovelsTableTableManager
                 required String sourceId,
                 required String url,
                 required String title,
+                Value<String?> author = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> coverUrl = const Value.absent(),
                 Value<bool> inLibrary = const Value.absent(),
@@ -3208,6 +3397,8 @@ class $$NovelsTableTableManager
                 sourceId: sourceId,
                 url: url,
                 title: title,
+                author: author,
+                description: description,
                 status: status,
                 coverUrl: coverUrl,
                 inLibrary: inLibrary,

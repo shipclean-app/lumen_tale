@@ -21,15 +21,15 @@ So there are three honest answers for a rule, and only three:
 2. **It is not observable, and the reason it is not observable is written down.**
 3. **It is withdrawn** (B42).
 
-## Business rules — 49 rows in the PRD, all accounted for
+## Business rules — 48 live rows in the PRD, all accounted for
 
-> The three counts below sum to **50** because `withdrawn` is counted separately from the 49 rows: B42 is a withdrawal that keeps its ID and appears in no § 4 table, so 36 + 13 + 1 = 50 counts it twice by construction. The reassurance is the `Unaccounted: 0` line, and it holds — **B50, added by the ADR-015 amendment, is listed.**
+> **The arithmetic, checked against `prd.md` rather than typed:** 36 visible + 12 non-visual = **48 live rows** in § 4, plus **2 withdrawn** (B35, B42) whose IDs are retained in § 9 = **50**. It used to need a footnote to add up — the section said *49 rows*, `prd.md` had 48, and B35 was counted inside the non-visual bucket purely so the total would reach 50. **A coverage table whose arithmetic only works with a footnote is one the next session trusts without reading.** Both withdrawals now sit in the withdrawn row where they belong, and the three counts sum to 50 because that is what is true.
 
 | Answer | Count | Rules |
 |---|---|---|
 | Needs a visible surface | **36** | B1 B2 B5 B9 B10 B11 B12 B13 B14 B15 B16 B17 B18 B19 B20 B22 B24 B25 B26 B27 B28 B31 B32 B33 B36 B39 B40 B41 B43 B44 B45 B46 B47 B48 B49 B50 |
-| Not observable, with a stated reason | **13** | B3 B4 B6 B7 B8 B21 B23 B29 B30 B34 B35 B37 B38 — **B35 is withdrawn** (ADR-023), so it is counted here only because its ID is retained in `prd.md` § 9 |
-| Withdrawn | **1** | B42 |
+| Not observable, with a stated reason | **12** | B3 B4 B6 B7 B8 B21 B23 B29 B30 B34 B37 B38 |
+| Withdrawn | **2** | B35 (ADR-023 — no SC requires it; Q-008 makes a scheduler unverifiable) · B42 (no rule established the fields it searched) |
 | **Unaccounted** | **0** | — |
 
 ### The 13 non-visual rules, each with its reason

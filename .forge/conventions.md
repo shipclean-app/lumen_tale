@@ -30,7 +30,7 @@ Resolved versions are read from `pubspec.lock` at implementation time; this tabl
 | Session strategy | **None** | — | No auth means no session, no token storage, no refresh. `17-security.md` rule 8 forbids persisting credentials |
 | Database | SQLite via `sqlite3` | 3.7.x | Native library provisioned through Dart build hooks (`native_toolchain_c`), which is why `sqlite3_flutter_libs` is banned. ADR-005 |
 | ORM / query builder | drift + drift_dev | 2.35.x | ADR-005. Deliberately diverges from Mihon's SQLDelight — see the divergence table in ADR-008 |
-| Background execution | workmanager | 0.10.x | **Scheduled library-update checks only.** The user-initiated download queue is in-process and cancellable (`07-downloads-offline.md`, `15-performance.md` §Background work) |
+| Background execution | workmanager | 0.10.x | **Library-update checks only, and manual-only in v1** — B37's foreground job, slice `6-10`. There is no schedule: B35 was withdrawn to `prd.md` § 9 (ADR-023). The user-initiated download queue is in-process and cancellable (`07-downloads-offline.md`, `15-performance.md` §Background work) |
 | State management | Riverpod (`flutter_riverpod` + `riverpod_generator`) | 3.4.x / 4.0.x | Codegen-first. `05-state-management.md` is the authority — this row only names the library |
 | Forms | Material 3 `TextFormField` | — | Deferred form rules live in `09-widgets-ui.md` §Deferred and activate when text forms arrive |
 | Validation | Dart types + `sealed` hierarchies | — | No validation library. `13-error-handling.md` owns the failure model; `Result<T>` is explicitly rejected |

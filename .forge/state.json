@@ -67,9 +67,9 @@
       "path": ".forge/conventions.md",
       "type": "conventions",
       "status": "approved",
-      "content_hash": "sha256:b0e5bcbcec97",
+      "content_hash": "sha256:6b54838f0b39",
       "headings": {},
-      "updated_at": "2026-10-02T20:56:18.768Z",
+      "updated_at": "2026-10-02T21:22:59.088Z",
       "derived_from": [
         ".forge/contract.md",
         ".forge/prd.md"
@@ -95,7 +95,7 @@
         "5": "Ce qui reviendra au client",
         "6": "Comment saurons-nous que c'est fini"
       },
-      "updated_at": "2026-10-02T20:56:18.814Z",
+      "updated_at": "2026-10-02T21:22:59.135Z",
       "requires": [
         "B1",
         "B4",
@@ -120,7 +120,7 @@
       "path": ".forge/prd.md",
       "type": "prd",
       "status": "approved",
-      "content_hash": "sha256:06a42579d8ed",
+      "content_hash": "sha256:eb7a8e0b4010",
       "headings": {
         "1": "Executive summary",
         "2": "Users and personas",
@@ -144,16 +144,16 @@
         "7.4": "Internationalization",
         "7.5": "Availability / resilience"
       },
-      "updated_at": "2026-10-02T20:56:47.068Z",
+      "updated_at": "2026-10-02T21:22:59.181Z",
       "version": "1",
-      "amended_from": "sha256:1b7fd915844d",
-      "amended_at": "2026-10-02T20:51:12.171Z",
+      "amended_from": "sha256:06a42579d8ed",
+      "amended_at": "2026-10-02T21:20:25.096Z",
       "amendment": {
-        "reason": "B35 (opt-in scheduled update checks + interval picker) WITHDRAWN to §9, ID retained. No success criterion SC-1..SC-6 requires it, and roadmap.md § 4.1 defines v1 as exactly those six. Q-008 (no real Android device) makes a background scheduler unverifiable before v1 ships: Android 13+ exact-alarm permission, background-start restrictions and Doze cannot be exercised here at all. Restated as a scope decision rather than left as an un-permitted deferral — the previous roadmap row deferred B35 and B37 without withdrawing either, which roadmap § 0 Rule 3 forbids. Restoration trigger recorded in §9.",
+        "reason": "No rule change. B45 forbids SEARCHING author/genre, not displaying author/description; ADR-024 adds novels.author and novels.description as display-only columns because five screen bindings had no column to hold them. Schema version stays 1 — nothing has shipped.",
         "changes": [
           "--",
           "type: prd",
-          "status: approved",
+          "status: stale",
           "generated_at: 2026-10-02",
           "version: 3",
           "--",
@@ -311,7 +311,7 @@
           "**I want** to be told which of my novels have chapters I have not read",
           "**So that** I know what is new without visiting each site",
           "*Priority**: P2",
-          "[x] Every novel in the library is visited by an automatic check — none is skipped — and each shows its exact unopened count beside when it was last checked (B39, B48, B49).",
+          "[x] Every novel in the library is visited by a check — none is skipped — and each shows its exact unopened count beside when it was last checked (B39, B48, B49).",
           "*Dependencies**: US-09",
           "*Acceptance criteria**:",
           "[x] A single view lists every library novel that has at least one chapter the reader has not opened, showing that count. The list does **not** depend on whether a check has run: a novel never checked appears with its count and \"never checked\" beside it (B48, B49).",
@@ -442,11 +442,10 @@
           "| B32 | Removing a novel from the library **keeps its downloaded chapters on the phone**. Deleting those chapters is a separate choice the user makes explicitly, off by default. No path removes a novel and silently destroys chapters that cannot be recovered. | US-09 | **Corrected.** Mihon never auto-deletes downloads on removal; with no backup and no export, the opposite is unrecoverable loss |",
           "| B33 | The downloaded copy of a single chapter can be deleted on its own, leaving the other chapters of the novel untouched. | US-06 | |",
           "| B34 | The app runs on Android phones only and is delivered as an installable file built automatically. No app store, no store account, no public distribution. | US-17 | See also C3, C9 |",
-          "| B35 | **Checking for new chapters is off by default.** The app never checks on its own unless the user turns it on and picks an interval: never, every 12, 24, 48 or 72 hours, or weekly. Choosing \"never\" actively disables the scheduled check rather than merely skipping it. | US-10 | Mihon `LibraryPreferences.autoUpdateInterval`, default `0` |",
           "| B36 | A manual action — \"update library\" — is available whether or not the schedule is on. **Opening the app is not a trigger for a check.** | US-10 | Mihon has no foreground/app-open trigger at all; we inherit that gap rather than close it |",
           "| B37 | A scheduled or manual check runs as a foreground job with a visible notification the user can cancel. Cancelling one run does not disable the schedule. | US-10 | Mihon `LibraryUpdateWorker`: foreground service, notification with a cancel action |",
           "| B38 | **A new-chapter check never starts downloading.** Checking and downloading are separate and never overlap: the check reads chapter lists and nothing else. It never enqueues, defers or triggers a download — a download starts only when the user asks for one (B5). | US-07, US-10 | **The highest-value Mihon invariant for this product.** Mihon's own stated reason: \"We don't want to start downloading while the library is updating, because websites may not like it and they could ban the user.\" See C7 |",
-          "| B39 | **An automatic check visits every novel in the library.** No novel is skipped for any reason. | US-10 | **Skip rule deleted by red-team.** The previous version skipped novels \"the reader has completed\" — a state no rule, story, criterion or glossary entry defined, so the check silently skipped an unknowable subset. Mihon can key on it because it has a real completed flag; we have none, and inventing one is a feature, not a correction. Politeness toward the site is handled where it actually belongs: checks are off by default (B35) and rate-limited (C7) |",
+          "| B39 | **A check visits every novel in the library.** No novel is skipped for any reason. | US-10 | **Skip rule deleted by red-team.** The previous version skipped novels \"the reader has completed\" — a state no rule, story, criterion or glossary entry defined, so the check silently skipped an unknowable subset. Mihon can key on it because it has a real completed flag; we have none, and inventing one is a feature, not a correction. Politeness toward the site is handled where it actually belongs: checks never happen without the reader asking (B36) and are rate-limited (C7) — B35, which made the schedule opt-in, was withdrawn 2026-10-02 (ADR-023). **Reworded the same day: this rule said *automatic* check, and ADR-023 removed every automatic check.** The substance is unchanged and still binds — a *manual* check visits every novel too, and skipping one is just as silent |",
           "| B40 | Library entries are **never renamed, aliased or merged.** Two novels with the same or a similar title stay separate. Adding one that resembles an existing entry warns and offers to open the existing entry or add anyway — nothing is ever merged. | US-09 | Mihon has no title field at all and no merge path; it only warns |",
           "| B41 | Searching inside a site searches whatever that site searches. The app does not split a query into title, author and description, nor decide which of those a site matches; it passes the reader's words to the site. | US-02 | Mihon passes one opaque query string per source, with no app-level field decomposition |",
           "| B43 | The app shows which version is installed, on a dedicated about screen. | US-17 | Mihon `AboutScreen` |",
@@ -560,6 +559,10 @@
           "## 9. Out of scope (explicitly)",
           "*Withdrawn requirements.** These carried an ID, were written, and were withdrawn by the red-team pass because they could not be verified or were contradicted by another rule. **The ID is retained and is never reused for anything else** — that is what makes the withdrawal traceable and stops a later requirement silently inheriting its number.",
           "**B42** — Local library search over explicit field prefixes (title, author, genre, source). **Withdrawn**: no requirement established that author, genre or description are stored, and no acceptance criterion tested it, so the rule was unverifiable as written. Replaced by **B45**, which promises only fields the app actually holds.",
+          "**B35** — ~~*Checking for new chapters is off by default. The app never checks on its own unless the user turns it on and picks an interval: never, every 12, 24, 48 or 72 hours, or weekly. Choosing \"never\" actively disables the scheduled check rather than merely skipping it.*~~ **WITHDRAWN 2026-10-02, ID retained.** It was not merely *deferred* — the previous `roadmap.md` § 3.5 deferred B35 and B37 without withdrawing either, which `roadmap.md` § 0 Rule 3 forbids, and the red-team pass caught the consequence: a live PRD rule with no slice, and a control designed into two screens (`settings.md`, `updates.md`) that nothing would ever build.",
+          "*Why withdrawn rather than shipped.** Three reasons, in order of weight. **No success criterion requires it** — SC-1..SC-6 are browsability, offline reading, correct local records, installable delivery, no false emptiness, and two languages, and SC-3 says only *\"Library, history, and unread badges are correct\"*; `roadmap.md` § 4.1 defines v1 as exactly those six. **It is the least verifiable subsystem in the project** — a background scheduler needs Android 13+'s exact-alarm permission, background-start restrictions and Doze exemptions, and **Q-008 records that no real device exists**, so it could not be exercised at all before shipping. **Its trigger is the notification**, and ADR-020 removes that: with nothing to announce, a schedule would wake the device to tell the reader nothing.",
+          "*What is *not* withdrawn, and this is the part that matters.** **B36** (a manual *Check for updates* is available) and **B37** (a manual check runs as a visible, cancellable foreground job) both remain live and both ship — see ADR-021. B35 was the *schedule*; B36/B37 are the *manual check*. Removing the schedule does not remove checking. The reader taps once and learns what is new; nothing happens on its own.",
+          "*Restores when** all three hold: **Q-008 closes** (a CI-built APK has run on a real phone), the **Android 13+ exact-alarm and background-start permissions have been measured on that phone** rather than assumed, and a slice exists to carry it. Reversal cost is known and small: one slice, plus re-adding the `CheckIntervalGroup` control and six strings to `settings.md` and `updates.md`, both of which are marked `V1 absent` rather than deleted.",
           "<!--",
           "This section lists **exclusions**, not withdrawals. The distinction is what",
           "makes the rest of the project readable, and it shows in the use of the ID.",
@@ -620,7 +623,7 @@
           "[x] The problem is defined concretely, not in jargon.",
           "[x] All user types are identified, including admin, support, moderator — including their explicit absence.",
           "[x] Every user story has verifiable acceptance criteria.",
-          "[x] Every business rule has a stable ID, B1–B50, none reused. B50 was appended by amendment (ADR-015) without renumbering. One ID (B42) is retained as a withdrawal in §9 rather than deleted, so the series is intentionally not contiguous.",
+          "[x] Every business rule has a stable ID, B1–B50, none reused. B50 was appended by amendment (ADR-015) without renumbering. Two IDs (B35, B42) are retained as withdrawals in §9 rather than deleted, so the series is intentionally not contiguous. **B35 was withdrawn on 2026-10-02 by the Phase 4 red-team pass** — it had been deferred by `roadmap.md` without a withdrawal, which is the same defect the red-team found in B37, one rule over.",
           "[x] Every identified edge case has a stable ID, E1–E22, contiguous, none reused.",
           "[x] Every constraint has a stable ID, C1–C14, contiguous, none reused.",
           "[x] Non-functional requirements cover performance, security, accessibility, internationalisation and availability.",
@@ -661,7 +664,7 @@
       "path": ".forge/benchmarks.md",
       "type": "benchmarks",
       "status": "approved",
-      "content_hash": "sha256:bc5d80be06bc",
+      "content_hash": "sha256:4d2d02b12e19",
       "headings": {
         "1": "Archetype",
         "2": "Reference products",
@@ -673,7 +676,7 @@
         "2.2": "Dreame / Webnovel — the competitive baseline",
         "2.3": "The gap we can actually exploit"
       },
-      "updated_at": "2026-10-02T20:56:18.905Z",
+      "updated_at": "2026-10-02T21:22:59.233Z",
       "requires": [
         "B1",
         "B28",
@@ -687,7 +690,7 @@
       "path": ".forge/roadmap.md",
       "type": "roadmap",
       "status": "approved",
-      "content_hash": "sha256:9dd16ef214dc",
+      "content_hash": "sha256:11e376e8b434",
       "headings": {
         "0": "How to read this document, and three standing rules",
         "1": "Version vision",
@@ -721,7 +724,7 @@
         "7.2": "Two contradictions between approved documents, flagged not resolved",
         "8.1": "Where the implementation order deliberately diverges from the reader's order"
       },
-      "updated_at": "2026-10-02T20:56:18.952Z",
+      "updated_at": "2026-10-02T21:22:59.281Z",
       "version": "1",
       "derived_from": [
         ".forge/prd.md"
@@ -794,7 +797,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:c5bdd4d58f28",
+      "content_hash": "sha256:ac5abb9c4fd3",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -830,7 +833,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-02T20:56:19.008Z",
+      "updated_at": "2026-10-02T21:22:59.333Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -847,9 +850,9 @@
       "path": ".forge/design/coverage.md",
       "type": "design-coverage",
       "status": "approved",
-      "content_hash": "sha256:098d94facc68",
+      "content_hash": "sha256:1b8dad9d8c3a",
       "headings": {},
-      "updated_at": "2026-10-02T20:56:19.057Z",
+      "updated_at": "2026-10-02T21:22:59.390Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -883,7 +886,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T20:56:19.113Z",
+      "updated_at": "2026-10-02T21:22:59.447Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -922,7 +925,7 @@
         "4.3": "Failure in the middle of the work",
         "4.4": "The honest limitation in the download flow"
       },
-      "updated_at": "2026-10-02T20:56:19.170Z",
+      "updated_at": "2026-10-02T21:22:59.494Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md",
@@ -958,7 +961,7 @@
         "6.3": "MigrateSource",
         "8.1": "What we add that Mihon does not have"
       },
-      "updated_at": "2026-10-02T20:56:19.226Z",
+      "updated_at": "2026-10-02T21:22:59.547Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md",
@@ -977,7 +980,7 @@
       "path": ".forge/architecture.md",
       "type": "architecture",
       "status": "draft",
-      "content_hash": "sha256:a4e57064abd1",
+      "content_hash": "sha256:db018b3d2549",
       "headings": {
         "1": "Overview",
         "2": "Foundations",
@@ -1014,7 +1017,7 @@
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-02T20:58:24.860Z",
+      "updated_at": "2026-10-02T21:22:59.601Z",
       "derived_from": [
         ".forge/prd.md"
       ],
@@ -1035,7 +1038,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:c5bdd4d58f28",
+      "content_hash": "sha256:ac5abb9c4fd3",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -1071,7 +1074,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-02T20:56:19.320Z",
+      "updated_at": "2026-10-02T21:22:59.651Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1155,21 +1158,27 @@
           "0-3",
           "0-4",
           "2-6",
-          "3-5",
-          "6-7"
+          "6-3",
+          "0-5"
         ]
       },
       {
         "wave": 2,
         "nodes": [
           "failure-discriminator",
-          "6-5"
+          "3-5",
+          "6-4",
+          "6-5",
+          "6-6",
+          "6-7",
+          "6-11"
         ]
       },
       {
         "wave": 3,
         "nodes": [
-          "2-1"
+          "2-1",
+          "6-10"
         ]
       },
       {
@@ -1214,21 +1223,7 @@
       {
         "wave": 9,
         "nodes": [
-          "5-3",
-          "6-3"
-        ]
-      },
-      {
-        "wave": 10,
-        "nodes": [
-          "6-4",
-          "6-6"
-        ]
-      },
-      {
-        "wave": 11,
-        "nodes": [
-          "6-10"
+          "5-3"
         ]
       }
     ]
@@ -1254,7 +1249,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T20:56:19.369Z",
+      "updated_at": "2026-10-02T21:22:59.705Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1264,7 +1259,7 @@
       "path": ".forge/design/screens/settings.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:88ee1bc278a9",
+      "content_hash": "sha256:be5f055cc4ab",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1281,7 +1276,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T20:56:19.421Z",
+      "updated_at": "2026-10-02T21:22:59.755Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1308,7 +1303,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T20:56:19.475Z",
+      "updated_at": "2026-10-02T21:22:59.804Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1335,7 +1330,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T20:56:19.543Z",
+      "updated_at": "2026-10-02T21:22:59.854Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1345,7 +1340,7 @@
       "path": ".forge/design/screens/browse-sources.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:7fd598cfc94e",
+      "content_hash": "sha256:0a2feedbf359",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1361,7 +1356,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T20:56:19.586Z",
+      "updated_at": "2026-10-02T21:22:59.907Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1387,7 +1382,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T20:56:19.642Z",
+      "updated_at": "2026-10-02T21:22:59.961Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1414,7 +1409,7 @@
         "1.1": "The two modes of one route",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T20:56:19.688Z",
+      "updated_at": "2026-10-02T21:23:00.032Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1441,7 +1436,7 @@
         "1.1": "Why this screen is in overflow and not a tab — the reason, argued",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T20:56:19.751Z",
+      "updated_at": "2026-10-02T21:23:00.132Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1469,7 +1464,7 @@
         "11.1": "`SortFilterSheet`",
         "11.2": "`BulkDownloadSheet` and `RemoveFromLibraryDialog`"
       },
-      "updated_at": "2026-10-02T20:56:19.821Z",
+      "updated_at": "2026-10-02T21:23:00.216Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1498,7 +1493,7 @@
         "11.2": "The similar-title warning (B40)",
         "11.3": "Chapter selection, and a gap in the design system recorded rather than papered over"
       },
-      "updated_at": "2026-10-02T20:56:19.879Z",
+      "updated_at": "2026-10-02T21:23:00.288Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1526,7 +1521,7 @@
         "11.1": "`NovelActionSheet`",
         "11.2": "A note on the in-progress check state, and on a divergence in the design system"
       },
-      "updated_at": "2026-10-02T20:56:19.967Z",
+      "updated_at": "2026-10-02T21:23:00.340Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1553,7 +1548,7 @@
         "2.1": "Anti-generic — mandatory",
         "11.1": "`RetentionSheet` and the clear confirmation"
       },
-      "updated_at": "2026-10-02T20:56:20.196Z",
+      "updated_at": "2026-10-02T21:23:00.387Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1580,7 +1575,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T20:56:20.348Z",
+      "updated_at": "2026-10-02T21:23:00.443Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1590,7 +1585,7 @@
       "path": ".forge/design/screens/onboarding.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:0eaad6489cc9",
+      "content_hash": "sha256:4f330d412809",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1607,7 +1602,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-02T20:56:20.443Z",
+      "updated_at": "2026-10-02T21:23:00.518Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1617,7 +1612,7 @@
       "path": ".forge/design/screens/more.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:03a0513ec9b0",
+      "content_hash": "sha256:162eb9fc9f9e",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1633,7 +1628,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`MoreRow` — declared here because it exists only for this screen"
       },
-      "updated_at": "2026-10-02T20:56:20.509Z",
+      "updated_at": "2026-10-02T21:23:00.569Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1659,7 +1654,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`SourceRow`"
       },
-      "updated_at": "2026-10-02T20:56:20.590Z",
+      "updated_at": "2026-10-02T21:23:00.628Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1685,7 +1680,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`StatRow` and `SourceBar`"
       },
-      "updated_at": "2026-10-02T20:56:20.650Z",
+      "updated_at": "2026-10-02T21:23:00.680Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1710,7 +1705,7 @@
         "11": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-02T20:56:20.722Z",
+      "updated_at": "2026-10-02T21:23:00.737Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1740,7 +1735,8 @@
       "depended_on_by": [
         "2-1",
         "2-5",
-        "2-6"
+        "2-6",
+        "6-3"
       ],
       "impl_wave": 0
     },
@@ -1768,7 +1764,8 @@
       "updated_at": "2026-10-02T17:15:09.699Z",
       "depends_on": [],
       "depended_on_by": [
-        "6-7"
+        "6-7",
+        "0-5"
       ],
       "impl_wave": 0
     },
@@ -1780,7 +1777,8 @@
       "updated_at": "2026-10-02T17:15:09.755Z",
       "depends_on": [],
       "depended_on_by": [
-        "2-8"
+        "2-8",
+        "0-5"
       ],
       "impl_wave": 0
     }
@@ -1827,7 +1825,8 @@
         "0-1"
       ],
       "depended_on_by": [
-        "6-1"
+        "6-1",
+        "6-11"
       ],
       "impl_wave": 1
     },
@@ -1902,7 +1901,8 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:08.255Z",
       "depends_on": [
-        "2-3"
+        "2-3",
+        "0-5"
       ],
       "depended_on_by": [
         "2-7"
@@ -1973,7 +1973,8 @@
       "updated_at": "2026-10-02T17:15:08.619Z",
       "depends_on": [
         "2-1",
-        "failure-discriminator"
+        "failure-discriminator",
+        "0-5"
       ],
       "depended_on_by": [
         "3-2",
@@ -1989,7 +1990,8 @@
       "updated_at": "2026-10-02T17:15:08.705Z",
       "depends_on": [
         "3-1",
-        "2-1"
+        "2-1",
+        "0-5"
       ],
       "depended_on_by": [
         "3-3"
@@ -2004,7 +2006,8 @@
       "updated_at": "2026-10-02T17:15:08.758Z",
       "depends_on": [
         "3-2",
-        "2-3"
+        "2-3",
+        "0-5"
       ],
       "depended_on_by": [
         "5-1"
@@ -2018,7 +2021,8 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:08.822Z",
       "depends_on": [
-        "2-5"
+        "2-5",
+        "0-5"
       ],
       "depended_on_by": [],
       "impl_wave": 5
@@ -2030,10 +2034,11 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:08.873Z",
       "depends_on": [
-        "apk-pipeline"
+        "apk-pipeline",
+        "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 1
+      "impl_wave": 2
     },
     "5-1": {
       "path": ".forge/architecture.md",
@@ -2059,8 +2064,7 @@
         "5-1"
       ],
       "depended_on_by": [
-        "5-3",
-        "6-3"
+        "5-3"
       ],
       "impl_wave": 8
     },
@@ -2096,7 +2100,8 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:09.161Z",
       "depends_on": [
-        "3-1"
+        "3-1",
+        "6-11"
       ],
       "depended_on_by": [],
       "impl_wave": 5
@@ -2108,13 +2113,13 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:09.231Z",
       "depends_on": [
-        "5-2"
+        "local-store"
       ],
       "depended_on_by": [
         "6-4",
         "6-6"
       ],
-      "impl_wave": 9
+      "impl_wave": 1
     },
     "6-4": {
       "path": ".forge/architecture.md",
@@ -2128,7 +2133,7 @@
       "depended_on_by": [
         "6-10"
       ],
-      "impl_wave": 10
+      "impl_wave": 2
     },
     "6-5": {
       "path": ".forge/architecture.md",
@@ -2137,7 +2142,8 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:09.347Z",
       "depends_on": [
-        "2-6"
+        "2-6",
+        "0-5"
       ],
       "depended_on_by": [],
       "impl_wave": 2
@@ -2149,10 +2155,11 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:09.404Z",
       "depends_on": [
-        "6-3"
+        "6-3",
+        "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 10
+      "impl_wave": 2
     },
     "6-7": {
       "path": ".forge/architecture.md",
@@ -2161,10 +2168,11 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:09.460Z",
       "depends_on": [
-        "localisation"
+        "localisation",
+        "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 1
+      "impl_wave": 2
     },
     "6-10": {
       "path": ".forge/architecture.md",
@@ -2176,7 +2184,44 @@
         "6-4"
       ],
       "depended_on_by": [],
-      "impl_wave": 11
+      "impl_wave": 3
+    },
+    "6-11": {
+      "path": ".forge/architecture.md",
+      "type": "6-11",
+      "status": "identified",
+      "content_hash": null,
+      "updated_at": "2026-10-02T21:05:00.000Z",
+      "depends_on": [
+        "0-3"
+      ],
+      "depended_on_by": [
+        "6-2"
+      ],
+      "impl_wave": 2
+    },
+    "0-5": {
+      "path": ".forge/architecture.md",
+      "type": "0-5",
+      "status": "identified",
+      "content_hash": null,
+      "updated_at": "2026-10-02T21:15:00.000Z",
+      "depends_on": [
+        "theme-type",
+        "localisation"
+      ],
+      "depended_on_by": [
+        "2-4",
+        "3-1",
+        "3-2",
+        "3-3",
+        "3-4",
+        "3-5",
+        "6-5",
+        "6-6",
+        "6-7"
+      ],
+      "impl_wave": 1
     }
   },
   "gates_pending": [],
@@ -2187,13 +2232,13 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 211,
+      "register": 212,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 90,
+      "status_change": 91,
       "gate_approved": 3,
       "phase_status": 3,
-      "amend": 2,
+      "amend": 4,
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,

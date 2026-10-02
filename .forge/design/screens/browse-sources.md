@@ -138,7 +138,7 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 |---|---|---|---|---|---|
 | Source row | tap | Open `/browse/:sourceId` — the genre index for that site | Row `pressed`: `--color-surface-sunken` over `--duration-fast` 120ms | Filled, next screen | **B1** |
 | Switch — turning **on** | tap | Persist `enabled = true` | Track fills `--color-accent` over `--duration-fast` 120ms `--ease-standard` | Filled | — |
-| Switch — turning **off** | tap | Persist `enabled = false`. **Nothing is deleted.** The site stops appearing in Browse; the library keeps its novels, their downloads, and their update checks | Snackbar only if the site had library novels, with **Undo** | Filled | **B32**, **B39**, **C4** |
+| Switch — turning **off** | tap | Persist `enabled = false`. **Nothing is deleted.** The site stops appearing in Browse; the library keeps its novels and their downloads, and every novel can still be checked | Snackbar only if the site had library novels, with **Undo** | Filled | **B32**, **B39**, **C4** |
 | Switch — write fails | tap | No state change | Switch springs back; snackbar *Could not save that change.* | Submit error | **B24** |
 | Row's check action | tap | Fetch the site's own index page **once**, because the reader asked (B5). Verdict and timestamp update | 16dp spinner in place of the chip; chip returns with the new verdict | Loading → Filled | **B5**, **C7** |
 | Check — connection absent | tap | No verdict change | Chip stays; snackbar *No connection. Nothing is wrong with the site.* — **distinct wording from a broken site** | Filled | **B22**, **E5** |
@@ -217,7 +217,7 @@ AppScaffold (titleBar + content + bottomNav; persistentStatus when a download ru
 | **B24** | PRD | Every failure on this screen carries a way to try again: `Try again` on the settings-read error, `Check again` per row, and a reversible switch on the write error |
 | **B28** | PRD | Every string is localisable, including the failure sentences — which is also what makes them reportable (C12). No in-app language switch exists (B28 forbids one) |
 | **B32** | PRD | Turning a site off says, in the snackbar, that the library and the downloads are untouched. Deleting downloaded chapters is a separate explicit choice that lives on `downloads` and is **off by default** |
-| **B39** | PRD | The disable wording states that **update checks for novels already in the library keep running**. A toggle that silently skipped those novels would violate B39 behind the reader's back |
+| **B39** | PRD | The disable wording states that **novels already in the library are still checked**. A toggle that silently dropped them would violate B39 behind the reader's back. **Corrected 2026-10-02** — this promised that *update checks keep running*, which became unmailable the moment ADR-023 withdrew the schedule. B39's substance survives: nothing is skipped |
 | **B50** | PRD | The row's `SourceCapability` line states what the site can do: `SEARCH` or `GENRE BROWSING ONLY`. It is a **declaration, not a control** — and with every v1 source measured as having no usable search, every v1 row currently reads `GENRE BROWSING ONLY` |
 | **C4** | PRD | Turning a site off removes nothing from disk. The screen says so at the moment of the action |
 | **C11** | PRD | Rows are 64dp with 48dp targets, all controls reachable one-handed, and the list is one screen tall |

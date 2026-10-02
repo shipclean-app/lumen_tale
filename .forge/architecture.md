@@ -5,19 +5,17 @@ generated_at: 2026-10-02
 derived_from: .forge/prd.md
 impl_waves: 6
 impl_waves_rationale: >-
-  Coarser than the computed topological minimum of 12, and deliberately so.
-  The 12 waves are what the dependency graph *permits*; six are the roadmap's
+  Coarser than the computed topological minimum of 10, and deliberately so.
+  The 10 waves are what the dependency graph *permits*; six are the roadmap's
   milestone waves, which is what it *intends*. They differ because the graph
   allows cheap slices that touch only foundations — 2-6 (reading position), 3-5
   (about), 6-7 (English) — to start in wave 1, while the roadmap holds them for
-  later milestones. Declaring 12 would erase the milestone grouping, and
+  later milestones. Declaring 10 would erase the milestone grouping, and
   declaring nothing would leave `dependency-check --write` free to overwrite the
   distinction without saying so. The difference that matters: browse UI (3-1) is
   topologically available at wave 4, but milestone Wave 2 completes the whole
   offline chain ending at 2-4, so following the milestones puts the offline read
-  proof BEFORE any browse UI exists. Wave 12 is 6-10 alone (B37, ADR-021), which
-  waits on 6-4 and on nothing else recent — it is a notification wrapper, so the
-  graph can offer it early and the roadmap still ships it late.
+  proof BEFORE any browse UI exists.
 ---
 
 # Architecture — Lumen Tale
@@ -48,7 +46,7 @@ Versions are the **resolved** ones, verified against `pubspec.lock`. The table i
 | Markdown rendering | `flutter_markdown_plus` | 1.0.12 | ADR-006: `flutter_markdown` is discontinued |
 | Local storage | `shared_preferences` | 2.5.5 | Settings only. **Never** chapter content — see § 4.4 |
 | Filesystem | `path_provider` + `path` | 2.1.6 / 1.9.1 | Application **support** directory, not cache — § 4.4 |
-| Networking (background) | `workmanager` | 0.10.10 | B37's foreground job. **No v1 slice implements it** — the earlier note pointed at `6-4`, which is the *manual* update and does not carry it. `6-4` owns B37 only if the `roadmap.md` § 3.5 reduction is refused. See `benchmarks.md` § 4b |
+| Foreground work | `workmanager` | 0.10.10 | **B37's cancellable foreground job, carried by slice `6-10`** (ADR-021). `6-4` is the *manual check itself* and does **not** own the notification — an earlier version of this row said it did, and that was wrong. **No schedule and no new-chapter notification exist** (ADR-023 withdrew B35; ADR-020 as superseded), so this is the app's *only* background-work surface in v1 |
 | Internationalisation | `flutter_localizations` + `gen_l10n` | SDK | FR primary, EN complete. Fallback chain is FR (B28) |
 | Images | `cached_network_image` | 4.0.4 | Covers only. A missing cover degrades to initials — never blocks a read |
 | Tests | `flutter_test` + `mocktail` | SDK / 1.0.5 | `mocktail`, not `mockito`: no codegen, no build-runner coupling in tests |
@@ -159,7 +157,7 @@ final class BrowseEmpty<T> extends BrowseOutcome<T> {
 
 `.github/workflows/` builds a release APK on merge to `master`. ADR-011: **no store**. Version from `pubspec.yaml`, surfaced by B43 on `settings-about`.
 
-This foundation exists before any feature because **Q-003** blocks every device verification, and SC-5 is unprovable without it. It is the cheapest slice in the plan and the one that unblocks the most.
+This foundation exists before any feature because **Q-008** blocks every device verification, and SC-5 is unprovable without it. It is the cheapest slice in the plan and the one that unblocks the most.
 
 ---
 
@@ -167,14 +165,15 @@ This foundation exists before any feature because **Q-003** blocks every device 
 
 ### 3.1 Inventory
 
-33 items: 5 foundations + **28 scheduled slices** — plus `6-8` and `6-9`, withdrawn from v1 for want of a rule (see § 3.1). `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
+35 items: 5 foundations + **30 scheduled slices** — plus `6-8` and `6-9`, withdrawn from v1 for want of a rule (see § 3.1). `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
 
 | Slice | Key | Wave | Depends on | Responsibility |
 |---|---|---|---|---|
-| `0.1` | `0-1` | 0 | — | Freeze real FanMTL fixtures with capture dates |
+| `0.1` | `0-1` | 0 | — | Freeze real FanMTL fixtures with capture dates, **plus one synthetic broken-layout fixture** (**E4**, **E8**) — a real captured page whose content container has been renamed, so it parses cleanly and yields nothing. See below |
 | `0.2` | `0-2` | 1 | `0-1` | Record whether FanMTL has an explicit empty-result signal |
 | `0.3` | `0-3` | 1 | `0-1` | Freeze Royal Road fixtures |
 | `0.4` | `0-4` | 1 | `0-1` | Separate chapter content from furniture, from the real pages. Consumed by `2-2` |
+| `0.5` | `0-5` | 1 | `theme-type`, `localisation` | **The app shell** — `go_router` table, the five-item bottom nav, `MaterialApp.router`, and the bootstrap that replaces `main.dart`'s missing `home:`. See below |
 | `1.1` | `apk-pipeline` | 0 | — | **Foundation.** Versioned APK on merge |
 | `1.2` | `local-store` | 0 | — | **Foundation.** drift schema + atomic chapter files |
 | `1.3` | `failure-discriminator` | 2 | `0-1`, `0-2` | **Foundation.** Broken ≠ empty (B22, B24) |
@@ -197,15 +196,46 @@ This foundation exists before any feature because **Q-003** blocks every device 
 | `5.2` | `5-2` | 8 | `5-1` | Pause/resume/cancel; queue survives closure |
 | `5.3` | `5-3` | 9 | `5-2` | Progress, connection loss, storage exhaustion |
 | `6.1` | `6-1` | 4 | `0-3`, `2-1` | Royal Road adapter |
-| `6.2` | `6-2` | 5 | `3-1` | Search, per source, only where measured usable |
-| `6.3` | `6-3` | 9 | `5-2` | Local counting model; last-checked / never-checked |
+| `6.2` | `6-2` | 5 | `3-1`, **`6-11`** | Search, per source, only where measured usable. **Conditional — do not build until `6-11` says the source is** |
+| `6.3` | `6-3` | 2 | `local-store` | Local counting model; last-checked / never-checked. **Dropped `5-2`** — see § 6.6 |
 | `6.4` | `6-4` | 10 | `6-3` | Manual "update library" |
 | `6.5` | `6-5` | 2 | `2-6` | History, time-bounded |
 | `6.6` | `6-6` | 10 | `6-3` | Unread badge, similar-title warning, title-only search |
 | `6.7` | `6-7` | 1 | `localisation` | English translations, including every error string |
+| `6.11` | `6-11` | 2 | `0-3` | **Measure, do not build.** Does Royal Road implement a usable search, and does Novel Fire? Record the answer in `18-external-contracts.md` with the URL map, as `0-2` did for FanMTL's empty signal. **No UI.** This is the slice that makes `6-2`'s condition decidable instead of aspirational |
 | `6.10` | `6-10` | 11 | `6-4` | **B37 — the manual check runs as a foreground job with a visible, cancellable notification.** Restored to v1 by ADR-021 |
 | **—** | ~~`6-8`~~ | — | — | **Reading statistics. NOT SCHEDULED IN V1.** A red-team pass found it attributed to rules and stories that do not contain it: US-12's four criteria are a history list, resume, offline, retention — **no statistics** — and `roadmap.md` § 4.1 says *V1 is defined by SC-1..SC-6 and nothing else*, and no SC mentions figures. The screen and route stay; the **slice is withdrawn from v1** and returns in v2 |
 | **—** | ~~`6-9`~~ | — | — | **Source management. NOT SCHEDULED IN V1**, for the same reason. **B1 says which sites ship; it says nothing about hiding or disabling one**, and US-01 is *which site to browse*. The `sources.enabled` column (§ 4.6) is kept because it is one bit and the screen is already specified — but **no v1 rule needs it**, and that is now stated rather than implied |
+
+### 3.1a `0-5`, the shell — the slice that makes every other slice reachable
+
+**Eighteen screens, fourteen routes, a five-item nav, and no slice whose job was to assemble them.** ADR-018 orders the tabs, `design-system.md` § 3.2 scores them, `state.json` records them via `set-nav`, and all eighteen screens assume a route table exists. `grep -in 'shell\|bottom nav\|go_router\|bootstrap' architecture.md` returned **one** hit: the § 1.2 folder-tree comment. `main.dart` today runs a `MaterialApp` with localisations, themes and **no `home:`**. So `2-4` — the offline read proof, the product's entire claim — had nothing to mount it.
+
+| `0-5` delivers | Detail |
+|---|---|
+| The route table | 14 routes, verbatim from `design-system.md` § 3.2. `/reader/…` and `/onboarding` are **outside the shell** and carry no tab bar |
+| The bottom nav | Five items in ADR-018's order, from `state.json`'s `set-nav` record — not re-derived here, because a second source of truth for nav order is the defect ADR-018 was written to end |
+| `MaterialApp.router` | Replaces the `MaterialApp` in `main.dart`, keeping the existing `localeListResolutionCallback` and the **FR fallback chain** (B28). Its `home:` becomes the router |
+| The bootstrap | `main.dart` stops being a localisation-and-theme demo and becomes an entry point |
+| **Nothing else** | No feature import. `app/` imports no `features/` code beyond the shell |
+
+**Every screen slice depends on `0-5`**, because a screen is a route and a route is a row in this table. That is declared on the nine slices that add one rather than on all of them, so the graph records the dependency once per *chain* instead of twenty-eight times.
+
+### 3.1b What `0-1` builds that nothing else can: the broken-layout fixture
+
+**SC-6 is the criterion this product exists to get right** — *a site that cannot be read is reported, never presented as empty* — and it was the one criterion with **no producing slice and no running gate**. `roadmap.md` Wave 7 asked for "a captured fixture of a changed layout", which is **unobtainable on demand**: a site changes when it changes, so a gate that waits for one either never runs or runs against something that no longer exists.
+
+**So the fixture is manufactured rather than waited for.** Slice `0-1` freezes the real pages *and* produces `<fixtures>/fanmtl-broken-layout.html`: a byte-for-byte copy of a real captured catalogue page with **one edit** — the content container's class renamed. It is well-formed, it returns 200, it is not empty, and the parser finds nothing in it. That is precisely the failure SC-6 exists to catch, and it is reproducible forever.
+
+**Three distinct outcomes the fixture separates, which is the point of having it:**
+
+| The page | What the app must show | Rule |
+|---|---|---|
+| Real capture, real results | The results | — |
+| Real capture, genuinely zero results, **site says so** | *No results* — **not** an error | B22's first half; `0-2` records whether FanMTL has that signal at all |
+| **`fanmtl-broken-layout.html`** | ***Could not read this site***, with a retry | B22's second half, and **SC-6** |
+
+The third row is the one that cannot be produced any other way, and the one that used to be unfalsifiable. `failure-discriminator` and `3-1` are tested against it; the V1 gate runs it.
 
 ### 3.1b Verification gates — not slices, and not optional
 
@@ -213,14 +243,20 @@ Two **drills**, from the roadmap's milestone waves. They are verification, not i
 
 | Gate | When | What it proves | Why it cannot be a slice |
 |---|---|---|---|
-| **MVP gate** | Roadmap Wave 4 | One live network run, then **connectivity physically off**, one chapter read. Plus **the upgrade-safety drill** below. Plus a number for list responsiveness, or its deletion (`roadmap.md` § 4.3) | Requires a physical device and a hand-off — **Q-003**. No test can stand in for it |
-| **V1 gate** | Roadmap Wave 7 | **50 chapters downloaded and read with the connection off** (SC-2). Plus **the upgrade-safety drill run a second time, with a larger library** | Same |
+| **MVP gate** | Roadmap Wave 4 | One live network run, then **connectivity physically off**, one chapter read. Plus **the upgrade-safety drill** below. Plus a number for list responsiveness, or its deletion (`roadmap.md` § 4.3). Plus **SC-6**: run `fanmtl-broken-layout.html` through `3-1` and assert the screen says *could not read*, never *no results* | Requires a physical device and a hand-off — **Q-008**. No test can stand in for it |
+| **V1 gate** | Roadmap Wave 7 | **50 chapters downloaded and read with the connection off** (SC-2). Plus **the upgrade-safety drill run a second time, with a larger library**. Plus **SC-6 re-run** against the same manufactured fixture, *and* against whatever real breakage has appeared since — the second is opportunistic and is recorded as such rather than awaited |
 
 **The upgrade-safety drill, stated as an acceptance criterion** because `benchmarks.md` § 2.3 makes it the product's one structural advantage and it is otherwise only asserted:
 
 > With a library entry, downloaded chapters, reading positions and a history in place, **install the next APK over the previous one and assert every one of those is intact afterwards.** The downloaded chapter *files* are checked, not just the database rows — B31's guarantee is about what survives on the phone, and a migration that drops a table would pass a rows-only check.
 
-No slice carries this. `apk-pipeline` builds the APK and `local-store` owns the schema; **the drill is what joins them**, and it only exists once Q-003 closes.
+**Its identity, because "no slice carries this" is not a schedule.** The drill is a **gate artefact**, not a slice: `gate:upgrade-safety`. It is deliberately outside the slice namespace so `dependency-check` cannot mistake it for one — and that also means **the graph tool cannot see it**, which is why it is named here and in `roadmap.md` Wave 4 and Wave 7 rather than left implicit. Three fields, so Phase 5 has something to schedule:
+
+| Field | Value |
+|---|---|
+| **Key** | `gate:upgrade-safety` — not a slice key, so it never appears in `state.json`'s `slices` and never perturbs the 33-node graph |
+| **Runs at** | Roadmap Wave 4 (MVP) and Wave 7 (V1). **Twice**, deliberately: the second run is with a larger library, which is the only way to notice a migration that only breaks at size |
+| **Blocked by** | **Q-008** — a real device. It cannot be run here, and neither gate can close without it |
 
 ### 3.2 Coverage against the PRD
 
@@ -229,15 +265,15 @@ No slice carries this. `apk-pipeline` builds the APK and `local-store` owns the 
 | US-01 Browse a source | `3-1`, `6-1`, `6-2` | B1, B2, B22, B24 |
 | US-02 Search (conditional) | `6-2` | B41, B50 |
 | US-03 Novel details + chapter list | `3-2` | B9, B10 |
-| US-04 Read a chapter | `2-7`, `2-4` | B25, B44 |
+| US-04 Read a chapter | `2-7`, `2-4` | B5, B8, B25, B44 — **B8** (a multi-page chapter is joined in reading order, never truncated) rides on `2-2`'s cleaner |
 | US-05 Read offline | `2-4` | B7, C14 |
 | US-06 Download one chapter | `3-3` | B33 |
 | US-07 Download a novel as a queue | `5-1` | B18 |
 | US-08 Watch/control a download | `5-2`, `5-3` | B19, B20, B21 |
-| US-09 Keep in library | `2-5`, `6-6` | B11, B12, B32, B40, B45 |
-| US-10 New chapters | `6-3`, `6-4`, `6-10` | B13, B14, B36, B37, B38, B39, B48, B49 — **B35 withdrawn** (ADR-023), so checking is manual-only |
+| US-09 Keep in library | `2-5`, `6-6` | **B23**, B11, B12, B32, B40, B45 |
+| US-10 New chapters | `6-3`, `6-4`, `6-10`, `6-11` | B13, B14, B36, B37, B38, B39, B48, B49 — **B35 withdrawn** (ADR-023), so checking is manual-only |
 | US-11 Resume where I stopped | `2-6`, `3-4` | B16, B46 |
-| US-12 Review what I read | `6-5` | B17, B47 |
+| US-12 Review what I read | `6-5` | **B15**, B17, B47 |
 | US-13 French and English | `localisation`, `6-7` | B28 |
 | US-14 Dark mode | `theme-type`, `2-8` | B26, ADR-016 |
 | US-15 My text size | `theme-type`, `2-8` | B27, ADR-017 |
@@ -263,7 +299,9 @@ Six tables. Every field below exists because a rule requires it; the authority f
 | `id` | `id` | TEXT | no | — | **PK** | MD5 of `name/lang/versionId` + source id. B3: stable across restarts. Never hand-written | `a3f1…9c02` |
 | `sourceId` | `source_id` | TEXT | no | — | — | **B2**: the one site this novel came from. Part of the identity, never derived from the title | `fanmtl` |
 | `url` | `url` | TEXT | no | — | — | Relative path + query. `03-source-system.md` rule 3: never a full URL | `/novel/ke383028.html` |
-| `title` | `title` | TEXT | no | — | — | Displayed **verbatim** as the site presents it | `Hurtful Reunion` |
+| `title` | `title` | TEXT | no | — | **indexed** (`idx_novels_title`) | Displayed **verbatim** as the site presents it. The index is how **B45**'s title-only promise is *enforced* rather than asserted | `Hurtful Reunion` |
+| `author` | `author` | TEXT | **yes** | — | **not indexed, deliberately** | ADR-024: **displayed, never searched.** Five screen bindings across four files; nullable because `library.md` collapses the subtitle when the site publishes none | `R. Vashti` |
+| `description` | `description` | TEXT | **yes** | — | — | ADR-024: the details blurb. **B44** — markup is never executed and never stored, so there is no HTML here to sanitise at render time | `A debt repaid.` |
 | `status` | `status` | TEXT | no | `''` | — | Mapped into `NovelStatus`. `''` means the site did not say | `ongoing` |
 | `coverUrl` | `cover_url` | TEXT | **yes** | — | — | Null means *this novel has no cover*, not *we failed* | `https://…/1.jpg` |
 | `inLibrary` | `in_library` | INTEGER (bool) | no | `false` | — | **B11**: keeping and following are one act, so one flag | `1` |
@@ -347,6 +385,27 @@ The app's **local** state of each compiled-in source. Not a copy of the registry
 | `lastErrorCode` | `last_error_code` | TEXT | **yes** | `''` | — | **B22**: lets `sources` render `unavailable` without attempting a fresh fetch | `source_layout_changed` |
 | `settings` | `settings` | TEXT | no | `'{}'` | — | `ConfigurableSource` values as JSON. **Opaque to the platform** — B41's "never interprets a source's values" applies to a source's settings as much as to its filters | `{"mirror":"eu"}` |
 
+### 4.9 The indexes, and why they are in § 4 and not in an optimisation pass
+
+`06-database.md` rule 7 has promised hot-path indexes since before any table existed. The committed schema had **none**, and neither did this document — so the rule was satisfied by nothing and contradicted by the code.
+
+| Index | Columns | Serves |
+|---|---|---|
+| `idx_chapters_novel_ordinal` | `novel_id, ordinal` | **B9** — the chapter list is the site's whole order and must stay complete however long it is |
+| `idx_chapters_novel_read` | `novel_id, is_read` | **B14 / B48** — the derived unread count, over a novel that may hold 10 000 rows |
+| `idx_history_opened_at` | `opened_at` | **B17** — "most recent first", with **B47**'s retention bound on the same column |
+| `idx_novels_title` | `title` | **B45** — and, by its **absence**, so do `author` and `description` (ADR-024) |
+| `idx_queue_state` | `state` | the paused/queued filter, read on every resume |
+
+**None of these bumps `schemaVersion`.** An index is not a column: no row's meaning changes, so this is additive DDL at version 1 and needs no migration step — which is the reason to add them before release rather than after the first 10 000-chapter bug report. **B31 is unaffected.**
+
+**The guard that nearly hid them, and the two placement traps.** `drift_dev schema dump` *does* record indexes alongside tables, so `schema_snapshot_test.dart` catches one that is **removed** — but it had to be **taught** to skip non-table entities, and before that it read `columns` off an index entity and threw. Until today the snapshot held **zero** index entities, and an empty category in a snapshot reads exactly like a covered one. So `app_database_test.dart` reads `sqlite_master` directly: that catches an index declared in Dart and **never created**, which no snapshot can see.
+
+Two traps, both hit while writing this, both silent:
+
+- `@TableIndex` is `@Target({TargetKind.classType})` — the annotation goes **above** `class X extends Table {`, never inside the body. Inside, the generator emits nothing and drift does not warn.
+- A wrong getter name produces `CREATE INDEX x ON t ()` — valid enough to compile, fatal at `createAll()`. `#readAt` on `HistoryEntries`, whose column is `openedAt`, took the whole test suite down with `near ")": syntax error`.
+
 ### 4.7 What is deliberately **not** in the database
 
 | Not stored | Where it lives | Why |
@@ -375,6 +434,11 @@ The app's **local** state of each compiled-in source. Not a copy of the registry
 | State stores a name, not an ordinal | Raw read → `'queued'` | `DownloadState round-trips as a name` |
 | No concurrency column exists | Column set assertion | `the queue has no concurrency column to mis-set` |
 | Never-checked ≠ epoch | `lastCheckedAt` is null | `a null lastCheckedAt is null, not epoch` |
+| **The five hot-path indexes exist** | Read `sqlite_master` for the names | `every declared index is present in the live database` |
+| **B45 — author/description are not searchable** | No index on either column, and one on title | `B45 — neither column is indexed, so neither is searchable` |
+| **B44 — no markup is stored** | Round-trip a description containing no tags | `B44 — a description round-trips as plain text with no markup` |
+| Absent ≠ blank | `author` and `description` default to null | `they default to null, because the site may publish neither` |
+| The count is a SQL aggregate (rule 8) | `COUNT(*)` with a `WHERE`, not a row loop | `the count is derived by SQL, not by a per-row loop` |
 | Unparseable ≠ 0 | Default `-1`, `0` still reachable | `the default is -1 and 0 stays reachable` |
 | Snapshot matches the live schema | Compare SQLite's tables to `schema.json` | `the committed snapshot matches the schema that actually runs` |
 | Snapshot still records B32's `RESTRICT` | Read the constraint out of the snapshot | `the snapshot still records B32's RESTRICT` |
@@ -415,19 +479,31 @@ abstract class Source {
   Future<NovelUpdate> getNovelUpdate(Novel novel, List<Chapter> chapters, {
     required bool fetchDetails, required bool fetchChapters,
   });
-  Future<Novel> getNovelDetails(Novel novel);
-  Future<List<Chapter>> getChapterList(Novel novel);
+  Future<BrowseOutcome<Novel>> getNovelDetails(Novel novel);
+  Future<BrowseOutcome<List<Chapter>>> getChapterList(Novel novel);
 }
 
 abstract class HttpSource extends Source { String get baseUrl; int get versionId; }
 abstract class ParsedHttpSource extends HttpSource {
-  Future<String> fetchChapterContent(Chapter chapter);  // raw HTML
+  Future<BrowseOutcome<String>> fetchChapterContent(Chapter chapter);  // raw HTML
 }
 ```
 
 **Every one of these returns `BrowseOutcome<T>` (§ 2.2), not a bare list.** That is the contract-level expression of B22: the type system cannot express "empty" and "failed" the same way.
 
 ### 5.2 The failure taxonomy
+
+**The four edge cases this section answers, named here because none of them appeared anywhere in this document until 2026-10-02 — and one of them is severity *critical* in the PRD:**
+
+| Edge case | Where it lands |
+|---|---|
+| **E4** — the site's layout changed between releases | `failure-discriminator` distinguishes it from a network failure and from an empty result, because the three produce three different screens. The manufactured fixture in `0-1` is its test |
+| **E5** — no connection while browsing or searching | § 5.3's promise table: the app never fetches unasked (**B5**), so a browsing screen is not degraded by a lost connection, it is unchanged |
+| **E8** — the page loads and contains none of the expected items | **The case SC-6 exists for**, and the one the manufactured fixture produces on demand |
+| **E9** — a novel followed in the library disappears from its site | `6-3`'s counting model and the `never-checked` / `last-checked` state (**B49**): a novel that can no longer be reached is *reported*, never silently kept as if current |
+
+
+**C12 is the constraint this whole section exists to satisfy**: *the app must make its own failure state obvious enough for a borrowed-device reader to describe it in words.* Seven screen files already cite it — 27 references — and this section is where it becomes structural. The taxonomy's third column, "what the reader does", is C12 expressed as a table: **a failure state that admits no action is a failure state that fails C12**, whatever its wording.
 
 `core/error` — one type per cause, each with its recovery. **B22 needs causes distinguished, not collapsed**, because three of the four have no retry worth offering and one has nothing wrong at all.
 
@@ -473,25 +549,22 @@ Each is an **exclusion with a reason**, recorded in `coverage.md` § B29/B30 and
 
 ### 6.1 Computed waves
 
-Twelve waves, computed by `dependency-check.js`, not asserted:
+Ten waves, computed by `dependency-check.js`, not asserted:
 
 ```
 W 0  0-1, apk-pipeline, local-store, localisation, theme-type
-W 1  0-2, 0-3, 0-4, 2-6, 3-5, 6-7
-W 2  6-5, failure-discriminator
-
-W 3  2-1
+W 1  0-2, 0-3, 0-4, 0-5, 2-6, 6-3     ← 0-5 the shell; 6-3 back to W1: § 6.6 dropped its false edge
+W 2  failure-discriminator, 3-5, 6-4, 6-5, 6-6, 6-7, 6-11
+W 3  2-1, 6-10
 W 4  2-2, 2-5, 3-1, 6-1     ← 2-2 also waits on 0-4 (W 1)
-W 5  2-3, 3-2, 3-4, 6-2
+W 5  2-3, 3-2, 3-4, 6-2     ← 6-2 is conditional on 6-11 (W 2)
 W 6  2-4, 3-3
 W 7  2-7, 5-1
 W 8  2-8, 5-2
-W 9  5-3, 6-3
-W10  6-4, 6-6
-W11  6-10            ← ADR-021 restored B37 to v1; it waits on 6-4
+W 9  5-3
 ```
 
-**Cycles: none. Dead dependencies: none. Orphans: none.** Verified by `dependency-check --full --write`, not read — 33 nodes, 28 slices, 5 foundations, 36 edges.
+**Cycles: none. Dead dependencies: none. Orphans: none.** Verified by `dependency-check --full --write`, not read — **35 nodes, 30 slices, 5 foundations, 49 edges, 10 waves.** Ten rather than twelve because § 6.6 removed one unjustified edge; the wave count went *down* when a false dependency went away, which is the direction that makes the number meaningful.
 
 ### 6.2 The critical path
 
@@ -502,7 +575,7 @@ W11  6-10            ← ADR-021 restored B37 to v1; it waits on 6-4
 
 The wow moment is on the critical path, not at the end of it. And **the offline proof precedes every browse UI slice in milestone order**, which is the roadmap's deliberate inversion and is explained in § 6.3.
 
-### 6.3 Why `impl_waves: 6` and not 12
+### 6.3 Why `impl_waves: 6` and not 10
 
 The graph permits more parallelism than the roadmap intends. `2-6` (reading position), `3-5` (about) and `6-7` (English) each depend only on a foundation, and `6-5` (history) only on `2-6` and a foundation, so the graph offers them in wave 1 — while the roadmap holds them for later milestones. Declaring 11 would erase the milestone grouping; declaring nothing would let `--write` overwrite the distinction silently.
 
@@ -522,10 +595,8 @@ Browse UI is available *first* by topology. Following milestones puts the offlin
 | 0 | `0-1` plus **four** of the five foundations — `apk-pipeline`, `local-store`, `localisation`, `theme-type`. `failure-discriminator` is **not** wave-0: it waits on `0-1` and `0-2` and lands in W2. **6 independent starts** |
 | 1 | `0-2`, `0-3`, `0-4`, `2-6`, `3-5`, `6-7` — 6 |
 | 4 | `2-2`, `2-5`, `3-1`, `6-1` — **4** |
-| 10 | `6-4`, `6-6` — 2 |
-| 11 | `6-10` — **1, and it is alone** (ADR-021) |
-| 2 | `failure-discriminator`, `6-5` — 2, and the smallest useful wave |
-| 3, 6–9 | one to three slices each — the dependency chain, not a choice |
+| 2 | `failure-discriminator`, `3-5`, `6-4`, `6-5`, `6-6`, `6-7`, `6-11` — **7, the widest wave** |
+| 9 | `5-3` — **1, and it is alone**: the queue's error handling waits on everything |
 
 ### 6.5 Cycles
 
@@ -540,6 +611,12 @@ Browse UI is available *first* by topology. Following milestones puts the offlin
 The general form, and the reason this is recorded rather than quietly fixed: **a research slice whose declared purpose is "informs X" and whose dependency list is empty is the most dangerous kind of leaf.** It looks like a tidy terminal node, nothing else in the graph is affected by it, and no structural check can tell an intentional leaf from a forgotten edge. Fan-in of zero is a question to answer, not a result to accept.
 
 Now declared: `2-2 → 0-4`. Fan-in of `0-4` is 1; wave counts are unchanged, because `0-4` lands in W1 and `2-2` in W4.
+
+**`6-3 → 5-2` was the mirror defect: an edge that was declared and should not have been.** `6-3` is the local counting model — B48's `COUNT(chapters.is_read = 0)` and B49's nullable timestamp, both pure reads of local metadata. It declared a dependency on `5-2`, the download queue's pause/resume/cancel, with no stated basis. The only defensible argument was **B38**'s invariant (*a check never starts a download*), which is a **verification** dependency, not an implementation one: proving no code path runs from check to download needs a download path to test *against*. That is worth having and it is worth **naming as verification**, not smuggling in as a build edge.
+
+The cost was not cosmetic. `6-3` was the sole occupant of **W9**, `6-4` and `6-6` sat at W10, and `roadmap.md` § 9 independently names **SC-3 as the most likely thing to break**. An unjustified edge had pushed SC-3's local half to three-quarters of the way through a 12-wave graph.
+
+Now declared: `6-3 → local-store` only, and **`6-3 → 5-2` moves to the test plan as a verification obligation on `6-4`**, which is the slice that owns both sides of B38's claim. Recomputed: `6-3` returns to W2 with `6-5` and `failure-discriminator`; `6-4` and `6-6` to W3.
 
 ---
 
@@ -558,8 +635,13 @@ Full text in `DECISIONS.md`. The ones that shape the structure above:
 | ADR-016 | Day is warm paper, night is **cool ink** | `theme-type`'s two independently designed palettes, not one inverted |
 | ADR-017 | Reader prose is serif via a preference chain; **nothing bundled** | `theme-type` ships no asset |
 | ADR-009 | v1 continuous scroll; position stored as an **offset** | § 4.3's `offset`, and why it is not a page index |
-| ADR-020 | **No new-chapter notification in v1** | § 5.4's exclusion table and `benchmarks.md` § 4b's first cost row. **Superseded 2026-10-02**: the conclusion stands, but it is now a *scope* decision rather than a rule-derived one, because B35 — the chain's first link — was withdrawn (ADR-023). The absence is correct while checking is manual-only, and becomes wrong the moment a schedule returns |
+| ADR-020 | **No new-chapter notification in v1** | `benchmarks.md` § 3's parity row, § 4b's first cost row, and this document's **§ 8** risk table. (An earlier version cited § 5.4's exclusion table, which lists only account/backup/IAP/telemetry and has no notification row.) **Superseded 2026-10-02**: the conclusion stands, but it is now a *scope* decision rather than a rule-derived one, because B35 — the chain's first link — was withdrawn (ADR-023). The absence is correct while checking is manual-only, and becomes wrong the moment a schedule returns |
 | ADR-010 | Personal use: no account, sync, export, backup | § 5.4's exclusion table. It removes 24 screens from Mihon's inventory (`screens/_mihon-verdicts.md` § 2) and costs the reader **any safety net for their library** — mitigated only by B31, which `benchmarks.md` § 2.3 shows is the failure their competitors cannot fix |
+| ADR-018 | **Nav order: Library · Updates · History · Browse · More** | § 3.2's five-item shell and `0-5`'s bottom nav. `0-5` reads the order from `state.json`'s `set-nav` record rather than re-deriving it, because a second source of truth for nav order is the defect this ADR exists to end |
+| ADR-019 | **Android phones only** — no tablet, no desktop, no rail, no two-pane | 46 citations across 22 files. Every screen's § 6 responsiveness row. Not **ADR-010**, which is legal posture; the two were confused 42 times before the sweep |
+| ADR-021 | **B37 ships in v1** — a manual check as a cancellable foreground job | Slice `6-10 → 6-4`, and § 1.1's `workmanager` row. The manual check is B36 (`6-4`); the *notification wrapper* is `6-10`, and § 1.1 once said otherwise |
+| ADR-022 | **The download mark is a column** (`chapters.downloadedAt`), written after the atomic rename | § 4.2's ninth chapter field, § 4.7's probe-absence row, § 4.8's three new proof rows — and the note that the *ordering* belongs to `2-3`'s test plan, not to the schema's |
+
 
 ---
 
@@ -568,7 +650,7 @@ Full text in `DECISIONS.md`. The ones that shape the structure above:
 | Risk | Prob | Impact | Mitigation |
 |---|---|---|---|
 | **The HTML→Markdown converter is the largest unknown** and no real FanMTL HTML has ever been read in this repo | HIGH | HIGH | Wave 0 captures fixtures **before** any converter code. ADR-003 rejected every published converter, so there is no fallback to switch to |
-| **No device to verify on** (Q-003) | HIGH | HIGH | `apk-pipeline` is a wave-0 foundation, so CI is unblocked early. Wave 4's drill is where SC-2 is won or lost |
+| **No device to verify on** (Q-008) | HIGH | HIGH | `apk-pipeline` is a wave-0 foundation, so CI is unblocked early. Wave 4's drill is where SC-2 is won or lost |
 | **SQLite FK enforcement off by default** | was HIGH | HIGH | **Fixed** — pragma on every connection + a test asserting it. Residual: any future second connection must repeat it |
 | **No drift-based migration verification** at schema version 1 | MED | MED | `drift_dev schema generate` emits non-compiling code in 2.35.1. Hand-written drift guard instead, proven red once. Re-run the generator at v2 |
 | A site changes its layout | HIGH | MED | B22 reports it rather than returning empty. `18-external-contracts.md` is the finding log; a new layout change is a new entry there, not a silent fix |
@@ -600,12 +682,12 @@ An amendment is recorded with `state.js amend`, which **refuses** the renumberin
 - [x] Every PRD user story has a slice — § 3.2, all 17
 - [x] Every slice has a responsibility expressible in one line — § 3.1
 - [x] Foundations identified and separated from feature slices — § 2, five of them, four wave-0-eligible and `failure-discriminator` at W2 on purpose (§ 6.4)
-- [x] All data models defined field by field — § 4, six tables, 38 columns
+- [x] All data models defined field by field — § 4, six tables, 41 columns, 5 indexes
 - [x] The template's "every endpoint lists its error codes" is satisfied **by § 5's honest substitution**: there is no API, the failure taxonomy is enumerated with its recovery, and the excluded surfaces are listed with reasons rather than left blank
 - [x] Dependency graph has no cycles — § 6.5, verified by `dependency-check`
 - [x] Implementation order is consistent with the dependencies — § 6.1–6.3, and the milestone-vs-topology divergence is declared with its reason
 - [x] Non-trivial architecture decisions are recorded as ADRs — § 7, **eleven** (ADR-003, 005, 008, 009, 010, 013, 014, 015, 016, 017, 019, 020 — twelve rows once ADR-009 is counted), with `DECISIONS.md` as the authority
-- [x] The DDL **executes** — against real SQLite rather than pglite, with 12 constraints asserted as behaviour, and the drift guard proven red once
+- [x] The DDL **executes** — against real SQLite rather than pglite, with 15 constraints asserted as behaviour, and the drift guard proven red once
 - [x] `consistency-check references`: zero broken
 
 **Status**: `draft` — awaiting validation.

@@ -227,7 +227,7 @@ Named, not "a nice transition".
 | `--bp-desktop` | `1024–1439dp` | Same single column, centred. Flutter desktop is out of scope. |
 | `--bp-wide` | `≥ 1440dp` | Same single column, centred. |
 
-**This is not a tablet layout and must not be built as one.** The owner excluded it (**ADR-019**, a platform decision — *not* ADR-019, which is a legal-posture decision about sharing, export and backup). The policy above is what "adapts" instead: past 600dp the layout stops growing and centres. `13-error-handling` and `09-widgets-ui` both forbid widening the reader column past the measure, because the failure mode is a 1400dp line of prose.
+**This is not a tablet layout and must not be built as one.** The owner excluded it (**ADR-019**, a platform decision — *not* **ADR-010**, which is a legal-posture decision about sharing, export and backup). The policy above is what "adapts" instead: past 600dp the layout stops growing and centres. `13-error-handling` and `09-widgets-ui` both forbid widening the reader column past the measure, because the failure mode is a 1400dp line of prose.
 
 **Touch target**: **48dp minimum** on every tappable element, including the reader's tap zones and list-row chevrons.
 
@@ -479,13 +479,13 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 > The order of navigation entries **is a statement of priority**. It follows the frequency of the work loop, not the org chart of the domain. `references/module-prioritization.md` — this section is not optional.
 
 - **Type**: bottom nav
-- **Responsive behaviour**: ≥600dp the bar stays at the bottom and stays 5 items. It does not become a rail. **ADR-019**, not ADR-019: tablet exclusion is a platform decision, and ADR-019 is about sharing, export and backup.
+- **Responsive behaviour**: ≥600dp the bar stays at the bottom and stays 5 items. It does not become a rail. **ADR-019**, not **ADR-010**: tablet exclusion is a platform decision, and ADR-010 is about sharing, export and backup. **Corrected 2026-10-02** — a 42-citation sweep rewrote `not ADR-010` into `not ADR-019`, producing a sentence that named the same ADR on both sides of a contrast. A blanket string replacement cannot see the word *not*.
 - **Plateau**: 5 items. The rest is overflow.
 
 | Rank | Module | Label (EN / FR) | Freq. | Centrality | Why here and not elsewhere |
 |---|---|---|---|---|---|
 | 1 | Library | Library / Bibliothèque | 5 | 5 | **Opens the loop.** A returning reader's most frequent action is resuming, not discovering. Frequency 5, not by default: it is the screen that answers "what do I have, and where was I". |
-| 2 | Updates | Updates / Mises à jour | 4 | 4 | "Did my serialised novels move?" — the new-before-past rule. Second because a serial novel generates the app's only pull-loop, and the pull is what brings the reader back. |
+| 2 | Updates | Updates / Mises à jour | 4 | 4 | "Did my serialised novels move?" — the new-before-past rule. Second because a serial novel generates the app's only pull-loop, **and the pull-loop is a destination the reader returns to, not a notification that brings them back**. ADR-020 originally justified this rank by *"the pull is what brings the reader back"*, which argued for a mechanism the plan does not build; ADR-023 then removed the schedule behind it. |
 | 3 | History | History / Historique | 4 | 2 | "What did I read?" — also a resume surface, but *past* tense, so below Updates. Centrality 2: history is a record, not a destination the reader builds. |
 | 4 | Browse | Browse / Parcourir | 3 | 3 | The only way to add a novel. Centrality 3, frequency 3 — genuinely several-times-a-week, but not daily, and not the reason the app is opened. |
 | 5 | More | More / Plus | 2 | 1 | Lifecycle and configuration. Lowest frequency **by design**: everything here is a setting or a transfer, and none of it is part of the reading loop. |
@@ -527,7 +527,9 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 /library          /library/novel/:novelId        /library/novel/:novelId/chapter/:chapterId
 /updates          /history
 /browse           /browse/:sourceId              /browse/:sourceId/genre/:genre
-/more             /more/downloads  /more/sources  /more/stats  /more/settings
+/more             /more/downloads  /more/settings          ← v1. /more/sources and /more/stats were
+                                              removed 2026-10-02 with slices 6-9 and 6-8;
+                                              both screens are designed and return in v2.
 /reader/:novelId/:chapterId      (outside the shell — no tab bar)
 /onboarding       (outside the shell)
 ```

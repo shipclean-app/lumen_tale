@@ -57,6 +57,8 @@ class DownloadStateConverter extends TypeConverter<DownloadState, String> {
 /// B2 — a novel belongs to exactly one site. `sourceId` is therefore part of
 /// the identity, never derived from the title.
 @DataClassName('NovelRow')
+/// **Index `idx_novels_title`.** **B45** — library search is **title only**. This index exists so that "not searchable by author or genre" is enforced by the *absence* of an index on those columns, not only by a rule nobody reads
+@TableIndex(name: 'idx_novels_title', columns: {#title})
 class Novels extends Table {
   /// B3 — stable across sessions and restarts. MD5 of
   /// `'${name.toLowerCase()}/$lang/$versionId'` per `03-source-system.md`
@@ -74,6 +76,32 @@ class Novels extends Table {
   /// B10-adjacent — displayed verbatim as the site presents it. Never
   /// normalised, title-cased or trimmed beyond leading/trailing whitespace.
   TextColumn get title => text()();
+
+  /// **Displayed, never searched** (ADR-024). Five screen files bind
+  /// `novel.author`, and `novel-details.md` says outright that it is *stored*,
+  /// so the design had a field with no column to hold it.
+  ///
+  /// **Nullable, because the site may publish none.** `library.md` specifies
+  /// that an absent author makes the subtitle line collapse rather than show an
+  /// em dash, so an empty string here would be a lie about a value nobody gave
+  /// us. Absent and blank are different states and this is where they differ.
+  ///
+  /// **No index, and that is the point.** B45 promises library search is title
+  /// only, and `idx_novels_title` exists so that promise is enforced by the
+  /// *absence* of an index here rather than by a rule nobody reads. **B42** was
+  /// withdrawn for assuming author and genre were stored *as searchable fields*;
+  /// storing them for display does not revive that premise, because nothing
+  /// queries them.
+  TextColumn get author => text().nullable()();
+
+  /// **Displayed, never searched** (ADR-024) — the novel-details blurb.
+  ///
+  /// **B44: markup is never executed and never stored.** The site may publish
+  /// this as HTML; the converter writes plain text here and drops the tags, so
+  /// there is no markup in this database to sanitise later. Storing raw HTML
+  /// and sanitising at render time is the shape that produces an XSS bug three
+  /// releases after the field was added.
+  TextColumn get description => text().nullable()();
 
   /// `03-source-system.md` rule 8 — site-specific strings mapped into the
   /// shared enum. Empty means the site did not say.
@@ -110,6 +138,10 @@ class Novels extends Table {
 /// B9 — the list is shown complete, whatever its length, so there is no
 /// truncation column and no page table. A 900-chapter novel is 900 rows.
 @DataClassName('ChapterRow')
+/// **Index `idx_chapters_novel_ordinal`.** **B9** — the chapter list is the site's whole order and must stay complete however long it is, so it is read in `(novelId, ordinal)` order
+@TableIndex(name: 'idx_chapters_novel_ordinal', columns: {#novelId, #ordinal})
+/// **Index `idx_chapters_novel_read`.** **B14 / B48** — the unread count is `count(chapters.is_read = 0)` grouped by novel. A derived count over 10 000 rows per novel is the query **B48** exists to keep *exact*, and this is what keeps it a list operation rather than a scan
+@TableIndex(name: 'idx_chapters_novel_read', columns: {#novelId, #isRead})
 class Chapters extends Table {
   /// B3 — stable. Derived from the novel's id plus the chapter's own url.
   TextColumn get id => text()();
@@ -154,7 +186,8 @@ class Chapters extends Table {
   /// Without this column the mark was a per-row filesystem probe, and that was
   /// the defect: B33 deletes one chapter's copy, so a probe could not
   /// distinguish "deleted on purpose" from "file lost", and probing 10 000 rows
-  /// put B9's complete-list requirement at risk (see ADR-021).
+  /// put B9's complete-list requirement at risk (see ADR-022 — not ADR-021, which is
+  /// the B37 foreground-notification decision).
   DateTimeColumn get downloadedAt => dateTime().nullable()();
 
   /// B9 — reading order is the site's order, so it is an explicit ordinal and
@@ -193,6 +226,8 @@ class ReadingPositions extends Table {
 /// **time**, not by count, so there is no `LIMIT` anywhere in this table's
 /// access and no `position` column.
 @DataClassName('HistoryRow')
+/// **Index `idx_history_opened_at`.** **B17** — history is "recently opened, most recent first", with **B47**'s retention bound applied on the same column
+@TableIndex(name: 'idx_history_opened_at', columns: {#openedAt})
 class HistoryEntries extends Table {
   TextColumn get id => text()();
 
@@ -220,6 +255,8 @@ class HistoryEntries extends Table {
 /// constant, and a constant expressed as a column would be something an
 /// implementation could change.
 @DataClassName('QueueRow')
+/// **Index `idx_queue_state`.** The queue's paused/queued filter, read on every resume
+@TableIndex(name: 'idx_queue_state', columns: {#state})
 class QueueItems extends Table {
   TextColumn get id => text()();
 
