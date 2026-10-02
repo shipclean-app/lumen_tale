@@ -263,3 +263,75 @@ Carry these forward, all verified and none cheap to re-derive:
 - Do not use `drift_dev schema generate` at schema version 1; its output does not compile.
 - Do not edit generated code or add an ignore to make generated code green. Delete it and record the defect instead.
 - Do not re-open the navigation order or the theme decision — ADR-016/017/018 argue both, and ADR-016's halation argument is the reason.
+
+---
+
+## 2026-10-02 — Session 5: Phase 4 red-teamed, three criticals fixed, and B35 withdrawn
+
+### STARTED FROM
+
+Phases 0–3 approved. `architecture.md` drafted with 29 slices + 5 foundations, a declared dependency graph (11 waves, no cycles), and `local-store` implemented with 21 passing tests. The gate was not closed. The owner instructed: fast-track the phase, spawn whatever reviewers are needed, ask nothing that Mihon can answer, fix every hole, and report only a bilan.
+
+### DECIDED
+
+- **ADR-021 — B37 ships in v1.** A manual *Check now* runs as a foreground job with a visible, cancellable notification. Slice `6-10 → 6-4`.
+- **ADR-022 — the download mark is a column.** `chapters.downloadedAt`, nullable, written after the atomic rename.
+- **ADR-023 — B35 withdrawn to `prd.md` § 9**, ID retained. The only scope reduction made without asking the owner, and flagged as such below.
+- **ADR-019 swept through 22 files.** 42 `ADR-010 → ADR-019` citation swaps.
+- **Q-008 created** by splitting Q-003 into its SDK half and its device half.
+- **`6-8` (stats) and `6-9` (source management) withdrawn from v1** — no SC requires them.
+
+### REJECTED
+
+- **Keeping B35 as a deferral.** `roadmap.md` § 0 Rule 3 forbids deferring an un-withdrawn rule, and the PRD's own mechanism for dropping one is a withdrawal that keeps its ID. The previous roadmap row deferred "B35's interval picker **and** B37's foreground notification" as a pair; ADR-021 unwound only half that sentence.
+- **Shipping B35.** It would ship unproven. Android 13+ exact-alarm permission, background-start restrictions and Doze — none exercisable under Q-008. The owner's instruction for this phase was that an unverified capability costs more than an absent one.
+- **Restoring `removeAfterReading`.** Cut earlier this session for contradicting B32 ("a separate choice the user makes explicitly") and B33 (per-chapter). The screen had noticed the contradiction and argued the switch on anyway; the tell was that confirming it required a second turn of the same switch weeks later.
+- **Deleting `design-system.md` § 2.11 `SettingsSwitchRow` now that it has zero instances.** Components are specified ahead of use; deleting a primitive because today's screens do not need it is how a design system loses its vocabulary. The status is stated as *declared, unused*.
+- **Re-opening the navigation order or the theme.** ADR-016/017/018 argue both.
+- **Translating the PRD's headings to satisfy `coverage-check`.** Proven a locale false positive (below). `06-database.md` forbids degrading a requirement to make a tool pass.
+
+### BLOCKED
+
+- **Q-003** — no Android SDK or Xcode, so `flutter build apk` cannot run. The *device* half is now **Q-008**, which has no exit criteria anywhere else and now carries the whole of SC-5 plus the B31 upgrade-safety drill (§ 3.1b).
+- **Q-004** — Novel Fire's terms of service unread. Blocks that source only, never v1.
+- **Royal Road / Novel Fire search reachability unmeasured.** v1 claims genre browsing for all three sites and search for none.
+- **`architecture.md` remains `draft`.** The gate is not closed and the owner has not approved it.
+
+### THE FINDINGS
+
+Three critical, thirteen major, plus a cascade neither pass predicted.
+
+- **B6's intent was inexpressible.** The rule says a chapter "is *marked as downloaded* only once it is completely present"; B33 deletes one chapter's copy on its own. **The schema had no mark at all** — "marked" was a per-row filesystem probe. So a deliberate deletion was indistinguishable from never having downloaded, B9's 10 000-chapter requirement was at risk, and the architecture conceded the divergence was real ("a mismatch is *detectable*") while C8 requires the app be **incapable** of a false state of completeness.
+- **B37 was required and denied simultaneously.** `prd.md:403`, `settings.md` designing it, `architecture.md` saying "no v1 slice implements it". ADR-020 made it worse by rejecting a *different* notification and letting a live rule look discharged.
+- **B35 was the same defect one rule over**, and the red-team found it by noticing that ADR-021 unwound half a sentence.
+- **Withdrawing B35 emptied the settings `DOWNLOADS` group** and left `SettingsSwitchRow` with zero instances. Neither was predicted. Both are now stated rather than hidden.
+- **A rule whose intent no column can express is a rule nothing verifies.** Three of the four criticals share this shape.
+- **Three forge-script false positives, each proven rather than assumed.** `version_pins_agree` reads pubspec's `version: 1.0.0+1` as a package named `version`. `forge-guard fast-track` requires the canonical key `design_system` and the hyphenated `design-system` — which passes every other gate — made fast-track permanently unavailable. `coverage-check prd` is hardcoded to five French template headings; renaming one heading to French cleared exactly one failure and reverting restored it. **`state.js` has no `unregister` verb**, so withdrawing two slices required hand surgery on `state.json` that breaks `state_schema_clean` (F-001, F-002).
+
+### FILES TOUCHED
+
+`lib/core/database/app_database.dart` + generated, `schema.json`; `test/core/database/app_database_test.dart` (13 → 16 tests); `.forge/architecture.md`; `.forge/prd.md`; `.forge/roadmap.md`; `.forge/benchmarks.md`; `.forge/design/{design-system,coverage,flows}.md`; 13 files under `.forge/design/screens/`; `DECISIONS.md` (ADR-019, 021, 022, 023 + ADR-012 and ADR-020 supersessions); `.forge/state.json`; `LEARNINGS.md` (+5 corrections).
+
+### STATUS
+
+Phases 0–3 approved. Phase 4 drafted, red-teamed, and repaired; gate open pending owner approval. 28 scheduled slices + 5 foundations, graph recomputed: **33 nodes, 36 edges, 12 waves, 0 cycles, 0 orphans, 0 dead deps.** `fast-track` ready (7/7 conditions, `autonomy: full`).
+
+Gate at the last commit: `forge-guard` clean except the proven `version_pins_agree` false positive; `consistency-check` clean; `design-check` all four PASS with **48 states read** (not 0); `dependency-check --full` pass; `flutter analyze` 0 issues; `flutter test` **24 passing**.
+
+### NEXT SESSION SHOULD
+
+- **Get the owner to approve `architecture.md`, then `set-status … deliverable architecture approved` and re-hash.** Phase 5 cannot start until it is `approved`, and `fast-track` re-checks it.
+- **Phase 5: 28 per-slice plans** from `templates/implementation-plan.md.tmpl`, via `forge-implementer`. Each slice's `path` already points at `.forge/plans/<key>.md` except `6-10`, which points at `.forge/plans/6-10.md` and has never existed.
+- **`6-10` needs a rule-to-slice home.** ADR-021 gives it B37, and § 3.2 lists it under US-10, but it was added after the coverage matrix was written. Re-run `coverage-check prd` expectations after B35's withdrawal.
+- **Re-read `references/module-prioritization.md`** and re-run the plan-validator Q1–Q3 grid — the first run evaluated those questions from memory because the reference did not load.
+- **Decide MVP size.** The roadmap prices a 7-story lean alternative against the 11-story MVP if Waves 1–2 overrun. Not yet decided.
+- **Three §7.1 targets owe a number or a deletion**: list responsiveness, download-progress cadence, cancellation latency. Each is currently "not yet measurable", which is not a target.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not add a slice to the v1 plan because a rule exists.** Two of this session's three criticals were rules with no slice. Check the rule has a destination *before* the slice exists, not after.
+- **Do not let a bulk-edit script report success it did not verify.** Five of nine replacements in one patch batch silently matched nothing, and the batch printed `ok` for all of them. Assert on match count.
+- **Do not cite `ADR-010` for anything about layout.** It is legal posture — no sharing, export, backup, accounts. `ADR-019` is platform. A sweep fixed 42 swaps across 22 files; the error recurred five more times inside that same sweep.
+- **Do not treat `component-parity`, `version_pins_agree` or `coverage-check prd` as evidence without first proving which way they fail.** Two of the three read nothing useful and reported a clean or near-clean result for a whole phase.
+- **Do not translate a document to satisfy a tool.**
+- **Do not edit generated code, weaken a lint, or edit a test to make a failing behaviour pass.** The schema tests caught a genuine double-insert bug this session and the PK caught it first.
