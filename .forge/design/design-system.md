@@ -523,15 +523,23 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 
 `go_router` shell routes (ADR-008), one `StatefulShellRoute` per bottom-nav destination so each tab keeps its own scroll position and back stack.
 
-```
-/library          /library/novel/:novelId        /library/novel/:novelId/chapter/:chapterId
+**Fifteen routes, and this table is reconciled against the eighteen screen files** — every route a screen pushes appears here, and every route here is pushed by a screen. That reconciliation is not free: it was checked on 2026-10-02 and it found four discrepancies, all of which had been sitting here as "verified":
+
+| Discrepancy | Resolution |
+|---|---|
+| `/library/novel/:novelId/chapter/:chapterId` appeared here and in **no** screen file | **Removed.** Every screen that opens a chapter pushes `/reader/:novelId/:chapterId` — 3 call sites, 0 for the other form. Two URLs for one destination is a route table with two truths |
+| `/browse/:sourceId/unavailable` pushed by `source-unavailable.md`, absent here | **Added** |
+| `/more/settings/reader` and `/more/settings/about` pushed by `settings-reader.md` and `settings-about.md`, absent here | **Added** — they are sub-routes of `/more/settings`, reached from `settings.md`'s rows |
+| `/more/sources` and `/more/stats` were here with no slice behind them | **Removed** 2026-10-02 with slices `6-9` and `6-8`; the screens are designed and return in v2 |
+
+/library                        /library/novel/:novelId
 /updates          /history
-/browse           /browse/:sourceId              /browse/:sourceId/genre/:genre
-/more             /more/downloads  /more/settings          ← v1. /more/sources and /more/stats were
-                                              removed 2026-10-02 with slices 6-9 and 6-8;
-                                              both screens are designed and return in v2.
-/reader/:novelId/:chapterId      (outside the shell — no tab bar)
-/onboarding       (outside the shell)
+/browse           /browse/:sourceId    /browse/:sourceId/genre/:genre
+                  /browse/:sourceId/unavailable
+/more             /more/downloads      /more/settings
+                  /more/settings/reader    /more/settings/about
+/reader/:novelId/:chapterId     (outside the shell — no tab bar)
+/onboarding                      (outside the shell)
 ```
 
 ---

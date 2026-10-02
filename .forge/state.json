@@ -121,7 +121,7 @@
     "prd": {
       "path": ".forge/prd.md",
       "type": "prd",
-      "status": "approved",
+      "status": "stale",
       "content_hash": "sha256:eb7a8e0b4010",
       "headings": {
         "1": "Executive summary",
@@ -148,14 +148,14 @@
       },
       "updated_at": "2026-10-02T21:25:42.047Z",
       "version": "1",
-      "amended_from": "sha256:06a42579d8ed",
-      "amended_at": "2026-10-02T21:20:25.096Z",
+      "amended_from": "sha256:eb7a8e0b4010",
+      "amended_at": "2026-10-02T22:20:36.589Z",
       "amendment": {
-        "reason": "No rule change. B45 forbids SEARCHING author/genre, not displaying author/description; ADR-024 adds novels.author and novels.description as display-only columns because five screen bindings had no column to hold them. Schema version stays 1 — nothing has shipped.",
+        "reason": "B37's cancel mechanism stated precisely rather than aspirationally. VERIFIED IN THE INSTALLED SOURCE: workmanager 0.10.10 is federated; the notification is built in workmanager_android 0.10.9 ForegroundServiceUtils.createForegroundInfo with .setContentTitle/.setContentText/.setSmallIcon/.setOngoing(true) and NO .addAction(...). ForegroundServiceConfig exposes title, text, channelId, channelName, notificationId and the service type — no action field. So 'a visible notification the user can cancel' cannot mean a cancel BUTTON ON THE NOTIFICATION without a second notification stack. The reader-facing intent — the reader is never trapped in a check they cannot stop — is preserved and is now stated as the two mechanisms that actually exist. See ADR-025.",
         "changes": [
           "--",
           "type: prd",
-          "status: stale",
+          "status: approved",
           "generated_at: 2026-10-02",
           "version: 3",
           "--",
@@ -506,16 +506,17 @@
           "--",
           "## 7. Non-functional requirements",
           "### 7.1 Performance",
-          "Targets are stated as **measurable frame-budget numbers** where a number exists to be had, and are labelled as targets rather than measurements. Three of them are not yet measurable and are marked as such below rather than dressed up with an adjective: list responsiveness on a very long novel, download-progress cadence, and how quickly a cancelled queue actually stops. **A requirement that reads well but cannot fail is not a requirement**, and those three are listed so Phase 4 either gives them a number or drops them. The owner supplied no number, so these are taken from the two published definitions rather than invented:",
+          "Targets are stated as **measurable frame-budget numbers** where a number exists to be had, and are labelled as targets rather than measurements. **Two** are not yet measurable and are marked as such below rather than dressed up with an adjective: **list responsiveness on a very long novel**, and **how quickly a cancelled queue actually stops**. **A requirement that reads well but cannot fail is not a requirement**, and both are listed so Phase 4 either gives them a number or drops them.",
+          "> **Corrected 2026-10-02: this paragraph said *three* and the section carried *two*.** The third — *download-progress cadence* — was deleted from the bullets at some point without the sentence that promised it being touched, so **§ 7.1 claimed a requirement it no longer stated** — which is the exact defect the paragraph exists to prevent, committed by the paragraph itself. A section that counts its own unmeasurable targets needs the count checked when any one of them moves; three documents (`§ 12`, `coverage.md`, `roadmap.md`) repeated the number, and **repeating a count propagates it**. The owner supplied no number, so these are taken from the two published definitions rather than invented:",
           "**Android**, on rendering performance: *\"your app must render frames in under 16ms to achieve 60 frames per second… If you are trying to achieve 90 fps, then this window drops to 11ms, and for 120 fps it's 8ms.\"* Overrunning the window by even 1ms means the frame is **dropped entirely**, which is what the reader perceives as stutter.",
           "**Flutter**, in the installed SDK (`scheduler/binding.dart`, the `addTimingsCallback` documentation): a frame is late if `FrameTiming.buildDuration` or `FrameTiming.rasterDuration` exceeds the frame budget — 16ms at 60Hz — and the interaction is late if `FrameTiming.totalSpan` exceeds it, *even when no frame was actually dropped*. The SDK notes that in the latter case *\"animations will be smooth but touch input will feel more sluggish.\"*",
           "Consequently:",
           "**Scrolling a downloaded chapter drops no frames at the device's own refresh rate.** The budget is half the refresh period: 16ms at 60Hz, 11ms at 90Hz, 8ms at 120Hz. The target is stated against the refresh rate rather than against 60Hz specifically, because a 120Hz phone makes 16ms a target that passes while feeling slow. Measured by the SDK's own frame timings: no reported frame has `buildDuration` or `rasterDuration` over that budget. This is the \"wow\" path (B7) and the one the owner named as the reason to install the app.",
           "**Touch response while scrolling stays within budget**, which is a *separate* condition from smoothness: `totalSpan` must stay within 16ms even on frames that render in time. Dropping this check is how an app passes a smoothness test while feeling sluggish.",
           "**Opening a downloaded chapter performs no network call at all** and reads only local storage (B6, B7). Being fast is not the same as being offline; §7.5 makes the offline guarantee and this section makes it fast.",
-          "**Not yet measurable.** Browsing a catalogue and opening a chapter list of several thousand chapters must stay usable (E1, B9). The threshold and the device it is measured on are left to Phase 4, which must either set a number here or delete the line.",
-          "**Not yet measurable.** Download progress is visible while the queue runs and is not only shown at the end (US-08). The required update frequency is left to Phase 4, which must set a number or drop the line.",
-          "**These numbers are targets, not measurements.** They become a verified claim only once the app runs on a real device, which is the same measurement that closes Q-003. Until then they are a definition of \"fast\" against which a later measurement can be judged, not proof.",
+          "**A chapter list of 10 000 chapters opens, and scrolls, without a dropped frame** (E1, B9). 10 000 is **B9**'s own figure, not a round number chosen for comfort. The budget is the same as everywhere else in this section — half the refresh period, measured with the SDK's `addTimingsCallback`, with `totalSpan` checked separately from `buildDuration`/`rasterDuration`. **The list must be lazy**: `ListView.builder` over the chapter rows, never a column of 10 000 widgets, because the alternative satisfies this target on a fast phone and fails on a slow one. *(Numbered 2026-10-02. It was \\\"not yet measurable\\\" on the grounds that the threshold and the device were undecided — but the threshold is already stated three bullets above, and B9 already fixes the length. The real unknown was never the number, it was having a phone, and that is **Q-008**'s job, not this line's.)*",
+          "**Download progress is visible while the queue runs, and moves at least every 500ms while an item is active** (US-08). Half a second is the longest a progress row may look frozen before the reader is entitled to conclude the app has stopped. **This one is measurable without a device** — it is a widget test over the queue's state stream — so unlike every other target in this section it can be *proven* in CI, and it must be: \\\"not only at the end\\\" is a behaviour, and a behaviour is a test. *(Numbered 2026-10-02; previously \\\"not yet measurable\\\" because the update frequency was undecided.)*",
+          "**These numbers are targets, not measurements** — with **one exception**: the 500ms progress cadence is a widget test and is proven in CI. The rest become a verified claim only once the app runs on a real device, which is the same measurement that closes **Q-008** (the *device* half; **Q-003** is the SDK, which ADR-011 already made a CI dependency). Until then they are a definition of \"fast\" against which a later measurement can be judged, not proof.",
           "### 7.2 Security",
           "No account, no sign-in, and no credential of any kind is stored or exchanged (B4, C2).",
           "No data leaves the device: no library, no progress, no history, no diagnostics, no telemetry, no crash reports (B29, C2).",
@@ -982,7 +983,7 @@
       "path": ".forge/architecture.md",
       "type": "architecture",
       "status": "approved",
-      "content_hash": "sha256:8054099b7289",
+      "content_hash": "sha256:a18d99b8975e",
       "headings": {
         "1": "Overview",
         "2": "Foundations",
@@ -1020,7 +1021,7 @@
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-02T22:14:27.736Z",
+      "updated_at": "2026-10-02T22:30:32.298Z",
       "derived_from": [
         ".forge/prd.md"
       ],
@@ -1185,6 +1186,7 @@
           "local-store",
           "localisation",
           "theme-type",
+          "http-client",
           "0-1"
         ]
       },
@@ -1193,7 +1195,6 @@
         "nodes": [
           "0-2",
           "0-3",
-          "0-4",
           "2-6",
           "6-3",
           "0-5"
@@ -1203,19 +1204,18 @@
         "wave": 2,
         "nodes": [
           "failure-discriminator",
+          "0-4",
           "3-5",
-          "6-4",
           "6-5",
-          "6-6",
           "6-7",
-          "6-11"
+          "6-11",
+          "3-7"
         ]
       },
       {
         "wave": 3,
         "nodes": [
-          "2-1",
-          "6-10"
+          "2-1"
         ]
       },
       {
@@ -1224,7 +1224,8 @@
           "2-2",
           "2-5",
           "3-1",
-          "6-1"
+          "6-1",
+          "6-4"
         ]
       },
       {
@@ -1233,7 +1234,10 @@
           "2-3",
           "3-2",
           "3-4",
-          "6-2"
+          "6-2",
+          "6-6",
+          "6-10",
+          "3-6"
         ]
       },
       {
@@ -1796,11 +1800,13 @@
       "updated_at": "2026-10-02T17:15:09.642Z",
       "depends_on": [
         "0-1",
-        "0-2"
+        "0-2",
+        "http-client"
       ],
       "depended_on_by": [
         "2-1",
-        "3-1"
+        "3-1",
+        "3-6"
       ],
       "impl_wave": 2,
       "rule_ids": [
@@ -1818,7 +1824,8 @@
       "depends_on": [],
       "depended_on_by": [
         "6-7",
-        "0-5"
+        "0-5",
+        "3-7"
       ],
       "impl_wave": 0,
       "rule_ids": [
@@ -1834,13 +1841,33 @@
       "depends_on": [],
       "depended_on_by": [
         "2-8",
-        "0-5"
+        "0-5",
+        "3-7"
       ],
       "impl_wave": 0,
       "rule_ids": [
         "B26",
         "B27"
       ]
+    },
+    "http-client": {
+      "path": ".forge/architecture.md",
+      "type": "http-client",
+      "status": "identified",
+      "content_hash": null,
+      "updated_at": "2026-10-02T22:35:00.000Z",
+      "depends_on": [],
+      "depended_on_by": [
+        "failure-discriminator",
+        "2-1",
+        "6-1"
+      ],
+      "impl_wave": 0,
+      "rule_ids": [
+        "C7",
+        "B29"
+      ],
+      "note": "the dio client, typed exception boundary and rate limiter. Added 2026-10-02: core/network/ was named by conventions.md, the layer table and three slices, and owned by none — a layer no slice builds is a layer no slice can call."
     }
   },
   "modules": {},
@@ -1902,6 +1929,7 @@
         "0-1"
       ],
       "depended_on_by": [
+        "0-4",
         "6-1",
         "6-11"
       ],
@@ -1920,14 +1948,19 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:08.005Z",
       "depends_on": [
-        "0-1"
+        "0-1",
+        "0-3"
       ],
       "depended_on_by": [
-        "2-2"
+        "2-2",
+        "6-1"
       ],
-      "impl_wave": 1,
-      "rule_ids": [],
-      "edge_case_ids": []
+      "impl_wave": 2,
+      "rule_ids": [
+        "B44"
+      ],
+      "edge_case_ids": [],
+      "note": "research slice: its output is a classification record, not code. B44 is attached because deciding what is furniture is the mechanism by which raw HTML never reaches the converted output."
     },
     "2-1": {
       "path": ".forge/architecture.md",
@@ -1937,15 +1970,17 @@
       "updated_at": "2026-10-02T17:15:08.083Z",
       "depends_on": [
         "0-1",
-        "local-store",
-        "failure-discriminator"
+        "failure-discriminator",
+        "http-client",
+        "local-store"
       ],
       "depended_on_by": [
         "2-2",
         "2-5",
         "3-1",
         "3-2",
-        "6-1"
+        "6-1",
+        "6-4"
       ],
       "impl_wave": 3,
       "rule_ids": [
@@ -2051,7 +2086,8 @@
         "2-1"
       ],
       "depended_on_by": [
-        "3-4"
+        "3-4",
+        "6-6"
       ],
       "impl_wave": 4,
       "rule_ids": [
@@ -2062,7 +2098,8 @@
       ],
       "edge_case_ids": [
         "E17"
-      ]
+      ],
+      "note": "also owns the /library screen"
     },
     "2-6": {
       "path": ".forge/architecture.md",
@@ -2139,7 +2176,8 @@
       ],
       "depended_on_by": [
         "3-2",
-        "6-2"
+        "6-2",
+        "3-6"
       ],
       "impl_wave": 4,
       "rule_ids": [
@@ -2314,7 +2352,9 @@
       "updated_at": "2026-10-02T17:15:09.108Z",
       "depends_on": [
         "0-3",
-        "2-1"
+        "0-4",
+        "2-1",
+        "http-client"
       ],
       "depended_on_by": [],
       "impl_wave": 4,
@@ -2387,7 +2427,8 @@
       ],
       "edge_case_ids": [
         "E9"
-      ]
+      ],
+      "note": "also owns the /updates screen"
     },
     "6-4": {
       "path": ".forge/architecture.md",
@@ -2396,12 +2437,13 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:09.285Z",
       "depends_on": [
+        "2-1",
         "6-3"
       ],
       "depended_on_by": [
         "6-10"
       ],
-      "impl_wave": 2,
+      "impl_wave": 4,
       "rule_ids": [
         "B36",
         "B38",
@@ -2412,7 +2454,8 @@
         "E8",
         "E9",
         "E16"
-      ]
+      ],
+      "note": "also owns the manual check's UI in /updates; the 2-1 edge is the Source contract — added 2026-02 because the graph placed this two waves before the contract it calls"
     },
     "6-5": {
       "path": ".forge/architecture.md",
@@ -2440,11 +2483,12 @@
       "content_hash": null,
       "updated_at": "2026-10-02T17:15:09.404Z",
       "depends_on": [
-        "6-3",
-        "0-5"
+        "0-5",
+        "2-5",
+        "6-3"
       ],
       "depended_on_by": [],
-      "impl_wave": 2,
+      "impl_wave": 5,
       "rule_ids": [
         "B14",
         "B40",
@@ -2483,7 +2527,7 @@
         "6-4"
       ],
       "depended_on_by": [],
-      "impl_wave": 3,
+      "impl_wave": 5,
       "rule_ids": [
         "B37"
       ],
@@ -2530,7 +2574,8 @@
         "3-5",
         "6-5",
         "6-6",
-        "6-7"
+        "6-7",
+        "3-7"
       ],
       "impl_wave": 1,
       "rule_ids": [
@@ -2541,7 +2586,57 @@
       "edge_case_ids": [
         "E11",
         "E12"
-      ]
+      ],
+      "note": "also owns AppScaffold (design-system § 2.8) and the /more screen"
+    },
+    "3-6": {
+      "path": ".forge/architecture.md",
+      "type": "3-6",
+      "status": "identified",
+      "content_hash": null,
+      "updated_at": "2026-10-02T22:10:00.000Z",
+      "depends_on": [
+        "3-1",
+        "failure-discriminator"
+      ],
+      "depended_on_by": [],
+      "impl_wave": 5,
+      "rule_ids": [
+        "B22",
+        "B23",
+        "B24"
+      ],
+      "edge_case_ids": [
+        "E4",
+        "E5",
+        "E8"
+      ],
+      "note": "SC-6 only has a surface here: /browse/:sourceId/unavailable. Added 2026-10-02 because source-unavailable.md was an approved screen with no slice at all."
+    },
+    "3-7": {
+      "path": ".forge/architecture.md",
+      "type": "3-7",
+      "status": "identified",
+      "content_hash": null,
+      "updated_at": "2026-10-02T22:20:00.000Z",
+      "depends_on": [
+        "0-5",
+        "theme-type",
+        "localisation"
+      ],
+      "depended_on_by": [],
+      "impl_wave": 2,
+      "rule_ids": [
+        "B26",
+        "B27",
+        "B28",
+        "B46",
+        "B47"
+      ],
+      "edge_case_ids": [
+        "E12"
+      ],
+      "note": "the Settings screen itself — /more/settings plus its /reader and /about sub-routes. Added 2026-10-02: settings.md, settings-reader.md and settings-about.md were approved screens with no owning slice, and 3-4 had to place the E11 disclosure inside one. Strings are localisation (6-7); theme and size are the theme-type foundation. This slice is the assembly and the persistence."
     }
   },
   "gates_pending": [],
@@ -2558,12 +2653,12 @@
       "status_change": 92,
       "gate_approved": 4,
       "phase_status": 4,
-      "amend": 4,
+      "amend": 5,
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 35,
-      "finding_raised": 2
+      "finding_raised": 3
     }
   },
   "divergences": [],
@@ -2640,6 +2735,19 @@
       "correction": "Preuve que la garde fonctionne: renommer un seul titre en français fait disparaître exactement une défaillance, l'annuler la restaure. Ne pas traduire le PRD pour satisfaire une garde — 06-database.md interdit de dégrader une exigence pour faire passer un outil. Troisième faux positif connu de la Phase 4, avec version_pins_agree et fast-track (clé canonique design_system).",
       "artifact": null,
       "raised_at": "2026-10-02T20:56:06.031Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-003",
+      "domain": "data-and-state.md",
+      "severity": "MEDIUM",
+      "origin": "phase5",
+      "status": "open",
+      "summary": "coverage-check.js slice <projet> <clé> échoue avec 'Slice not found in state.json' pour une FONDATION, car checkSlice() lit state.slices et jamais state.foundations. Les cinq fondations ne sont donc jamais vérifiées mécaniquement.",
+      "correction": "Correctif: check_plans.py couvre les fondations en lisant state.foundations, et README.md § 2 le déclare. Mais le finding lui-même doit exister dans state.json — trois agents l'ont cité par son identifiant avant qu'il soit enregistré, ce qui est un signal que la convention « findings » n'est pas encore appliquée. Outil Forge en lecture seule : demander un bool --foundation.",
+      "artifact": null,
+      "raised_at": "2026-10-02T22:21:45.348Z",
       "promoted_to": null,
       "resolved_at": null
     }

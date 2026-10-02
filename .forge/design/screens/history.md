@@ -258,10 +258,9 @@ AppScaffold (titleBar, bottomNav)
 |---|---|
 | Three months | Drops entries older than three months, oldest first |
 | **One year** | **The default.** Conservative enough to bound a pathological table and never felt in normal use |
-| Three years | Drops entries older than three years |
-| Keep everything | Removes the bound entirely, and the notice's sentence and the terminal line both change to match |
+| Two years | Drops entries older than two years |
 
-Four options, and the reason there are not more: B47 is about the **shape** of the bound — by time, configurable, clearable — not about the number, and every additional window is a decision about a reader's habits that the app has no basis to make.
+**Five options, and the reason there are no more: there is no \*\*Keep everything\*\*.** An earlier draft of this screen offered it as a sixth, and that was the rule **B47** exists to prevent — *\"the history list is bounded by time, not by count\"* becomes false the moment the reader can remove the bound. `design-system.md` § 2.12 forbids it independently (*\"No 'forever' option on any bounded list\"*), because an unbounded value next to bounded ones teaches the reader the bounds are negotiable. **The five windows are the same five `settings.md` offers** — `1 week · 1 month · 3 months · 1 year · 2 years`, one year the default — because two lists of the same values in two places is two truths about how long history lasts.
 
 **The clear confirmation** is an `AlertDialog` on `--color-surface-raised` with `--shadow-dialog`, and its body is B46 in one sentence: **Your 96 entries will be removed. Your library, your downloads and every remembered reading position will be kept.** Cancel is the default action; the destructive button reads **Clear history** in full, never *OK*, never *Delete*. The promise is repeated after the fact in the cleared state and in the SnackBar, because a reader who has just emptied a list is exactly the reader who will wonder what else went with it.
 

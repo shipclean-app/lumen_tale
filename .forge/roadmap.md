@@ -487,6 +487,9 @@ them will inherit them.
 
 ## 8. Dependency-ordered build sequence
 
+
+> **This table's dependency column was stale until 2026-10-02, and `architecture.md` § 6.6 is the authority.** Phase 4 recomputed the graph twice and both corrections are recorded there: `2-2` gained an edge to `0-4` (the content-vs-furniture record) and `6-3` *lost* its edge to `5-2` (a purely local count needs no download queue). Two columns here said otherwise, and a roadmap that disagrees with the architecture about which slice waits for which is the kind of thing nobody notices until an implementer blocks. **The graph lives in `state.json`; this table is a reading of it, not a second source.**
+>
 > **This is the order slices must be implemented in — which is not the order the reader experiences them.**
 > The reader's order is browse → library → read → download. The build order is the reverse of the one that
 > matters: **store → read → download → library → browse.** The browse surface is deliberately last, and
@@ -516,7 +519,7 @@ them will inherit them.
 | # | Item | Depends on | Blocks |
 |---|---|---|---|
 | 2.1 | FanMTL as one adapter over the source contract: catalogue → novel → chapter list → chapter pages (B1, B2, B3, B8, B9, B10, E3) | 0.1, 1.2, 1.3 | 2.2 |
-| 2.2 | Clean and convert a chapter page to stored text, with the "no real text" threshold rules (B5, B44, E18, E22) | 2.1 | 2.3 |
+| 2.2 | Clean and convert a chapter page to stored text, with the "no real text" threshold rules (B5, B44, E18, E22) | 2.1 **+ 0.4** | 2.3 |
 | 2.3 | Store a chapter atomically: present-and-complete, or not present (B6, B20, E6) | 2.2 | 2.4 |
 | 2.4 | **Read a stored chapter from local storage only — the wow moment is proven here** (B7, C14) | 2.3 | the whole product claim |
 | 2.5 | Library: add, remove, list, open — and removing keeps the downloads (B11, B12, B32, B33) | 1.2, 2.1 | 2.4's entry point |
@@ -554,8 +557,8 @@ them will inherit them.
 |---|---|---|---|
 | 6.1 | Royal Road adapter (SC-1) — the real test of the source contract | 0.3, 2.1 | SC-1 |
 | 6.2 | Search, **per source, only where measured usable** (US-02, B41, B50) | 3.1 | — (SC-1 satisfied by 6.1) |
-| 6.3 | The local counting model: unopened count is local and exact (B48), last-checked / never-checked is visible (B49), a check never downloads (B38) | 5.2 | SC-3 |
-| 6.4 | Manual "update library" (B36) | 6.3 | SC-3 |
+| 6.3 | The local counting model: unopened count is local and exact (B48), last-checked / never-checked is visible (B49), a check never downloads (B38), offline staleness shows its date (B15) | **`local-store`** — was `5.2`, dropped in Phase 4 | SC-3 |
+| 6.4 | Manual "update library" (B36, B38, B39) | 6.3 **+ 2.1** (the `Source` contract) | SC-3 |
 | 6.10 | **B37 — the manual check as a foreground job with a visible, cancellable notification** (ADR-021) | 6.4 | SC-3 |
 | 6.5 | History view, time-bounded, never touching reading positions (US-12, B17, B46, B47) | 2.6 | SC-3 |
 | 6.6 | Library unread badge, similar-title warning, title-only search (US-09b, B14, B40, B45) | 6.3 | SC-3 |

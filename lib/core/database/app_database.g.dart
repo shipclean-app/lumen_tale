@@ -1360,8 +1360,24 @@ class $ReadingPositionsTable extends ReadingPositions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _contentHeightMeta = const VerificationMeta(
+    'contentHeight',
+  );
   @override
-  List<GeneratedColumn> get $columns => [chapterId, offset, updatedAt];
+  late final GeneratedColumn<int> contentHeight = GeneratedColumn<int>(
+    'content_height',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    chapterId,
+    offset,
+    updatedAt,
+    contentHeight,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1396,6 +1412,15 @@ class $ReadingPositionsTable extends ReadingPositions
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('content_height')) {
+      context.handle(
+        _contentHeightMeta,
+        contentHeight.isAcceptableOrUnknown(
+          data['content_height']!,
+          _contentHeightMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1417,6 +1442,10 @@ class $ReadingPositionsTable extends ReadingPositions
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      contentHeight: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}content_height'],
+      ),
     );
   }
 
@@ -1434,10 +1463,32 @@ class PositionRow extends DataClass implements Insertable<PositionRow> {
   /// representation v2 can resume from without converting it.
   final double offset;
   final DateTime updatedAt;
+
+  /// **The content height this offset was measured against**, so the position
+  /// can be re-anchored when the text size later differs (B16, B27, E14).
+  ///
+  /// A scroll offset is in logical pixels, so the same pixel denotes a
+  /// different paragraph once the text size changes. With only [`offset`]
+  /// stored, a reader who read at 18 px and returns at 26 px lands somewhere
+  /// else in the chapter and there is nothing to correct it with — the earlier
+  /// height is simply gone. With it stored, the restore is
+  /// `offset / contentHeight`, scaled onto whatever the height is now.
+  ///
+  /// **Nullable, and that is deliberate.** `null` means "height not recorded",
+  /// which is what every row written before this column existed means. Restore
+  /// then **clamps and says so** rather than guessing a ratio — a disclosed
+  /// wrong position is better than a confident wrong one. This is the same
+  /// ordering principle as ADR-022: prefer the state that cannot overstate
+  /// what it knows.
+  ///
+  /// **Not a B31 concern.** Nothing is lost by its absence; `schemaVersion`
+  /// stays 1 because nothing has shipped.
+  final int? contentHeight;
   const PositionRow({
     required this.chapterId,
     required this.offset,
     required this.updatedAt,
+    this.contentHeight,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1445,6 +1496,9 @@ class PositionRow extends DataClass implements Insertable<PositionRow> {
     map['chapter_id'] = Variable<String>(chapterId);
     map['offset'] = Variable<double>(offset);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || contentHeight != null) {
+      map['content_height'] = Variable<int>(contentHeight);
+    }
     return map;
   }
 
@@ -1453,6 +1507,9 @@ class PositionRow extends DataClass implements Insertable<PositionRow> {
       chapterId: Value(chapterId),
       offset: Value(offset),
       updatedAt: Value(updatedAt),
+      contentHeight: contentHeight == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contentHeight),
     );
   }
 
@@ -1465,6 +1522,7 @@ class PositionRow extends DataClass implements Insertable<PositionRow> {
       chapterId: serializer.fromJson<String>(json['chapterId']),
       offset: serializer.fromJson<double>(json['offset']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      contentHeight: serializer.fromJson<int?>(json['contentHeight']),
     );
   }
   @override
@@ -1474,6 +1532,7 @@ class PositionRow extends DataClass implements Insertable<PositionRow> {
       'chapterId': serializer.toJson<String>(chapterId),
       'offset': serializer.toJson<double>(offset),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'contentHeight': serializer.toJson<int?>(contentHeight),
     };
   }
 
@@ -1481,16 +1540,23 @@ class PositionRow extends DataClass implements Insertable<PositionRow> {
     String? chapterId,
     double? offset,
     DateTime? updatedAt,
+    Value<int?> contentHeight = const Value.absent(),
   }) => PositionRow(
     chapterId: chapterId ?? this.chapterId,
     offset: offset ?? this.offset,
     updatedAt: updatedAt ?? this.updatedAt,
+    contentHeight: contentHeight.present
+        ? contentHeight.value
+        : this.contentHeight,
   );
   PositionRow copyWithCompanion(ReadingPositionsCompanion data) {
     return PositionRow(
       chapterId: data.chapterId.present ? data.chapterId.value : this.chapterId,
       offset: data.offset.present ? data.offset.value : this.offset,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      contentHeight: data.contentHeight.present
+          ? data.contentHeight.value
+          : this.contentHeight,
     );
   }
 
@@ -1499,37 +1565,42 @@ class PositionRow extends DataClass implements Insertable<PositionRow> {
     return (StringBuffer('PositionRow(')
           ..write('chapterId: $chapterId, ')
           ..write('offset: $offset, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('contentHeight: $contentHeight')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(chapterId, offset, updatedAt);
+  int get hashCode => Object.hash(chapterId, offset, updatedAt, contentHeight);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PositionRow &&
           other.chapterId == this.chapterId &&
           other.offset == this.offset &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.contentHeight == this.contentHeight);
 }
 
 class ReadingPositionsCompanion extends UpdateCompanion<PositionRow> {
   final Value<String> chapterId;
   final Value<double> offset;
   final Value<DateTime> updatedAt;
+  final Value<int?> contentHeight;
   final Value<int> rowid;
   const ReadingPositionsCompanion({
     this.chapterId = const Value.absent(),
     this.offset = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.contentHeight = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ReadingPositionsCompanion.insert({
     required String chapterId,
     this.offset = const Value.absent(),
     required DateTime updatedAt,
+    this.contentHeight = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : chapterId = Value(chapterId),
        updatedAt = Value(updatedAt);
@@ -1537,12 +1608,14 @@ class ReadingPositionsCompanion extends UpdateCompanion<PositionRow> {
     Expression<String>? chapterId,
     Expression<double>? offset,
     Expression<DateTime>? updatedAt,
+    Expression<int>? contentHeight,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (chapterId != null) 'chapter_id': chapterId,
       if (offset != null) 'offset': offset,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (contentHeight != null) 'content_height': contentHeight,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1551,12 +1624,14 @@ class ReadingPositionsCompanion extends UpdateCompanion<PositionRow> {
     Value<String>? chapterId,
     Value<double>? offset,
     Value<DateTime>? updatedAt,
+    Value<int?>? contentHeight,
     Value<int>? rowid,
   }) {
     return ReadingPositionsCompanion(
       chapterId: chapterId ?? this.chapterId,
       offset: offset ?? this.offset,
       updatedAt: updatedAt ?? this.updatedAt,
+      contentHeight: contentHeight ?? this.contentHeight,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1573,6 +1648,9 @@ class ReadingPositionsCompanion extends UpdateCompanion<PositionRow> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (contentHeight.present) {
+      map['content_height'] = Variable<int>(contentHeight.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1585,6 +1663,7 @@ class ReadingPositionsCompanion extends UpdateCompanion<PositionRow> {
           ..write('chapterId: $chapterId, ')
           ..write('offset: $offset, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('contentHeight: $contentHeight, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4179,6 +4258,7 @@ typedef $$ReadingPositionsTableCreateCompanionBuilder =
       required String chapterId,
       Value<double> offset,
       required DateTime updatedAt,
+      Value<int?> contentHeight,
       Value<int> rowid,
     });
 typedef $$ReadingPositionsTableUpdateCompanionBuilder =
@@ -4186,6 +4266,7 @@ typedef $$ReadingPositionsTableUpdateCompanionBuilder =
       Value<String> chapterId,
       Value<double> offset,
       Value<DateTime> updatedAt,
+      Value<int?> contentHeight,
       Value<int> rowid,
     });
 
@@ -4234,6 +4315,11 @@ class $$ReadingPositionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get contentHeight => $composableBuilder(
+    column: $table.contentHeight,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$ChaptersTableFilterComposer get chapterId {
     final $$ChaptersTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -4277,6 +4363,11 @@ class $$ReadingPositionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get contentHeight => $composableBuilder(
+    column: $table.contentHeight,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ChaptersTableOrderingComposer get chapterId {
     final $$ChaptersTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4315,6 +4406,11 @@ class $$ReadingPositionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get contentHeight => $composableBuilder(
+    column: $table.contentHeight,
+    builder: (column) => column,
+  );
 
   $$ChaptersTableAnnotationComposer get chapterId {
     final $$ChaptersTableAnnotationComposer composer = $composerBuilder(
@@ -4373,11 +4469,13 @@ class $$ReadingPositionsTableTableManager
                 Value<String> chapterId = const Value.absent(),
                 Value<double> offset = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<int?> contentHeight = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ReadingPositionsCompanion(
                 chapterId: chapterId,
                 offset: offset,
                 updatedAt: updatedAt,
+                contentHeight: contentHeight,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4385,11 +4483,13 @@ class $$ReadingPositionsTableTableManager
                 required String chapterId,
                 Value<double> offset = const Value.absent(),
                 required DateTime updatedAt,
+                Value<int?> contentHeight = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ReadingPositionsCompanion.insert(
                 chapterId: chapterId,
                 offset: offset,
                 updatedAt: updatedAt,
+                contentHeight: contentHeight,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

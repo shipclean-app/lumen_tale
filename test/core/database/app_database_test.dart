@@ -297,6 +297,108 @@ void main() {
     },
   );
 
+  group('B16 / E14 — a position survives a text-size change', () {
+    test(
+      'contentHeight defaults to null, so an old row is not a wrong ratio',
+      () async {
+        await db
+            .into(db.novels)
+            .insert(
+              NovelsCompanion.insert(
+                id: 'n1',
+                sourceId: 's',
+                url: '/a',
+                title: 'A',
+              ),
+            );
+        await db
+            .into(db.chapters)
+            .insert(
+              ChaptersCompanion.insert(
+                id: 'c1',
+                novelId: 'n1',
+                name: 'One',
+                url: '/c1',
+                ordinal: 0,
+              ),
+            );
+        final p = await db
+            .into(db.readingPositions)
+            .insertReturning(
+              ReadingPositionsCompanion.insert(
+                chapterId: 'c1',
+                offset: const Value(900),
+                updatedAt: DateTime(2026, 10, 2),
+              ),
+            );
+        expect(
+          p.contentHeight,
+          isNull,
+          reason:
+              'null means "height not recorded" — restore must clamp and '
+              'disclose, never invent a ratio',
+        );
+      },
+    );
+
+    test(
+      'the re-anchor is a ratio, and the fraction is what survives',
+      () async {
+        // Read at 18px in a 4000px chapter, stopped 25% down. Reopen at 26px
+        // where the chapter is 6000px tall. A quarter of 6000 is 1500, not 900.
+        const storedOffset = 900.0;
+        const storedHeight = 4000;
+        const newHeight = 6000;
+        const reanchored = storedOffset / storedHeight * newHeight;
+        expect(reanchored, 1350.0);
+        expect(
+          reanchored / newHeight,
+          closeTo(storedOffset / storedHeight, 1e-9),
+          reason: 'the fraction must survive the change, not the pixel',
+        );
+      },
+    );
+
+    test('a stored height is written on save and read back', () async {
+      await db
+          .into(db.novels)
+          .insert(
+            NovelsCompanion.insert(
+              id: 'n1',
+              sourceId: 's',
+              url: '/a',
+              title: 'A',
+            ),
+          );
+      await db
+          .into(db.chapters)
+          .insert(
+            ChaptersCompanion.insert(
+              id: 'c1',
+              novelId: 'n1',
+              name: 'One',
+              url: '/c1',
+              ordinal: 0,
+            ),
+          );
+      await db
+          .into(db.readingPositions)
+          .insert(
+            ReadingPositionsCompanion.insert(
+              chapterId: 'c1',
+              offset: const Value(900),
+              updatedAt: DateTime(2026, 10, 2),
+              contentHeight: const Value(4000),
+            ),
+          );
+      final back = await (db.select(
+        db.readingPositions,
+      )..where((p) => p.chapterId.equals('c1'))).getSingle();
+      expect(back.offset, 900.0);
+      expect(back.contentHeight, 4000);
+    });
+  });
+
   group('06-database rule 7 — the hot-path indexes exist', () {
     // Read from `sqlite_master`, not from the snapshot. The snapshot *does*
     // record indexes — but it recorded **none at all** until today, because

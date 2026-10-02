@@ -216,6 +216,27 @@ class ReadingPositions extends Table {
 
   DateTimeColumn get updatedAt => dateTime()();
 
+  /// **The content height this offset was measured against**, so the position
+  /// can be re-anchored when the text size later differs (B16, B27, E14).
+  ///
+  /// A scroll offset is in logical pixels, so the same pixel denotes a
+  /// different paragraph once the text size changes. With only [`offset`]
+  /// stored, a reader who read at 18 px and returns at 26 px lands somewhere
+  /// else in the chapter and there is nothing to correct it with — the earlier
+  /// height is simply gone. With it stored, the restore is
+  /// `offset / contentHeight`, scaled onto whatever the height is now.
+  ///
+  /// **Nullable, and that is deliberate.** `null` means "height not recorded",
+  /// which is what every row written before this column existed means. Restore
+  /// then **clamps and says so** rather than guessing a ratio — a disclosed
+  /// wrong position is better than a confident wrong one. This is the same
+  /// ordering principle as ADR-022: prefer the state that cannot overstate
+  /// what it knows.
+  ///
+  /// **Not a B31 concern.** Nothing is lost by its absence; `schemaVersion`
+  /// stays 1 because nothing has shipped.
+  IntColumn get contentHeight => integer().nullable()();
+
   @override
   Set<Column> get primaryKey => {chapterId};
 }

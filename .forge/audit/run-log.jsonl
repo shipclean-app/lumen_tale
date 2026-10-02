@@ -558,3 +558,9 @@
 {"ts":"2026-10-02T21:29:24.515Z","type":"gate_approved","phase":"4_architecture","next_phase":"5"}
 {"ts":"2026-10-02T22:14:27.739Z","type":"hash","kind":"deliverable","entry":"architecture","content_hash":"sha256:8054099b7289"}
 {"ts":"2026-10-02T22:14:27.797Z","type":"hash","kind":"screen","entry":"downloads","content_hash":"sha256:62501ebcac3f"}
+{"ts":"2026-10-02T22:18:52.195Z","type":"graph_written","nodes":36,"waves":10}
+{"ts":"2026-10-02T22:19:31.351Z","type":"graph_written","nodes":37,"waves":10}
+{"ts":"2026-10-02T22:20:36.609Z","type":"amend","kind":"deliverable","key":"prd","reason":"B37's cancel mechanism stated precisely rather than aspirationally. VERIFIED IN THE INSTALLED SOURCE: workmanager 0.10.10 is federated; the notification is built in workmanager_android 0.10.9 ForegroundServiceUtils.createForegroundInfo with .setContentTitle/.setContentText/.setSmallIcon/.setOngoing(true) and NO .addAction(...). ForegroundServiceConfig exposes title, text, channelId, channelName, notificationId and the service type — no action field. So 'a visible notification the user can cancel' cannot mean a cancel BUTTON ON THE NOTIFICATION without a second notification stack. The reader-facing intent — the reader is never trapped in a check they cannot stop — is preserved and is now stated as the two mechanisms that actually exist. See ADR-025."}
+{"ts":"2026-10-02T22:21:45.351Z","type":"finding_raised","id":"F-003","domain":"data-and-state.md","severity":"MEDIUM"}
+{"ts":"2026-10-02T22:23:03.954Z","type":"graph_written","nodes":38,"waves":10}
+{"ts":"2026-10-02T22:30:32.301Z","type":"hash","kind":"deliverable","entry":"architecture","content_hash":"sha256:a18d99b8975e"}

@@ -99,7 +99,7 @@ AppScaffold (titleBar "About Lumen Tale", bottomNav kept)
     │   │                                                        automatically · no store"
     │   └── ghost TextButton            "Copy version number" → clipboard
     │
-    ├── UpdateBlock                     ONLY while an update is known to exist
+    ├── ~~UpdateBlock~~                 NOT IN V1 — no rule requires it (see below)
     │   │                               --color-surface-sunken
     │   ├── system_update_alt icon, --color-info
     │   ├── "Version 0.10.0 is available."           --text-h3
@@ -141,7 +141,7 @@ AppScaffold (titleBar "About Lumen Tale", bottomNav kept)
 | # | Component | Role | Source |
 |---|---|---|---|
 | 1 | `AppScaffold` | Title bar + retained bottom nav | `design-system.md` § 2.8 |
-| 2 | `UpdateBlock` | The B31 update notice, with the guarantee stated before the button | slice-local composition over `design-system.md` § 2.3 buttons |
+| ~~2~~ | ~~`UpdateBlock`~~ | **NOT IN V1.** The notice itself stays — "your library and downloads are kept" is **B31**'s promise and the reader deserves to read it before installing anything | — |
 | 3 | `DataBlock` | The three local counts that evidence B31, plus the E11 statement | slice-local composition |
 | 4 | `PrivacyBlock` | What is sent, what is never sent, and the falsifiable check | slice-local composition |
 | 5 | `PrimaryButton` / `SecondaryButton` / `TextButton` | Install, download, not now, copy | `design-system.md` § 2.3 |
@@ -157,7 +157,7 @@ AppScaffold (titleBar "About Lumen Tale", bottomNav kept)
 |---|---|---|---|
 | **Loading** | The screen opens. The version string and the delivery line are build-time constants and render **immediately**. The three counts are one local query per figure | The counts render as `LoadingState` skeletons **at the shape of the content they replace**: a `--color-surface-sunken` bar the width of the figure it will become, with `--duration-normal` shimmer, **no centred spinner**. Every other block renders fully and immediately, including the whole privacy block — a privacy statement must never be waiting on a query | Nothing announces it. The privacy block appearing before the counts is deliberate: the claims are static, and only the numbers are not |
 | **Filled** | Normal case, no update known | `AboutIdentity` + `DataBlock` + `PrivacyBlock` + `DeliveryBlock`. The `Check for a new version` action is present under `AboutIdentity` with its last-result value line | None. The screen is entirely declarative |
-| **Empty — never visited** | The reader has never tapped **Check for a new version** | **The `UpdateBlock` is absent** — not greyed, not empty, not showing "up to date", because the app does not know whether it is up to date and B15's discipline applies here exactly as it does to a novel's chapters: an unchecked answer must never be presented as a checked one. The action's value line reads **`Never checked`**, in the same words `Updates` uses for a novel's never-checked stamp (B49) | The absence is the honest state. An `UpdateBlock` saying "you are up to date" before any check has run would be a fabricated answer, and fabricated answers are the exact failure B22 exists to prevent |
+| **Empty — never visited** | The reader has never tapped **Check for a new version** — **and in v1 there is nothing to tap** | **The `UpdateBlock` is absent** — not greyed, not empty, not showing "up to date", because the app does not know whether it is up to date and B15's discipline applies here exactly as it does to a novel's chapters: an unchecked answer must never be presented as a checked one. The action's value line reads **`Never checked`**, in the same words `Updates` uses for a novel's never-checked stamp (B49) | The absence is the honest state. An `UpdateBlock` saying "you are up to date" before any check has run would be a fabricated answer, and fabricated answers are the exact failure B22 exists to prevent |
 | **Empty — no data** | Fresh install: the library is empty, nothing has been downloaded, no reading positions exist | **The three counts read `0 · 0 · 0`**, in `--text-body`, set exactly like the non-zero case. **No `EmptyState`, no illustration, no "get started" call to action** — this is an About screen, not a library, and a celebratory empty state about having downloaded nothing would be both absurd and, per the design system's anti-references, gamification | A real zero, shown as a zero. The reader who has just installed needs to see that the three numbers exist and that they are empty, because those are the three numbers B31 promises to preserve |
 | **Load error** | The build-time version constant is missing or malformed — a real failure mode, since the version is injected at build time from `pubspec.yaml` (ADR-011) rather than read from the package | One `--color-error` line at `--text-body-sm` where the version would be: *"The installed version number could not be read."* **The rest of the screen renders completely and unchanged** — the three counts, the whole privacy block, the delivery sentence. The version is one string; a missing string must not blank the screen that states what the app does with the reader's data | The failure is scoped in the rendering rather than in a second sentence, because the surrounding content is still true. `Version —` is *not* used: an em dash looks like a version, and C9 requires the owner to be able to determine which version is installed |
 | **Submit error** | **Check for a new version** fails — no connection, or the release-metadata file is unreachable | The action's value line becomes `--color-warning` **with an icon and words**: *"The version could not be checked. There may be no connection."* and the action's label switches to **Try again**. **It never becomes "You have the latest version."** | This is B22's discriminator applied to delivery, and it is the same rule verbatim: a file that could not be read is not a file that said "no". A failed check rendered as "up to date" is the single most damaging thing this screen could do, because it would tell the reader, falsely, that they are safe |
@@ -211,6 +211,20 @@ AppScaffold (titleBar "About Lumen Tale", bottomNav kept)
 
 ---
 
+## 4bis. `UpdateBlock` — removed from v1, and why
+
+The *check for a new version* — the button, the version endpoint, the atomic APK download, the OS install hand-off — is **not in v1**, and that was an omission rather than a decision. It sat in this screen's design with **no slice and no rule behind it**, found when a plan author implementing `3-5` went looking for the owner of a block specified in this much detail.
+
+Three reasons, in weight order:
+
+- **No success criterion requires it.** SC-1..SC-6 are browsability, offline reading, correct local records, an installable file, no false emptiness, and two languages. **B34** says the app *is delivered* as a built file; **B43** says this screen *shows which version is installed*. Neither says the app must ask a server whether a newer one exists.
+- **`apk-pipeline` already does the delivery.** ADR-011 builds a versioned APK on merge to the default branch, and for a personal install the channel that announces a new version is the same one the reader installed from.
+- **It is the one control on this screen that would reach a server by itself.** **B29** — no user data leaves the device — is satisfied while it sends none, which makes every future addition to it a place to be careless.
+
+**What stays:** the version line (**B43**) and the guarantee sentence *"your library and your downloads are kept"* — **B31**'s promise, read out loud before the reader installs anything. Losing the block does not lose the promise.
+
+**Returns with** a slice, a version endpoint that does not log who asks, and a reason it matters more than the CI channel already does.
+
 ## 5. Interactions
 
 | Element | Event | Behaviour | Visual feedback | Resulting state | Rule |
@@ -218,7 +232,7 @@ AppScaffold (titleBar "About Lumen Tale", bottomNav kept)
 | Title-bar back / system back | tap / back | Pop to `/more/settings` | `--duration-normal` 200ms `--ease-standard` | Settings | — |
 | `Check for a new version` | tap | **One** HTTP GET of a static release-metadata file that CI publishes. It carries no device identifier, no library content, no version of the OS and nothing else — and the app performs it **only** because this button was tapped. It is never automatic | Action enters `loading`: 16dp spinner, label hidden, width locked | Filled, then Success or Submit error | **B29**, **C2**, **B34** |
 | — the response is an equal or older version | — | Write the durable value line, with its timestamp | Value line updates | Filled, up to date | **B15**, B49 |
-| — the response is a newer version | — | Render `UpdateBlock` with the guarantee line **above** the buttons | Block appears; no animation beyond a fade `--duration-normal` | Filled + update known | **B31** |
+| — the response is a newer version | — | **NOT IN V1.** Would render `UpdateBlock` with the guarantee line **above** the buttons | Block appears; no animation beyond a fade `--duration-normal` | Filled + update known | **B31** |
 | `UpdateBlock` — Download the file | tap | Fetch the APK to a temporary file, then move it into place **atomically** — the same discipline as a chapter (B6). Progress shows on the block's own `apkProgressLine`: a 2dp determinate bar in `--color-accent`, and the caption reads `Downloading · 41% of 8.2 MB` | Determinate bar inside the block | Update known, file present | **B6**, **C8** |
 | — the download fails | — | Bar disappears, one `--color-error` line **inside the block** names the failure, and **Download the file** returns to its default state. **No chapter is affected and none is enqueued** | — | Update known, no file | **B24**, B5 |
 | — the file is present | — | The action set changes: `primary` **Install the update** becomes the emphasised action and **Download the file** is replaced by the file's size and name | Button emphasis moves | Update known, file present | **B31** |

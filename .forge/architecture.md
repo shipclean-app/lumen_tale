@@ -41,6 +41,12 @@ Versions are the **resolved** ones, verified against `pubspec.lock`. The table i
 | Tests | `flutter_test` + `mocktail` | SDK / 1.0.5 | `mocktail`, not `mockito`: no codegen, no build-runner coupling in tests |
 | Lint / Format | `flutter_lints` | 6.0.0 | DoD requires **zero** issues including zero `info` |
 
+**Two entries were added after this table was first written, both forced by a rule the table could not satisfy, and both recorded rather than slipped in:**
+
+| Added | Why it could not be avoided |
+|---|---|
+| `crypto` 3.0.7 | **`Source.id` is an MD5** — `03-source-system.md` rule 1 and **B3**. `dart:convert` has no MD5 and no `package:` in `pubspec.yaml` computed one, so the id rule was **unbuildable as written**. `crypto` is a dart.dev package, pure Dart, no native code, no FFI — nothing `17-security.md` rule 13 bans. ADR-026 |
+
 **Nothing else may be added.** `08-coding-standards.md` § Dependencies: `flutter pub add` is the only way to change dependencies, and `AGENTS.md` carries the banned list with a reason for each.
 
 ### 1.2 Target folder structure
@@ -143,11 +149,33 @@ final class BrowseEmpty<T> extends BrowseOutcome<T> {
 }
 ```
 
-**`BrowseEmpty` exists only where the site provides the signal.** FanMTL's failure page carries the explicit string *"No relevant content found"*, which is what makes the third state possible there. **On genre browsing that string is not applicable** — an empty genre page is judged by page shape (no novel rows), never by that string. A source with no site-supplied signal gets two states, and the UI must say which situation it cannot distinguish.
+**`BrowseEmpty` exists only where the site provides the signal — and whether FanMTL does is `0-2`'s job, not this section's.** The belief recorded before measuring was that FanMTL's failure page carries the explicit string *"No relevant content found"*; **`0-2` records the answer from the frozen fixtures, and this paragraph is wrong if it turns out otherwise.** Stating an unmeasured fact here is how a belief becomes an assumption, so it is labelled as one. Royal Road's equivalent **is** measured: a `200` with zero rows carries `There is nothing here :(` (`18-external-contracts.md`), which is what makes the third state available there. **On genre browsing that string is not applicable** — an empty genre page is judged by page shape (no novel rows), never by that string. A source with no site-supplied signal gets two states, and the UI must say which situation it cannot distinguish.
 
 **Prohibited**, because each has been the obvious cheap answer: catching an exception and returning `BrowseSucceeded(items: [])`; returning `null` and letting the caller decide; a boolean `isEmpty`. All three collapse B22's distinction, and B22 is SC-6.
 
-### 2.3 `apk-pipeline`
+### 2.3 `http-client` — the dio client every network slice calls
+
+**`core/network/` was named by three documents and owned by none.** `conventions.md` puts the shared client, interceptors and rate limiting there; § 1.2's layer table lets `sources/implementations` import `core/network` **only**; and `2-1`, `6-1` and `failure-discriminator` all need it. A slice cannot call a layer no slice builds.
+
+| `http-client` delivers | Why it is transverse and not part of `2-1` |
+|---|---|
+| One configured `dio` instance | Shared headers, timeouts, and the **honest User-Agent** every site measured required |
+| Catching the primitive, rethrowing a typed one | `conventions.md`: never let a `DioException` reach a source |
+| **Rate limiting** | **C7** — politeness toward the sites, enforced in one place rather than per adapter |
+| Per-source base URL + `versionId` plumbing | `03-source-system.md` rule 2 |
+| **No retry policy** | Mihon deprecated its equivalent helper for hiding behaviour; a retry is a *decision* and belongs to the caller that can justify it |
+
+### 2.4 The three foundations without a subsection, stated so § 2 documents all six
+
+| Foundation | Delivers | Owned by |
+|---|---|---|
+| **`apk-pipeline`** | GitHub Actions builds a **versioned** APK on merge to the default branch (ADR-011, **B34**, **C9**) | § 3.1b's `gate:upgrade-safety` proves **B31** — and B31's proof is a *real* install-over, which needs **Q-008**. `3-5` reads the installed version from it |
+| **`localisation`** | FR primary, EN complete, **fallback chain FR** (**B28**). `lib/l10n/` already holds the ARB sources and generated output | `6-7` adds the English; the mechanism is here |
+| **`theme-type`** | Colours, typography, spacing, motion and the reader's text scale, from `design-system.md`'s **measured** tokens | `2-8` applies it in the reader; `theme-type` owns the values |
+
+**Six foundations, and three of them had no subsection here** — the same shape as `core/network` having no owner: a thing the documents referenced freely and the inventory did not list. § 3.1 carries all six; § 2 now carries all six.
+
+
 
 `.github/workflows/` builds a release APK on merge to `master`. ADR-011: **no store**. Version from `pubspec.yaml`, surfaced by B43 on `settings-about`.
 
@@ -159,25 +187,26 @@ This foundation exists before any feature because **Q-008** blocks every device 
 
 ### 3.1 Inventory
 
-35 items: 5 foundations + **30 scheduled slices** — plus `6-8` and `6-9`, withdrawn from v1 for want of a rule (see § 3.1). `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
+36 items: 6 foundations + **30 scheduled slices** — plus `6-8` and `6-9`, withdrawn from v1 for want of a rule (see § 3.1). `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
 
 | Slice | Key | Wave | Depends on | Responsibility |
 |---|---|---|---|---|
 | `0.1` | `0-1` | 0 | — | Freeze real FanMTL fixtures with capture dates, **plus one synthetic broken-layout fixture** (**E4**, **E8**) — a real captured page whose content container has been renamed, so it parses cleanly and yields nothing. See below |
 | `0.2` | `0-2` | 1 | `0-1` | Record whether FanMTL has an explicit empty-result signal |
 | `0.3` | `0-3` | 1 | `0-1` | Freeze Royal Road fixtures |
-| `0.4` | `0-4` | 1 | `0-1` | Separate chapter content from furniture, from the real pages. Consumed by `2-2` |
+| `0.4` | `0-4` | 1 | `0-1`, **`0-3`** | Separate chapter content from furniture, from the real pages. Consumed by `2-2` **and `6-1`** — the edge to `6-1` was missing, which left Royal Road's content/furniture classification owned by nobody while `0-4` itself depended only on `0-1` |
 | `0.5` | `0-5` | 1 | `theme-type`, `localisation` | **The app shell** — `go_router` table, the five-item bottom nav, `MaterialApp.router`, and the bootstrap that replaces `main.dart`'s missing `home:`. See below |
 | `1.1` | `apk-pipeline` | 0 | — | **Foundation.** Versioned APK on merge |
 | `1.2` | `local-store` | 0 | — | **Foundation.** drift schema + atomic chapter files |
 | `1.3` | `failure-discriminator` | 2 | `0-1`, `0-2` | **Foundation.** Broken ≠ empty (B22, B24) |
 | `1.4` | `localisation` | 0 | — | **Foundation.** ARB plumbing, FR fallback |
 | `1.5` | `theme-type` | 0 | — | **Foundation.** Colours, text, reader scale, override |
+| `1.6` | `http-client` | 0 | — | **Foundation.** dio, the typed exception boundary, rate limiting (C7). **Added 2026-10-02** — `core/network/` was named by `conventions.md`, by the layer table and by three slices, and owned by none |
 | `2.1` | `2-1` | 3 | `0-1`, `local-store`, `failure-discriminator` | FanMTL adapter: catalogue → novel → chapter list → chapter page |
 | `2.2` | `2-2` | 4 | `2-1`, `0-4` | Clean and convert a chapter page to text. **Also waits on `0-4`** — see § 6.6 |
 | `2.3` | `2-3` | 5 | `2-2` | Store a chapter atomically |
 | `2.4` | `2-4` | 6 | `2-3` | **Read a stored chapter, local only — the wow moment** |
-| `2.5` | `2-5` | 4 | `local-store`, `2-1` | Library add/remove/list/open; removing keeps downloads |
+| `2.5` | `2-5` | 4 | `local-store`, `2-1` | Library add/remove/list/open; removing keeps downloads. **Also owns the `/library` screen and `AppScaffold`'s novel list** |
 | `2.6` | `2-6` | 1 | `local-store` | Reading position, per chapter |
 | `2.7` | `2-7` | 7 | `2-4` | Reader presentation: continuous scroll, large chapter, no clipping |
 | `2.8` | `2-8` | 8 | `theme-type`, `2-7` | Theme and text size applied in the reader |
@@ -185,13 +214,14 @@ This foundation exists before any feature because **Q-008** blocks every device 
 | `3.2` | `3-2` | 5 | `3-1`, `2-1` | Novel details + chapter list UI |
 | `3.3` | `3-3` | 6 | `3-2`, `2-3` | Download one chapter; delete one chapter |
 | `3.4` | `3-4` | 5 | `2-5` | First-run disclosure that the library is not recoverable |
+| `3.6` | `3-6` | 5 | `3-1`, `failure-discriminator` | **The source-unavailable screen — `/browse/:sourceId/unavailable`.** SC-6's only surface: a site that cannot be read says so in words, distinguishes the **four** causes, and never shows an empty list as an answer (B22, C12) |
 | `3.5` | `3-5` | 1 | `apk-pipeline` | About screen with the installed version |
 | `5.1` | `5-1` | 7 | `3-3` | Download queue, six bulk choices |
 | `5.2` | `5-2` | 8 | `5-1` | Pause/resume/cancel; queue survives closure |
 | `5.3` | `5-3` | 9 | `5-2` | Progress, connection loss, storage exhaustion |
 | `6.1` | `6-1` | 4 | `0-3`, `2-1` | Royal Road adapter |
 | `6.2` | `6-2` | 5 | `3-1`, **`6-11`** | Search, per source, only where measured usable. **Conditional — do not build until `6-11` says the source is** |
-| `6.3` | `6-3` | 2 | `local-store` | Local counting model; last-checked / never-checked. **Dropped `5-2`** — see § 6.6 |
+| `6.3` | `6-3` | 2 | `local-store` | Local counting model; last-checked / never-checked. **Dropped `5-2`** — see § 6.6. **Also owns the `/updates` screen**, the new-before-past feed it exists to render |
 | `6.4` | `6-4` | 10 | `6-3` | Manual "update library" |
 | `6.5` | `6-5` | 2 | `2-6` | History, time-bounded |
 | `6.6` | `6-6` | 10 | `6-3` | Unread badge, similar-title warning, title-only search |
@@ -207,8 +237,9 @@ This foundation exists before any feature because **Q-008** blocks every device 
 
 | `0-5` delivers | Detail |
 |---|---|
-| The route table | 14 routes, verbatim from `design-system.md` § 3.2. `/reader/…` and `/onboarding` are **outside the shell** and carry no tab bar |
-| The bottom nav | Five items in ADR-018's order, from `state.json`'s `set-nav` record — not re-derived here, because a second source of truth for nav order is the defect ADR-018 was written to end |
+| The route table | **15** routes, reconciled against all eighteen screen files — `design-system.md` **§ 3.5**, not § 3.2. `/reader/…` and `/onboarding` are **outside the shell** and carry no tab bar |
+| The bottom nav | Five items in ADR-018's order, from `state.json`'s `set-nav` record — not re-derived here, because a second source of truth for nav order is the defect ADR-018 was written to end. `design-system.md` § 2.8's **`AppScaffold`** is built here too: 16 screen files use it and **no other slice claims it** |
+| The `/more` screen | The overflow itself — four rows, `MoreRow` from `design-system.md` § 2.10, `value`s that read live queue and history counts. It is the fifth nav destination and therefore the shell's, not a feature's |
 | `MaterialApp.router` | Replaces the `MaterialApp` in `main.dart`, keeping the existing `localeListResolutionCallback` and the **FR fallback chain** (B28). Its `home:` becomes the router |
 | The bootstrap | `main.dart` stops being a localisation-and-theme demo and becomes an entry point |
 | **Nothing else** | No feature import. `app/` imports no `features/` code beyond the shell |
@@ -324,6 +355,7 @@ One row per chapter the reader has opened.
 |---|---|---|---|---|---|---|---|
 | `chapterId` | `chapter_id` | TEXT | no | — | **PK**, FK → `chapters.id` `ON DELETE CASCADE` | B16: a position cannot outlive its chapter | `a3f1…:412` |
 | `offset` | `offset` | REAL | no | `0` | — | **B16 / ADR-009**: a **scroll offset**, not a page index and not a page number | `1240.5` |
+| `contentHeight` | `content_height` | INTEGER | **yes** | — | — | **B16 / B27 / E14.** The content height this offset was measured against, so a position survives a text-size change: restore is `offset / contentHeight` scaled onto whatever the height is now. **Null → clamp and say so**, never guess a ratio |
 | `updatedAt` | `updated_at` | INTEGER (datetime) | no | — | — | Last write. B16's "reopening resumes from here" | `1780000000000` |
 
 > `offset` is a **scroll offset** because ADR-009 defers paged modes to v2, and an offset is the only representation a future paged mode can resume from without converting it. A page index would need re-deriving the moment a text size or a line height changed.
@@ -373,7 +405,7 @@ The app's **local** state of each compiled-in source. Not a copy of the registry
 
 | Field | Column | Type | Null | Default | Constraint | Description | Example |
 |---|---|---|---|---|---|---|---|
-| `id` | `id` | TEXT | no | — | **PK** | The registry's id, never hand-written (`03-source-system.md` rule 1) | `fanmtl` |
+| `id` | `id` | TEXT | no | — | **PK** | **The MD5, not the name.** `03-source-system.md` rule 1: `md5('${name.toLowerCase()}/$lang/$versionId')`, computed with `package:crypto`. An earlier version of this row's example read `fanmtl`, which is the *name* — the two are incompatible, and `2-3`'s plan relies on the MD5 property being true because a novel id embeds its source id | `7c1f…a90e` |
 | `enabled` | `enabled` | INTEGER (bool) | no | `true` | — | B1: hiding a source hides its novels from browsing and **keeps every download** | `1` |
 | `lastCheckedAt` | `last_checked_at` | INTEGER (datetime) | **yes** | — | — | **B49**: null means *never checked*, which is a different claim from *checked at epoch* | `1780000000000` |
 | `lastErrorCode` | `last_error_code` | TEXT | **yes** | `''` | — | **B22**: lets `sources` render `unavailable` without attempting a fresh fetch | `source_layout_changed` |
@@ -546,19 +578,19 @@ Each is an **exclusion with a reason**, recorded in `coverage.md` § B29/B30 and
 Ten waves, computed by `dependency-check.js`, not asserted:
 
 ```
-W 0  0-1, apk-pipeline, local-store, localisation, theme-type
-W 1  0-2, 0-3, 0-4, 0-5, 2-6, 6-3     ← 0-5 the shell; 6-3 back to W1: § 6.6 dropped its false edge
-W 2  failure-discriminator, 3-5, 6-4, 6-5, 6-6, 6-7, 6-11
-W 3  2-1, 6-10
-W 4  2-2, 2-5, 3-1, 6-1     ← 2-2 also waits on 0-4 (W 1)
-W 5  2-3, 3-2, 3-4, 6-2     ← 6-2 is conditional on 6-11 (W 2)
+W 0  0-1, apk-pipeline, http-client, local-store, localisation, theme-type
+W 1  0-2, 0-3, 2-6, 6-3, 0-5     ← 0-5 the shell; 6-3 back to W1: § 6.6 dropped its false edge
+W 2  failure-discriminator, 0-4, 3-5, 6-5, 6-7, 6-11, 3-7
+W 3  2-1
+W 4  2-2, 2-5, 3-1, 6-1, 6-4     ← 6-4 also waits on 2-1 (W 3): the Source contract
+W 5  2-3, 3-2, 3-4, 6-2, 6-6, 6-10, 3-6
 W 6  2-4, 3-3
 W 7  2-7, 5-1
 W 8  2-8, 5-2
 W 9  5-3
 ```
 
-**Cycles: none. Dead dependencies: none. Orphans: none.** Verified by `dependency-check --full --write`, not read — **35 nodes, 30 slices, 5 foundations, 49 edges, 10 waves.** Ten rather than twelve because § 6.6 removed one unjustified edge; the wave count went *down* when a false dependency went away, which is the direction that makes the number meaningful.
+**Cycles: none. Dead dependencies: none. Orphans: none.** Verified by `dependency-check --full --write`, not read — **38 nodes, 32 slices, 6 foundations, 60 edges, 10 waves.** Ten rather than twelve because § 6.6 removed one unjustified edge; the wave count went *down* when a false dependency went away, which is the direction that makes the number meaningful.
 
 ### 6.2 The critical path
 
@@ -586,10 +618,10 @@ Browse UI is available *first* by topology. Following milestones puts the offlin
 
 | Wave | Parallelisable |
 |---|---|
-| 0 | `0-1` plus **four** of the five foundations — `apk-pipeline`, `local-store`, `localisation`, `theme-type`. `failure-discriminator` is **not** wave-0: it waits on `0-1` and `0-2` and lands in W2. **6 independent starts** |
+| 0 | `0-1` plus **five** of the six foundations — `apk-pipeline`, `http-client`, `local-store`, `localisation`, `theme-type`. `failure-discriminator` is **not** wave-0: it waits on `0-1` and `0-2` and lands in W2. **6 independent starts** |
 | 1 | `0-2`, `0-3`, `0-4`, `2-6`, `3-5`, `6-7` — 6 |
 | 4 | `2-2`, `2-5`, `3-1`, `6-1` — **4** |
-| 2 | `failure-discriminator`, `3-5`, `6-4`, `6-5`, `6-6`, `6-7`, `6-11` — **7, the widest wave** |
+| 2 | `failure-discriminator`, `0-4`, `3-5`, `6-5`, `6-7`, `6-11`, `3-7` — **7, the widest wave** |
 | 9 | `5-3` — **1, and it is alone**: the queue's error handling waits on everything |
 
 ### 6.5 Cycles
@@ -676,7 +708,7 @@ An amendment is recorded with `state.js amend`, which **refuses** the renumberin
 - [x] Every PRD user story has a slice — § 3.2, all 17
 - [x] Every slice has a responsibility expressible in one line — § 3.1
 - [x] Foundations identified and separated from feature slices — § 2, five of them, four wave-0-eligible and `failure-discriminator` at W2 on purpose (§ 6.4)
-- [x] All data models defined field by field — § 4, six tables, 41 columns, 5 indexes
+- [x] All data models defined field by field — § 4, six tables, 42 columns, 5 indexes
 - [x] The template's "every endpoint lists its error codes" is satisfied **by § 5's honest substitution**: there is no API, the failure taxonomy is enumerated with its recovery, and the excluded surfaces are listed with reasons rather than left blank
 - [x] Dependency graph has no cycles — § 6.5, verified by `dependency-check`
 - [x] Implementation order is consistent with the dependencies — § 6.1–6.3, and the milestone-vs-topology divergence is declared with its reason
