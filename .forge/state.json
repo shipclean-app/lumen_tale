@@ -816,6 +816,32 @@
         ".forge/prd.md",
         ".forge/design/design-system.md"
       ]
+    },
+    "screen-reader": {
+      "path": ".forge/design/screens/reader.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:d63fce8ba252",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Explicitly deferred (ADR-009)",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T15:53:13.427Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
     }
   },
   "index": {
@@ -871,7 +897,34 @@
       "updated_at": "2026-10-02T15:42:15.448Z"
     }
   },
-  "screens": {},
+  "screens": {
+    "reader": {
+      "path": ".forge/design/screens/reader.md",
+      "type": "screen",
+      "status": "draft",
+      "content_hash": "sha256:d63fce8ba252",
+      "headings": {
+        "1": "Role of the screen",
+        "2": "Visual direction for this screen",
+        "3": "Anatomy",
+        "4": "States — all nine, no exceptions",
+        "5": "Interactions",
+        "6": "Responsive",
+        "7": "Accessibility",
+        "8": "Data",
+        "9": "Traceability",
+        "10": "Gate checklist",
+        "11": "Explicitly deferred (ADR-009)",
+        "12": "Tokens this screen cites",
+        "2.1": "Anti-generic — mandatory"
+      },
+      "updated_at": "2026-10-02T15:53:13.386Z",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/design/design-system.md"
+      ]
+    }
+  },
   "foundations": {},
   "modules": {},
   "slices": {},
@@ -883,7 +936,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 8,
+      "register": 12,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 7,
@@ -891,7 +944,8 @@
       "phase_status": 1,
       "amend": 1,
       "phase2_complete": 1,
-      "nav_prioritized": 1
+      "nav_prioritized": 1,
+      "sync": 1
     }
   },
   "divergences": [],
