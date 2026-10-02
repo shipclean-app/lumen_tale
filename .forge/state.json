@@ -1536,9 +1536,9 @@
     "apk-pipeline": {
       "path": ".forge/architecture.md",
       "type": "apk-pipeline",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.209Z",
+      "updated_at": "2026-10-02T17:15:09.520Z",
       "depends_on": [],
       "depended_on_by": [
         "3-5"
@@ -1548,9 +1548,9 @@
     "local-store": {
       "path": ".forge/architecture.md",
       "type": "local-store",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.260Z",
+      "updated_at": "2026-10-02T17:15:09.582Z",
       "depends_on": [],
       "depended_on_by": [
         "2-1",
@@ -1562,9 +1562,9 @@
     "failure-discriminator": {
       "path": ".forge/architecture.md",
       "type": "failure-discriminator",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.325Z",
+      "updated_at": "2026-10-02T17:15:09.642Z",
       "depends_on": [
         "0-1",
         "0-2"
@@ -1578,9 +1578,9 @@
     "localisation": {
       "path": ".forge/architecture.md",
       "type": "localisation",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.411Z",
+      "updated_at": "2026-10-02T17:15:09.699Z",
       "depends_on": [],
       "depended_on_by": [
         "6-7"
@@ -1590,9 +1590,9 @@
     "theme-type": {
       "path": ".forge/architecture.md",
       "type": "theme-type",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.474Z",
+      "updated_at": "2026-10-02T17:15:09.755Z",
       "depends_on": [],
       "depended_on_by": [
         "2-8"
@@ -1605,9 +1605,9 @@
     "0-1": {
       "path": ".forge/architecture.md",
       "type": "0-1",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:38.985Z",
+      "updated_at": "2026-10-02T17:15:07.825Z",
       "depends_on": [],
       "depended_on_by": [
         "failure-discriminator",
@@ -1621,9 +1621,9 @@
     "0-2": {
       "path": ".forge/architecture.md",
       "type": "0-2",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.034Z",
+      "updated_at": "2026-10-02T17:15:07.874Z",
       "depends_on": [
         "0-1"
       ],
@@ -1635,9 +1635,9 @@
     "0-3": {
       "path": ".forge/architecture.md",
       "type": "0-3",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.096Z",
+      "updated_at": "2026-10-02T17:15:07.932Z",
       "depends_on": [
         "0-1"
       ],
@@ -1649,9 +1649,9 @@
     "0-4": {
       "path": ".forge/architecture.md",
       "type": "0-4",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.152Z",
+      "updated_at": "2026-10-02T17:15:08.005Z",
       "depends_on": [
         "0-1"
       ],
@@ -1661,9 +1661,9 @@
     "2-1": {
       "path": ".forge/architecture.md",
       "type": "2-1",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.528Z",
+      "updated_at": "2026-10-02T17:15:08.083Z",
       "depends_on": [
         "0-1",
         "local-store",
@@ -1681,9 +1681,9 @@
     "2-2": {
       "path": ".forge/architecture.md",
       "type": "2-2",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.576Z",
+      "updated_at": "2026-10-02T17:15:08.140Z",
       "depends_on": [
         "2-1"
       ],
@@ -1695,9 +1695,9 @@
     "2-3": {
       "path": ".forge/architecture.md",
       "type": "2-3",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.629Z",
+      "updated_at": "2026-10-02T17:15:08.201Z",
       "depends_on": [
         "2-2"
       ],
@@ -1710,9 +1710,9 @@
     "2-4": {
       "path": ".forge/architecture.md",
       "type": "2-4",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.682Z",
+      "updated_at": "2026-10-02T17:15:08.255Z",
       "depends_on": [
         "2-3"
       ],
@@ -1724,9 +1724,9 @@
     "2-5": {
       "path": ".forge/architecture.md",
       "type": "2-5",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.739Z",
+      "updated_at": "2026-10-02T17:15:08.331Z",
       "depends_on": [
         "local-store",
         "2-1"
@@ -1739,9 +1739,9 @@
     "2-6": {
       "path": ".forge/architecture.md",
       "type": "2-6",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.790Z",
+      "updated_at": "2026-10-02T17:15:08.392Z",
       "depends_on": [
         "local-store"
       ],
@@ -1753,9 +1753,9 @@
     "2-7": {
       "path": ".forge/architecture.md",
       "type": "2-7",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.843Z",
+      "updated_at": "2026-10-02T17:15:08.460Z",
       "depends_on": [
         "2-4"
       ],
@@ -1767,9 +1767,9 @@
     "2-8": {
       "path": ".forge/architecture.md",
       "type": "2-8",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.904Z",
+      "updated_at": "2026-10-02T17:15:08.534Z",
       "depends_on": [
         "theme-type",
         "2-7"
@@ -1780,9 +1780,9 @@
     "3-1": {
       "path": ".forge/architecture.md",
       "type": "3-1",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:39.955Z",
+      "updated_at": "2026-10-02T17:15:08.619Z",
       "depends_on": [
         "2-1",
         "failure-discriminator"
@@ -1796,9 +1796,9 @@
     "3-2": {
       "path": ".forge/architecture.md",
       "type": "3-2",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.020Z",
+      "updated_at": "2026-10-02T17:15:08.705Z",
       "depends_on": [
         "3-1",
         "2-1"
@@ -1811,9 +1811,9 @@
     "3-3": {
       "path": ".forge/architecture.md",
       "type": "3-3",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.076Z",
+      "updated_at": "2026-10-02T17:15:08.758Z",
       "depends_on": [
         "3-2",
         "2-3"
@@ -1826,9 +1826,9 @@
     "3-4": {
       "path": ".forge/architecture.md",
       "type": "3-4",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.146Z",
+      "updated_at": "2026-10-02T17:15:08.822Z",
       "depends_on": [
         "2-5"
       ],
@@ -1838,9 +1838,9 @@
     "3-5": {
       "path": ".forge/architecture.md",
       "type": "3-5",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.204Z",
+      "updated_at": "2026-10-02T17:15:08.873Z",
       "depends_on": [
         "apk-pipeline"
       ],
@@ -1850,9 +1850,9 @@
     "5-1": {
       "path": ".forge/architecture.md",
       "type": "5-1",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.256Z",
+      "updated_at": "2026-10-02T17:15:08.933Z",
       "depends_on": [
         "3-3"
       ],
@@ -1864,9 +1864,9 @@
     "5-2": {
       "path": ".forge/architecture.md",
       "type": "5-2",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.316Z",
+      "updated_at": "2026-10-02T17:15:08.989Z",
       "depends_on": [
         "5-1"
       ],
@@ -1879,9 +1879,9 @@
     "5-3": {
       "path": ".forge/architecture.md",
       "type": "5-3",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.367Z",
+      "updated_at": "2026-10-02T17:15:09.044Z",
       "depends_on": [
         "5-2"
       ],
@@ -1891,9 +1891,9 @@
     "6-1": {
       "path": ".forge/architecture.md",
       "type": "6-1",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.426Z",
+      "updated_at": "2026-10-02T17:15:09.108Z",
       "depends_on": [
         "0-3",
         "2-1"
@@ -1904,9 +1904,9 @@
     "6-2": {
       "path": ".forge/architecture.md",
       "type": "6-2",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.479Z",
+      "updated_at": "2026-10-02T17:15:09.161Z",
       "depends_on": [
         "3-1"
       ],
@@ -1916,9 +1916,9 @@
     "6-3": {
       "path": ".forge/architecture.md",
       "type": "6-3",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.533Z",
+      "updated_at": "2026-10-02T17:15:09.231Z",
       "depends_on": [
         "5-2"
       ],
@@ -1931,9 +1931,9 @@
     "6-4": {
       "path": ".forge/architecture.md",
       "type": "6-4",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.606Z",
+      "updated_at": "2026-10-02T17:15:09.285Z",
       "depends_on": [
         "6-3"
       ],
@@ -1943,9 +1943,9 @@
     "6-5": {
       "path": ".forge/architecture.md",
       "type": "6-5",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.659Z",
+      "updated_at": "2026-10-02T17:15:09.347Z",
       "depends_on": [
         "2-6"
       ],
@@ -1955,9 +1955,9 @@
     "6-6": {
       "path": ".forge/architecture.md",
       "type": "6-6",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.721Z",
+      "updated_at": "2026-10-02T17:15:09.404Z",
       "depends_on": [
         "6-3"
       ],
@@ -1967,9 +1967,9 @@
     "6-7": {
       "path": ".forge/architecture.md",
       "type": "6-7",
-      "status": "draft",
+      "status": "identified",
       "content_hash": null,
-      "updated_at": "2026-10-02T16:43:40.777Z",
+      "updated_at": "2026-10-02T17:15:09.460Z",
       "depends_on": [
         "localisation"
       ],
@@ -1988,7 +1988,7 @@
       "register": 124,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 32,
+      "status_change": 64,
       "gate_approved": 3,
       "phase_status": 3,
       "amend": 1,

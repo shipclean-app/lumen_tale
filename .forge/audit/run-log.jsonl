@@ -259,3 +259,35 @@
 {"type": "tool_defect", "tool": "build_runner", "severity": "low", "summary": "`--delete-conflicting-outputs` is removed and silently ignored.", "detected": "2026-10-02", "detail": "The command prints 'W These options have been removed and were ignored: --delete-conflicting-outputs' and continues successfully.", "impact": "AGENTS.md documents that flag. It does nothing, and a silent no-op flag in a documented command is how someone ends up with a stale generated file and blames something else.", "fix": "AGENTS.md should drop the flag. Not yet changed -- recorded here so the DoD's documented command is corrected rather than left to mislead.", "ts": "2026-10-02T17:00:04.806844Z"}
 {"type": "tool_defect", "tool": "dart run drift_dev schema generate", "severity": "medium", "summary": "Generated code does not compile at schema version 1: `static const versions = const []` is an untyped List<dynamic>, passed to a parameter typed Iterable<int>.", "detected": "2026-10-02, drift_dev 2.35.1", "detail": "The emitted file is `class GeneratedHelper implements SchemaInstantiationHelper { GeneratedDatabase databaseForVersion(...) { switch (version) { default: throw MissingSchemaException(version, versions); } } static const versions = const []; }`. Two analyzer errors and one lint follow. The file's own `// ignore_for_file: type=lint` covers lints only, so the `argument_type_not_assignable` ERROR survives it.", "impact": "`schema generate` is unusable at version 1. It only becomes useful once a second schema version exists.", "fix": "Not used at v1. lib/core/database/generated/ removed rather than committed: an unused generated file that fails `flutter analyze` violates the Definition of Done, and the alternative -- editing generated code or adding an ignore -- is exactly the two things AGENTS.md forbids.", "residual_risk": "Re-run it when schemaVersion reaches 2, and expect the same defect until drift fixes it. If it still fails to compile then, record it against the pinned version rather than patching the output.", "ts": "2026-10-02T17:11:20.171914Z"}
 {"type": "tool_mismatch", "tool": "dart run drift_dev schema dump", "severity": "low", "status": "RESOLVED", "summary": "AGENTS.md documented one positional argument; the command requires two.", "detail": "Correct form is `dart run drift_dev schema dump <input-file> <output-file>`. With one argument it prints usage and exits 0, so it looks like it ran.", "fix": "lib/core/database/schema.json written and verified: 6 tables, 38 columns, history_entries.novel_id carrying `REFERENCES novels (id) ON DELETE RESTRICT` and chapter_id `ON DELETE CASCADE`. AGENTS.md corrected.", "ts": "2026-10-02T17:11:20.171985Z"}
+{"ts":"2026-10-02T17:15:07.828Z","type":"status_change","kind":"slice","key":"0-1","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:07.876Z","type":"status_change","kind":"slice","key":"0-2","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:07.935Z","type":"status_change","kind":"slice","key":"0-3","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.010Z","type":"status_change","kind":"slice","key":"0-4","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.087Z","type":"status_change","kind":"slice","key":"2-1","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.144Z","type":"status_change","kind":"slice","key":"2-2","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.203Z","type":"status_change","kind":"slice","key":"2-3","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.258Z","type":"status_change","kind":"slice","key":"2-4","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.334Z","type":"status_change","kind":"slice","key":"2-5","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.395Z","type":"status_change","kind":"slice","key":"2-6","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.462Z","type":"status_change","kind":"slice","key":"2-7","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.538Z","type":"status_change","kind":"slice","key":"2-8","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.623Z","type":"status_change","kind":"slice","key":"3-1","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.708Z","type":"status_change","kind":"slice","key":"3-2","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.760Z","type":"status_change","kind":"slice","key":"3-3","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.824Z","type":"status_change","kind":"slice","key":"3-4","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.876Z","type":"status_change","kind":"slice","key":"3-5","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.935Z","type":"status_change","kind":"slice","key":"5-1","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:08.991Z","type":"status_change","kind":"slice","key":"5-2","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.046Z","type":"status_change","kind":"slice","key":"5-3","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.111Z","type":"status_change","kind":"slice","key":"6-1","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.163Z","type":"status_change","kind":"slice","key":"6-2","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.232Z","type":"status_change","kind":"slice","key":"6-3","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.287Z","type":"status_change","kind":"slice","key":"6-4","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.349Z","type":"status_change","kind":"slice","key":"6-5","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.407Z","type":"status_change","kind":"slice","key":"6-6","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.462Z","type":"status_change","kind":"slice","key":"6-7","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.523Z","type":"status_change","kind":"foundation","key":"apk-pipeline","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.585Z","type":"status_change","kind":"foundation","key":"local-store","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.644Z","type":"status_change","kind":"foundation","key":"failure-discriminator","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.703Z","type":"status_change","kind":"foundation","key":"localisation","from":"draft","to":"identified","mirrored":null}
+{"ts":"2026-10-02T17:15:09.758Z","type":"status_change","kind":"foundation","key":"theme-type","from":"draft","to":"identified","mirrored":null}
