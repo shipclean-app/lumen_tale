@@ -29,7 +29,7 @@
     "mode": "guided",
     "fast_track": null
   },
-  "current_phase": "4",
+  "current_phase": "5",
   "phases": {
     "0_bootstrap": {
       "status": "approved",
@@ -44,10 +44,12 @@
       "completed_at": "2026-10-02T15:30:41.129Z"
     },
     "3_design": {
-      "status": "not_started"
+      "status": "approved",
+      "completed_at": "2026-10-02T21:29:24.455Z"
     },
     "4_architecture": {
-      "status": "in_progress"
+      "status": "approved",
+      "completed_at": "2026-10-02T21:29:24.512Z"
     },
     "5_implementation_plan": {
       "status": "not_started"
@@ -979,7 +981,7 @@
     "architecture": {
       "path": ".forge/architecture.md",
       "type": "architecture",
-      "status": "draft",
+      "status": "approved",
       "content_hash": "sha256:3a2f1e9ab245",
       "headings": {
         "1": "Overview",
@@ -1004,6 +1006,7 @@
         "4.4": "`history_entries`",
         "4.5": "`queue_items`",
         "4.6": "`sources`",
+        "4.9": "The indexes, and why they are in § 4 and not in an optimisation pass",
         "4.7": "What is deliberately **not** in the database",
         "4.8": "Constraints, and how they were proved",
         "5.1": "The source contract",
@@ -1012,12 +1015,12 @@
         "5.4": "Where the template's API table would have gone, and why it is empty",
         "6.1": "Computed waves",
         "6.2": "The critical path",
-        "6.3": "Why `impl_waves: 6` and not 11",
+        "6.3": "Why `impl_waves: 6` and not 10",
         "6.4": "Parallelism",
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-02T21:25:42.589Z",
+      "updated_at": "2026-10-02T21:29:01.331Z",
       "derived_from": [
         ".forge/prd.md"
       ],
@@ -1757,7 +1760,11 @@
       "depended_on_by": [
         "3-5"
       ],
-      "impl_wave": 0
+      "impl_wave": 0,
+      "rule_ids": [
+        "B31",
+        "B34"
+      ]
     },
     "local-store": {
       "path": ".forge/architecture.md",
@@ -1772,7 +1779,14 @@
         "2-6",
         "6-3"
       ],
-      "impl_wave": 0
+      "impl_wave": 0,
+      "rule_ids": [
+        "B7",
+        "B29",
+        "B31",
+        "B32",
+        "B46"
+      ]
     },
     "failure-discriminator": {
       "path": ".forge/architecture.md",
@@ -1788,7 +1802,12 @@
         "2-1",
         "3-1"
       ],
-      "impl_wave": 2
+      "impl_wave": 2,
+      "rule_ids": [
+        "B22",
+        "B23",
+        "B24"
+      ]
     },
     "localisation": {
       "path": ".forge/architecture.md",
@@ -1801,7 +1820,10 @@
         "6-7",
         "0-5"
       ],
-      "impl_wave": 0
+      "impl_wave": 0,
+      "rule_ids": [
+        "B28"
+      ]
     },
     "theme-type": {
       "path": ".forge/architecture.md",
@@ -1814,7 +1836,11 @@
         "2-8",
         "0-5"
       ],
-      "impl_wave": 0
+      "impl_wave": 0,
+      "rule_ids": [
+        "B26",
+        "B27"
+      ]
     }
   },
   "modules": {},
@@ -1833,7 +1859,15 @@
         "0-4",
         "2-1"
       ],
-      "impl_wave": 0
+      "impl_wave": 0,
+      "rule_ids": [
+        "B9"
+      ],
+      "edge_case_ids": [
+        "E1",
+        "E4",
+        "E22"
+      ]
     },
     "0-2": {
       "path": ".forge/architecture.md",
@@ -1847,7 +1881,14 @@
       "depended_on_by": [
         "failure-discriminator"
       ],
-      "impl_wave": 1
+      "impl_wave": 1,
+      "rule_ids": [
+        "B22"
+      ],
+      "edge_case_ids": [
+        "E2",
+        "E8"
+      ]
     },
     "0-3": {
       "path": ".forge/architecture.md",
@@ -1862,7 +1903,13 @@
         "6-1",
         "6-11"
       ],
-      "impl_wave": 1
+      "impl_wave": 1,
+      "rule_ids": [
+        "B9"
+      ],
+      "edge_case_ids": [
+        "E4"
+      ]
     },
     "0-4": {
       "path": ".forge/architecture.md",
@@ -1876,7 +1923,11 @@
       "depended_on_by": [
         "2-2"
       ],
-      "impl_wave": 1
+      "impl_wave": 1,
+      "rule_ids": [],
+      "edge_case_ids": [
+        "E1"
+      ]
     },
     "2-1": {
       "path": ".forge/architecture.md",
@@ -1896,7 +1947,28 @@
         "3-2",
         "6-1"
       ],
-      "impl_wave": 3
+      "impl_wave": 3,
+      "rule_ids": [
+        "B2",
+        "B3",
+        "B5",
+        "B10",
+        "B22",
+        "B23",
+        "B29",
+        "B41",
+        "B50"
+      ],
+      "edge_case_ids": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E8",
+        "E16",
+        "E21"
+      ]
     },
     "2-2": {
       "path": ".forge/architecture.md",
@@ -1911,7 +1983,17 @@
       "depended_on_by": [
         "2-3"
       ],
-      "impl_wave": 4
+      "impl_wave": 4,
+      "rule_ids": [
+        "B8",
+        "B10",
+        "B44"
+      ],
+      "edge_case_ids": [
+        "E1",
+        "E10",
+        "E22"
+      ]
     },
     "2-3": {
       "path": ".forge/architecture.md",
@@ -1926,7 +2008,16 @@
         "2-4",
         "3-3"
       ],
-      "impl_wave": 5
+      "impl_wave": 5,
+      "rule_ids": [
+        "B6",
+        "B18",
+        "B31"
+      ],
+      "edge_case_ids": [
+        "E14",
+        "E15"
+      ]
     },
     "2-4": {
       "path": ".forge/architecture.md",
@@ -1941,7 +2032,15 @@
       "depended_on_by": [
         "2-7"
       ],
-      "impl_wave": 6
+      "impl_wave": 6,
+      "rule_ids": [
+        "B6",
+        "B7",
+        "B25"
+      ],
+      "edge_case_ids": [
+        "E14"
+      ]
     },
     "2-5": {
       "path": ".forge/architecture.md",
@@ -1956,7 +2055,16 @@
       "depended_on_by": [
         "3-4"
       ],
-      "impl_wave": 4
+      "impl_wave": 4,
+      "rule_ids": [
+        "B11",
+        "B12",
+        "B32",
+        "B40"
+      ],
+      "edge_case_ids": [
+        "E6"
+      ]
     },
     "2-6": {
       "path": ".forge/architecture.md",
@@ -1970,7 +2078,14 @@
       "depended_on_by": [
         "6-5"
       ],
-      "impl_wave": 1
+      "impl_wave": 1,
+      "rule_ids": [
+        "B16",
+        "B27"
+      ],
+      "edge_case_ids": [
+        "E11"
+      ]
     },
     "2-7": {
       "path": ".forge/architecture.md",
@@ -1984,7 +2099,14 @@
       "depended_on_by": [
         "2-8"
       ],
-      "impl_wave": 7
+      "impl_wave": 7,
+      "rule_ids": [
+        "B25",
+        "B27"
+      ],
+      "edge_case_ids": [
+        "E10"
+      ]
     },
     "2-8": {
       "path": ".forge/architecture.md",
@@ -1997,7 +2119,15 @@
         "2-7"
       ],
       "depended_on_by": [],
-      "impl_wave": 8
+      "impl_wave": 8,
+      "rule_ids": [
+        "B26",
+        "B27"
+      ],
+      "edge_case_ids": [
+        "E10",
+        "E12"
+      ]
     },
     "3-1": {
       "path": ".forge/architecture.md",
@@ -2014,7 +2144,19 @@
         "3-2",
         "6-2"
       ],
-      "impl_wave": 4
+      "impl_wave": 4,
+      "rule_ids": [
+        "B5",
+        "B22",
+        "B24"
+      ],
+      "edge_case_ids": [
+        "E1",
+        "E2",
+        "E4",
+        "E5",
+        "E8"
+      ]
     },
     "3-2": {
       "path": ".forge/architecture.md",
@@ -2030,7 +2172,16 @@
       "depended_on_by": [
         "3-3"
       ],
-      "impl_wave": 5
+      "impl_wave": 5,
+      "rule_ids": [
+        "B10",
+        "B12",
+        "B24"
+      ],
+      "edge_case_ids": [
+        "E3",
+        "E6"
+      ]
     },
     "3-3": {
       "path": ".forge/architecture.md",
@@ -2046,7 +2197,17 @@
       "depended_on_by": [
         "5-1"
       ],
-      "impl_wave": 6
+      "impl_wave": 6,
+      "rule_ids": [
+        "B6",
+        "B18",
+        "B33"
+      ],
+      "edge_case_ids": [
+        "E14",
+        "E15",
+        "E20"
+      ]
     },
     "3-4": {
       "path": ".forge/architecture.md",
@@ -2059,7 +2220,14 @@
         "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 5
+      "impl_wave": 5,
+      "rule_ids": [
+        "B7",
+        "B32"
+      ],
+      "edge_case_ids": [
+        "E11"
+      ]
     },
     "3-5": {
       "path": ".forge/architecture.md",
@@ -2072,7 +2240,11 @@
         "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 2
+      "impl_wave": 2,
+      "rule_ids": [
+        "B43"
+      ],
+      "edge_case_ids": []
     },
     "5-1": {
       "path": ".forge/architecture.md",
@@ -2086,7 +2258,15 @@
       "depended_on_by": [
         "5-2"
       ],
-      "impl_wave": 7
+      "impl_wave": 7,
+      "rule_ids": [
+        "B18",
+        "B19"
+      ],
+      "edge_case_ids": [
+        "E14",
+        "E15"
+      ]
     },
     "5-2": {
       "path": ".forge/architecture.md",
@@ -2100,7 +2280,15 @@
       "depended_on_by": [
         "5-3"
       ],
-      "impl_wave": 8
+      "impl_wave": 8,
+      "rule_ids": [
+        "B19",
+        "B21"
+      ],
+      "edge_case_ids": [
+        "E15",
+        "E19"
+      ]
     },
     "5-3": {
       "path": ".forge/architecture.md",
@@ -2112,7 +2300,17 @@
         "5-2"
       ],
       "depended_on_by": [],
-      "impl_wave": 9
+      "impl_wave": 9,
+      "rule_ids": [
+        "B19",
+        "B20",
+        "B24"
+      ],
+      "edge_case_ids": [
+        "E17",
+        "E18",
+        "E20"
+      ]
     },
     "6-1": {
       "path": ".forge/architecture.md",
@@ -2125,7 +2323,25 @@
         "2-1"
       ],
       "depended_on_by": [],
-      "impl_wave": 4
+      "impl_wave": 4,
+      "rule_ids": [
+        "B1",
+        "B2",
+        "B3",
+        "B5",
+        "B22",
+        "B23",
+        "B29"
+      ],
+      "edge_case_ids": [
+        "E1",
+        "E2",
+        "E4",
+        "E5",
+        "E8",
+        "E16",
+        "E21"
+      ]
     },
     "6-2": {
       "path": ".forge/architecture.md",
@@ -2138,7 +2354,15 @@
         "6-11"
       ],
       "depended_on_by": [],
-      "impl_wave": 5
+      "impl_wave": 5,
+      "rule_ids": [
+        "B41",
+        "B50"
+      ],
+      "edge_case_ids": [
+        "E5",
+        "E8"
+      ]
     },
     "6-3": {
       "path": ".forge/architecture.md",
@@ -2153,7 +2377,19 @@
         "6-4",
         "6-6"
       ],
-      "impl_wave": 1
+      "impl_wave": 1,
+      "rule_ids": [
+        "B13",
+        "B14",
+        "B15",
+        "B38",
+        "B48",
+        "B49"
+      ],
+      "edge_case_ids": [
+        "E8",
+        "E9"
+      ]
     },
     "6-4": {
       "path": ".forge/architecture.md",
@@ -2167,7 +2403,17 @@
       "depended_on_by": [
         "6-10"
       ],
-      "impl_wave": 2
+      "impl_wave": 2,
+      "rule_ids": [
+        "B36",
+        "B38",
+        "B39"
+      ],
+      "edge_case_ids": [
+        "E4",
+        "E8",
+        "E9"
+      ]
     },
     "6-5": {
       "path": ".forge/architecture.md",
@@ -2180,7 +2426,15 @@
         "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 2
+      "impl_wave": 2,
+      "rule_ids": [
+        "B17",
+        "B46",
+        "B47"
+      ],
+      "edge_case_ids": [
+        "E13"
+      ]
     },
     "6-6": {
       "path": ".forge/architecture.md",
@@ -2193,7 +2447,16 @@
         "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 2
+      "impl_wave": 2,
+      "rule_ids": [
+        "B14",
+        "B40",
+        "B45"
+      ],
+      "edge_case_ids": [
+        "E6",
+        "E7"
+      ]
     },
     "6-7": {
       "path": ".forge/architecture.md",
@@ -2206,7 +2469,13 @@
         "0-5"
       ],
       "depended_on_by": [],
-      "impl_wave": 2
+      "impl_wave": 2,
+      "rule_ids": [
+        "B28"
+      ],
+      "edge_case_ids": [
+        "E12"
+      ]
     },
     "6-10": {
       "path": ".forge/architecture.md",
@@ -2218,7 +2487,11 @@
         "6-4"
       ],
       "depended_on_by": [],
-      "impl_wave": 3
+      "impl_wave": 3,
+      "rule_ids": [
+        "B37"
+      ],
+      "edge_case_ids": []
     },
     "6-11": {
       "path": ".forge/architecture.md",
@@ -2232,7 +2505,13 @@
       "depended_on_by": [
         "6-2"
       ],
-      "impl_wave": 2
+      "impl_wave": 2,
+      "rule_ids": [
+        "B50"
+      ],
+      "edge_case_ids": [
+        "E8"
+      ]
     },
     "0-5": {
       "path": ".forge/architecture.md",
@@ -2255,7 +2534,15 @@
         "6-6",
         "6-7"
       ],
-      "impl_wave": 1
+      "impl_wave": 1,
+      "rule_ids": [
+        "B4",
+        "B28",
+        "B30"
+      ],
+      "edge_case_ids": [
+        "E12"
+      ]
     }
   },
   "gates_pending": [],
@@ -2269,9 +2556,9 @@
       "register": 212,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 91,
-      "gate_approved": 3,
-      "phase_status": 3,
+      "status_change": 92,
+      "gate_approved": 4,
+      "phase_status": 4,
       "amend": 4,
       "phase2_complete": 1,
       "nav_prioritized": 1,
