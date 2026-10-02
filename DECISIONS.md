@@ -62,12 +62,17 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 
 ### Q-007 — Is tag browsing an acceptable substitute for text search on FanMTL?
 
-- **Status**: Open — found by measurement, 2026-10-02, after the roadmap was drafted.
-- **What is not known**: `US-02` promises "search inside a site". FanMTL's text search endpoint is **not reachable by an automated client** — GET and POST to `/e/search/index.php` both return 404 with a JavaScript meta-refresh, even for a query that should match, with and without a prior session. This is a reachability failure, **not** a robots.txt one: `/e/search/` is not among the seven paths FanMTL disallows.
-- **What does work**: `/browsetags/` exposes 9 genre tags and `/list/<tag>/<sort>-<page>.html` returns full novel pages. So on FanMTL, finding a novel means browsing genres.
-- **What the answer determines**: whether `US-02` is implementable on the first source at all, and whether the v1 scope says "search" or "browse by genre". It also affects `B45`/library search scope and the roadmap's browse wave.
-- **Closes when**: the owner says whether genre/tag browsing satisfies "find a novel" for FanMTL, or whether text search on that source is dropped from v1. Royal Road and Novel Fire still need their own reachability check before `US-02` can be promised for any source.
-- **Note**: this was **not** caught by the PRD's own review because the PRD assumed every site supports search. It surfaced only from fetching the site.
+- **Status**: **Closed 2026-10-02** → became **ADR-015**.
+- **Resolution**: Genre/tag browsing is the primary discovery mechanism on these sites, and a novel's own tags are the good entry point — but a source gets **no search at all** unless its site genuinely implements one. FanMTL's search is unreachable, so **FanMTL offers genre browsing only**, and search is declared per source.
+
+### ADR-015: Search is an opt-in per-source capability, gated on the site genuinely implementing it
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: The owner answered Q-007 with a principle rather than a one-off: browsing by genre is how most web-novel sites work, and the tags on a novel's detail page are a good way in — **but passing those tags back into the site's own search bar returns unsatisfying results**. The rule they gave is therefore *"unless the website genuinely implements genre search, we won't add it to that source."* This is stricter than Mihon, which exposes search on every source that has a search endpoint, and much stricter than the commercial apps, which own their index and therefore always "have search".
+- **Decision**: **`Source.supportsSearch` is a declared per-source capability**, exactly like Mihon's existing `supportsLatest`, and the app may only use it where the site's own search is genuinely usable. Where it is not, the source exposes **genre/tag browsing instead** and the app says so — it never renders a search box that would return nothing. A source that declares search and then returns nothing is a **broken source** (B22), not a source with no results.
+- **Alternatives considered**: (a) Ship search on every source and let it return nothing — rejected: it is the failure B22 exists to prevent, presented as a feature. (b) Implement our own cross-source index so search always works — rejected for v1: it turns a reader into a search engine, needs every chapter's metadata up front, and breaks the moment a site's markup changes. (c) Hide search per source at the UI layer without declaring it in the contract (chosen): the capability is data, not presentation, so it belongs in the `Source` contract where `supportsLatest` already lives.
+- **Consequences**: `03-source-system.md` gains `supportsSearch` alongside `supportsLatest`. `US-02` becomes conditional, which amended the approved PRD via `state.js amend` → **B50**. A novel's detail page exposes its genres as tap-to-browse, mirroring Mihon's `searchGenre()` behaviour rather than inventing a new interaction. Each remaining source needs its own reachability check before search can be promised for it — **Royal Road and Novel Fire are not yet checked**, so v1 can claim genre browsing for all three sites but search for none of them until they are.
 
 ### Q-006 — Is the default branch `master` or `main`?
 

@@ -2,9 +2,16 @@
 type: prd
 status: approved
 generated_at: 2026-10-02
-version: 2
+version: 3
 ---
 
+<!-- amendment: 2026-10-02, Q-007 closed → ADR-015. Added B50 (search is an opt-in
+     per-source capability, gated on the site genuinely implementing it); US-02's
+     acceptance criterion made conditional on it; and SC-1 amended, because as
+     originally written it required every source to be searchable — which the
+     measurement proves FanMTL cannot be, so it would have been unmeetable.
+     Extend-only: the pre-existing rules keep the numbers they already had, and
+     E1–E22 and C1–C14 are untouched. The series is now B1–B50. -->
 # Product Requirements Document — Lumen Tale
 
 > This document describes WHAT the product does, FOR WHOM, and WHY.
@@ -82,7 +89,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 **Dependencies**: US-01, US-16
 
 **Acceptance criteria**:
-- [x] Typing text and submitting shows matching novels from the site currently selected, and only from that site (B2, B41).
+- [x] **Where a source genuinely supports search**, typing text and submitting shows matching novels from that source only (B2, B41, B50). Where it does not, the app offers that source's genre and tag browsing instead, and never presents a search box that would return nothing (B50).
 - [x] A search that matches nothing shows an explicit "no results" message that is visibly different from a failure message (E19).
 - [x] A search that fails shows an error with a retry, never an empty list (B22).
 - [x] Selecting a site again and running the same search runs it against that site.
@@ -405,6 +412,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 | B47 | **The history list is bounded by time, not by count.** Entries older than **one year** are dropped, oldest first. The reader may change that window or clear the list entirely. | US-12 | **Standard, not a guess.** Mihon bounds nothing — its history table has no `LIMIT` and no retention window, cleared only by hand — so there is no precedent to copy. Every platform that does bound activity history bounds it by **time** (Safari and Chrome offer "delete history older than…"; Google account activity defaults to 18 months; Android usage stats keeps about a year). **Time, not count, because a count cap punishes heavy readers — precisely our user — while time bounds unbounded growth without punishing use.** One year is chosen as the conservative end of that range — an order of magnitude beyond what any real reader reaches — so the cap bounds a pathological table without ever being felt. The point of the standard is the **shape** (bound by time, configurable, clearable), not the number. |
 | B48 | **The new-chapter count is a local fact and never depends on a check.** It is the number of chapters the reader has not opened. This is B14 restated as a property that makes the B39 conflict impossible: the count is computed over stored **chapter-list metadata**, not over downloaded bodies, so a novel never downloaded still counts correctly. It is never an estimate and never goes stale. | | US-10, US-11 | **This is what dissolves the B14/B39 conflict.** Once the count is purely local, a skipped novel's count is still correct; nothing about the count can be made wrong by whether a check ran |
 | B49 | A novel also shows **when it was last checked against its site**, or "never checked" if it has not been. The app never implies there is nothing new for a novel it has not checked — it says it has not looked. | US-10 | Closes B15: staleness is made **visible** rather than denied. Two separate facts, two separate displays: how many you have not opened, and how recently we confirmed what exists |
+| B50 | **Search is an opt-in capability of a source, not a promise of the app.** The app offers search for a site **only when that site genuinely implements one** — meaning its own search returns results a reader would call useful, rather than an empty page or an error. Where it does not, the app offers that source's **genre and tag browsing** instead, and says so, rather than showing a search box that would return nothing. A source that declares search and then returns nothing is treated as a **broken source** and reported per B22 — never as a source that simply has no results. | US-02, US-16 | **Added by amendment when Q-007 closed.** The owner: browsing by genre is the primary way these sites work, and passing a novel's own tags back into a site's search bar "ain't satisfying at all". FanMTL's search is unreachable, so **FanMTL offers genre browsing only** |
 | B46 | **Reading position and reading history are different things and are never conflated.** The position — which chapter, and how far into it — is held for every novel forever and is **never trimmed by any retention rule**, because it is what "pick up where you left off" depends on and there is no backup of it. The history *list* — a log of what was opened, browsable by date — is bounded separately (B47). | US-11, US-12 | **Split by red-team finding:** one rule was covering both, and any cap applied to it would have quietly destroyed reading positions |
 ## 5. Constraints
 
@@ -575,7 +583,7 @@ Consequently:
 
 <!-- How will we know the product succeeded? -->
 
-- **SC-1 — Sources work end to end.** FanMTL and Royal Road can each be browsed, searched within, and their chapters read end to end. Novel Fire also, **if its terms of service have been confirmed by then** — there is no deadline, and if they are never confirmed, Novel Fire simply does not count against v1. FanMTL is the first source regardless.
+- **SC-1 — Sources work end to end.** FanMTL and Royal Road can each be **browsed by genre** and have their chapters read end to end, and each is **searchable where — and only where — its own site genuinely implements search** (B50, ADR-015). A source with no genuine site search is met by genre browsing alone; that is a passing v1, not a gap, because the app promises nothing it cannot deliver. Novel Fire also, **if its terms of service have been confirmed by then** — there is no deadline, and if they are never confirmed, Novel Fire simply does not count against v1. FanMTL is the first source regardless, and on measurement it has **no** usable search, so FanMTL is judged on genre browsing.
 - **SC-2 — Offline reading is proven.** Fifty chapters can be downloaded and then read **with the network off** — verified by actually switching off connectivity on the device, not by assuming the file exists.
 - **SC-3 — The app's own records are correct.** Library, history, and unread badges are correct.
 - **SC-4 — Both languages are complete.** French and English are both complete, including error messages.
@@ -621,7 +629,7 @@ Three contradictions between the PRD's own sections were found and fixed during 
 - [x] The problem is defined concretely, not in jargon.
 - [x] All user types are identified, including admin, support, moderator — including their explicit absence.
 - [x] Every user story has verifiable acceptance criteria.
-- [x] Every business rule has a stable ID, B1–B49, none reused. One ID (B42) is retained as a withdrawal in §9 rather than deleted, so the series is intentionally not contiguous.
+- [x] Every business rule has a stable ID, B1–B50, none reused. B50 was appended by amendment (ADR-015) without renumbering. One ID (B42) is retained as a withdrawal in §9 rather than deleted, so the series is intentionally not contiguous.
 - [x] Every identified edge case has a stable ID, E1–E22, contiguous, none reused.
 - [x] Every constraint has a stable ID, C1–C14, contiguous, none reused.
 - [x] Non-functional requirements cover performance, security, accessibility, internationalisation and availability.

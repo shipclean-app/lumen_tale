@@ -36,7 +36,17 @@ These are in `03-source-system.md` (contract) and `17-security.md` (posture); th
 
 ## Open items
 
-Two sites were selected for v1 on 2026-10-02. **FanMTL** is now the **first** source. Royal Road and Novel Fire status: see Q-004 / the ADR-011 note below.
+Two further sites were selected for v1 on 2026-10-02. **FanMTL** is the **first** source. Royal Road and Novel Fire status: see Q-004 / the ADR-011 note below.
+
+**Search reachability is measured per site and recorded per site.** ADR-015 makes `supportsSearch` a declared promise, so each site needs its own fetch-and-verify pass before search can be claimed for it. Current state:
+
+| Site | `supportsSearch` | Basis |
+|---|---|---|
+| FanMTL | **false** | Measured 2026-10-02. GET and POST both 404 with a meta-refresh, including for a query that should match, session or no session. Genre browsing works and is the intended path. |
+| Royal Road | **unknown — not yet checked** | Must be fetched and judged before any claim. |
+| Novel Fire | **unknown — not yet checked** | Blocked additionally by Q-004. |
+
+Until both remaining sites are measured, v1 can claim **genre browsing for all three** and **search for none of them**. That is a correct v1, not a gap: it is what the contract promises when `supportsSearch` is false.
 
 ---
 
@@ -55,7 +65,8 @@ Two sites were selected for v1 on 2026-10-02. **FanMTL** is now the **first** so
   | Chapter body | `/novel/<id>_<n>.html` | `/novel/ke383028_1.html` |
   | Catalogue / tag / pagination | `/list/<tag>/<sort>-<page>.html` | `/list/xianxia/all-lastdotime-0.html` |
   | Latest chapters | `/updates/` | |
-  | Search | `/search.html` | |
+  | Genre index | `/browsetags/` | 9 tags, the primary discovery path |
+  | Search | `/search.html` (form) → posts to `/e/search/index.php` — **both unreachable, see quirk 6**. Do not implement. | |
 
   The trailing integer in `/list/...` is the **0-based page number** — note this differs from the 1-based `page` argument in the `Source` contract. Convert at the boundary.
 
@@ -66,8 +77,8 @@ Two sites were selected for v1 on 2026-10-02. **FanMTL** is now the **first** so
   3. **An ad `<script>` sits inside the content div**: `<div align="center"><script src=/d/js/ad/page_01.js></script></div>`. The cleaner already drops `<script>` elements. Note the path is under `/d/`, which robots.txt disallows — we must never *fetch* it, and dropping the tag is what prevents that.
   4. **`&nbsp;` is not used**; separators are plain `<br><br>`. Whitespace normalisation has no entity to decode here.
   5. **Cloudflare, as above** — present, currently not challenging.
-  6. **Text search is not reachable by an automated client; tag browsing is.** Measured 2026-10-02: the search form posts to `/e/search/index.php`, but GET returns 404 with a JavaScript meta-refresh, and POST returns the same 404 **even for a query that should match**, with and without a prior session (the site sets no cookies on `/` or `/search.html`). So FanMTL text search does not work for us — this is a reachability problem, **not** a robots.txt one. **What does work:** `/browsetags/` exposes 9 tags (`action`, `wuxia`, `xianxia`, `xuanhuan`, `shounen`, `romance`, `contemporary-romance`, `shoujo`), and `/list/<tag>/<sort>-<page>.html` returns a full page of novels (30 per page, 123 catalogue links observed). **On FanMTL, "find a novel" therefore means browsing tags, not typing a query.** Affects `US-02` — see the open question in `DECISIONS.md`.
-  7. **B22's discriminator is satisfiable here.** FanMTL's own failure page carries the explicit string *"No relevant content found"*, which is a real site-supplied empty-result signal — exactly the distinction B22 requires between "genuinely nothing" and "could not read". It is reachable even though the search itself is not.
+  6. **Text search is not reachable by an automated client; tag browsing is.** Measured 2026-10-02: the search form posts to `/e/search/index.php`, but GET returns 404 with a JavaScript meta-refresh, and POST returns the same 404 **even for a query that should match**, with and without a prior session (the site sets no cookies on `/` or `/search.html`). So FanMTL text search does not work for us — this is a reachability problem, **not** a robots.txt one. **What does work:** `/browsetags/` exposes 9 tags (`action`, `wuxia`, `xianxia`, `xuanhuan`, `shounen`, `romance`, `contemporary-romance`, `shoujo`), and `/list/<tag>/<sort>-<page>.html` returns a full page of novels (30 per page, 123 catalogue links observed). **On FanMTL, "find a novel" therefore means browsing tags, not typing a query.** → **`supportsSearch = false`** (ADR-015). Genre browsing is not a consolation prize here; it is how the site is meant to be used, and a novel's detail-page genres are the good way in (browse the genre, never search for the tag).
+  7. **B22's discriminator is satisfiable here.** FanMTL's own failure page carries the explicit string *"No relevant content found"*, which is a real site-supplied empty-result signal — exactly the distinction B22 requires between "genuinely nothing" and "could not read". It is reachable even though the search itself is not. **Do not read it as "no results" on a browse page** — it lives on the search failure page, so it discriminates for search calls only; for genre browsing, an empty tag page is judged by page shape (no novel rows), not by this string.
 
 - **Pending promotion**: `04-html-to-markdown.md` §The converter is ours §Required behaviour — the `<br><br>` → paragraph rule and the `.chapter-content` selector are **general** enough to promote. Site-specific selectors stay here.
 

@@ -15,7 +15,13 @@ abstract class Source {
   String get lang;              // ISO 639-1 ('en', 'fr', ...)
   bool get supportsLatest;
 
-  /// Filters declared by the source for search. Empty list = no filters.
+  /// Whether this site GENUINELY implements search — i.e. its own search
+  /// returns results a reader would call useful. See rule 5a and ADR-015.
+  /// False = the UI offers genre/tag browsing instead, never a search box.
+  bool get supportsSearch;
+
+  /// Filters declared by the source for search AND for genre browsing.
+  /// Empty list = no filters. The platform never interprets their states.
   FilterList get filterList;
 
   Future<NovelsPage> getPopularNovels(int page);
@@ -63,6 +69,7 @@ abstract class ParsedHttpSource extends HttpSource {
 3. **Relative URLs**: store relative URLs (path + query) in `Novel.url` / `Chapter.url` via a `setUrlWithoutDomain` helper — never store full URLs (hosts change).
 4. **Be gentle**: shared rate limiting, delays, minimal requests, and an honest User-Agent from `core/network`. Only scrape sites that permit it. The posture rules are owned by `17-security.md` rules 5–7 and 16; per-site permission is recorded in `18-external-contracts.md` **before** the scraper is written.
 5. **Filters**: a source *declares* filters in `filterList` and *interprets* their states itself. The platform never interprets filter values.
+5a. **`supportsSearch` is a promise, not a guess** (ADR-015). Set it `true` only after you have fetched the site's own search and seen results a reader would call useful. A search endpoint that 404s, meta-refreshes, times out, or returns an empty page means `supportsSearch = false` — that is not "no results", it is a broken source (rule 10). When it is `false`, the source must still expose **genre/tag browsing** through `filterList`, and the browse UI must not render a search field. Measured verdicts live in `18-external-contracts.md`.
 6. **Configurable sources**: implement `ConfigurableSource` (shared_preferences namespaced `source_<id>`) for per-source options and expose a settings UI in `features/settings`.
 7. **`memo`**: `Map<String, dynamic>` for source-internal metadata that must not be shown to users. Keep it small.
 8. **Status mapping**: use the shared `NovelStatus` enum (Unknown, Ongoing, Completed, Licensed, PublishingFinished, Cancelled, OnHiatus) and map site-specific statuses into it.

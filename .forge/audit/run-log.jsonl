@@ -47,3 +47,10 @@
 {"ts":"2026-10-02T15:03:13.685Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:4d9824e4cd5a"}
 {"ts":"2026-10-02T15:09:36.958Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:18b866c15052"}
 {"ts":"2026-10-02T15:10:57.706Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:9f0130ffc365"}
+{"ts":"2026-10-02T15:20:07.023Z","type":"amend","kind":"deliverable","key":"prd","reason":"Q-007 closed: search becomes an opt-in per-source capability, gated on the site genuinely implementing it. FanMTL's search is unreachable, so FanMTL offers genre browsing only."}
+{"ts":"2026-10-02T15:24:58.898Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:25cc5d09692b"}
+{"ts":"2026-10-02T15:24:58.952Z","type":"status_change","kind":"deliverable","key":"prd","from":"stale","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/prd.md","from":"draft","to":"approved"}}
+{"ts":"2026-10-02T15:26:09.431Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:304e43cad86e"}
+{"ts":"2026-10-02T15:26:09.491Z","type":"hash","kind":"deliverable","entry":"roadmap","content_hash":"sha256:7217529694b6"}
+{"ts":"2026-10-02T15:26:28.693Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:da8e9150bd1a"}
+{"ts":"2026-10-02T15:27:29.284Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:1b7fd915844d"}
