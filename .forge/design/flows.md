@@ -93,7 +93,7 @@ Two entry points, and they are deliberately different:
 | From | Path | Why |
 |---|---|---|
 | Manual | `/updates` → *Check now* (B36) | The reader asked, so the app fetches (B5) |
-| Automatic | **does not happen in v1** | B35: off by default, never on its own. `benchmarks.md` § 2.1 records Mihon also defaults `autoUpdateInterval` to 0 |
+| Automatic | **does not happen in v1 — and not because a rule forbids it** | **B35 was withdrawn** (ADR-023), so there is no schedule to be careful about; there is simply none. `benchmarks.md` § 2.1 records Mihon defaults `autoUpdateInterval` to 0, so Mihon *could* check on its own and we choose not to. The distinction is kept visible because the earlier text claimed a rule forced this, and no rule does |
 
 On return, `/updates` shows what changed. **B38: checking never downloads.** The two actions are visually separate on the same screen, and the copy must not blur them — "check" fetches chapter *lists*; "download" fetches chapter *bodies*.
 

@@ -28,7 +28,7 @@ So there are three honest answers for a rule, and only three:
 | Answer | Count | Rules |
 |---|---|---|
 | Needs a visible surface | **36** | B1 B2 B5 B9 B10 B11 B12 B13 B14 B15 B16 B17 B18 B19 B20 B22 B24 B25 B26 B27 B28 B31 B32 B33 B36 B39 B40 B41 B43 B44 B45 B46 B47 B48 B49 B50 |
-| Not observable, with a stated reason | **13** | B3 B4 B6 B7 B8 B21 B23 B29 B30 B34 B35 B37 B38 |
+| Not observable, with a stated reason | **13** | B3 B4 B6 B7 B8 B21 B23 B29 B30 B34 B35 B37 B38 — **B35 is withdrawn** (ADR-023), so it is counted here only because its ID is retained in `prd.md` § 9 |
 | Withdrawn | **1** | B42 |
 | **Unaccounted** | **0** | — |
 
@@ -48,7 +48,7 @@ These are not omissions. Several of them are *stronger* precisely because they h
 | **B29** | No user data leaves the device. A network posture; **no screen can display an absence of traffic.** |
 | **B30** | Chapters cannot be shared out of the app. Surfaces as the **absence** of a share action — the only correct UI for this rule is the share sheet never appearing. |
 | **B34** | Android phones only, delivered as an APK. A build fact; visible only on the About screen. |
-| **B35** | Checking for new chapters is off by default. A Settings toggle whose default is off. |
+| **B35** | *Withdrawn* (ADR-023). **Nothing observes it, because nothing implements it.** The check is now manual-only and its observability is carried by **B36** and **B37** — the reader taps, and a cancellable foreground job says so |
 | **B37** | A check runs as a foreground job with a visible notification. An **OS** surface, not an in-app screen — the app's own screen is not the thing being promised. |
 | **B38** | Checking never downloads. A separation guarantee; visible as the **absence** of any download trigger in Updates. |
 

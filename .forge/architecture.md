@@ -235,7 +235,7 @@ No slice carries this. `apk-pipeline` builds the APK and `local-store` owns the 
 | US-07 Download a novel as a queue | `5-1` | B18 |
 | US-08 Watch/control a download | `5-2`, `5-3` | B19, B20, B21 |
 | US-09 Keep in library | `2-5`, `6-6` | B11, B12, B32, B40, B45 |
-| US-10 New chapters | `6-3`, `6-4` | B13, B14, B35, B36, B38, B39, B48, B49 |
+| US-10 New chapters | `6-3`, `6-4`, `6-10` | B13, B14, B36, B37, B38, B39, B48, B49 — **B35 withdrawn** (ADR-023), so checking is manual-only |
 | US-11 Resume where I stopped | `2-6`, `3-4` | B16, B46 |
 | US-12 Review what I read | `6-5` | B17, B47 |
 | US-13 French and English | `localisation`, `6-7` | B28 |
@@ -551,7 +551,7 @@ Full text in `DECISIONS.md`. The ones that shape the structure above:
 | ADR-016 | Day is warm paper, night is **cool ink** | `theme-type`'s two independently designed palettes, not one inverted |
 | ADR-017 | Reader prose is serif via a preference chain; **nothing bundled** | `theme-type` ships no asset |
 | ADR-009 | v1 continuous scroll; position stored as an **offset** | § 4.3's `offset`, and why it is not a page index |
-| ADR-020 | **No new-chapter notification in v1** | § 5.4's exclusion table and `benchmarks.md` § 4b's first cost row. **Forced by B35**, not chosen: opt-in checks → no automatic check → nothing to detect → nothing to announce. The chain matters more than the absence — see ADR-020 for why a design decision cannot override an approved business rule silently |
+| ADR-020 | **No new-chapter notification in v1** | § 5.4's exclusion table and `benchmarks.md` § 4b's first cost row. **Superseded 2026-10-02**: the conclusion stands, but it is now a *scope* decision rather than a rule-derived one, because B35 — the chain's first link — was withdrawn (ADR-023). The absence is correct while checking is manual-only, and becomes wrong the moment a schedule returns |
 | ADR-010 | Personal use: no account, sync, export, backup | § 5.4's exclusion table. It removes 24 screens from Mihon's inventory (`screens/_mihon-verdicts.md` § 2) and costs the reader **any safety net for their library** — mitigated only by B31, which `benchmarks.md` § 2.3 shows is the failure their competitors cannot fix |
 
 ---
@@ -568,7 +568,7 @@ Full text in `DECISIONS.md`. The ones that shape the structure above:
 | Sequential downloads make a 900-chapter novel slow | HIGH | LOW | B18 makes it a constant. Accepted and documented, not optimised away — a concurrency column is what would let it drift |
 | One implementer, one device, one person who can repair a scraper | HIGH | HIGH | Stated plainly in the roadmap. The MVP+V1 total is 32 slices and the roadmap prices a 7-story reduction if Waves 1–2 overrun |
 | **Q-004** — Novel Fire's terms unread | MED | LOW | Gates one source only. Ships when confirmed, never otherwise |
-| **No new-chapter notification in v1** — a serial's reader must open the app to learn a chapter is out | HIGH | **MED** | ADR-020: forced by B35's opt-in checking, not chosen. Both commercial apps use progress notifications as their primary re-engagement, so this is a real parity gap. `benchmarks.md` § 4b states the cost; `6-4` reaches it the moment the reader opts into a schedule |
+| **No new-chapter notification in v1** — a serial's reader must open the app to learn a chapter is out | HIGH | **MED** | ADR-020, as superseded: the cost is real because both commercial apps use progress notifications as their primary re-engagement. `benchmarks.md` § 4b states it. **The exposure is now larger than the text implies** — with B35 withdrawn (ADR-023) there is no schedule *and* no notification, so the reader's only route to a new chapter is opening the app and tapping *Check for updates*. That is the honest shape of the gap |
 | Royal Road / Novel Fire search unmeasured | MED | LOW | `6-2` is per-source and conditional. v1 claims genre browsing for all three and search for none — a passing v1, not a gap |
 | Chapter bodies as files drift from the database | MED | MED | § 4.7 gives files their own key space and B6 their own atomicity. A mismatch is detectable: the row exists, the file does not |
 

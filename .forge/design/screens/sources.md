@@ -149,7 +149,7 @@ AppScaffold (titleBar = "Sources")
 | `status` chip `unavailable` | tap | Open `source-unavailable` for that source | Sheet | — | **B22** |
 | `status` chip `never-checked` | tap | Nothing — it is information, not an action | — | Filled | **B49** |
 | Source settings row | tap | Open the per-source settings a `ConfigurableSource` declares | — | Settings sheet | `03-source-system.md` rule 6 |
-| *Check now* | tap | A single **manual** check of this source — never scheduled, never automatic | Row shows `available` | Filled | **B35 B36** |
+| *Check now* | tap | A single **manual** check of this source — never scheduled, never automatic | Row shows `available` | Filled | **B36 B37** | |
 | System back | gesture | Return to `more` | Standard | `more` | — |
 
 - **Focus / clavier**: row → switch → options, three stops per row. The switch is operable by `Space`/`Enter`. Focus visible at 2dp `--color-border-focus`.

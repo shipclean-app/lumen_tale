@@ -445,7 +445,7 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 ### 2.11 `SettingsSwitchRow`
 
-`SettingsRow` (variant `action`) hosting a `Switch`, with `consequence` **required**. It exists as its own entry because the mandatory `consequence` is the whole point: a switch whose effect is not obvious is a switch the reader has to guess about, and **B35's "off by default" is meaningless if the reader cannot see what turning it on would do**.
+`SettingsRow` (variant `action`) hosting a `Switch`, with `consequence` **required**. It exists as its own entry because the mandatory `consequence` is the whole point: a switch whose effect is not obvious is a switch the reader has to guess about, and **an "off by default" is meaningless if the reader cannot see what turning it on would do**.
 
 ### 2.12 `SettingsChoiceSheet`
 
@@ -464,7 +464,7 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **No "forever" option on any bounded list.** B47 requires the history to be bounded by time, and a settings list that offers an unbounded value next to bounded ones teaches the reader the bounds are negotiable.
 
-**Why every setting switch carries a `consequence` line.** The four settings most likely to be misunderstood are: *checking for new chapters* (off by default, **B35**), *remove after reading* (**B33** makes deletion per-chapter and explicit, so this stays off), *history retention* (**B47**, one year), and *theme* (**B26**). A switch with a label but no consequence is a switch the reader has to guess about, and B35's "off by default" is meaningless if the reader cannot see what turning it on would do. The reader has no title bar at all — its title lives in the revealed controls, so the first thing on screen when a chapter opens is prose.
+**Why every setting switch carries a `consequence` line.** The general rule: a switch whose effect is **destructive, invisible, or surprising when wrong** must say in words what the position means. Two worked examples earned it. *Checking for new chapters* was the original (**B35**, now withdrawn — ADR-023). *Remove after reading* earned it and was then **cut**, because **B32**/**B33** make deletion per-chapter and explicit, so the switch was asserting an effect the rules did not permit. **Both are gone, and `SettingsSwitchRow` therefore has ZERO instances in v1.** It stays declared — components are specified ahead of use, and deleting a primitive because today's screens do not need it is how a design system loses its vocabulary — but the honest status is *declared, unused*, not *in use*. **It returns whole** with the first v2 setting that needs it; the B35 restoration in `prd.md` § 9 is one candidate. *History retention* (**B47**, one year), and *theme* (**B26**). A switch with a label but no consequence is a switch the reader has to guess about, and B35's "off by default" is meaningless if the reader cannot see what turning it on would do. The reader has no title bar at all — its title lives in the revealed controls, so the first thing on screen when a chapter opens is prose.
 
 ---
 
@@ -494,7 +494,7 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 
 1. It has the highest frequency — a reader opens the app to resume, and resume means their own shelf.
 2. It is the only screen that can **open the loop** rather than summarise it. `archetypes.md` § 2 names the trap precisely: *"écran d'accueil qui est un sommaire"*. So the Library is **not** a list of covers with chapter counts. It leads with a **continue-reading shelf** — the last read novel, at its position — and the list is below it. A library that is only a list has put a summary where a home should be.
-3. It is the screen the app must open *from* after a download completes — so it is where the loop re-enters. **Not** after a new-chapter notification: v1 has none, and cannot have one while B35 keeps automatic checking opt-in (ADR-020).
+3. It is the screen the app must open *from* after a download completes — so it is where the loop re-enters. **Not** after a new-chapter notification: v1 has none, because there is no automatic check to announce the result of — no schedule (B35 withdrawn, ADR-023) and no new-chapter notification (ADR-020, superseded).
 
 **Overflow (« More »)** — everything here is configuration or a transfer, never part of the reading loop:
 

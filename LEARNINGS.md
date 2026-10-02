@@ -64,6 +64,18 @@ The **contrast** is the form, and it is not decorative. "There was a problem wit
 - 2026-10-02 — Don't trust a green gate that reports zero work: a check which reads nothing and passes is worse than no check, because a reviewer stops looking. `component-parity` reported `states: 0` for all eight components and said PASS, because the state tables' name column was unbackticked and the heading was the English `States` where the template specifies `États`.
   → domain: `09-widgets-ui.md` | Seen: the browse screens agent asked for a component that did not exist, and separately the component-parity output showed `states: 0`, 2026-10-02
 
+- 2026-10-02 — Don't satisfy a rule's letter when its intent has no state to live in. **B6** said a chapter "is *marked as downloaded* only once it is completely present" and **B33** deletes one chapter's copy; the schema held no mark, so "marked" was a per-row filesystem probe and a deliberate deletion was indistinguishable from never having downloaded. A rule that nothing in the schema can express is a rule nothing verifies — check that each rule has a column, a derived value, or a named check, not only a sentence in the PRD.
+  → domain: `10-testing.md` | Seen: the red-team pass on Phase 4, 2026-10-02
+
+- 2026-10-02 — Don't let a bulk-edit script report success it did not verify. A `str.replace` patch helper printed `ok` unconditionally; five of nine replacements had silently matched nothing because the text had been reflowed by `dart format` or by an earlier edit in the same run, and the run's own log said every one had landed.
+  → domain: `12-ai-agent-workflow.md` | Seen: re-reading five files back after a fix batch and finding the claims false, 2026-10-02
+
+- 2026-10-02 — Don't register a slice against a deliverable's path: `state.js register slice 6-10 .forge/architecture.md` wrote a document-shaped entry (`type: architecture`, all of the file's headings, a content hash) and every later `set-status` / `dep` then rejected it as `unknown_slice`. Point a slice at the plan file it will own, `.forge/plans/<key>.md`.
+  → domain: `12-ai-agent-workflow.md` | Seen: registering the ADR-021 slice, 2026-10-02
+
+- 2026-10-02 — Don't guess a deliverable key from its filename: `forge-guard fast-track` looks up `design_system` and `CANONICAL_LAYOUT` in `forge-lib.js` is the only authority on key spelling. `design-system.md` the file is `design_system` the key, and the hyphenated key passes every other gate while making fast-track permanently unavailable.
+  → domain: `12-ai-agent-workflow.md` | Seen: fast-track refusing a project whose design system was approved, 2026-10-02
+
 - 2026-10-02 — Don't declare a database constraint and assume it holds; execute it. SQLite disables foreign-key enforcement per connection by default and it is not part of the file format, so `CASCADE` and `RESTRICT` in a drift schema are inert unless every connection sets the pragma. `history_entries.novelId` was `RESTRICT` — the only enforcement of B32 — and deleting a novel succeeded.
   → domain: `06-database.md` | Seen: two schema tests failing against a schema that read correctly, 2026-10-02
 

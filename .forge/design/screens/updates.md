@@ -19,7 +19,7 @@ rule_ids:
   - B24
   - B26
   - B28
-  - B35
+  - ~~B35~~ (withdrawn, ADR-023)
   - B36
   - B37
   - B38
@@ -53,7 +53,7 @@ flow: update-loop
 | **Type** | list page, bottom-nav destination (its own `StatefulShellRoute` branch) |
 | **Users** | the reader returning to a serialised novel; the reader deciding, once a week, whether to turn automatic checking on |
 | **User stories served** | US-10, US-11, US-09, US-16 |
-| **Business rules** | B11 B13 B14 B15 B16 B17 B22 B24 B26 B28 B35 B36 B37 B38 B39 B48 B49 |
+| **Business rules** | B11 B13 B14 B15 B16 B17 B22 B24 B26 B28 B36 B37 B38 B39 B48 B49 — **B35 withdrawn** (ADR-023) |
 | **Edge cases** | E4 E5 E8 E9 E12 E16 E20 |
 
 **In one sentence**: this screen tells the reader which of the novels they keep have chapters they have not opened, says honestly how recently the app last looked at each one, and keeps *checking* and *downloading* as two things they choose separately.
@@ -97,10 +97,10 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 ├── TitleBar
 │   ├── Title "Updates"                          --text-h1 31/38 700
 │   ├── CheckButton  TextButton, accent label    "Check for new chapters"  (B36, not confirmed — B38)
-│   └── ScheduleButton → /more/settings          opens the automatic-check setting (B35)
+│   └── ScheduleButton → /more/settings          **NOT IN V1** — opens nothing (B35 withdrawn, ADR-023)
 ├── ScheduleNotice            --color-surface-raised, --radius-lg, --space-md padding
 │   ├── NoticeText            "Automatic checks are off. Nothing is looked at unless you tap Check,
-│   │                          and opening the app is not a check either."   (B35, B36)
+│   │                          and opening the app is not a check either."   (B36)
 │   └── NoticeLink            "Turn automatic checks on"  → the interval picker
 ├── UpdateList
 │   ├── SectionHeader         overline "UNOPENED CHAPTERS" + "4 novels · 96 chapters you have not opened"   (local, B48)
@@ -125,7 +125,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 | 3 | `TextButton` / `SecondaryButton` | The check, and the two bulk actions | `design-system.md` § 2.3 |
 | 4 | `EmptyState` / `ErrorState` / `LoadingState` | Empty, unreadable store, first paint | `design-system.md` § 2.7 |
 | 5 | `AppScaffold` | Title bar, bottom nav, and the `persistentStatus` slot that carries a running check | `design-system.md` § 2.8 |
-| 6 | `ScheduleNotice` | **slice-local**: the raised block stating B35's default and B36's no-trigger-on-open. A composition of `Text` and a `TextButton` on `--color-surface-raised`; promoted to the design system only if a second screen needs it |
+| 6 | `ScheduleNotice` | **slice-local**: the raised block stating B36's no-trigger-on-open. **Reduced** — it used to state B35's default too, which ADR-023 withdrew. A composition of `Text` and a `TextButton` on `--color-surface-raised`; promoted to the design system only if a second screen needs it |
 | 7 | `NovelActionSheet` | **slice-local**: the per-novel action sheet — see § 11 |
 
 ---
@@ -157,7 +157,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 | `persistentStatus` — cancel | tap | Cancel **this run**. The schedule is untouched: cancelling one run does not disable the schedule (B37) | Status line replaced by *Check cancelled · your library is unchanged* | Filled | **B37** |
 | `persistentStatus` | during a check | Counts novels, **never capped**, and says *nothing is downloaded* | Live counter | — | **B39**, **B38** |
 | Terminal line | after a check | *All 23 novels checked · none skipped.* — B39 is the one rule a reader cannot otherwise verify: a check that quietly visited only the first fifty novels would look identical from outside, so the app states the count it reached | — | Filled | **B39** |
-| Schedule link | tap | Open the automatic-check setting: **Never / every 12 / 24 / 48 / 72 hours / weekly**, with **Never** the default and an active choice that disables the schedule rather than skipping it | Standard push | — | **B35** |
+| ~~Schedule link~~ | — | **NOT IN V1. B35 withdrawn (ADR-023)** — there is no schedule to configure, so the link is removed rather than left pointing at a control that does not exist. **The `CheckNowButton` above it is what ships** | Standard push | — | **B35** |
 | `UpdateRow` | tap | Push `/library/novel/:novelId` — the novel's own screen | `--duration-normal` 200ms, `--ease-standard` | Filled on the detail screen | — |
 | `UpdateRow` | long-press | Open `NovelActionSheet` (§ 11): **Continue reading · Download new chapters · Mark as read · Open the novel** | Sheet slides up `--duration-normal`, `--shadow-sheet` | Filled + sheet | — |
 | `NovelActionSheet` · Continue | tap | Open the reader at this novel's stored position (the position record, not this list — B17/B46) | No transition into the reader | Reader at position | **B16**, **B46** |
@@ -223,7 +223,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 | `novel.siteChapterCount` | `int` | last successful check, stored locally | yes | **Used only for the schedule link's information and for reporting what a check found — never for the unopened count**, which is local (B48) |
 | `novel.unopenedDownloaded` | `int` | local | yes | — |
 | `novel.downloadProgress` | `double?` | live queue state | no | `null` → no bar in `trailing` |
-| `schedule` | `enum(never, 12h, 24h, 48h, 72h, weekly)` | `shared_preferences`, **default `never`** | yes | Never → nothing is ever checked unless the reader taps (B35) |
+| ~~`schedule`~~ | `enum(never, 12h, 24h, 48h, 72h, weekly)` | — | — | **NOT IN V1** (ADR-023). Nothing is stored and nothing is defaulted |
 | `lastRunAt`, `lastRunOutcome` | `DateTime?`, `enum` | local | no | `null` → the terminal line reads *No check has ever been run* (B49) |
 | `connection` | `bool` | platform | yes | False → the offline sentence; never a row-level change |
 
@@ -247,7 +247,7 @@ AppScaffold (titleBar, bottomNav, persistentStatus)
 | B24 | PRD | The check button is the retry for every failed row, and the local store's own failure has its own sentence and retry |
 | B26 | PRD | The whole screen re-themes on the phone's setting, with the in-app override one tap from the reader |
 | B28 | PRD | Every string is ARB with French fallback, including the notice, the terminal line and both confirms |
-| B35 | PRD | The **ScheduleNotice** states the default is off and that opening the app is not a check; the interval picker's default is Never and choosing it actively disables the schedule |
+| ~~B35~~ | withdrawn | **Nothing on this screen implements it** (ADR-023). `ScheduleButton`, the schedule link and the `schedule` preference are all `NOT IN V1`. **B36's half of the ScheduleNotice survives and still ships** — *opening the app is not a check* — and it is now the whole of it |
 | B36 | PRD | The labelled check action is always available, whatever the schedule; **pull-to-refresh is absent**, so that opening the app is visibly not a trigger |
 | B37 | PRD | A running check is cancellable from `persistentStatus`, and cancelling one run does not touch the schedule. The notification itself is an OS surface, and this screen does not pretend to render it |
 | B38 | PRD | Check in the app bar, downloads per row and in a separate section under a rule; the running line says *nothing is downloaded*; the check is unconfirmed while downloads are confirmed |
@@ -302,7 +302,7 @@ There is deliberately **no remove, no keep and no share** in it. Removing from t
 
 **The check in progress reuses the `never-checked` presentation** — the information token, wording only — because it is the same class of fact: *the app does not currently know what the site has*. Inventing a seventh `StatusChip` variant for a transient that lasts seconds and that the reader can cancel would add a component state no other screen needs, and the design system is explicit that screens must not invent components. The per-novel position during a check lives in `persistentStatus` as a counter, which is where a screen-level fact belongs.
 
-**One divergence found, recorded rather than silently resolved.** `design-system.md` § 1.1 lists `never-checked` under `--color-warning`'s usage column, while `design-system.md` § 2.5 declares `StatusChip`'s `never-checked` variant as **info**. This screen follows `design-system.md` § 2.5, the component contract, because it is the more specific claim and because *info* is the right register for "we have not looked" — a warning colour would present the reader's own default (B35) as a fault. The colour table's usage cell is the thing that should change; this is left to the design system's owner rather than decided here.
+**One divergence found, recorded rather than silently resolved.** `design-system.md` § 1.1 lists `never-checked` under `--color-warning`'s usage column, while `design-system.md` § 2.5 declares `StatusChip`'s `never-checked` variant as **info**. This screen follows `design-system.md` § 2.5, the component contract, because it is the more specific claim and because *info* is the right register for "we have not looked" — a warning colour would present a state the reader has not yet acted on (**B49**) as a fault. The colour table's usage cell is the thing that should change; this is left to the design system's owner rather than decided here.
 
 ---
 

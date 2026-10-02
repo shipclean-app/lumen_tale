@@ -33,7 +33,7 @@ Free, open-source Android reader for **comics and novels**, ~63 screens, plugin 
 | Sync | None. No account. |
 | Network posture | Honest UA; `CloudflareInterceptor` harvests a `cf_clearance` cookie via an off-screen WebView — **we deliberately do not port this** (ADR-014) |
 
-**What it proves is possible** and **what it costs.** The read path, the queue semantics, and the atomic temp-dir-then-rename download discipline are all directly reusable and are the basis for our B6, B18, B35 and B38.
+**What it proves is possible** and **what it costs.** The read path, the queue semantics, and the atomic temp-dir-then-rename download discipline are all directly reusable and are the basis for our B6, B18 and B38.
 
 **Where it is worse than the commercial apps:** no paged/slide reading modes for text, no cloud sync, no discovery of any kind — its whole browse surface is *your installed sources*.
 
@@ -74,7 +74,7 @@ They cannot fix it, because their library lives on their server and is coupled t
 | New-chapter detection | yes, off by default | yes | **yes, off by default** | yes |
 | Cloud sync / account | no | **yes** | **no — deliberate** | reconsider |
 | Social / comments / rewards | no | **yes** | **no — out of scope** | no |
-| New-chapter notification | yes | **yes** | **no — forced by B35** (ADR-020) | yes |
+| New-chapter notification | yes | **yes** | **no — scope, not derivation** (ADR-020 superseded, ADR-023) | yes |
 | In-app purchases / coins | no | **yes** | **no — personal use** | no |
 | Localisation | many locales via i18n | EN + many | **FR + EN** | more |
 | Library survives reinstall | yes (local) | **no — the top complaint** | **yes, guaranteed (B31)** | yes |
@@ -96,7 +96,7 @@ They cannot fix it, because their library lives on their server and is coupled t
 
 | Declined | What it costs the reader | Why v1 declines it |
 |---|---|---|
-| **New-chapter notification** | **A serialised novel's reader must open the app to learn a chapter is out.** For a title that updates daily that is a daily visit they may not have made | **Forced, not chosen.** ADR-020: B35 makes automatic checking opt-in, so with the default running there is nothing to detect and therefore nothing to announce. Reachable as soon as the reader opts into a schedule; slice `6-4` owns it |
+| **New-chapter notification** | **A serialised novel's reader must open the app to learn a chapter is out.** For a title that updates daily that is a daily visit they may not have made. **With B35 withdrawn the cost is now larger, not smaller**: no schedule either, so the reader must open the app *and* tap *Check for updates* | **Chosen, and relabelled.** ADR-020 originally claimed this was *forced* by B35's opt-in checking, so that the design had no choice. B35 was then withdrawn (ADR-023), which exposed that the choice existed and was not exercised. It is still the right call for v1 — a notification that fires only because the reader tapped would tell them what they just did — but it is a decision, and it reverses the moment a schedule returns |
 | **Background download** | **The reader must keep the app alive for a queue to progress.** The comparison at § 2.2 says this of Dreame verbatim — *"Dreame's offline access felt clunkier, requiring you to stay on a specific screen"* — and we are on the wrong side of that line | E7: the queue is in-process with no background executor. A real cost, accepted rather than papered over |
 | **Paged and slide reading modes** | Long sessions in the only modes our competitors' most-used feature offers are unavailable. Both commercial apps ship three modes | ADR-009: the reader is the largest subsystem and feeds the pipeline; scroll-only is the lowest-risk order. The position is stored as a **scroll offset**, so v2 resumes rather than converts |
 | **Tablet layout** | A reader on a tablet gets a phone layout, centred. Not broken — not adapted | ADR-019: phones only. Past `--bp-mobile` the layout stops growing rather than reflowing |
