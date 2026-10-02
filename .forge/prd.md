@@ -1,6 +1,6 @@
 ---
 type: prd
-status: draft
+status: approved
 generated_at: 2026-10-02
 version: 1
 ---
@@ -412,7 +412,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 | C7 | Source reliability — sites change their pages without warning and can stop working overnight. The app silently returning nothing is the main failure mode to avoid (B22, E4). | métier | Drives US-16, E4, E8, E9 and the verification of SC-1. |
 | C8 | Data loss is structurally accepted — there is no backup and no export (B31, C2). An interrupted or partially written download must therefore never be presented as complete (B6, E6, E7). | métier | No recovery exists, so the app must be incapable of creating a false state of completeness. |
 | C9 | Delivery — the app must be buildable without a store account and installable from a file on the owner's phone, repeatedly, without the owner performing a manual procedure (US-17). | technique | Puts "one verified install on the owner's phone" (SC-5) on the critical path. |
-| C10 | Time — Novel Fire's terms of service must be confirmed before a deadline; if not confirmed, it does not ship in v1 and does not count against v1's success (B1, E21). | temps | Decided by the owner, not by the app. The deadline itself is a §12 point. |
+| C10 | Novel Fire's terms of service must be confirmed by the owner before its scraper is written. **There is no deadline.** FanMTL is the first source and does not wait on this; Novel Fire ships whenever, or never. | Time |
 | C11 | Usage context — reading happens one-handed, on a phone, at night or in transit, frequently with poor or no connectivity (C11 also constrains gestures, text size and error legibility). | métier | Features that assume steady connectivity or two hands are out of place. |
 | C12 | Privacy of failure reporting — because a borrowed-device reader cannot send anything back (C2), the app must make its own failure state obvious enough for that reader to describe it to the owner in words. | métier | Constrains error wording and what the owner can learn from a friend. |
 | C13 | One device, one reader — lending the app file is the whole distribution model. There is no multi-user support, no per-user data, no shared library, no migration of a reader's progress between two people's devices. | métier | No login, no profiles, no sync. See §9. |
@@ -454,16 +454,26 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 
 ### 7.1 Performance
 
-- The "wow" path — opening a downloaded novel and scrolling a downloaded chapter — must feel immediate and must never wait on the network (B7, C14). This path has a measured target to be set (§12 point 14).
-- Browsing a catalogue and opening a novel's chapter list must remain responsive on a novel with several thousand chapters (E1, B9).
-- Progress on a running download must be visible and update as chapters complete, not only at the end (US-08).
-- A stored chapter must open without re-fetching it from its site (B6, B7).
+Targets are stated as **measurable frame-budget numbers**, not as adjectives. The owner supplied no number, so these are taken from the two published definitions rather than invented:
+
+- **Android**, on rendering performance: *"your app must render frames in under 16ms to achieve 60 frames per second… If you are trying to achieve 90 fps, then this window drops to 11ms, and for 120 fps it's 8ms."* Overrunning the window by even 1ms means the frame is **dropped entirely**, which is what the reader perceives as stutter.
+- **Flutter**, in the installed SDK (`scheduler/binding.dart`, the `addTimingsCallback` documentation): a frame is late if `FrameTiming.buildDuration` or `FrameTiming.rasterDuration` exceeds the frame budget — 16ms at 60Hz — and the interaction is late if `FrameTiming.totalSpan` exceeds it, *even when no frame was actually dropped*. The SDK notes that in the latter case *"animations will be smooth but touch input will feel more sluggish."*
+
+Consequently:
+
+- **Scrolling a downloaded chapter drops no frames at 60Hz.** Measured by the SDK's own frame timings: no reported frame has `buildDuration` or `rasterDuration` over 16ms. This is the "wow" path (B7, C14) and the one the owner named as the reason to install the app.
+- **Touch response while scrolling stays within budget**, which is a *separate* condition from smoothness: `totalSpan` must stay within 16ms even on frames that render in time. Dropping this check is how an app passes a smoothness test while feeling sluggish.
+- **Opening a downloaded chapter performs no network call at all** and reads only local storage (B6, B7). Being fast is not the same as being offline; §7.5 makes the offline guarantee and this section makes it fast.
+- Browsing a catalogue and opening a novel's chapter list stay responsive on a novel with several thousand chapters (E1, B9).
+- Progress on a running download is visible and updates as chapters complete, not only at the end (US-08).
+- **These numbers are targets, not measurements.** They become a verified claim only once the app runs on a real device, which is the same measurement that closes Q-003. Until then they are a definition of "fast" against which a later measurement can be judged, not proof.
+
 
 ### 7.2 Security
 
 - No account, no sign-in, and no credential of any kind is stored or exchanged (B4, C2).
 - No data leaves the device: no library, no progress, no history, no diagnostics, no telemetry, no crash reports (B29, C2).
-- Downloaded content stays in the app's own storage and is removed when the reader removes the novel or chapter (C4, B32, B33).
+- Downloaded content stays in the app's own storage, and nothing else on the device can read it (C4, B30). **Removing a novel or a chapter from the library does not delete what has been downloaded** — that is a separate, explicit choice (B32, B33).
 - Nothing the app reads from a site is treated as a trusted instruction to the device; content read from a site can only become text the reader sees (C1, C4).
 - The app is not distributed through any store and has no public entry point (C3, C9).
 
@@ -477,9 +487,9 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 
 ### 7.4 Internationalization
 
-- French and English are both complete, with no missing, untranslated, or partially translated text anywhere in the app (B28, SC-4).
+- French and English are both complete, with no missing, untranslated, or partially translated text anywhere in the app (B28).
 - All error and download-status messages are translated, not only navigation and labels (B28).
-- The app follows the phone's language, with an in-app override (B28, E12).
+- The app follows the phone's language setting, and a language it does not recognise falls back to French (B28, E12). There is no in-app language switch; see §12.
 - Chapter content itself is never translated or altered by the app — it is displayed as the site published it, in whatever language it was written (B10).
 
 ### 7.5 Availability / resilience
@@ -508,7 +518,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 
 ### Unknowns
 
-- ⚠️ **Novel Fire's terms of service are unconfirmed.** Must be decided by the owner before the C10 deadline; otherwise the site does not ship and does not count against v1 (B1, E21).
+- **Novel Fire's terms of service are unconfirmed.** This is the one input the project is waiting on, and it is a legal judgement the owner makes — not a product question. **There is no deadline**: FanMTL is the first source and does not wait on it, and Novel Fire ships whenever the terms are confirmed or does not ship at all, without counting against v1 (B1, C10, E21).
 - ⚠️ **We have never measured how often these sites change their pages over a year.** The real maintenance cost of v1 is therefore unknown and cannot be estimated from the current sample of two working sites.
 - ⚠️ **The battery cost of downloads has never been measured.** Nothing in this document can tell the owner whether a fifty-chapter download is acceptable overnight on their phone.
 - ⚠️ Several product assumptions were made by the analyst where the interview was silent. They are listed in §12 and are **not** treated as decided.
@@ -551,7 +561,7 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 
 <!-- How will we know the product succeeded? -->
 
-- **SC-1 — Sources work end to end.** FanMTL and Royal Road can each be browsed, searched within, and their chapters read end to end. Novel Fire also, if its terms of service are confirmed before the C10 deadline; if they are not, it does not count against v1.
+- **SC-1 — Sources work end to end.** FanMTL and Royal Road can each be browsed, searched within, and their chapters read end to end. Novel Fire also, **if its terms of service have been confirmed by then** — there is no deadline, and if they are never confirmed, Novel Fire simply does not count against v1. FanMTL is the first source regardless.
 - **SC-2 — Offline reading is proven.** Fifty chapters can be downloaded and then read **with the network off** — verified by actually switching off connectivity on the device, not by assuming the file exists.
 - **SC-3 — The app's own records are correct.** Library, history, and unread badges are correct.
 - **SC-4 — Both languages are complete.** French and English are both complete, including error messages.
@@ -583,27 +593,13 @@ Commercial web-novel apps (Dreame, Webnovel, NovelBin and similar) have polished
 
 <!-- Every unresolved ambiguity. Never mixed into the established facts above. -->
 
-Twelve of the fourteen questions raised at draft have been resolved against **Mihon**, the declared reference project (`DECISIONS.md` ADR-008), and are now recorded as business rules or as notes on the rules they changed. Mihon's answers were adopted where the product is the same and deliberately not adopted where it is not — see B38 and §7.1.
+**None outstanding.** All fourteen questions raised at draft are now closed:
 
-| # | Question | Resolved from Mihon | Where it landed |
-|---|---|---|---|
-| 1 | Do site categories / genres need browsing? | Yes, and it is the **source** that offers them, not the app — each source declares its own filters. The library has its own filter sheet (downloaded / unread / started / bookmarked / completed, every one a three-state toggle defaulting to off) and its own sort list. There is no genre filter in the library sheet; genre is only a search prefix. | B41, B42 |
-| 3 | When does the app check for new chapters? | **Off by default.** Never / 12 / 24 / 48 / 72 hours / weekly, plus a manual "update library" action. **Opening the app is not a trigger.** | B35, B36, B37, B39 |
-| 4 | "Download a whole novel" — which chapters? | Never "everything". Next chapter / next 5, 10, 25 / **all unread** / an explicit hand-picked set. | B18 |
-| 5 | In-app overrides for dark mode, text size, language? | Dark-mode and reader text-size overrides: **already required** by the project's own rules. App language: Mihon has a dedicated app-language screen, so the override is consistent with the reference — but our rules say system-following with a French fallback, and the owner's words ("the whole app in French and English") are satisfied either way. | B26, B27 stand; B28 narrowed to system-following |
-| 6 | Is reading history a feature, and is it bounded? | **Yes, it is a real feature** in Mihon — a top-level tab, not an internal convenience. The entry size is a Phase 4 detail. | history kept as a feature |
-| 7 | Is storage management required? | **Mihon does not show total downloaded size** — its "storage usage" screen shows whole-device free/total, not the app's own usage, and there is no bulk download deletion. We have no eviction-managed chapter cache to clear either, because we store chapters permanently. | **No storage screen in v1.** Deletion stays per novel and per chapter (B32, B33) |
-| 8 | How broad is search? | Site search is whatever the site supports — the app sends one opaque query and shows what returns. Field-scoped search exists only **locally**, in the library. | B41, B42 |
-| 9 | Same title on two sites — rename or alias? | **Mihon does neither.** There is no title field anywhere and no merge path; duplicates are detected by title similarity and merely warned about. | B40 |
-| 10 | Warn before an irreversible removal? | **Yes** — and Mihon never deletes downloads automatically, which is why B32 was corrected. There is no undo, so the confirmation matters more, not less. | B32 |
-| 11 | How does the reader know which version is installed? | A dedicated about screen. | B43 |
-| 12 | Do downloads continue with the screen off, overnight? | **Yes**, as a foreground job with a notification, surviving app death. | already covered by the download rules |
-| 14 | What happens to the library when a site is removed? | Downloads live under the source's own folder and disabling a source does not delete files. Stored chapters stay readable. | already covered by B23 |
+- **Twelve were answered by reading Mihon**, the declared reference project (`DECISIONS.md` ADR-008), and are recorded as business rules or as notes on the rules they changed. The table of which question landed where has been folded into each rule's own note.
+- **The Novel Fire deadline** — removed by the owner. There is no deadline: FanMTL is the first source and does not wait on it, and Novel Fire ships whenever its terms are confirmed or never (C10, SC-1).
+- **The offline read-path performance target** — answered from published standards rather than a number the owner could supply. §7.1 now carries Android's published frame windows (16ms / 11ms / 8ms) and Flutter's own definition of a late frame versus a late interaction, both measured with the SDK's `FrameTiming`. Those are *targets*; they become verified only once measured on a real device, which is what closes Q-003.
 
-**Two remain genuinely open, and neither can be answered by reading Mihon.**
-
-- ⚠️ **What is the deadline for the Novel Fire terms-of-service decision, and what happens on a late confirmation?** This is a legal judgement that belongs to the owner, not a product question a reference project can answer. `C10` states the decision is the owner's. **Blocking for whether Novel Fire is in v1.**
-- ⚠️ **What is the performance target for the offline read path?** Mihon has no equivalent number to borrow — its reader is an image pager, not stored text. §7.1 states the requirement qualitatively and cannot be falsified until a number exists. **This needs one measurement on a real device**, which is also what closes Q-003.
+Three contradictions between the PRD's own sections were found and fixed during this pass, each of which a structural check passes without noticing: §7.2 still described downloaded content as being removed with the library, which contradicted the corrected B32; §7.4 still promised an in-app language override that B28 no longer allows; and §7.1 pointed at a §12 item that no longer existed.
 
 ## Gate checklist
 

@@ -26,3 +26,6 @@
 {"ts":"2026-10-02T11:27:01.620Z","type":"hash","kind":"deliverable","entry":"contract","content_hash":"sha256:4940f415e5b4"}
 {"ts":"2026-10-02T11:27:01.664Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:5ad1e2140523"}
 {"ts":"2026-10-02T12:14:07.803Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:7904ff8dad08"}
+{"ts":"2026-10-02T12:34:06.271Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:fc1b108808aa"}
+{"ts":"2026-10-02T12:34:15.481Z","type":"status_change","kind":"deliverable","key":"prd","from":"draft","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/prd.md","from":"draft","to":"approved"}}
+{"ts":"2026-10-02T12:34:15.524Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:fc1b108808aa"}
