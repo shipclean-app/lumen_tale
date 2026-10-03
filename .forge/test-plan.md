@@ -1,6 +1,6 @@
 ---
 type: test-plan
-status: draft
+status: approved
 generated_at: 2026-10-03
 derived_from: .forge/plans/*.md section 11
 checked_by: .forge/plans/check_plans.py::check_test_plan

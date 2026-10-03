@@ -741,3 +741,5 @@
 {"ts":"2026-10-03T06:14:00.454Z","type":"finding_raised","id":"F-006","domain":"workflow.md","severity":"majeur"}
 {"ts":"2026-10-03T06:15:07.616Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
 {"ts":"2026-10-03T06:16:42.729Z","type":"register","deliverable":"0-2","path":".forge/plans/0-2.md","kind":"slice"}
+{"ts":"2026-10-03T06:19:14.947Z","type":"status_change","kind":"deliverable","key":"test_plan","from":"draft","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/test-plan.md","from":"draft","to":"approved"}}
+{"ts":"2026-10-03T06:19:14.996Z","type":"phase_status","phase":"6_validation","from":"in_progress","to":"approved"}
