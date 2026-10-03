@@ -2356,3 +2356,123 @@ then the marker discriminator. Replaced by the copy: 24 pass.
   and record that.
 - **Do not write an assertion from a conclusion you borrowed.** Write the measurement first,
   then the row that fails when it is wrong.
+
+---
+
+## 2026-10-03 — Session 13: `6-5` History, and the second the database actually stores
+
+### STARTED FROM
+
+`6-11` committed at `987d592` (551 tests). `6-5` is the first of Wave 2's slices with a
+**table already in place** — `history_entries` and `reading_positions` both exist from
+`local-store`, so no migration and `schemaVersion` stays 1. The plan says so; the plan was
+worth reading before writing, because B47 and B46 land on the **same screen** and must not
+land on the same query.
+
+### DECIDED
+
+- **`clearAll()` is one statement, `DELETE FROM history_entries`, with no join.** Not "a
+  join we decided against" — **no join**. A join is readable, reversible, testable, and
+  would still destroy the reader's place in a product with no remote copy of anything
+  (C8, ADR-010). B46's requirement is an absence, so the absence is what the code shows.
+- **`readResumePoints()` joins `reading_positions ⋈ chapters ⋈ novels` and reads NO row
+  of `history_entries`.** B17's second sentence says the last chapter read for a novel
+  comes from the position record. Deriving it from the journal is the one implementation
+  that looks entirely reasonable and is wrong: erasing the journal would erase where the
+  reader stopped, which is the most destructive thing this app could do and the one no
+  other test in the project would object to.
+- **The domain layer takes no clock.** Every function that needs "now" is handed it. A
+  function reading a clock would be untestable exactly at a midnight boundary, which is
+  the only place any of this can be wrong.
+- **The day header is computed, never stored, and compared field by field.**
+  `isSameLocalDay` reads year/month/day and **ignores the time**, because an
+  instant-based comparison puts a 23:55 row and a 00:05 row in the same group — the
+  row a reader reads as *yesterday* lands under *today*.
+- **`readsFrom` for the journal deliberately omits `readingPositions`.** A journal row
+  carries no position, so a position write cannot alter one. Listing it would make a
+  scroll re-query the journal and re-render the list under the reader's thumb.
+- **`HistoryRetention` is an enum, not a `Duration`**, because a raw `Duration` accepts
+  `Duration(days: 45)` — a window nothing in the product offers, and therefore a value no
+  screen can render. **There is no "keep everything"**: it would be a way to promise
+  something the app cannot back.
+
+### THE FINDING, and the code it changed
+
+**drift stores a `DateTime` as epoch seconds** — `millisecondsSinceEpoch ~/ 1000`,
+read in the installed drift 2.35.1 at
+`lib/src/runtime/types/mapping.dart`. I derived `history_entries.id` from
+`openedAt.microsecondsSinceEpoch`, and the test *two openings in the same millisecond
+are still two rows* failed with `UNIQUE constraint failed: history_entries.id`.
+
+The failure was **right and the code was wrong**: a distinction the column discards two
+lines later cannot be made in the id either. So:
+
+- `_entryId` now hashes `chapterId` and `millisecondsSinceEpoch ~/ 1000` — **the same
+  expression drift applies on the way in**, with a comment saying so.
+- The guarantee is stated at the resolution that exists: two openings **a second or more
+  apart** are two rows. Two opens of the same chapter inside one second are
+  indistinguishable **in this schema**, and that is written down rather than asserted
+  away. It is not a gesture a reader makes — the minimum is a tap, a load and a scroll.
+- A row pins the property directly: the id is the same for two instants inside one stored
+  second and different across a boundary. Finer than the column is what collided;
+  coarser would merge readings a day apart.
+
+### REJECTED
+
+- **Making the id finer** — a monotonic counter, or `DateTime.now().microsecond` at the
+  repository. Both make the id depend on something the schema does not hold, so the row
+  and the id disagree on disk. Same defect, invisible.
+- **A `rowid`-based id.** `history_entries.id` is a `TextColumn` primary key, and
+  changing that is a schema migration for a problem that a one-line derivation solves.
+- **Reflexivity for "no clock".** `dart:mirrors` is unavailable on this platform, so the
+  B46 rows assert **behaviour** (positions survive a clear; a resume point exists with an
+  empty journal) rather than enumerating fields. The behaviour is the stronger claim: a
+  field nobody renders is harmless, and a clear that moves the reader is not.
+
+### BLOCKED
+
+- **The `/history` screen itself is not built.** This slice delivered the domain contract,
+  the retention model, the grouping and the drift repository — 43 rows. The UI, the
+  confirm sheet and `SettingsChoiceSheet` wiring are not here, and `3-7` (Settings) needs
+  the retention store, which is **also not here**. `6-5` stays `in_progress` rather than
+  being called done.
+
+### FILES TOUCHED
+
+`lib/domain/history/{history_entry,history_retention,history_repository,history_grouping}.dart`,
+`lib/data/history/drift_history_repository.dart`,
+`test/domain/history/history_test.dart` (24),
+`test/data/history/drift_history_repository_test.dart` (19).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **594 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass** · `coverage-check 6-5`
+**pass**.
+
+**Sabotage, all three, on both sides.** Each of these would pass every other test in the
+project:
+
+| Sabotage | Rows that caught it |
+|---|---|
+| `clearAll` also deletes positions | **2 fail** — *positions untouched*, *resume points identical after a clear* |
+| `readResumePoints` joins `history_entries` | **3 fail** — including *a resume point exists with no journal entry at all* |
+| `LIMIT 50` added to the journal read | **1 fail** — *there is no count bound anywhere in the query* (200 entries, all returned) |
+
+### NEXT SESSION SHOULD
+
+- **Finish `6-5`**: the `HistoryRetentionStore` over `shared_preferences` (the plan's § 2.2
+  names `countOlderThan` as a *pre-purge* count — after a purge it is always zero, true
+  about the past and useless about the decision), then the `/history` screen and the
+  retention sheet. `3-7` cannot start until the store exists.
+- **`3-5`** (About) — needs three counts; `reading_positions` exists from `2-6`.
+- **`2-1`'s source, against Royal Road**, now that `supportsSearch` is measured and its
+  search side has an empty marker.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not derive an id from a resolution finer than the column that stores it.** drift's
+  `DateTime` is epoch **seconds**, and the symptom is a UNIQUE-constraint failure on a
+  routine action rather than a wrong-looking row.
+- **Do not assert at a resolution the database does not deliver.** State the guarantee at
+  the one that exists and write down the limit.

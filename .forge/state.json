@@ -3910,9 +3910,9 @@
     "6-5": {
       "path": ".forge/plans/6-5.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "in_progress",
       "content_hash": "sha256:26411027313d",
-      "updated_at": "2026-10-03T06:27:55.835Z",
+      "updated_at": "2026-10-03T22:09:52.685Z",
       "depends_on": [
         "2-6",
         "0-5"
@@ -4498,7 +4498,7 @@
       "register": 280,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 151,
+      "status_change": 152,
       "gate_approved": 4,
       "phase_status": 11,
       "amend": 10,
