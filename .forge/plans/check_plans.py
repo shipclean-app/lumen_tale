@@ -237,6 +237,116 @@ CONTRACT_METHODS = [
 ]
 
 
+def check_cross_plan():
+    """Checks that compare the plans with EACH OTHER, not each plan alone.
+
+    Everything in `check_plan` validates one plan in isolation. A sixth review
+    pass found nine defects that all live in the gap between two plans —
+    a symbol transposed in both consumers, a file two plans declare with
+    different contents, an import no plan creates, an enum written down four
+    different ways. Not one was visible to any gate, because no gate compared
+    two documents.
+
+    Three cheap checks close most of it:
+      1. a `lib/` path declared by two plans must be declared identically
+      2. a `package:lumen_tale/...` import must resolve to a declared path
+      3. an enum's member list must be identical everywhere it is written
+    """
+    import glob as _glob
+    plans = {}
+    for f in sorted(_glob.glob(str(PLANS / '*.md'))):
+        if Path(f).name in ('README.md',):
+            continue
+        plans[Path(f).stem] = Path(f).read_text(encoding='utf-8')
+
+    # An import writes `package:lumen_tale/core/x.dart` while a declaration
+    # writes `lib/core/x.dart`. They must be normalised to the same form before
+    # being compared — comparing them raw reports every foundation-owned file as
+    # unknown, which is 36 false positives and a check nobody keeps running.
+    DECLARED = re.compile(r'\b(lib/[A-Za-z0-9_./-]+\.dart)\b')
+    IMPORT = re.compile(r"package:lumen_tale/([A-Za-z0-9_./-]+\.dart)")
+
+    def norm(p):
+        return p[len('lib/'):] if p.startswith('lib/') else p
+
+    # 1. one lib/ path, one declaration ------------------------------------
+    owners = {}
+    for name, text in plans.items():
+        for path in set(DECLARED.findall(text)):
+            owners.setdefault(path, set()).add(name)
+    for path, names in sorted(owners.items()):
+        if len(names) < 2:
+            continue
+        # Same path in two plans is legitimate when one plan only *reads* it.
+        # The defect is two plans *declaring* it — which shows up either as a
+        # Dart type header for that file's stem, or as a § 4.2 component-table
+        # row that gives the path and names the type. Reading is not claiming.
+        declaring = {}
+        for name in names:
+            stem = Path(path).stem
+            body = plans[name]
+            as_type = re.search(
+                rf'^(abstract |final |sealed )?(class|enum|mixin) {_re_escape(stem)}\b',
+                body, re.M)
+            as_row = re.search(
+                rf'^\|[^\n]*{_re_escape(stem)}[^\n|]*\|[^\n]*{_re_escape(path)}[^\n|]*\|',
+                body, re.M)
+            if as_type or as_row:
+                # Record what each plan says the type is, so the message can
+                # show the contradiction rather than just the collision.
+                kind = ('type' if as_type else
+                        ('StatelessWidget' if 'StatelessWidget' in body[as_row.start():as_row.start()+300]
+                         else 'StatefulWidget' if 'StatefulWidget' in body[as_row.start():as_row.start()+300]
+                         else 'composant'))
+                declaring[name] = kind
+        if len(declaring) > 1:
+            fail(PLANS / sorted(declaring)[0],
+                 f'`{path}` is DECLARED by {len(declaring)} plans: '
+                 f'{declaring} — two plans, one file')
+
+    # 2. every internal import resolves to a declared path -----------------
+    declared_all = {norm(p) for p in owners}
+    # Files that already exist are declared by the repository, not by a plan.
+    declared_all |= {norm(str(p.relative_to(ROOT))) for p in (ROOT / 'lib').rglob('*.dart')}
+    unresolved = {}
+    for name, text in plans.items():
+        for target in set(IMPORT.findall(text)):
+            if target not in declared_all:
+                unresolved.setdefault(target, set()).add(name)
+    for target, names in sorted(unresolved.items()):
+        fail(PLANS / sorted(names)[0],
+             f'`package:lumen_tale/{target}` is imported by {sorted(names)} '
+             f'but NO plan declares that path')
+
+    # 3. one enum, one member list ------------------------------------------
+    # Strip comments before reading members: an enum body interleaved with
+    # `///` doc lines yields a different "member list" on every mention, and a
+    # check that reports a difference on every mention is a check nobody runs.
+    enums = {}
+    ENUM = re.compile(r'enum\s+(\w+)\s*\{([^}]*)\}', re.S)
+    COMMENT = re.compile(r'//[^\n]*')
+    for name, text in plans.items():
+        for enum_name, body in ENUM.findall(text):
+            body = COMMENT.sub('', body)
+            members = tuple(sorted(
+                m.strip() for m in body.split(',') if m.strip()))
+            if members:
+                enums.setdefault(enum_name, {}).setdefault(members, set()).add(name)
+    for enum_name, variants in sorted(enums.items()):
+        if len(variants) > 1:
+            detail = '; '.join(
+                f'{{{", ".join(m)}}} in {sorted(plans_)}'
+                for m, plans_ in sorted(variants.items(), key=lambda kv: -len(kv[1])))
+            biggest = max(variants.items(), key=lambda kv: len(kv[1]))[1]
+            fail(PLANS / sorted(biggest)[0],
+                 f'enum `{enum_name}` is written {len(variants)} different ways '
+                 f'across the plans — {detail}')
+
+
+def _re_escape(s):
+    return re.escape(s)
+
+
 def check_counts():
     """The numbers architecture.md states about itself must equal the state it
     describes. This session wrote '30 scheduled slices' in a document that
@@ -302,6 +412,7 @@ def check_corpus():
 def main():
     check_corpus()
     check_counts()
+    check_cross_plan()
     state = json.loads((ROOT / '.forge/state.json').read_text())
     wanted = {k: (v.get('rule_ids', []), v.get('edge_case_ids', []), False)
               for k, v in state['slices'].items()}
