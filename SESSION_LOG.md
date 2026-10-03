@@ -1371,3 +1371,93 @@ contract against unverified selectors would freeze the wrong thing.
 - **Do not implement `BuildInfoReader` from `pubspec.yaml`.** That is a new dependency
   question (`17-security.md` rule 13) *and* the wrong source.
 - **Do not start Wave 1 against selectors for URLs measured dead today.**
+
+### Phase 7 — `0-1` DISCHARGED on Royal Road, and the capture corrected three beliefs
+
+I had stopped and called the fixture decision the owner's. It was mine. FanMTL is
+Cloudflare-blocked, but **the second v1 site was reachable** — I had measured its `/` as
+200 and then not followed the lead. Following it found that **its URLs had moved**, which
+is why ADR-014's paths 404'd.
+
+**Captured:** 9 fixtures, 2 045 855 bytes, into `test/fixtures/sources/royalroad/` with
+a full manifest. `0-1` is **no longer skipped** — 19 rows green against real captures.
+
+**Live URLs, all fetched, all superseding § FanMTL-era claims above:**
+
+| What | URL |
+|---|---|
+| Entry | `/` **302** → `/home` |
+| Catalogue | `/fictions/active-popular`, page N via **`?page=N`** (a query) |
+| Detail | `/fiction/<id>/<slug>` |
+| Chapter | `/fiction/<id>/<slug>/chapter/<n>/<chapter-slug>` — **five segments** |
+
+**Three beliefs the capture corrected — none guessed, all measured:**
+
+1. **The three-segment chapter URL 404s.** `/fiction/33844/the-runesmith/chapter/526587`
+   returns `Not Found | Royal Road`. The fifth segment is the chapter's own slug. **A
+   chapter URL that 404s is indistinguishable from a chapter that does not exist** — that
+   is B22's third state, so the segment is part of the contract.
+2. **The body container is `chapter-inner chapter-content`.** An exact
+   `class="chapter-content"` match finds **nothing**: zero paragraphs on a page with 106.
+   **A zero-parse looks exactly like an empty chapter**, which is B22's failure mode, so
+   this one would have shipped as a source that "works".
+3. **B22's third state has NO marker on this site.** A zero-row catalogue (HTTP 200,
+   239 765 bytes) carries no "nothing here" / "no results" / "no fictions".
+   `18-external-contracts.md` recorded that it *does* volunteer one. **It does not.**
+   `2-1` must distinguish by **page shape** — a marker-based implementation would call
+   every unparseable catalogue "no results".
+
+**And one plan instruction that could not be followed.** § 3.2 says build the
+manufactured fixture from the **detail** page. That page has **zero** occurrences of
+`chapter-content` in 1 000 263 bytes — the prose lives on the chapter page. Renaming
+there would have substituted nothing and produced a fixture named "broken" that was not
+broken. Built from a chapter page instead, with a row asserting the detail page really
+has no container so the choice cannot rot silently.
+
+**Three bugs of mine, all caught by the rows meant to catch them:**
+
+- **The round-trip was the wrong instrument.** `broken.replaceAll('chapter-content',
+  'chapter-content')` is a no-op; run backwards it yields `chapter-content-v2-v2`. A
+  negative lookahead still failed, because after matching the bare name the scan resumes
+  past it and the trailing `-v2` survives. **Fixing a round-trip means reasoning about
+  regex resumption.** Replaced with what § 3.2 actually asks: the two files differ in
+  exactly ONE line, and that line is the rename.
+- **`listSync()` without `recursive: true`** reported the manufactured fixture as "on disk
+  but undeclared" — the exact failure B9 warns about, caused by the check itself.
+- **`manifest.json` excluded from one direction only**, so it looked undeclared. It is
+  the thing doing the declaring.
+
+**Proven RED:** adding a second illegitimate edit (commenting out the ad `<script>`) makes
+the row fail **and name both differing lines** — 55 and 431 — which is the diagnostic
+§ 3.2 wants.
+
+**`robots.txt` honoured, not just captured.** A row parses the `User-agent: *` block and
+asserts that **no captured path is disallowed by it**, and that we are not among the
+fourteen agents banned wholesale. C1 is a permission question, so "we read robots.txt" is
+not evidence — "no captured URL falls under a rule" is.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **222 passed + 9 skipped** ·
+`check_plans` **38 clean**. Register § 3: **228 written**, **7 of 55** locations, and the
+skipped nine are now attributed to FanMTL specifically rather than to "no capture yet".
+
+### NEXT SESSION SHOULD
+
+- **Write `2-1` (the Source contract) against the corrected facts** — five-segment chapter
+  URLs, `chapter-inner chapter-content`, and page-shape discrimination. All three came
+  from a real capture; two contradict documents written earlier today.
+- **FanMTL remains unmeasured for our purposes** (F-012). Royal Road carries v1 on its
+  own; FanMTL's scraper waits on a capture that Cloudflare currently prevents.
+- **Promote F-001…F-014** (13 open) and give `state.js finding` a tombstone.
+- **`theme-type`'s sixth test file**, `reader_scale_widget_test.dart`'s plan-name sibling,
+  and `apk-pipeline`'s remaining integration rows.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not use a round-trip to prove a single substitution.** Two attempts failed and the
+  third instrument — diff the lines — is the one the spec describes.
+- **Do not write a selector from the documentation.** Three of the documented shapes are
+  wrong on the live site, and two of them fail *silently* as "no results".
+- **Do not treat a zero-parse as an empty chapter.** That conflation is B22's third state
+  and it is the most expensive bug available here.

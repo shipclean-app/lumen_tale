@@ -1152,7 +1152,7 @@
       "path": ".forge/test-plan.md",
       "type": "test-plan",
       "status": "approved",
-      "content_hash": "sha256:f7b163c41b30",
+      "content_hash": "sha256:2bae17ac9cfa",
       "headings": {
         "1": "The inventory",
         "2": "Coverage of the rule corpus",
@@ -1165,6 +1165,7 @@
         "9": "The regression suite, and the command for each part",
         "10": "Per-screen verification",
         "11": "Environments, and their variables",
+        "3.1": "One site captured, one site blocked — and what the capture changed",
         "4.1": "Two claims here that measurement refuted",
         "4.2": "`flutter test` cannot run a test on a phone — and says so silently",
         "4.3": "What is still unproven",
@@ -1172,7 +1173,7 @@
         "11.2": "Variables and commands",
         "11.3": "Two tool defects Phase 6 had to fix to make any of this checkable"
       },
-      "updated_at": "2026-10-03T10:25:54.895Z",
+      "updated_at": "2026-10-03T12:59:19.881Z",
       "derived_from": [
         ".forge/plans/*.md section 11"
       ]
@@ -4432,7 +4433,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 264,
+      "register": 266,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 134,

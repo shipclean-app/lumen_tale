@@ -83,24 +83,50 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
 | § 11 `Emplacement` targets that exist on disk | **7 of 55** |
-| Test cases actually written | **209** |
-| Of those, host (`test/`), on the Dart VM | **203** |
+| Test cases actually written | **228** |
+| Of those, host (`test/`), on the Dart VM | **222** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 203, covering the database schema | **27** |
-| Of the host 203, covering the app bootstrap | **5** |
-| Of the host 203, covering the network foundation | **51** |
-| Of the host 203, covering localisation | **27** |
-| Of the host 203, covering the theme foundation | **71** |
-| Of the host 203, covering the build/delivery foundation | **13** |
-| Of the host 203, **skipped** pending a site that answers | **9** |
+| Of the host 222, covering the database schema | **27** |
+| Of the host 222, covering the app bootstrap | **5** |
+| Of the host 222, covering the network foundation | **51** |
+| Of the host 222, covering localisation | **27** |
+| Of the host 222, covering the theme foundation | **71** |
+| Of the host 222, covering the build/delivery foundation | **13** |
+| Of the host 222, **fixture-manifest suites** | **28** |
+| Of the host 222, **skipped** — FanMTL unreachable | **9** |
 
-**Seven of the 55 declared locations now exist.** **All six Wave-0 nodes now have at
-least one test file on disk** — `local-store` (2), `http-client` (2), `localisation` (3),
-`theme-type` (4 of 6), `0-1` (1, nine rows skipped), and `apk-pipeline` (1).
+**Seven of the 55 declared locations exist, and all six Wave-0 nodes have at least one
+test file on disk** — `local-store` (2), `http-client` (2), `localisation` (3),
+`theme-type` (4 of 6), `0-1` (1 declared + 1 extra), and `apk-pipeline` (1). The
+`0-1` count is 7 because `royalroad_manifest_test.dart` is an **addition**: no plan
+declares it, since `0-1` was written for FanMTL alone and could not know the second
+site would be capturable. § 3.1 records what it found.
 
-**⚠️ Nine tests are SKIPPED, and the skip is the finding.** `0-1` exists to capture real
-FanMTL fixtures before any feature code exists. Measured 2026-10-03 with the honest
-`LumenTale/0.1.0 (personal reader)` UA:
+**`0-1` is now PARTIALLY discharged: Royal Road captured, FanMTL not.** See § 3.1.
+
+### 3.1 One site captured, one site blocked — and what the capture changed
+
+**Royal Road yielded a complete `0-1` capture** (9 fixtures, 2 045 855 bytes) after
+finding that its URLs had *moved*: the paths ADR-014 recorded as 200 all 404. The live
+catalogue is `/fictions/active-popular` with `?page=N`, not `/fictions/ratings`.
+
+Three things the capture **corrected**, none of which was guessed:
+
+| Finding | Detail |
+|---|---|
+| Chapter URLs are **five** segments | `/fiction/<id>/<slug>/chapter/<n>/<chapter-slug>`. The three-segment form **404s**. |
+| The body container class is `chapter-inner chapter-content` | An exact `class="chapter-content"` match finds **nothing** — measured: zero paragraphs on a page that has 106. |
+| **B22's third state has no marker on this site** | A zero-row catalogue carries no "nothing here" string. `18-external-contracts.md` planned to rely on one; `2-1` must distinguish by **page shape** instead. |
+
+And one place where the plan's instruction could not be followed: § 3.2 says build the
+manufactured fixture from the **detail** page, but that page has **zero** occurrences of
+`chapter-content` in 1 000 263 bytes — the text lives on the chapter page. Renaming there
+would have substituted nothing and produced a fixture named "broken" that was not broken.
+It is built from a chapter page instead, and a row asserts the detail page genuinely has
+no container, so the choice cannot rot silently.
+
+**Nine tests are still SKIPPED, and the skip is FanMTL.** `0-1` was written for FanMTL.
+Measured 2026-10-03 with the honest `LumenTale/0.1.0 (personal reader)` UA:
 
 | Site | Result |
 |---|---|

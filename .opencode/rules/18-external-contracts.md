@@ -167,3 +167,54 @@ through `0-4` depend on its fixtures.
 capture is the owner's; the cheapest honest option is capturing from the owner's own
 phone, which already carries whatever cookie the challenge requires, and which is the
 same method ADR-014's own measurement used.
+
+
+## Royal Road — the URLs moved, measured 2026-10-03
+
+Supersedes the URL claims in the section above. Every one of these was **fetched**, and
+the `?page=N` form is what the site's own navigation uses.
+
+| What | Live URL (2026-10-03) |
+|---|---|
+| Entry point | `/` **302** → `/home` (200, 118 173 bytes) |
+| Popular catalogue, page 1 | `/fictions/active-popular` |
+| Popular catalogue, page N | `/fictions/active-popular?page=N` — **a query, not a path segment** |
+| Other catalogue tabs | `/fictions/best-rated`, `/fictions/latest-updates`, `/fictions/rising-stars`, `/fictions/trending`, `/fictions/weekly-popular`, `/fictions/complete`, `/fictions/new`, `/fictions/active-popular` |
+| Search | `/fictions/search` |
+| Novel detail | `/fiction/<id>/<slug>` |
+| **Chapter** | `/fiction/<id>/<slug>/chapter/<n>/<chapter-slug>` — **five segments** |
+
+**The three-segment chapter form 404s.** `/fiction/33844/the-runesmith/chapter/526587`
+returns `Not Found | Royal Road`. The fifth segment is the chapter's own slug, and the
+site publishes it in `tr[data-url]`. **A chapter URL that 404s is indistinguishable from
+a chapter that does not exist**, which is B22's third state — so the fifth segment is
+part of the contract, not a nicety.
+
+**The body container is `div.chapter-inner.chapter-content`.** An exact
+`class="chapter-content"` match finds **nothing**: measured zero paragraphs on a page
+that has 106 of them. The class sits on a div that *also* carries `chapter-inner`.
+
+**⚠️ B22's third state has NO site-supplied marker on this site.** Measured: a zero-row
+catalogue (`/fictions/search?tags_add=99nonexistenttag`, HTTP 200, 239 765 bytes) carries
+no "nothing here", no "no results", no "no fictions". **This contradicts what the section
+above anticipated** — it recorded that this site's empty catalogue volunteers an empty
+marker. It does not. `2-1` must therefore distinguish *"could not read"* from *"no
+results"* by **page shape** (rows present, container present), never by a marker string,
+because there is no marker to find. A marker-based implementation would classify every
+empty catalogue as "no results", including one that failed to parse.
+
+**Pagination is real and checkable.** `/fictions/active-popular` and `?page=2` return
+byte-different pages with 20 distinct fiction rows each — verified by hashing the sorted
+`/fiction/<id>` hrefs of each.
+
+**`table#chapters` carries `data-chapters`, and it is exact.** The detail page for
+*The Runesmith* declares `data-chapters="716"` and lists 716 `tr.chapter-row` elements.
+This is the site's own completeness witness, so a truncation is **detectable** rather
+than something a reviewer has to notice.
+
+**robots.txt, honoured and captured.** The `User-agent: *` block disallows four paths —
+`/fiction/chapter/*/vote`, `/fictions/review/`, `/forums/report/*`, `/report/*` — and
+**none of the paths captured here**. Fourteen named agents (GPTBot, CCBot, ClaudeBot,
+Google-Extended, Applebot-Extended, Amazonbot, Bytespider, meta-externalagent, …) are
+`Disallow: /` wholesale; we are among none of them and impersonate none of them, per
+`17-security.md` rule 5 and ADR-014.
