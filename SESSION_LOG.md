@@ -1461,3 +1461,83 @@ skipped nine are now attributed to FanMTL specifically rather than to "no captur
   wrong on the live site, and two of them fail *silently* as "no results".
 - **Do not treat a zero-parse as an empty chapter.** That conflation is B22's third state
   and it is the most expensive bug available here.
+
+### Phase 7 — the FanMTL gap is now one command, not a project
+
+The owner solved the Cloudflare challenge in their browser. I re-measured first:
+**every** FanMTL path still answers 403 from this machine — `/robots.txt`,
+`/favicon.ico`, with no UA and with a browser UA. It is a blanket challenge keyed to
+their session, and **I did not replay their `cf_clearance` cookie**, because that is the
+bypass ADR-014 rejected on measurement and C1 forbids: it would mean shipping a session
+token to defeat a site's bot protection. The honest path is that they save the page they
+legitimately read.
+
+**So I removed the remaining work rather than asking for it.** `tool/build_manifest.py`
+turns files dropped into a fixture folder into a manifest. It **computes** `bytes` and
+`sha256` from the files — § 3.2 makes `bytes` the one field an automatic guard asserts,
+and a hand-typed hash is a promise about a file rather than a fact about one — and it
+**refuses**:
+
+| Refusal | Rule |
+|---|---|
+| `bytes`/`sha256` supplied | measured, never typed |
+| absolute `url` | `03-source-system.md` rules 2-3 |
+| `kind` outside the closed list | § 2.2 — a free string becomes a taxonomy nobody maintains |
+| malformed `capturedAt` | provenance; omit it and it is stamped instead |
+| empty `notes` | § 2.2 — records what was OBSERVED, not a workaround |
+| session cookie / `cf_clearance` | C2, B4 — enforced at build time, not left to review |
+| browser-save wrapper | the bytes would be Chrome's preamble, not the server's |
+| `.mht`/`.mhtml` | a MIME envelope; unwrapping by hand is an unrecorded edit |
+| declared file absent | a missing capture must not become a silent skip |
+
+**All nine proven to fire** by `test/fixtures/manifest_builder_test.dart` (15 rows), which
+stages a throwaway site per row. **Three were found NOT to fire and fixed:**
+
+1. **`capturedAt` was checked only per entry**, so a malformed value at the **top level**
+   of `manifest.in.json` was accepted while the same value on an entry was refused.
+   Guarding with `is not None` made it worse — omitting the key skipped the check
+   entirely.
+2. **The wrapper check required `<!doctype html>` immediately followed by the comment.**
+   Chrome emits the comment **first**, so a real browser save was accepted — the exact
+   artefact the check exists to catch. A check that fires on one byte sequence is not a
+   check.
+3. Verified by sabotage: breaking the marker makes all three wrapper rows fail **and
+   leaves the genuine-page row green**, which is what distinguishes a real check from one
+   that refuses everything.
+
+**`test/fixtures/sources/fanmtl/manifest.in.json` is staged and waiting** — seven entries
+with the real URLs `18-external-contracts.md` documents, each `notes` field marked
+`REPLACE:` with **what the human must observe** rather than what the machine can derive:
+the selector including every class on the element, the count counted by hand, and whether
+the site publishes its own completeness figure. The builder currently refuses with all
+seven "declared but absent", which is the correct state.
+
+**`.forge/design/capture-procedure.md`** documents the procedure and *why* it is not a
+`curl`, including the three Royal Road findings that contradict documents written earlier
+the same day — because the second capture is where the first one's lessons belong.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **243 passed + 9 skipped** ·
+`check_plans` **38 clean**. Register § 3: **249 written**, **243 host + 6 on-device**.
+
+### NEXT SESSION SHOULD
+
+- **`2-1`, the Source contract**, against the captured facts: five-segment chapter URLs,
+  `chapter-inner chapter-content`, page-shape discrimination. All three came from real
+  bytes and two contradict the prose.
+- **FanMTL**: drop seven files in and run `python3 tool/build_manifest.py fanmtl`. One
+  command, and the refusals protect the repository from a bad capture.
+- **Promote F-001…F-014** (13 open) and give `state.js finding` a tombstone so an ID is
+  never reused after a resolve.
+- **`theme-type`'s sixth test file**, and `apk-pipeline`'s integration rows.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not replay a clearance cookie**, however available it is. It is the bypass ADR-014
+  rejected, and the builder refuses a fixture containing one on purpose.
+- **Do not save a page as "Complete" or "Single File".** The first lands an assets folder
+  in git, the second makes `bytes` measure Chrome's inlining rather than the server's
+  response, and the builder refuses both.
+- **Do not trust a refusal that has never rejected anything.** Three of the nine above
+  did not fire when first written, and a validator is only known once it has failed.

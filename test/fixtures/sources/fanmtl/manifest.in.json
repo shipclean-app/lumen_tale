@@ -1,0 +1,45 @@
+{
+  "baseUrl": "https://www.fanmtl.com",
+  "capturedBy": "0-1",
+  "capturedAt": "2026-10-03T00:00:00Z",
+  "entries": [
+    { "key": "robots", "file": "robots.txt", "url": "/robots.txt",
+      "httpStatus": 200, "contentType": "text/plain; charset=utf-8",
+      "kind": "robots",
+      "notes": "REPLACE: what the site's robots.txt permits for User-agent *. Name the paths it disallows and confirm none of the files captured here falls under one." },
+
+    { "key": "genre-index", "file": "browsetags.html", "url": "/browsetags/",
+      "httpStatus": 200, "contentType": "text/html; charset=utf-8",
+      "kind": "genre-index",
+      "notes": "REPLACE: the genre list. 18-external-contracts records eight genres plus an `all` pseudo-entry; confirm the count and note which selector carries the container." },
+
+    { "key": "catalogue-genre-page0", "file": "catalogue-genre-page0.html",
+      "url": "/list/<genre>/<sort>-0.html", "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8", "kind": "catalogue",
+      "expected": { "novelRowsAtLeast": 1, "novelRowsExact": null },
+      "notes": "REPLACE: genre listing page 1. Note the row count you count BY HAND and the selector that finds it." },
+
+    { "key": "catalogue-genre-page1", "file": "catalogue-genre-page1.html",
+      "url": "/list/<genre>/<sort>-1.html", "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8", "kind": "catalogue",
+      "expected": { "novelRowsAtLeast": 1, "novelRowsExact": null },
+      "notes": "REPLACE: page 2 of the same listing. Confirm it lists DIFFERENT novels than page 0 -- if the two are the same, pagination is not real and B9 cannot be tested." },
+
+    { "key": "novel-detail", "file": "novel-detail.html",
+      "url": "/novel/<id>.html", "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8", "kind": "novel-detail",
+      "notes": "REPLACE: any novel's page. Note whether the chapter table publishes its own count -- Royal Road does, and that is what makes B9 checkable." },
+
+    { "key": "chapter", "file": "chapter.html",
+      "url": "/novel/<id>/<chapter>.html", "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8", "kind": "chapter",
+      "expected": { "textCharsAtLeast": 100 },
+      "notes": "REPLACE: one chapter body. RECORD THE CONTAINER CLASS EXACTLY, including any second class on the same element -- on Royal Road it is `chapter-inner chapter-content`, and an exact match on `chapter-content` finds nothing." },
+
+    { "key": "chapter-short", "file": "chapter-short.html",
+      "url": "/novel/<id>/<short-chapter>.html", "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8", "kind": "chapter",
+      "expected": { "textCharsAtLeast": 0 },
+      "notes": "REPLACE: the shortest chapter you can find, ideally under E18's 100-character threshold, so 'too short to read' is distinguishable from 'empty'." }
+  ]
+}

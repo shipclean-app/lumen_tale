@@ -83,17 +83,18 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
 | § 11 `Emplacement` targets that exist on disk | **7 of 55** |
-| Test cases actually written | **228** |
-| Of those, host (`test/`), on the Dart VM | **222** |
+| Test cases actually written | **249** |
+| Of those, host (`test/`), on the Dart VM | **243** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 222, covering the database schema | **27** |
-| Of the host 222, covering the app bootstrap | **5** |
-| Of the host 222, covering the network foundation | **51** |
-| Of the host 222, covering localisation | **27** |
-| Of the host 222, covering the theme foundation | **71** |
-| Of the host 222, covering the build/delivery foundation | **13** |
-| Of the host 222, **fixture-manifest suites** | **28** |
-| Of the host 222, **skipped** — FanMTL unreachable | **9** |
+| Of the host 243, covering the database schema | **27** |
+| Of the host 243, covering the app bootstrap | **5** |
+| Of the host 243, covering the network foundation | **51** |
+| Of the host 243, covering localisation | **27** |
+| Of the host 243, covering the theme foundation | **71** |
+| Of the host 243, covering the build/delivery foundation | **13** |
+| Of the host 243, **fixture-manifest suites** | **43** |
+| Of the host 243, **manifest-builder refusals** | **15** |
+| Of the host 243, **skipped** — FanMTL unreachable | **9** |
 
 **Seven of the 55 declared locations exist, and all six Wave-0 nodes have at least one
 test file on disk** — `local-store` (2), `http-client` (2), `localisation` (3),
@@ -125,7 +126,18 @@ would have substituted nothing and produced a fixture named "broken" that was no
 It is built from a chapter page instead, and a row asserts the detail page genuinely has
 no container, so the choice cannot rot silently.
 
-**Nine tests are still SKIPPED, and the skip is FanMTL.** `0-1` was written for FanMTL.
+**`tool/build_manifest.py` exists so the FanMTL gap is one command, not a project.**
+It turns files dropped into a fixture folder into a manifest, **computing** `bytes` and
+`sha256` from the files rather than accepting them, and it **refuses** an absolute URL, an
+open-ended `kind`, empty `notes`, a malformed `capturedAt`, a session cookie, a
+browser-save wrapper, an MHTML envelope, and a declared file that is absent. All nine
+refusals are proven to fire by `test/fixtures/manifest_builder_test.dart` (15 rows), and
+**three of them were found not to fire and fixed** — the `capturedAt` check missed the top
+level of the spec, and the wrapper check required a byte adjacency Chrome does not emit.
+The procedure is written up in `.forge/design/capture-procedure.md`.
+
+**Nine tests are still SKIPPED, and the skip is FanMTL specifically.** `0-1` was written
+for FanMTL.
 Measured 2026-10-03 with the honest `LumenTale/0.1.0 (personal reader)` UA:
 
 | Site | Result |
