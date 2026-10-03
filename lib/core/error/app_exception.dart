@@ -51,3 +51,66 @@ final class CancelledException extends AppException {
   const CancelledException({super.cause})
     : super('the request was cancelled by the reader');
 }
+
+/// A site could not be read the way this source reads it.
+///
+/// ⚠️ **This is not `SourceFailure`, and the two must not be merged.**
+/// `SourceFailure` is what a **read returns** — `BrowseFailed(reason)` carries it,
+/// nothing throws it, and it is sealed over the seven causes of
+/// `architecture.md` § 5.2. This is what a **repository or an interactor throws**
+/// when it needed a page and the page did not arrive, and a caller catches it
+/// specifically to offer "try again".
+///
+/// Two representations of one fact is the shape this project has been bitten by
+/// twice already (`SKILL.md` § Discipline de vérification, rule 10), so the
+/// distinction is written down rather than left to be re-derived: reads return,
+/// writes throw, and the two travel in opposite directions.
+final class SourceException extends AppException {
+  const SourceException(
+    super.message, {
+    super.cause,
+    this.sourceId,
+    this.status,
+  });
+
+  /// The site, when the failure is attributable to one. **Never** the site that
+  /// hosts the *file* — this is a network read, not a disk read.
+  final String? sourceId;
+
+  /// The HTTP status, or `null` when no response arrived.
+  ///
+  /// C7: a status is **evidence**, and evidence a screen can show. It is not free
+  /// text, and it is not a sentence: the sentence lives in the ARB.
+  final int? status;
+}
+
+/// A storage operation failed — drift, or the filesystem under it.
+///
+/// `13-error-handling.md` rule 2: a primitive `IOException` or `SqliteException`
+/// is wrapped here so a caller never sees the driver.
+final class DatabaseException extends AppException {
+  const DatabaseException(super.message, {super.cause, this.operation});
+
+  /// What was being attempted (`'read library'`, `'delete queue row'`). Present
+  /// because a bare "storage error" is not something a reader can describe, and
+  /// C12 asks for a failure state they can describe **in words**.
+  final String? operation;
+}
+
+/// A chapter's body is not available — not downloaded, absent at the site, or
+/// removed.
+///
+/// Distinct from `SourceException`: a missing body is not a broken site, and the
+/// two produce different screens. Catching them together would show a reader
+/// "the site changed" for a chapter they simply never downloaded.
+final class ChapterNotAvailableException extends AppException {
+  const ChapterNotAvailableException(
+    super.message, {
+    super.cause,
+    this.chapterId,
+  });
+
+  /// The chapter, by id. Present so the failure is traceable to one row; it is
+  /// **never** displayed — B44: no chapter prose, and a title is site text.
+  final String? chapterId;
+}

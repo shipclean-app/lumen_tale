@@ -2112,3 +2112,117 @@ never looked at the requirement" family:
 - **Do not pass `-d <device-id>` to `flutter test` for a file under `test/`.** The flag is
   silently ignored and a fabricated id still passes. Only `integration_test/` deploys, and
   it refuses an unknown device.
+
+---
+
+## 2026-10-03 — Session 11: the failure vocabulary, and a mistake I made mid-sabotage
+
+### STARTED FROM
+
+Wave 1 closed at `7d6808f` (502 tests). Wave 2 is six slices: `0-4`, `3-5`, `3-7`, `6-5`,
+`6-7`, `6-11`. **`0-4` is blocked** — it ranks the furniture of a *FanMTL* chapter page,
+and FanMTL is 403 behind a Cloudflare challenge for an honest UA (F-012), so there is no
+page to rank and § 7 question 3 says a guessed answer has no recovery. `6-7` is the one
+Wave-2 slice with **no blocked dependency**, and it is the one every screen slice needs:
+B28 demands a string in two languages for every error and download status, and there
+were sixteen keys, all navigation.
+
+### DECIDED
+
+- **`forSourceFailure` has SIX arms, not seven.** `architecture.md` § 5.2's table has
+  seven rows and `StorageFull` is the seventh — but a full disk is **not a source read**,
+  so it cannot be a `SourceFailure`, and `failure-discriminator` did not create one. A
+  storage failure reaches the mapper through a **write**. Inventing a
+  `StorageFull extends SourceFailure` would put "the phone is full" inside a taxonomy
+  whose whole subject is *a site that could not be read*, and every reader of § 5.2 would
+  then believe the table and the hierarchy agree. **They do not, and that difference is
+  the useful part.** The test asserts `hasLength(6)` and says why in its reason string.
+- **Three `AppException` subclasses were added**, all three named by
+  `13-error-handling.md` § The hierarchy: `SourceException`, `DatabaseException`,
+  `ChapterNotAvailableException`. The rule file already lists them; only
+  `NetworkException` and `CancelledException` existed. Each carries the fact § 5.2 says a
+  screen needs — `status` for `SourceException`, `operation` for `DatabaseException`,
+  `chapterId` for `ChapterNotAvailableException` — because a bare "storage error" is not
+  something a reader can describe, and C12 asks for one they can.
+- **`SourceFailure` and `AppException` are mapped side by side, never chained.** Reads
+  **return** `BrowseFailed(reason)`; writes **throw**. Different directions, so merging
+  them would be one fact with two representations — the shape this project has been
+  bitten by twice.
+- **`recovery()` returns `null` in six places, and that is the point.** A `Retry` on
+  `SourceLayoutChanged` is a lie: no retry repairs a site that renamed its markup. A
+  `Retry` on `ParseFailed` is a lie for the same reason. `RateLimited` offers **nothing**
+  because the site's `Retry-After` already says when, and B37 plus
+  `17-security.md` rule 6 are explicit that a retry earlier than the header makes the
+  rate limit worse. `architecture.md` § 5.2's "Recoverable by retry" column stops being
+  advisory and becomes executable.
+- **`RateLimited` is the only arm that reads `retryAfter`,** and a row asserts every
+  other arm **ignores** it — otherwise the parameter becomes a second source of truth
+  for a sentence.
+
+### REJECTED
+
+- **Adding a `RateLimitedException`.** The plan's § 2.2 mapping references one. The rule
+  file does not declare it, and rate limiting is a *site* fact, which is exactly what
+  `SourceFailure` carries. A fifth exception type would put "the site said 429" in the
+  write-side hierarchy.
+- **Making `forDatabaseException` distinguish "out of room".** It was written, then cut:
+  it takes the exception and returns a constant, so the name promises a decision the
+  body does not make. The honest version is a parameter the caller supplies, and no
+  caller exists yet — a function shaped for a caller that has not been written is
+  scaffolding, and the rule against speculative code is in the priority order at 5.
+
+### BLOCKED
+
+- **`0-4` stays blocked on F-012.** No bypass, no impersonation.
+- **F-012 remains the only open finding.** Unchanged and unpromoted.
+
+### FILES TOUCHED
+
+`lib/l10n/app_{en,fr}.arb` + generated (41 keys each, from 17),
+`lib/core/error/app_exception.dart` (+3 subclasses),
+`lib/core/ui/app_error_copy.dart` (new — the one mapping point),
+`test/core/ui/app_error_copy_test.dart` (25 rows).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **527 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass** ·
+`coverage-check 6-7` **pass** · EN and FR carry **41 keys each, identical sets**.
+
+**Sabotage, all three observed:**
+
+| Sabotage | Result |
+|---|---|
+| `sourceLayoutChanged` mapped to `commonRetry` | *a changed layout offers "report", never "retry"* **fails** |
+| one FR sentence replaced by its EN twin | *the two languages are not the same sentence* **fails**: `1 sentence(s) are identical in both languages` |
+| one EN sentence prefixed `NetworkException:` | *no sentence leaks a class name* **fails**: `contains "Exception"` |
+
+**A mistake of mine, recorded because the next session needs to know it happened.** While
+restoring after the third sabotage I ran `git checkout lib/l10n/app_en.arb` and
+`lib/l10n/app_fr.arb` to undo a one-line edit — and **that reverted the whole slice's
+ARB work**, because those files were uncommitted. The French file was rebuilt from the
+message content and verified key-for-key against the English one (41/41, no difference);
+the English file was restored from a copy. No product code was lost and no test was
+weakened, and `flutter analyze` was red for a while, which is how it was caught. **The
+lesson is procedural and it is the reason this entry exists**: a sabotage must be undone
+from a *copy taken for the purpose*, never from `git checkout` on a file the current
+commit does not contain. There is a copy at `/tmp/opencode/en.bak` next time too, and
+the copy is the rollback, not the index.
+
+### NEXT SESSION SHOULD
+
+- **`6-5`** (History) — check first whether `history_entries` exists; if not, this is a
+  migration and `schemaVersion` stops being 1. Read the plan's § 2 before writing code.
+- **`3-5`** (About) — needs three counts, two of which exist (`reading_positions` from
+  `2-6`) and one of which does not.
+- **`3-7`** (Settings) — depends on `6-5` and `6-7`.
+- **`6-11`** — measure Royal Road's and Novel Fire's search with the honest UA. If the
+  network refuses, that is a finding, not a retry loop.
+- **`2-1`'s sources, against Royal Road.** `0-4` is not the only FanMTL hostage: the
+  catalogue selectors are too, for the same reason.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not undo a sabotage with `git checkout`.** Copy the file first.
+- **Do not add an exception subclass to fit a mapping.** `13-error-handling.md`: keep the
+  hierarchy small, and add a subclass only when a caller needs to catch it specifically.

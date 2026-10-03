@@ -13,6 +13,7 @@
 
   "commonRetry": "Réessayer",
   "commonCancel": "Annuler",
+  "commonBack": "Retour",
   "commonErrorTitle": "Une erreur est survenue",
   "commonErrorBody": "L'opération n'a pas pu être terminée.",
 
@@ -41,5 +42,126 @@
         "example": "The Wandering Inn"
       }
     }
+  },
+
+  "errorNoConnection": "Pas de connexion. Vos chapitres téléchargés restent lisibles.",
+  "@errorNoConnection": {
+    "description": "E5. La phrase dit ce qui reste utilisable, pas seulement ce qui a échoué."
+  },
+
+  "errorRateLimited": "Le site demande de ralentir. Réessayez dans un instant.",
+  "@errorRateLimited": {
+    "description": "C7. 429 sans en-tête Retry-After exploitable."
+  },
+
+  "errorRateLimitedIn": "Le site demande de ralentir. Réessayez dans {seconds} secondes.",
+  "@errorRateLimitedIn": {
+    "description": "C7. La durée vient de l'en-tête Retry-After du site, jamais d'une estimation.",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+
+  "errorSourceLayoutChanged": "Ce site a changé de présentation. L'application ne peut plus le lire.",
+  "@errorSourceLayoutChanged": {
+    "description": "E4 / SC-6. Rien à retenter : c'est un défaut à signaler."
+  },
+
+  "errorSourceUnavailable": "Ce site ne répond pas. Réessayez plus tard.",
+  "@errorSourceUnavailable": {
+    "description": "Statut non-succis. Retentable plus tard, donc Retry est une action honnête."
+  },
+
+  "errorItemRemovedAtSource": "Ce roman n'existe plus sur le site. Le reste de votre bibliothèque n'est pas touché.",
+  "@errorItemRemovedAtSource": {
+    "description": "E9. Un seul élément a disparu ; la phrase le dit, sinon le lecteur croit à une perte de données."
+  },
+
+  "errorStorageFull": "L'espace de stockage est plein. Libérez de la place, puis relancez.",
+  "@errorStorageFull": {
+    "description": "C8. La seule cause dont la phrase contient une action qui fonctionne réellement."
+  },
+
+  "errorParseFailed": "Un fichier de ce roman n'a pas pu être lu. Signalez-le au responsable de l'application.",
+  "@errorParseFailed": {
+    "description": "C12. L'action est signaler, parce que rien ne peut réparer une conversion ratée."
+  },
+
+  "errorSiteUnreadable": "Ce site n'a pas pu être lu. Les autres sources fonctionnent normalement.",
+  "@errorSiteUnreadable": {
+    "description": "B22. Les autres sources : une panne de source n'est pas une panne d'application."
+  },
+
+  "errorSettingsLoad": "Vos réglages n'ont pas pu être chargés.",
+  "@errorSettingsLoad": {
+    "description": "Échec au démarrage, donc jamais un état d'écran — voir le commentaire de main()."
+  },
+
+  "errorSettingsWrite": "Ce réglage n'a pas pu être enregistré. Il reprendra sa valeur précédente.",
+  "@errorSettingsWrite": {
+    "description": "Le contrôle se remet et dit pourquoi : afficher une valeur non enregistrée est pire qu'un échec visible."
+  },
+
+  "errorHistoryClear": "L'historique n'a pas pu être effacé.",
+  "@errorHistoryClear": {
+    "description": "B46 : la position de lecture n'est pas concernée, et la phrase ne doit pas le laisser croire."
+  },
+
+  "errorCountUnavailable": "Ce compte n'a pas pu être calculé.",
+  "@errorCountUnavailable": {
+    "description": "B48 : un compte incertain se dit incertain ; il ne s'estime pas."
+  },
+
+  "warningNotifications": "Les notifications sont désactivées dans les réglages du téléphone.",
+  "@warningNotifications": {
+    "description": "Avertissement, pas erreur : l'application fonctionne, le téléphone a décidé."
+  },
+
+  "checkCancelled": "Vérification annulée.",
+  "@checkCancelled": {
+    "description": "Existe pour être complet ; 13-error-handling.md règle 7 veut dire annulé, pas échoué."
+  },
+
+  "browseEmpty": "Ce site n'a rien à montrer ici.",
+  "@browseEmpty": {
+    "description": "B22 : le troisième état, distinct de l'échec, et disponible uniquement là où le site fournit son propre signal."
+  },
+
+  "browseSucceeded": "Lecture réussie.",
+  "@browseSucceeded": {
+    "description": "Presque jamais affiché ; existe pour que le mapping soit exhaustif et testable."
+  },
+
+  "downloadQueued": "Téléchargement en attente",
+  "@downloadQueued": {
+    "description": "Un des quatre DownloadState. B37 : la file est visible et effaçable avant le premier octet."
+  },
+
+  "downloadDownloading": "Téléchargement en cours",
+  "@downloadDownloading": {
+    "description": "L'état en cours. Le pourcentage est un nombre, jamais une estimation du temps restant."
+  },
+
+  "downloadDone": "Téléchargé",
+  "@downloadDone": {
+    "description": "B6 : le mot n'apparaît qu'après le renommage atomique, donc le fichier est complet."
+  },
+
+  "downloadFailed": "Téléchargement interrompu. Vous pouvez le relancer.",
+  "@downloadFailed": {
+    "description": "Relançable parce que rien n'a été écrit : l'écriture est atomique."
+  },
+
+  "actionFreeSpace": "Libérer de la place",
+  "@actionFreeSpace": {
+    "description": "L'action de errorStorageFull. Elle fonctionne, donc elle est proposée."
+  },
+
+  "actionReportBug": "Signaler le problème",
+  "@actionReportBug": {
+    "description": "L'action de errorParseFailed et errorSourceLayoutChanged. Aucun bouton Réessayer ne les réparera."
   }
 }

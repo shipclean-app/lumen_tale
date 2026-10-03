@@ -13,6 +13,7 @@
 
   "commonRetry": "Retry",
   "commonCancel": "Cancel",
+  "commonBack": "Back",
   "commonErrorTitle": "Something went wrong",
   "commonErrorBody": "The operation could not be completed.",
 
@@ -41,5 +42,126 @@
         "example": "The Wandering Inn"
       }
     }
+  },
+
+  "errorNoConnection": "No connection. Your downloaded chapters stay readable.",
+  "@errorNoConnection": {
+    "description": "E5. The sentence says what stays usable, not only what failed."
+  },
+
+  "errorRateLimited": "The site asked us to slow down. Try again shortly.",
+  "@errorRateLimited": {
+    "description": "C7. A 429 with no usable Retry-After header."
+  },
+
+  "errorRateLimitedIn": "The site asked us to slow down. Try again in {seconds} seconds.",
+  "@errorRateLimitedIn": {
+    "description": "C7. The duration comes from the site's Retry-After header, never from a guess.",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+
+  "errorSourceLayoutChanged": "This site has changed its layout. The app can no longer read it.",
+  "@errorSourceLayoutChanged": {
+    "description": "E4 / SC-6. Nothing to retry: this is a defect to report."
+  },
+
+  "errorSourceUnavailable": "This site is not responding. Try again later.",
+  "@errorSourceUnavailable": {
+    "description": "A non-success status. Retriable later, so Retry is honest."
+  },
+
+  "errorItemRemovedAtSource": "This novel is no longer on the site. The rest of your library is untouched.",
+  "@errorItemRemovedAtSource": {
+    "description": "E9. One item vanished; the sentence says so, or the reader thinks data was lost."
+  },
+
+  "errorStorageFull": "Storage is full. Free some space, then try again.",
+  "@errorStorageFull": {
+    "description": "C8. The only cause whose sentence contains an action that actually works."
+  },
+
+  "errorParseFailed": "A file for this novel could not be read. Please report it to whoever maintains this app.",
+  "@errorParseFailed": {
+    "description": "C12. The action is report, because nothing can repair a failed conversion."
+  },
+
+  "errorSiteUnreadable": "This site could not be read. Your other sources work normally.",
+  "@errorSiteUnreadable": {
+    "description": "B22. 'Your other sources': one site failing is not the app failing."
+  },
+
+  "errorSettingsLoad": "Your settings could not be loaded.",
+  "@errorSettingsLoad": {
+    "description": "A startup failure, therefore never a screen state. See the comment on main()."
+  },
+
+  "errorSettingsWrite": "This setting could not be saved. It will keep its previous value.",
+  "@errorSettingsWrite": {
+    "description": "The control snaps back and says why: showing a value it could not store is worse than a visible failure."
+  },
+
+  "errorHistoryClear": "History could not be cleared.",
+  "@errorHistoryClear": {
+    "description": "B46: reading position is not involved, and the sentence must not let the reader think it is."
+  },
+
+  "errorCountUnavailable": "That count could not be computed.",
+  "@errorCountUnavailable": {
+    "description": "B48: an uncertain count says it is uncertain; it is never estimated."
+  },
+
+  "warningNotifications": "Notifications are turned off in your phone's settings.",
+  "@warningNotifications": {
+    "description": "A warning, not an error: the app works, the phone decided."
+  },
+
+  "checkCancelled": "Check cancelled.",
+  "@checkCancelled": {
+    "description": "Exists so the mapping is complete; 13-error-handling.md rule 7 means cancelled, not failed."
+  },
+
+  "browseEmpty": "This site has nothing to show here.",
+  "@browseEmpty": {
+    "description": "B22: the third state, distinct from failure, and available only where the site supplies its own signal."
+  },
+
+  "browseSucceeded": "Read successfully.",
+  "@browseSucceeded": {
+    "description": "Almost never displayed; it exists so the mapping is exhaustive and testable."
+  },
+
+  "downloadQueued": "Queued for download",
+  "@downloadQueued": {
+    "description": "One of the four DownloadState values. B37: the queue is visible and cancellable before the first byte."
+  },
+
+  "downloadDownloading": "Downloading",
+  "@downloadDownloading": {
+    "description": "The in-progress state. The percentage is a number, never an estimate of the time left."
+  },
+
+  "downloadDone": "Downloaded",
+  "@downloadDone": {
+    "description": "B6: the word appears only after the atomic rename, so the file is whole."
+  },
+
+  "downloadFailed": "Download interrupted. You can try it again.",
+  "@downloadFailed": {
+    "description": "Retriable because nothing was written: the write is atomic."
+  },
+
+  "actionFreeSpace": "Free space",
+  "@actionFreeSpace": {
+    "description": "The action for errorStorageFull. It works, so it is offered."
+  },
+
+  "actionReportBug": "Report the problem",
+  "@actionReportBug": {
+    "description": "The action for errorParseFailed and errorSourceLayoutChanged. No Retry button repairs either."
   }
 }

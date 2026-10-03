@@ -158,6 +158,12 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get commonCancel;
 
+  /// No description provided for @commonBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get commonBack;
+
   /// No description provided for @commonErrorTitle.
   ///
   /// In en, this message translates to:
@@ -199,6 +205,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cover of {title}'**
   String coverSemanticsLabel(String title);
+
+  /// E5. The sentence says what stays usable, not only what failed.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection. Your downloaded chapters stay readable.'**
+  String get errorNoConnection;
+
+  /// C7. A 429 with no usable Retry-After header.
+  ///
+  /// In en, this message translates to:
+  /// **'The site asked us to slow down. Try again shortly.'**
+  String get errorRateLimited;
+
+  /// C7. The duration comes from the site's Retry-After header, never from a guess.
+  ///
+  /// In en, this message translates to:
+  /// **'The site asked us to slow down. Try again in {seconds} seconds.'**
+  String errorRateLimitedIn(int seconds);
+
+  /// E4 / SC-6. Nothing to retry: this is a defect to report.
+  ///
+  /// In en, this message translates to:
+  /// **'This site has changed its layout. The app can no longer read it.'**
+  String get errorSourceLayoutChanged;
+
+  /// A non-success status. Retriable later, so Retry is honest.
+  ///
+  /// In en, this message translates to:
+  /// **'This site is not responding. Try again later.'**
+  String get errorSourceUnavailable;
+
+  /// E9. One item vanished; the sentence says so, or the reader thinks data was lost.
+  ///
+  /// In en, this message translates to:
+  /// **'This novel is no longer on the site. The rest of your library is untouched.'**
+  String get errorItemRemovedAtSource;
+
+  /// C8. The only cause whose sentence contains an action that actually works.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage is full. Free some space, then try again.'**
+  String get errorStorageFull;
+
+  /// C12. The action is report, because nothing can repair a failed conversion.
+  ///
+  /// In en, this message translates to:
+  /// **'A file for this novel could not be read. Please report it to whoever maintains this app.'**
+  String get errorParseFailed;
+
+  /// B22. 'Your other sources': one site failing is not the app failing.
+  ///
+  /// In en, this message translates to:
+  /// **'This site could not be read. Your other sources work normally.'**
+  String get errorSiteUnreadable;
+
+  /// A startup failure, therefore never a screen state. See the comment on main().
+  ///
+  /// In en, this message translates to:
+  /// **'Your settings could not be loaded.'**
+  String get errorSettingsLoad;
+
+  /// The control snaps back and says why: showing a value it could not store is worse than a visible failure.
+  ///
+  /// In en, this message translates to:
+  /// **'This setting could not be saved. It will keep its previous value.'**
+  String get errorSettingsWrite;
+
+  /// B46: reading position is not involved, and the sentence must not let the reader think it is.
+  ///
+  /// In en, this message translates to:
+  /// **'History could not be cleared.'**
+  String get errorHistoryClear;
+
+  /// B48: an uncertain count says it is uncertain; it is never estimated.
+  ///
+  /// In en, this message translates to:
+  /// **'That count could not be computed.'**
+  String get errorCountUnavailable;
+
+  /// A warning, not an error: the app works, the phone decided.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are turned off in your phone\'s settings.'**
+  String get warningNotifications;
+
+  /// Exists so the mapping is complete; 13-error-handling.md rule 7 means cancelled, not failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Check cancelled.'**
+  String get checkCancelled;
+
+  /// B22: the third state, distinct from failure, and available only where the site supplies its own signal.
+  ///
+  /// In en, this message translates to:
+  /// **'This site has nothing to show here.'**
+  String get browseEmpty;
+
+  /// Almost never displayed; it exists so the mapping is exhaustive and testable.
+  ///
+  /// In en, this message translates to:
+  /// **'Read successfully.'**
+  String get browseSucceeded;
+
+  /// One of the four DownloadState values. B37: the queue is visible and cancellable before the first byte.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued for download'**
+  String get downloadQueued;
+
+  /// The in-progress state. The percentage is a number, never an estimate of the time left.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading'**
+  String get downloadDownloading;
+
+  /// B6: the word appears only after the atomic rename, so the file is whole.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get downloadDone;
+
+  /// Retriable because nothing was written: the write is atomic.
+  ///
+  /// In en, this message translates to:
+  /// **'Download interrupted. You can try it again.'**
+  String get downloadFailed;
+
+  /// The action for errorStorageFull. It works, so it is offered.
+  ///
+  /// In en, this message translates to:
+  /// **'Free space'**
+  String get actionFreeSpace;
+
+  /// The action for errorParseFailed and errorSourceLayoutChanged. No Retry button repairs either.
+  ///
+  /// In en, this message translates to:
+  /// **'Report the problem'**
+  String get actionReportBug;
 }
 
 class _AppLocalizationsDelegate

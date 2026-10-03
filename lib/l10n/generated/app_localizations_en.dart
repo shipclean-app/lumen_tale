@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonCancel => 'Cancel';
 
   @override
+  String get commonBack => 'Back';
+
+  @override
   String get commonErrorTitle => 'Something went wrong';
 
   @override
@@ -69,4 +72,85 @@ class AppLocalizationsEn extends AppLocalizations {
   String coverSemanticsLabel(String title) {
     return 'Cover of $title';
   }
+
+  @override
+  String get errorNoConnection =>
+      'No connection. Your downloaded chapters stay readable.';
+
+  @override
+  String get errorRateLimited =>
+      'The site asked us to slow down. Try again shortly.';
+
+  @override
+  String errorRateLimitedIn(int seconds) {
+    return 'The site asked us to slow down. Try again in $seconds seconds.';
+  }
+
+  @override
+  String get errorSourceLayoutChanged =>
+      'This site has changed its layout. The app can no longer read it.';
+
+  @override
+  String get errorSourceUnavailable =>
+      'This site is not responding. Try again later.';
+
+  @override
+  String get errorItemRemovedAtSource =>
+      'This novel is no longer on the site. The rest of your library is untouched.';
+
+  @override
+  String get errorStorageFull =>
+      'Storage is full. Free some space, then try again.';
+
+  @override
+  String get errorParseFailed =>
+      'A file for this novel could not be read. Please report it to whoever maintains this app.';
+
+  @override
+  String get errorSiteUnreadable =>
+      'This site could not be read. Your other sources work normally.';
+
+  @override
+  String get errorSettingsLoad => 'Your settings could not be loaded.';
+
+  @override
+  String get errorSettingsWrite =>
+      'This setting could not be saved. It will keep its previous value.';
+
+  @override
+  String get errorHistoryClear => 'History could not be cleared.';
+
+  @override
+  String get errorCountUnavailable => 'That count could not be computed.';
+
+  @override
+  String get warningNotifications =>
+      'Notifications are turned off in your phone\'s settings.';
+
+  @override
+  String get checkCancelled => 'Check cancelled.';
+
+  @override
+  String get browseEmpty => 'This site has nothing to show here.';
+
+  @override
+  String get browseSucceeded => 'Read successfully.';
+
+  @override
+  String get downloadQueued => 'Queued for download';
+
+  @override
+  String get downloadDownloading => 'Downloading';
+
+  @override
+  String get downloadDone => 'Downloaded';
+
+  @override
+  String get downloadFailed => 'Download interrupted. You can try it again.';
+
+  @override
+  String get actionFreeSpace => 'Free space';
+
+  @override
+  String get actionReportBug => 'Report the problem';
 }
