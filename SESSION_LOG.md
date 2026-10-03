@@ -1855,3 +1855,134 @@ format clean · `analyze --fatal-infos` **zero** · host **397 passed + 9 skippe
   signal.
 - **Findings to promote**: the plan's `COALESCE(added_at, 0)` sorts nulls first; `customSelect`
   needs `readsFrom` or a stream emits once; `AppDatabase.forTesting` was a FK trap.
+
+---
+
+## 2026-10-03 — Session 9: the tree did not compile, and the tracking file was wrong in both directions
+
+### STARTED FROM
+
+Phase 7 `in_progress`, `state.js start` reporting **32 slices, all `planned`, zero
+suspended** — and `flutter analyze` reporting **18 errors**. The previous commit
+(`b49c11e`) had added `lib/domain/sources/source.dart`, which imports five model files
+that were never written. The last green commit was the one before it.
+
+### DECIDED
+
+- **Repair before anything else.** Not a commit on top of a broken tree: the Definition
+  of Done lists `flutter analyze` as item 2 and item 2 is a gate, so a commit that skips
+  it is not a commit with a gap, it is a commit that skipped the gate. Everything else in
+  this session waited.
+- **The five models are `domain`, so `ChapterRecognition` and `NovelStatus` went in the
+  files that own the fields they fill** — `models/chapter.dart` and `models/novel.dart` —
+  rather than in a sixth file nothing else imports. `SourceId` is a separate file because
+  `source.dart`'s own doc comment already names `SourceId.of`, and three layers derive
+  through it.
+- **`FilterList` extends `ListBase`, it does not delegate through `noSuchMethod`.** Both
+  satisfy "implements `List` by delegation". Delegating through `noSuchMethod` reaches
+  `NoSuchMethodError` — *"Class 'List<Filter<Object?>>' has no instance method 'add'"* —
+  because the unmodifiable inner list has no `add`. That reads like a typo in the caller;
+  the caller wrote a method that **exists and is refused on purpose** (rule 5: the platform
+  does not change what a source declared). `ListBase` routes every remaining mutator
+  through `[]=` or `length=`, so two overrides refuse all of them, and the refusal names
+  the rule.
+- **`Novel.toString` carries the id and not the title.** `2-1`'s own acceptance criterion
+  for the dropped-row path is that the site's title never reaches a log, and a `toString`
+  is the most likely accidental carrier. Printing it would make the criterion true of the
+  logger and false of the model.
+- **`state.json` now says what is true.** Six foundations and six slices were reported
+  `planned` while their code and tests were committed and green. Four are complete and
+  tested, two are provably partial (`0-1` blocked on F-012, `2-1` has its data layer and
+  no source), and the state now says exactly that.
+
+### REJECTED
+
+- **Renumbering `.forge/plans/2-1.md` § 3.1 to match its own constant.** The plan
+  *displays* `md5('f321cc5e…31//novel/ke383028.html')` — two slashes — beside the frozen
+  constant `90db9662…`, which is the digest of the **one**-slash string. Both were computed:
+  ```
+  md5(sid + "//novel/ke383028.html")  = 071603bb…   ← not the plan's value
+  md5(sid + "/novel/ke383028.html")   = 90db9662…   ← the plan's value
+  ```
+  The constant is the authority — it was computed, the string was written by hand. So
+  `SourceId` strips leading slashes and both shapes are pinned by a test. Rejecting the
+  renumbering is deliberate: editing the plan to match the code would have removed the
+  record of the contradiction.
+- **Adding `navMore` to the ARB files is not this slice's to decide.** `0-5` § 7 question 3
+  says the foundation `localisation` owns the keys and `0-5` consumes them. `localisation`
+  **is** built and `navMore` is not in either file. Leaving it missing means a fifth tab
+  with no label in two languages, which is B28 violated directly; so it gets written, in
+  both files, in the same commit — `16-i18n.md` rule 2's requirement — and the owner of
+  the key is recorded rather than assumed.
+- **Implementing `FanMtlSource` now.** Its three catalogue selectors are unfilled, F-012
+  measured the site at 403 behind a Cloudflare challenge for an honest UA one day after
+  ADR-014 measured 200, and `2-1` § 7 question 3 says a guessed selector has **no
+  recovery**: it matches nothing, every page reads as `SourceLayoutChanged`, and SC-6's
+  fixture becomes indistinguishable from a working site. No bypass, no impersonation.
+  Royal Road has 2 MB of measured fixtures; FanMTL has none.
+
+### BLOCKED
+
+- **F-012 (FanMTL 403) stays open.** The documentation half is done —
+  `18-external-contracts.md` records the 403 on five paths with an honest UA. The capture
+  half needs the owner's phone. No bypass will be built: ADR-014 already rejected the
+  WebView technique, and C2 plus `17-security.md` rule 7 put a challenge-solving WebView
+  out of scope independently. A Cloudflare interstitial is the site declining; the correct
+  response is to record it, not to defeat it.
+- **F-013 is promoted.** Its correction was *find the current catalogue and chapter URLs
+  and update the file*: Royal Road's are `/fictions/…` for listings and
+  `/fiction/<id>/<slug>/chapter/<chapterId>/<slug>` for a chapter, both captured, both
+  measured, both written back.
+- **On-device suite**: `YBZ2577ALDAC000899` is absent from `adb devices`.
+
+### FILES TOUCHED
+
+**Product** — `lib/domain/sources/{source_id,source}.dart`,
+`lib/domain/sources/models/{novel,chapter,novels_page,update,filter}.dart`,
+`test/domain/sources/{source_id_test,chapter_test,models_test}.dart`.
+
+**Forge state** — `.forge/audit/issues.md` (created; 5 incidents), `.forge/state.json`
+(13 findings promoted, duplicate key removed, `test_plan` premise declared, 12 node
+statuses corrected), `.forge/plans/{2-2,6-6}.md` (two broken pointers).
+
+**The skill itself, in `~/.agents/skills/forge/`** — five defects fixed, each with a
+witness on both sides:
+
+| Defect | Fix | Failing witness | Clean witness |
+|---|---|---|---|
+| `finding` minted `F-014` twice | next id = max + 1, plus a `while` that skips any id in use; `--resolve` stamps `retired_at` | 13 entries, gap + resolved entry → `length+1` = `F-014`, an id in use | same command → `F-015` |
+| four slices reported **0** tests, they had **138** | one `L.countSliceTests`, both branches, both scripts | `attendu F-010 (max+1), obtenu F-003` | 228 selftests pass; a slice no test cites still returns 0 |
+| `register` accepted two keys for one path | refused, existing key named | refusal leaves `state.json` byte-identical | re-registering the canonical key passes |
+| `version_pins_agree` read `.dart_tool/` | generated dirs skipped; a JSON name must be declared | real conflict + noise → `fail` on the conflict only | clean tree → `pass`; **no manifest** → still `fail` |
+| `section_references` could not pass | index walks `.opencode/rules/` and `.forge/**`; external targets reclassified | — | 113 files, 3 843 references resolved, **2 true broken pointers found and fixed** |
+
+`selftest.js`: **228 passed, 8 skipped, 0 failed**. The 8 skips are the `pglite` engine,
+absent from this machine; `skip` is not `pass` and the output says so.
+
+### STATUS
+
+`dart format` clean · `flutter analyze --fatal-infos` **zero** · host **457 passed +
+9 skipped** · `forge-guard all` **pass** · `consistency-check all` **pass** ·
+`coverage-check` on the touched slices · one unpromoted finding left, **F-012**, which is
+the only honest one.
+
+### NEXT SESSION SHOULD
+
+- **`0-5`** — the route table, `AppScaffold`, `AppShell`, `MaterialApp.router`. The
+  `appRouter` must be a top-level `final`, or E12's language switch loses the navigation
+  stack; and `main` must be `async` and **await** `SharedPreferences`, or
+  `appThemePreferencesProvider` throws on the first frame.
+- **Then Wave 2**: `0-4`, `3-5`, `6-5`, `6-7`, `3-7`, `6-11`.
+- **`2-1`'s source implementations, against Royal Road** — the one site with measured
+  fixtures. FanMTL stays unimplemented while F-012 is open.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not rename a test file to contain its slice key** just to satisfy
+  `state.js start`. That was the defect: the tracking file, not the tests, was wrong.
+- **Do not re-add `--delete-conflicting-outputs` to `build_runner`**, and do not run
+  `dart run drift_dev schema dump` with one argument — it prints usage and exits 0, which
+  looks like success.
+- **Do not treat `check_plans.py` passing as "the plans are implemented"**. It checks
+  headings and ids; the code is the only proof, and the last commit before this one was
+  proof of the opposite.

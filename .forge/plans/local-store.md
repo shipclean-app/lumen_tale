@@ -2,7 +2,7 @@
 type: implementation-plan
 slice: local-store
 module: foundation
-status: planned
+status: validated
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md

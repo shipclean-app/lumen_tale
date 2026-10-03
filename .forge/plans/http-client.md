@@ -2,7 +2,7 @@
 type: implementation-plan
 slice: http-client
 module: core
-status: planned
+status: validated
 generated_at: 2026-10-03
 derived_from:
   - .forge/prd.md

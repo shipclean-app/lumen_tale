@@ -864,3 +864,34 @@
 {"ts":"2026-10-03T17:44:40.574Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
 {"ts":"2026-10-03T18:14:19.335Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
 {"ts":"2026-10-03T18:14:43.352Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
+{"ts":"2026-10-03T19:38:00.883Z","type":"finding_raised","id":"F-015","domain":"external-system-contracts.md","severity":"majeur"}
+{"ts":"2026-10-03T19:39:12.481Z","type":"finding_promoted","id":"F-001","promoted_to":"data-and-state.md"}
+{"ts":"2026-10-03T19:39:12.564Z","type":"finding_promoted","id":"F-002","promoted_to":"testing.md"}
+{"ts":"2026-10-03T19:39:12.651Z","type":"finding_promoted","id":"F-003","promoted_to":"testing.md"}
+{"ts":"2026-10-03T19:39:12.718Z","type":"finding_promoted","id":"F-004","promoted_to":"workflow.md"}
+{"ts":"2026-10-03T19:39:12.827Z","type":"finding_promoted","id":"F-005","promoted_to":"testing.md"}
+{"ts":"2026-10-03T19:39:12.902Z","type":"finding_promoted","id":"F-006","promoted_to":"workflow.md"}
+{"ts":"2026-10-03T19:39:12.999Z","type":"finding_promoted","id":"F-008","promoted_to":"data-and-state.md"}
+{"ts":"2026-10-03T19:39:13.077Z","type":"finding_promoted","id":"F-009","promoted_to":"data-and-state.md"}
+{"ts":"2026-10-03T19:39:13.155Z","type":"finding_promoted","id":"F-010","promoted_to":"data-and-state.md"}
+{"ts":"2026-10-03T19:39:13.228Z","type":"finding_promoted","id":"F-013","promoted_to":"external-system-contracts.md"}
+{"ts":"2026-10-03T19:39:13.296Z","type":"finding_promoted","id":"F-014","promoted_to":"data-and-state.md"}
+{"ts":"2026-10-03T19:40:09.455Z","type":"register_rejected","reason":"duplicate_path","path":".forge/design/design-system.md","key":"design-system","existing_key":"design_system"}
+{"ts":"2026-10-03T19:40:14.035Z","type":"register","deliverable":"design_system","path":".forge/design/design-system.md","kind":"deliverable"}
+{"ts":"2026-10-03T19:40:18.188Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
+{"ts":"2026-10-03T19:46:15.160Z","type":"amend","kind":"slice","key":"2-2","reason":"consistency-check section_references BROKEN : le renvoi '18-external-contracts.md (§ 7, question 2)' ne nomme pas la section de ce plan — 18-external-contracts.md n'a pas de § 7. La question 2 est celle de CE plan. Renvoi nomme, cible existante."}
+{"ts":"2026-10-03T19:46:21.136Z","type":"amend","kind":"slice","key":"6-6","reason":"consistency-check section_references BROKEN : '06-database.md § 4.7' ne designe aucune section — le fichier n'a que § Suggested initial tables, § Rules et § Mappers. La regle citee (index sur le chemin chaud du compte derive, regle 7 de § Rules) est la bonne ; le numero ne l'etait pas."}
+{"ts":"2026-10-03T19:46:39.020Z","type":"register","deliverable":"2-2","path":".forge/plans/2-2.md","kind":"slice"}
+{"ts":"2026-10-03T19:46:39.086Z","type":"register","deliverable":"6-6","path":".forge/plans/6-6.md","kind":"slice"}
+{"ts":"2026-10-03T19:46:46.794Z","type":"status_change","kind":"foundation","key":"apk-pipeline","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/apk-pipeline.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:46.851Z","type":"status_change","kind":"foundation","key":"local-store","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/local-store.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:46.915Z","type":"status_change","kind":"foundation","key":"failure-discriminator","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/failure-discriminator.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:46.967Z","type":"status_change","kind":"foundation","key":"localisation","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/localisation.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:47.027Z","type":"status_change","kind":"foundation","key":"theme-type","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/theme-type.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:47.082Z","type":"status_change","kind":"foundation","key":"http-client","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/http-client.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:47.139Z","type":"status_change","kind":"slice","key":"0-2","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/0-2.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:47.191Z","type":"status_change","kind":"slice","key":"0-3","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/0-3.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:47.277Z","type":"status_change","kind":"slice","key":"2-6","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/2-6.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:47.334Z","type":"status_change","kind":"slice","key":"6-3","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/6-3.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-03T19:46:47.390Z","type":"status_change","kind":"slice","key":"0-1","from":"planned","to":"in_progress","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/0-1.md","from":"planned","to":"in_progress"}}
+{"ts":"2026-10-03T19:46:47.447Z","type":"status_change","kind":"slice","key":"2-1","from":"planned","to":"in_progress","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/2-1.md","from":"planned","to":"in_progress"}}

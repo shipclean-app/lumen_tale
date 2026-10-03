@@ -807,59 +807,6 @@
         "E22"
       ]
     },
-    "design-system": {
-      "path": ".forge/design/design-system.md",
-      "type": "design-system",
-      "status": "approved",
-      "content_hash": "sha256:64468ccb27c0",
-      "headings": {
-        "0": "Visual direction",
-        "1": "Design tokens",
-        "2": "Primitive components",
-        "3": "Navigation patterns",
-        "4": "Grid and layout",
-        "0.0": "Colour class declaration",
-        "1.1": "Colours",
-        "1.2": "Typography",
-        "1.3": "Spacing",
-        "1.4": "Shadows",
-        "1.5": "Borders",
-        "1.6": "Motion",
-        "1.7": "Breakpoints",
-        "1.8": "Mapping to Flutter",
-        "2.1": "`NovelRow`",
-        "2.2": "`ChapterListTile`",
-        "2.3": "`PrimaryButton` / `SecondaryButton` / `TextButton`",
-        "2.4": "`TextField`",
-        "2.5": "`StatusChip`",
-        "2.6": "`ReaderControls`",
-        "2.7": "`EmptyState`, `ErrorState`, `LoadingState`",
-        "2.8": "`AppScaffold`",
-        "2.9": "`Switch`",
-        "2.10": "`SettingsRow`",
-        "2.11": "`SettingsSwitchRow`",
-        "2.12": "`SettingsChoiceSheet`",
-        "3.1": "Structure",
-        "3.2": "Main navigation",
-        "3.3": "Breadcrumbs",
-        "3.4": "Transitions",
-        "3.5": "Routing",
-        "4.1": "Base grid",
-        "4.2": "Layouts"
-      },
-      "updated_at": "2026-10-03T04:07:56.027Z",
-      "derived_from": [
-        ".forge/prd.md",
-        ".forge/benchmarks.md"
-      ],
-      "requires": [
-        "B26",
-        "B27",
-        "B28",
-        "B44",
-        "C13"
-      ]
-    },
     "design-coverage": {
       "path": ".forge/design/coverage.md",
       "type": "design-coverage",
@@ -1091,7 +1038,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T10:29:16.581Z",
+      "updated_at": "2026-10-03T19:40:14.031Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1173,9 +1120,16 @@
         "11.2": "Variables and commands",
         "11.3": "Two tool defects Phase 6 had to fix to make any of this checkable"
       },
-      "updated_at": "2026-10-03T18:14:43.348Z",
+      "updated_at": "2026-10-03T19:40:18.185Z",
       "derived_from": [
         ".forge/plans/*.md section 11"
+      ],
+      "requires": [
+        "B48",
+        "B49",
+        "B5",
+        "B38",
+        "B9"
       ]
     }
   },
@@ -1844,9 +1798,9 @@
     "apk-pipeline": {
       "path": ".forge/plans/apk-pipeline.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:479157e04535",
-      "updated_at": "2026-10-03T06:27:56.080Z",
+      "updated_at": "2026-10-03T19:46:46.785Z",
       "depends_on": [],
       "depended_on_by": [
         "3-5"
@@ -1905,9 +1859,9 @@
     "local-store": {
       "path": ".forge/plans/local-store.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:b7187e2432d5",
-      "updated_at": "2026-10-03T06:27:56.323Z",
+      "updated_at": "2026-10-03T19:46:46.843Z",
       "depends_on": [],
       "depended_on_by": [
         "2-1",
@@ -1970,9 +1924,9 @@
     "failure-discriminator": {
       "path": ".forge/plans/failure-discriminator.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:2b2e30104eae",
-      "updated_at": "2026-10-03T06:27:56.155Z",
+      "updated_at": "2026-10-03T19:46:46.906Z",
       "depends_on": [
         "0-1",
         "0-2",
@@ -2038,9 +1992,9 @@
     "localisation": {
       "path": ".forge/plans/localisation.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:133c46ad7028",
-      "updated_at": "2026-10-03T06:27:56.405Z",
+      "updated_at": "2026-10-03T19:46:46.959Z",
       "depends_on": [],
       "depended_on_by": [
         "6-7",
@@ -2104,9 +2058,9 @@
     "theme-type": {
       "path": ".forge/plans/theme-type.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:676cae8234eb",
-      "updated_at": "2026-10-03T06:27:56.490Z",
+      "updated_at": "2026-10-03T19:46:47.017Z",
       "depends_on": [],
       "depended_on_by": [
         "2-8",
@@ -2168,9 +2122,9 @@
     "http-client": {
       "path": ".forge/plans/http-client.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:9ea11827dfa9",
-      "updated_at": "2026-10-03T06:27:56.246Z",
+      "updated_at": "2026-10-03T19:46:47.071Z",
       "depends_on": [],
       "depended_on_by": [
         "failure-discriminator",
@@ -2240,9 +2194,9 @@
     "0-1": {
       "path": ".forge/plans/0-1.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "in_progress",
       "content_hash": "sha256:86ddd33efa7a",
-      "updated_at": "2026-10-03T06:27:53.531Z",
+      "updated_at": "2026-10-03T19:46:47.382Z",
       "depends_on": [],
       "depended_on_by": [
         "failure-discriminator",
@@ -2312,9 +2266,9 @@
     "0-2": {
       "path": ".forge/plans/0-2.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:9f883149f33b",
-      "updated_at": "2026-10-03T06:27:53.610Z",
+      "updated_at": "2026-10-03T19:46:47.132Z",
       "depends_on": [
         "0-1"
       ],
@@ -2376,9 +2330,9 @@
     "0-3": {
       "path": ".forge/plans/0-3.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:f9cb00557a0c",
-      "updated_at": "2026-10-03T06:27:53.694Z",
+      "updated_at": "2026-10-03T19:46:47.185Z",
       "depends_on": [
         "0-1"
       ],
@@ -2508,9 +2462,9 @@
     "2-1": {
       "path": ".forge/plans/2-1.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "in_progress",
       "content_hash": "sha256:6fd263d0c4b1",
-      "updated_at": "2026-10-03T06:27:53.927Z",
+      "updated_at": "2026-10-03T19:46:47.437Z",
       "depends_on": [
         "0-1",
         "failure-discriminator",
@@ -2598,8 +2552,8 @@
       "path": ".forge/plans/2-2.md",
       "type": "implementation-plan",
       "status": "planned",
-      "content_hash": "sha256:53cef10d934d",
-      "updated_at": "2026-10-03T06:27:54.006Z",
+      "content_hash": "sha256:72ccd77d4d5c",
+      "updated_at": "2026-10-03T19:46:39.015Z",
       "depends_on": [
         "2-1",
         "0-4"
@@ -2620,7 +2574,7 @@
         "E22"
       ],
       "plan_path": ".forge/plans/2-2.md",
-      "plan_hash": "sha256:53cef10d934d",
+      "plan_hash": "sha256:72ccd77d4d5c",
       "headings": {
         "1": "Résumé de la slice",
         "2": "Contrats de données (code)",
@@ -2662,7 +2616,52 @@
         ".forge/design/design-system.md",
         ".forge/design/screens"
       ],
-      "stale": false
+      "stale": false,
+      "amended_from": "sha256:53cef10d934d",
+      "amended_at": "2026-10-03T19:46:15.153Z",
+      "amendment": {
+        "reason": "consistency-check section_references BROKEN : le renvoi '18-external-contracts.md (§ 7, question 2)' ne nomme pas la section de ce plan — 18-external-contracts.md n'a pas de § 7. La question 2 est celle de CE plan. Renvoi nomme, cible existante.",
+        "changes": [
+          ".forge/plans/2-2.md:784 — (§ 7, question 2) -> (2-2.md § 7, question 2)",
+          ".forge/plans/6-6.md:551 — 06-database.md § 4.7 -> § Rules, règle 7"
+        ],
+        "renumbered": null,
+        "added_sections": [],
+        "headings": {
+          "1": "Résumé de la slice",
+          "2": "Contrats de données (code)",
+          "3": "Algorithmes critiques",
+          "4": "Plan composants",
+          "5": "Gestion d'état (state management)",
+          "6": "Traçabilité des règles",
+          "7": "Pièges à éviter",
+          "8": "Dépendances",
+          "9": "Checklist de tâches",
+          "10": "Critères d'acceptation",
+          "11": "Plan de tests",
+          "2.1": "Schémas de validation",
+          "2.2": "Types et interfaces",
+          "2.3": "Contrats API",
+          "3.1": "Le parcours de bout en bout",
+          "3.2": "Les paragraphes : `br br` vaut paragraphe (règle « Required behaviour »)",
+          "3.3": "L'école des éléments, toutes branches (règle « Inline » et « Block »)",
+          "3.4": "Échappement, espaces, déterminisme (règles « Escaping », « Whitespace », 7)",
+          "3.5": "Le seuil « pas de vrai texte » (couvre **E22**, E18)",
+          "3.6": "La jointure multi-pages, et ce que cette slice voit (couvre **B8**, **E3**)",
+          "4.1": "Arbre de composants",
+          "4.2": "Composants",
+          "4.3": "États par écran",
+          "4.4": "Formulaires",
+          "6.1": "Règles métier (B*)",
+          "6.2": "Edge cases (E*)",
+          "6.3": "Contraintes (C*)",
+          "11.1": "Tests unitaires",
+          "11.2": "Tests de composants",
+          "11.3": "Tests d'intégration",
+          "11.4": "Tests E2E",
+          "11.5": "Vérifications manuelles"
+        }
+      }
     },
     "2-3": {
       "path": ".forge/plans/2-3.md",
@@ -2867,9 +2866,9 @@
     "2-6": {
       "path": ".forge/plans/2-6.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:b9ad869405e7",
-      "updated_at": "2026-10-03T06:27:54.322Z",
+      "updated_at": "2026-10-03T19:46:47.264Z",
       "depends_on": [
         "local-store"
       ],
@@ -3752,9 +3751,9 @@
     "6-3": {
       "path": ".forge/plans/6-3.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:e66b33213363",
-      "updated_at": "2026-10-03T06:27:55.677Z",
+      "updated_at": "2026-10-03T19:46:47.327Z",
       "depends_on": [
         "local-store"
       ],
@@ -3954,8 +3953,8 @@
       "path": ".forge/plans/6-6.md",
       "type": "implementation-plan",
       "status": "planned",
-      "content_hash": "sha256:5dfc8cc426ef",
-      "updated_at": "2026-10-03T06:27:55.919Z",
+      "content_hash": "sha256:1eadc56c8036",
+      "updated_at": "2026-10-03T19:46:39.082Z",
       "depends_on": [
         "0-5",
         "2-5",
@@ -3972,7 +3971,7 @@
         "E17"
       ],
       "plan_path": ".forge/plans/6-6.md",
-      "plan_hash": "sha256:5dfc8cc426ef",
+      "plan_hash": "sha256:1eadc56c8036",
       "headings": {
         "1": "Résumé de la slice",
         "2": "Contrats de données (code)",
@@ -4012,7 +4011,50 @@
         ".forge/design/design-system.md",
         ".forge/design/screens"
       ],
-      "stale": false
+      "stale": false,
+      "amended_from": "sha256:5dfc8cc426ef",
+      "amended_at": "2026-10-03T19:46:21.130Z",
+      "amendment": {
+        "reason": "consistency-check section_references BROKEN : '06-database.md § 4.7' ne designe aucune section — le fichier n'a que § Suggested initial tables, § Rules et § Mappers. La regle citee (index sur le chemin chaud du compte derive, regle 7 de § Rules) est la bonne ; le numero ne l'etait pas.",
+        "changes": [
+          ".forge/plans/2-2.md:784 — (§ 7, question 2) -> (2-2.md § 7, question 2)",
+          ".forge/plans/6-6.md:551 — 06-database.md § 4.7 -> § Rules, règle 7"
+        ],
+        "renumbered": null,
+        "added_sections": [],
+        "headings": {
+          "1": "Résumé de la slice",
+          "2": "Contrats de données (code)",
+          "3": "Algorithmes critiques",
+          "4": "Plan composants",
+          "5": "Gestion d'état (state management)",
+          "6": "Traçabilité des règles",
+          "7": "Pièges à éviter",
+          "8": "Dépendances",
+          "9": "Checklist de tâches",
+          "10": "Critères d'acceptation",
+          "11": "Plan de tests",
+          "2.1": "Schémas de validation",
+          "2.2": "Types et interfaces",
+          "2.3": "Contrats API",
+          "3.1": "La recherche par titre — **toutes** les branches (couvre **B45**)",
+          "3.2": "Le badge de non-ouverts (couvre **B14**)",
+          "3.3": "E6 et E7 — un téléchargement interrompu (couvre **E6**, **E7**)",
+          "3.4": "L'avertissement de titre similaire (couvre **B40**, **B2**)",
+          "4.1": "Arbre de composants",
+          "4.2": "Composants",
+          "4.3": "États par écran",
+          "4.4": "Formulaires",
+          "6.1": "Règles métier (B*)",
+          "6.2": "Edge cases (E*)",
+          "6.3": "Contraintes (C*)",
+          "11.1": "Tests unitaires",
+          "11.2": "Tests de composants",
+          "11.3": "Tests d'intégration",
+          "11.4": "Tests E2E",
+          "11.5": "Vérifications manuelles"
+        }
+      }
     },
     "6-7": {
       "path": ".forge/plans/6-7.md",
@@ -4433,20 +4475,20 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 275,
+      "register": 279,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 134,
+      "status_change": 146,
       "gate_approved": 4,
       "phase_status": 11,
-      "amend": 7,
+      "amend": 9,
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
       "finding_raised": 13,
       "fast_track_enter": 1,
-      "finding_promoted": 1,
+      "finding_promoted": 12,
       "script_failure": 3,
       "user_correction": 1
     }
@@ -4507,78 +4549,84 @@
       "domain": "data-and-state.md",
       "severity": "MEDIUM",
       "origin": "phase4-red-team",
-      "status": "open",
+      "status": "resolved",
       "summary": "state.json n'a aucun verbe pour retirer une slice — ni unregister, ni un statut 'withdrawn' (le vocabulaire est identified|planned|in_progress|implemented|validated). Retirer 6-8 et 6-9 du graphe a exigé une édition manuelle du JSON d'état, qui casse state_schema_clean.",
       "correction": "Correctif: les deux slices sont retirées, le motif est écrit dans architecture.md § 3.1, dependency-check ne les voit plus (33 nœuds, 12 vagues), et ce finding acte l'absence de verbe. Outil Forge en lecture seule — demander un verbe unregister avant la Phase 5, sinon le prochain slice retiré exige la même surgery.",
       "artifact": null,
       "raised_at": "2026-10-02T20:56:05.973Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "data-and-state.md",
+      "resolved_at": "2026-10-03T19:39:12.477Z",
+      "retired_at": "2026-10-03T19:39:12.477Z"
     },
     {
       "id": "F-002",
       "domain": "data-and-state.md",
       "severity": "LOW",
       "origin": "phase4",
-      "status": "open",
+      "status": "resolved",
       "summary": "coverage-check.js prd exige cinq titres de section en FRANÇAIS et les déclare MANQUANTS alors que .forge/prd.md les a en anglais (§ 1 Executive summary, § 2 Users and personas, § 4 Business rules, § 5 Constraints, § 9 Out of scope). Faux positif de locale, pas une lacune de contenu.",
       "correction": "Preuve que la garde fonctionne: renommer un seul titre en français fait disparaître exactement une défaillance, l'annuler la restaure. Ne pas traduire le PRD pour satisfaire une garde — 06-database.md interdit de dégrader une exigence pour faire passer un outil. Troisième faux positif connu de la Phase 4, avec version_pins_agree et fast-track (clé canonique design_system).",
       "artifact": null,
       "raised_at": "2026-10-02T20:56:06.031Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "testing.md",
+      "resolved_at": "2026-10-03T19:39:12.559Z",
+      "retired_at": "2026-10-03T19:39:12.559Z"
     },
     {
       "id": "F-003",
       "domain": "data-and-state.md",
       "severity": "MEDIUM",
       "origin": "phase5",
-      "status": "open",
+      "status": "resolved",
       "summary": "coverage-check.js slice <projet> <clé> échoue avec 'Slice not found in state.json' pour une FONDATION, car checkSlice() lit state.slices et jamais state.foundations. Les cinq fondations ne sont donc jamais vérifiées mécaniquement.",
       "correction": "Correctif: check_plans.py couvre les fondations en lisant state.foundations, et README.md § 2 le déclare. Mais le finding lui-même doit exister dans state.json — trois agents l'ont cité par son identifiant avant qu'il soit enregistré, ce qui est un signal que la convention « findings » n'est pas encore appliquée. Outil Forge en lecture seule : demander un bool --foundation.",
       "artifact": null,
       "raised_at": "2026-10-02T22:21:45.348Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "testing.md",
+      "resolved_at": "2026-10-03T19:39:12.647Z",
+      "retired_at": "2026-10-03T19:39:12.647Z"
     },
     {
       "id": "F-004",
       "domain": "workflow.md",
       "severity": "MEDIUM",
       "origin": "session6-factcheck",
-      "status": "open",
+      "status": "resolved",
       "summary": "forge-guard no_undecided_slots exige que le marqueur soit SEUL dans sa cellule. « — Framework : À DÉCIDER EN PHASE 4 — blocked on a runnable target (Q-003) » est donc lu comme une phrase commençant par le marqueur, pas comme une case. Quatre placeholders réels ont survécu dans conventions.md pendant que la garde disait le fichier propre.",
       "correction": "Correctif: les quatre cases sont remplies (framework integration_test, pattern, emplacement, commande) et la gardeouse du défaut est consignée dans conventions.md comme finding F-004. Outil Forge en lecture seule : le motif devrait trouver « À DÉCIDER » n'importe où dans une cellule de liste, pas seulement seul. Aucun mécanisme du projet ne peut détecter cette forme — c'est le sixième 'la garde passe et le défaut reste'.",
       "artifact": null,
       "raised_at": "2026-10-03T03:50:25.011Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "workflow.md",
+      "resolved_at": "2026-10-03T19:39:12.715Z",
+      "retired_at": "2026-10-03T19:39:12.715Z"
     },
     {
       "id": "F-005",
       "domain": "testing.md",
       "severity": "majeur",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "forge-guard version_pins_agree is a false positive: it scans .dart_tool/package_graph.json and reads the JSON field named 'version' as if it were a package name, emitting one conflict that lists 100+ unrelated versions. Verified 2026-10-03 to fail on a tree whose pubspec.lock is unchanged, so it is a pre-existing checker bug and not a dependency conflict.",
       "correction": "Exclude .dart_tool/ from the version-pin scan, or keep only keys that resolve to real packages in pubspec.lock. Until it is fixed, version_pins_agree must be read as noise -- which is precisely how a genuine version conflict would be waved through.",
       "artifact": null,
       "raised_at": "2026-10-03T05:53:56.262Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "testing.md",
+      "resolved_at": "2026-10-03T19:39:12.821Z",
+      "retired_at": "2026-10-03T19:39:12.821Z"
     },
     {
       "id": "F-006",
       "domain": "workflow.md",
       "severity": "majeur",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "consistency-check.js section_references reports 3 'references_to_unknown_file' that are not defects: .opencode/rules/ and .forge/plans/ are both absent from its index, so a document citing a rule file (18-external-contracts.md, 06-database.md) or a slice plan (localisation.md) is reported as pointing at nothing. Measured 2026-10-03 after the one genuine broken pointer (0-2.md citing architecture.md 6.11, a line number misread as a section) was fixed; broken is now 0.",
       "correction": "Extend referenceIndex to cover .opencode/rules/*.md and .forge/plans/*.md, or classify a target that exists on disk outside .forge as 'external target, not indexed' rather than 'unknown'. Until then section_references cannot pass, and a check that can never pass is a check nobody reads.",
       "artifact": null,
       "raised_at": "2026-10-03T06:14:00.451Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "workflow.md",
+      "resolved_at": "2026-10-03T19:39:12.897Z",
+      "retired_at": "2026-10-03T19:39:12.896Z"
     },
     {
       "id": "F-007",
@@ -4598,39 +4646,42 @@
       "domain": "data-and-state.md",
       "severity": "critique",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "check-stale overwrites plan_hash with the current file hash and saves it, so it can report plan_edited EXACTLY ONCE per plan: run 1 says stale, run 2 says 'stale: false' with nothing changed on disk. Measured 2026-10-03 -- five foundations went stale->ok across two runs and state.json gained 26 lines. It also silently updates the recorded hash, which is why the drift it reports disappears instead of persisting until a human acts. A gate that can only fail once is not a gate.",
       "correction": "Do not write plan_hash back inside check-stale. Either compare read-only and report, leaving the hash for an explicit /, or record the drift in a separate field (drifted_hash) so the finding survives. Add a selftest that runs check-stale twice on a mutated plan and asserts the second run still reports stale.",
       "artifact": null,
       "raised_at": "2026-10-03T06:25:58.888Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "data-and-state.md",
+      "resolved_at": "2026-10-03T19:39:12.992Z",
+      "retired_at": "2026-10-03T19:39:12.992Z"
     },
     {
       "id": "F-009",
       "domain": "data-and-state.md",
       "severity": "critique",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "Every foundation in state.json carries two wrong hashes and no gate detects either. For local-store: content_hash = b7187e2432d5, which is the hash of .forge/plans/local-store.md, while path names .forge/architecture.md (which hashes to 6216ebdb8c36); plan_hash = 367fc29dc1be matches NO committed version of that plan -- every one of its three commits hashes to b7187e2432d5. All 5 foundations mismatch; the 0-1 slice matches. forge-guard content_hashes_current checks 69 artefacts but does not cover foundations, so the corruption is invisible. Consequence: the staleness signal for all six foundations was fiction, in both directions -- it cried drift where there was none and would stay silent about real drift.",
       "correction": "Re-register the 6 foundations so content_hash is architecture.md's hash and plan_hash is the plan body's, then extend forge-guard's hash check to cover foundations. Until it covers them, a foundation's hashes cannot be trusted at all -- which also means forge-guard's 'content_hashes_current: pass' says nothing about 6 of the 38 nodes.",
       "artifact": null,
       "raised_at": "2026-10-03T06:25:58.938Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "data-and-state.md",
+      "resolved_at": "2026-10-03T19:39:13.075Z",
+      "retired_at": "2026-10-03T19:39:13.075Z"
     },
     {
       "id": "F-010",
       "domain": "data-and-state.md",
       "severity": "critique",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "SCOPE CORRECTION to F-009, measured not estimated: the corruption is systemic, not foundation-only. Across all 38 nodes, 37 have a content_hash that is NOT the hash of their path, and 31 have a plan_hash that is NOT the hash of their plan_path. Only 1 node's content_hash matched its path. The 7 nodes whose plan_hash appeared correct were exactly the ones state.js check-stale had just rewritten, which is F-008's self-heal masquerading as a fix. Separately verified: 37 of the 38 plan FILES are byte-identical to the Phase-5 approval commit b51fdad, and the only one that differs is 0-2, edited this session to fix a broken pointer and committed with that change documented. The plans are trustworthy; the bookkeeping was fiction in both directions -- it cried drift where there was none and would have stayed silent about real drift.",
       "correction": "Repaired in this pass by re-registering all 38 nodes at their plan paths, after which 38/38 are internally consistent (verified content_hash == hash(path) AND plan_hash == hash(plan_path) for every node). Still required: extend forge-guard's content_hashes_current to cover slices and foundations, since it checked 69 artefacts and none of the 38 nodes -- which is why 37 wrong hashes went unnoticed. Until it does, 'content_hashes_current: pass' says nothing about the graph.",
       "artifact": null,
       "raised_at": "2026-10-03T06:29:54.172Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "data-and-state.md",
+      "resolved_at": "2026-10-03T19:39:13.151Z",
+      "retired_at": "2026-10-03T19:39:13.150Z"
     },
     {
       "id": "F-012",
@@ -4650,26 +4701,28 @@
       "domain": "errors-and-loading-states.md",
       "severity": "majeur",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "MEASURED 2026-10-03, honest UA: Royal Road's / redirects 302 to /home and serves 200 with 118173 bytes of real markup, but every deep path returns 404 with zero fiction-list rows -- /fiction/1, /fictions/ratings, /fiction/best-rated, /fiction/updates, /fiction/ratings. ADR-014 recorded 'home, best-rated catalogue, real chapter' at 200 on 2026-10-02, so the catalogue and chapter URLs have moved. Wave 0's fixture capture needs a catalogue page and a chapter body; the home page alone cannot produce either.",
       "correction": "Find the current catalogue and chapter URLs and update 18-external-contracts.md, whose FanMTL section documents '/list/<tag>/<sort>-<page>.html' and whose Royal Road section documents a 'fiction-list' selector that no longer resolves. Until then 0-1 cannot capture fixtures for either v1 site, and 3-1's selectors are written against URLs that are measured dead.",
       "artifact": null,
       "raised_at": "2026-10-03T09:36:18.162Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "external-system-contracts.md",
+      "resolved_at": "2026-10-03T19:39:13.225Z",
+      "retired_at": "2026-10-03T19:39:13.225Z"
     },
     {
       "id": "F-014",
       "domain": "data-and-state.md",
       "severity": "majeur",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "state.json registers .forge/design/design-system.md under TWO keys, 'design-system' and 'design_system', with different content_hash values. Both were approved with the same hash; registering either updates only that key, so the other drifts and forge-guard reports content_hashes_current + no_content_drift as an out-of-band edit -- a wrong diagnosis that sends a reader looking for an editor rather than at a duplicate registration. Measured 2026-10-03 while amending design-system.md to close F-011.",
       "correction": "Have register() detect that the target path is already registered under another key and either refuse with the existing key named, or update both. Also add a guard check for two deliverable entries sharing one path, since 'two names for one artefact' is exactly the ambiguity the project already forbids for requirement ids.",
       "artifact": null,
       "raised_at": "2026-10-03T10:32:03.393Z",
-      "promoted_to": null,
-      "resolved_at": null
+      "promoted_to": "data-and-state.md",
+      "resolved_at": "2026-10-03T19:39:13.291Z",
+      "retired_at": "2026-10-03T19:39:13.290Z"
     }
   ]
 }
