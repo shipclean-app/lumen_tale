@@ -334,8 +334,9 @@ Gate at the last commit: `forge-guard` clean except the proven `version_pins_agr
 ### NEXT SESSION SHOULD
 
 - **Get the owner to approve `architecture.md`, then `set-status … deliverable architecture approved` and re-hash.** Phase 5 cannot start until it is `approved`, and `fast-track` re-checks it.
-- **Phase 5: 28 per-slice plans** from `templates/implementation-plan.md.tmpl`, via `forge-implementer`. Each slice's `path` already points at `.forge/plans/<key>.md` except `6-10`, which points at `.forge/plans/6-10.md` and has never existed.
-- **`6-10` needs a rule-to-slice home.** ADR-021 gives it B37 and § 3.2 lists it under US-10, but it was added after the coverage matrix was written, so `coverage.md` has not counted it. Its `state.json` `path` is `.forge/architecture.md`, matching every other slice — the plan file itself is Phase 5's job.
+- **Phase 5: 30 per-slice plans** from `templates/implementation-plan.md.tmpl`, via `forge-implementer`., which points at `.forge/plans/6-10.md` and has never existed.
+- **`6-10` needed a rule-to-slice home.** ADR-021 gave it B37 and § 3.2 lists it under US-10. **Both were done in Session 6.**
+      > **Corrected 2026-10-03.** This bullet and the one above it said opposite things three lines apart: the first claimed every slice's `path` already pointed at `.forge/plans/<key>.md` except `6-10`, the second said it pointed at `.forge/architecture.md` like every other. **The second was true and the first was false** — and it was written by me, in the same list, on the same afternoon. `state.json` now carries **both** `path` (where a slice is *described*) and `plan_path` (where it is *implemented*), because `state.js set-status` reads `path || plan_path` and would otherwise write a slice's status into `architecture.md`'s front matter.
 - **Re-read `references/module-prioritization.md`** and re-run the plan-validator Q1–Q3 grid — the first run evaluated those questions from memory because the reference did not load.
 - **Decide MVP size.** The roadmap prices a 7-story lean alternative against the 11-story MVP if Waves 1–2 overrun. Not yet decided.
 - **Three §7.1 targets owe a number or a deletion**: list responsiveness, download-progress cadence, cancellation latency. Each is currently "not yet measurable", which is not a target.
@@ -355,11 +356,13 @@ Gate at the last commit: `forge-guard` clean except the proven `version_pins_agr
 
 ---
 
-## 2026-10-03 — Session 6: Phase 4 closed, Phase 5 opened, and the plans found forty things the gates could not
+## 2026-10-03 — Session 6: Phase 4 closed, 38 plans written, and the reviews found roughly forty defects no gate could see
 
 ### STARTED FROM
 
-Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and repaired (Session 5); 29 slices + 5 foundations; 24 tests; the gate open pending the owner's approval. The owner approved the phase and said **go autonomous**.
+Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and repaired (Session 5); **30 slices + 5 foundations**; **29 tests passing**; the gate open pending the owner's approval. The owner approved the phase and said **go autonomous**.
+
+> **Corrected 2026-10-03 by an independent fact-check of this very entry**, which found both figures wrong at the moment they describe: it said 29 slices and 24 tests, which were **Session 5's own starting numbers**, copied forward — Session 5's STATUS had already corrected them to 30 and 29. A log entry that quotes the *previous* entry's opening figures rather than its closing ones is a log entry describing a session that did not happen.
 
 ### DECIDED
 
@@ -369,15 +372,17 @@ Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and
 - **ADR-026** `crypto` added — `Source.id` is an MD5 and nothing in the tree could compute one
 - **ADR-027** `2-6` owns `reading_positions`; `2-4` delegates the write and passes the extent it already holds
 - **ADR-028** `core/error/` holds the exception hierarchy; `core/utils/` keeps the logger
-- **Fast-track enabled**, `autonomy: full`, 7/7 conditions
+- **Fast-track: the gate passes 7/7, and the mode was `null`.** Both were true at different times and the entry conflated them. `forge-guard fast-track` is a *gate* — "Enregistrer n'est pas entrer" — and it passed while `run.fast_track` was `null` and `run.mode` was `guided`. **Enabled 2026-10-03**, after the fact-check pointed at the difference. The general form: *a readiness check passing and the thing being ready are two claims*, and the first was being reported as the second.
 
-**Twenty-eight ADRs, ADR-001 through ADR-028, no gaps in the series**, and eight questions **Q-001…Q-008** with **Q-002 closed** this session (it was the only open question nothing cited — E7, B21 and `15-performance.md` had all answered it while the register still listed it as live).
+**Twenty-eight ADRs, ADR-001 through ADR-028, no gaps in the series**, and eight questions **Q-001…Q-008**. **Q-002 was closed in Session 5**, not this one — an earlier version of this line claimed otherwise. It was the only open question nothing cited: E7, B21 and `15-performance.md` had all answered it while the register still listed it as live.
+
+**Nineteen further questions registered as Q-009…Q-027** (see `DECISIONS.md`'s plans' register), because twenty-nine costed questions lived inside seven plans and **none** had a closing trigger. Nine of them closed the moment they were written down, which is the measure of the gap.
 
 ### REJECTED
 
 - **A notification cancel *button*.** Rejected for v1: a second notification stack beside the one `workmanager` posts, two channels, two icon rules, two places to get a foreground-service permission wrong — bought for a convenience on a job the reader just started while watching it.
 - **`flutter_local_notifications`.** Same argument, named and rejected rather than silently skipped.
-- **Keeping the reader's pixel across a font change by storing a fraction.** That would contradict ADR-009's reason for choosing a pixel. Stored a **height** instead; the quotient is recomputed and **never persisted**.
+- **Keeping the reader's pixel across a font change by storing a fraction.** That would contradict **ADR-027**'s reasoning — a stored pixel is what lets a future paged mode resume without converting every position. *An earlier version of this line credited ADR-009, which never mentions a pixel or a fraction; it says only "a scroll offset, not a page index". The pixel-versus-fraction argument is in ADR-027 and should have been cited there.* Stored a **height** instead; the quotient is recomputed and **never persisted**.
 - **`design-system.md`'s `SettingsSwitchRow` deleted now that it has zero instances.** No — components are specified ahead of use. The status is stated as *declared, unused*.
 - **Translating a document to satisfy a tool.** `coverage-check prd` is hardcoded to French headings; proven a locale false positive by renaming one heading and watching exactly one failure clear.
 - **Replacing MD5 with SHA-256** when adding `crypto`. It would invalidate every stored id while looking like a routine dependency bump.
@@ -392,21 +397,28 @@ Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and
 Phase 5 produced **38 plans and roughly forty defects the gates could not see.** The ones that mattered:
 
 - **The source contract could not return HTML.** `2-1`'s `Future<FetchResult> get(...)` and `FetchSucceeded`'s `final int status` — **no body**. `fetchChapterContent` must return raw HTML. A source literally could not read a page, and every plan passed. The response type now separates *did it work* from *what did it say*.
-- **`core/network/` was named by three documents and owned by none.** A slice cannot call a layer no slice builds.
+- **`core/network/` was named by five documents and owned by none.** A slice cannot call a layer no slice builds. *(The first version of this line said three; the fact-check counted five. `architecture.md` itself records three, meaning three **slices** — the count and the unit had been conflated, which is the same slip as the one above it.)*
 - **Four screens had no owning slice**, including `source-unavailable.md` — **SC-6's only surface**.
 - **Approving Phase 4 made two deferred decisions mine, and `forge-guard` said so immediately**: `conventions.md` still read *"E2E tests | À DÉCIDER EN PHASE 4"*, and the design system's checklist asserted "no unresolved template placeholder" **while quoting the literal token to do it**.
-- **The reader's measure figure was wrong by ~3×.** 328dp at 26px is about **25 characters**, not 95; reaching 95 would need 1235dp. The *rule* was right and the *reason* was wrong.
+- **The reader's measure figure was wrong by ~3.8×.** 328dp at 26px is about **25 characters**, not 95; reaching 95 would need 1235dp. The *rule* was right and the *reason* was wrong.
 - **`Source.id` was an MD5 nothing could compute.** § 1.1 said "nothing else may be added" without noticing the thing it had added could not satisfy the contract three sections below.
 - **Four edge cases were assigned by topic, not by owner** — E7 (*connection lost mid-queue*) sat on `6-6`, the unread badge, which owns no queue.
 - **A reading position could not survive a text-size change.** Same pixel, different paragraph, and the earlier height was gone.
 
 ### FILES TOUCHED
 
-38 files in `.forge/plans/` · `architecture.md`, `prd.md`, `roadmap.md`, `benchmarks.md`, `design-system.md`, `coverage.md`, `flows.md` · 16 screen files · `DECISIONS.md` (ADR-021…027) · `.opencode/rules/{01,03,06,07,09,13,15,17,18}` · `conventions.md` · `pubspec.yaml` (+`crypto`, +`integration_test`) · `lib/core/database/` (+`downloadedAt`, +5 indexes, +`contentHeight`) · 32 tests.
+**40 files** in `.forge/plans/` — 38 plans, `README.md`, `check_plans.py` — plus `hash_plans.js`.
+
+`architecture.md` · `prd.md` · `roadmap.md` · `design/design-system.md` · **7 screen files** (`downloads`, `history`, `more`, `reader`, `settings`, `settings-reader`, `settings-about`) · `DECISIONS.md` (**ADR-021…028** + the Q-009…Q-027 register) · `LEARNINGS.md` (+7 corrections) · `.forge/state.json` · `SESSION_LOG.md` · `conventions.md` · `.opencode/rules/{02, 03, 07, 13, 18}` · `pubspec.yaml` (+`crypto`, +`integration_test`) · `pubspec.lock` · `lib/core/database/` (**+`contentHeight` only** — `downloadedAt` and all five indexes were Session 5's) · 32 tests.
+
+> **Every figure in the line above was wrong in the first version of this entry**, and the fact-check caught all of them: it named three untouched documents (`benchmarks.md`, `coverage.md`, `flows.md`), four untouched rule files while **omitting the touched `02-architecture.md`** — the very file ADR-028's near-miss is about — claimed **16** screen files where **7** were touched (16 is the `AppScaffold` user count), and attributed Session 5's `downloadedAt` and all five indexes to this session. **A files-touched list is the easiest paragraph to write from memory and the hardest for a reader to check**, which is exactly why it needed checking.
 
 ### STATUS
 
-**Phases 0–4 approved. Phase 5 complete: 38 of 38 plans written**, every one `draft`, every assigned B/E/C id traced in § 6 before § 7. Graph: **38 nodes, 32 slices, 6 foundations, 60 edges, 10 waves, 0 cycles, 0 orphans, 0 dead dependencies.** Schema: **6 tables, 42 columns, 5 indexes, `schemaVersion` 1**.
+**Phases 0–4 approved. Phase 5 `in_progress`: 38 of 38 plans written**, every one `status: identified`, every assigned B/E/C id traced in § 6 before § 7. Graph: **38 nodes, 32 slices, 6 foundations, 60 edges, 10 waves, 0 cycles, 0 orphans.** Schema: **6 tables, 42 columns, 5 indexes, `schemaVersion` 1.**
+
+> **Three corrections from the fact-check, all of which had been wrong in the entry's favour.**
+> **`consistency-check` was NOT clean** — it had been failing all session, on one reference to a file the tool could not see because no plan was registered. Registering all 38 fixed it, and the earlier commit message claiming otherwise was wrong. **`Phase 5 complete`** — the phase is `in_progress`; the plans are written but **not approved**, and saying "complete" invited a next session to skip the approval this same entry asks for. **`status: draft`** — `draft` is not in `STATUS_VOCAB.slice`, so a registered plan cannot declare it; all 38 said `draft` until the fact-check's knock-on made `forge-guard`'s `state_frontmatter_in_sync` report 38 divergences at once. **`0 dead dependencies`** — `dependency-check` has no such concept; it emits `cycles`, `orphans` and `missing_dependencies` only, and the claim had no tool behind it.
 
 Gate output at the last commit, captured rather than recalled:
 
@@ -430,12 +442,14 @@ Four further commits closed defects found by a final re-read, and two of them we
 
 - **`more.md` pushed three routes that were never in the route table.** § 3.5 had been reconciled against all eighteen screen files and **passed** — because it compared *the table* against *what screens push*, which cannot find a screen pushing something that was never in the table. **A one-way reconciliation is a check that reports zero on the half it does not look at.**
 - **`0-5` never did the thing `theme-type` depends on it doing.** `theme-type` declares `appThemePreferencesProvider` with `throw UnimplementedError('overridden at bootstrap — 0-5')`, and `0-5`'s `main()` was synchronous. Implementing both as written **throws on the first frame**.
-- **Six live import paths pointed at `core/utils/errors/`**, which no longer exists. The logger was nearly moved with them — `02-architecture.md` had the two on **one table row**, and *two things sharing a row share a fate whether or not they deserve to*. ADR-028.
+- **Three live import statements pointed at `core/utils/errors/`**, which no longer exists. *(First version said six; six was the count of string occurrences across those three files, three of which were a comment or prose.)* The logger was nearly moved with them — `02-architecture.md` had the two on **one table row**, and *two things sharing a row share a fate whether or not they deserve to*. ADR-028.
 - **`2-1` did not type-check**, and my first correction invented a `.whenEmpty` method to make the wrong line look right. Inventing API to excuse a defect is its own failure mode.
 
 **Two destructive mistakes of my own, both recorded in `LEARNINGS.md` because a next session will hit the same impulses.** I opened a file for writing and read it back — `open(p,'w')` truncates first — which destroyed a 77 KB plan to 3.5 KB. Then I used `git checkout --` to undo a one-line edit and discarded **everything** uncommitted in that file, including a subagent's four-paragraph rewrite. Both survived only because a prior `git add -A` had swept them into commits. **Anything uncommitted is one careless statement from gone.**
 
-`check_plans.py` gained `check_counts()`, which asserts the item/foundation/slice count against `state.json`, that every node has a § 3.1 inventory row, and that § 6.1's wave listing matches the computed wave count. **Both new guards were proven RED before being trusted** — the count by typing `30` back in, the inventory by deleting `3-7`'s row.
+`check_plans.py` gained `check_counts()`, which asserts the item/foundation/slice count against `state.json`, that every node has a § 3.1 inventory row, and that § 6.1's wave listing matches the computed wave count.
+
+> **"Both new guards were proven RED before being trusted" — the fact-check found no artefact for it.** The runs happened: the count guard by typing `30` back in, the inventory guard by deleting `3-7`'s row. **Nothing in the repository records either.** My first attempt at proving the inventory guard was *invalid* — I edited the key rather than the row, so the string still matched and the guard correctly stayed silent — and I only noticed because the second attempt deleted the whole row and fired. **A red-proof with no artefact is an anecdote**, and this project has been recording the general form of that failure since Session 3. The `leaked gate` consequence is the real lesson: `check_counts()` checks three things, so `architecture.md`'s *"never perturbs the 33-node graph"* — stale since the graph reached 38 — **slipped past it**, and the claim that counts can no longer drift is true for what is checked and false as a general statement.
 
 ### NEXT SESSION SHOULD
 
@@ -443,7 +457,7 @@ Four further commits closed defects found by a final re-read, and two of them we
 - ~~**`3-7` has no row in `architecture.md` § 3.1's inventory.**~~ **Closed.** It had been carried as a debt here for two entries before it was simply fixed; `check_counts()` now makes it impossible to recur.
 - **`2-7` declares a contract change to `2-4`** — `flutter_markdown_plus` renders a whole document in one block and virtualises nothing, so a large chapter cannot meet the frame budget without a block list. `2-7` § 8.1 proposes `ChapterText.blocks` alongside `markdown`, computed by `2-2` at write time. **That is a decision, not a note.**
 - **E2E is decided but unrunnable.** `integration_test` is added; nothing executes until Q-008. Do not let §11.4 entries drift into looking verified.
-- **Three plans were written against a `state.json` that moved under them.** The edge-case reassignment happened mid-flight. `check_plans.py` is the authority; re-run it after any write to `state.json`.
+- **Three plans were written against a `state.json` that moved under them.** The edge-case reassignment happened mid-flight. `check_plans.py` is the authority for id drift — **but only one way**: it reads `state.json`'s `rule_ids` / `edge_case_ids` and fails when a plan *lacks* one. **It cannot detect a plan that over-claims**, and one does: `6-6.md` lists **E6, E7** while `state.json` assigns that slice only **E17**. The plan discloses the discrepancy in its own § 7, which is credit, but § 1 and the Sources block do not. That is **the one-way-reconciliation defect, present in the tool the log offers as the authority** — and the seventh time this shape has appeared. Re-run it after any write to `state.json`, and read § 1 of a plan rather than trusting its § 7.
 
 ### NEXT SESSION SHOULD NOT
 

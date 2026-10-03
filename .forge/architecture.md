@@ -283,7 +283,7 @@ Two **drills**, from the roadmap's milestone waves. They are verification, not i
 
 | Field | Value |
 |---|---|
-| **Key** | `gate:upgrade-safety` — not a slice key, so it never appears in `state.json`'s `slices` and never perturbs the 33-node graph |
+| **Key** | `gate:upgrade-safety` — not a slice key, so it never appears in `state.json`'s `slices` and never perturbs the **38-node** graph |
 | **Runs at** | Roadmap Wave 4 (MVP) and Wave 7 (V1). **Twice**, deliberately: the second run is with a larger library, which is the only way to notice a migration that only breaks at size |
 | **Blocked by** | **Q-008** — a real device. It cannot be run here, and neither gate can close without it |
 

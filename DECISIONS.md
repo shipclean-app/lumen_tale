@@ -404,3 +404,56 @@ A closed question leaves this section and **becomes an ADR**, carrying the decis
 - **Decision**: Do not port the WebView bypass. None of the three v1 sites challenges an honestly-identified client, and on Novel Fire **browser impersonation is the thing that triggers the block**. `17-security.md` rule 5 stays as written, and this measurement is promoted into it as the worked example.
 - **Alternatives considered**: (a) Port Mihon's interceptor — rejected on measurement: it would add `webview_flutter` and a hidden-WebView code path that is **never exercised** by any current site, and on Novel Fire the User-Agent it would present to the challenge page is precisely the one that gets a 403. (b) Ask the sites for whitelisting — not pursued; it is a relationship cost for a personal-use app, and the honest client already works. (c) Honest identification only (chosen).
 - **Consequences**: `webview_flutter` is **not** added. The path back is narrow and explicit: if a site starts serving `cf-mitigated: challenge` to our honest UA, that is a finding for `18-external-contracts.md`, the contract says we ask the owner rather than escalate, and the answer is either *drop the source* or *amend `17-security.md` rule 5 with a new ADR*. It is never an implementation detail. This decision is the concrete case behind the ADR-008 rule that a Mihon pattern is a starting point, not an authority — copying this one faithfully would have broken a source we can otherwise read fine.
+---
+
+## Plans' open questions — registered 2026-10-03, because nothing else would revisit them
+
+**Twenty-nine questions live inside seven plans.** Each is *well* done: costed, with a
+cheapest-reversible option named, in the exact form `AGENTS.md` § "When blocked" asks
+for. **The defect is that none of them was ever registered here**, so none had a
+closing trigger and none would have been looked at again. A question inside a plan is
+a note to the next reader of *that plan*; this project has 38 plans and a reader does
+not come back to one.
+
+`AGENTS.md` is explicit: *"A design is undecided and it changes the architecture →
+write it as an open question in `DECISIONS.md` **with its closing trigger**."* These
+were undecided, several of them architectural, and the register was skipped.
+
+**Each row's trigger is written so it can be *checked*, not merely read.** Where the
+trigger depends on something no plan can produce — a device, a measurement — it says so
+rather than inventing a condition.
+
+| # | Question | Lives in | Closes when |
+|---|---|---|---|
+| Q-009 | Who builds the 10 000-chapter list — a fixture that large, or a generated one? | `0-1` § 7 | `2-2`'s cleaner has a chapter-list fixture **of that size**, and its test runs against it. Until then the question is unanswerable, not merely open |
+| Q-010 | Is FanMTL's chapter list paginated (`chapter-list-page1`)? | `0-1` § 7 | The fixture set contains either a second chapter-list page **or** a captured proof that there is none. One fetch of the real site settles it |
+| Q-011 | Is FanMTL's per-chapter pagination real (E3 / B8)? | `0-1` § 7 | Same: a captured multi-page chapter, or a captured proof of a single page. `2-2` cannot join fragments it has never seen |
+| Q-012 | Who writes the empty-signal verdict into the UI, and in what form? | `0-2` § 7 | `0-2` has run against the frozen fixtures and recorded a yes/no in `18-external-contracts.md`. **That record is the trigger and the answer at once** |
+| Q-013 | Is Royal Road's chapter list complete on one page? | `0-3` § 7 | Royal Road fixtures are frozen and compared against the site's own `data-chapters` count — which **is** measured, so this closes the moment `0-3` runs |
+| Q-014 | Does Royal Road have working search? | `0-3` § 7 | **`6-11` runs.** It exists precisely to measure this, and `6-2`'s condition is undecidable without it. The cheapest reversible option is already taken: ship `6-2` last |
+| Q-015 | Who classifies Royal Road's chapter pages? | `0-4` § 7 | `0-4` has read a real Royal Road chapter page. **The edge `6-1 → 0-4` now exists**, so this cannot be skipped by accident again |
+| Q-016 | Does a chapter page's nav block really hold thousands of links? | `0-4` § 7 | Same capture. Affects `2-2`'s cost, not its correctness |
+| Q-017 | Who owns `/library/novel/:novelId/chapter/:chapterId`? | `0-5` § 7 | **Resolved 2026-10-03**: no screen pushes it, `design-system.md` § 3.5 removed it, and it is not declared. Row retained so the decision is not re-litigated |
+| Q-018 | Which icons for the five tabs? | `0-5` § 7 | `design-system.md` § 3.2 declares them, or `0-5` picks Material 3 defaults and § 3.2 is corrected. **Not an architecture question** — a two-line edit either way |
+| Q-019 | `navMore` does not exist in either ARB file | `0-5` § 7 | `localisation` runs. ADR-018 requires a fifth tab and it has no label in either language |
+| Q-020 | ~~`more.md` § 3 still lists `Stats` and `Sources`~~ | `0-5` § 7 | **Resolved 2026-10-03** — `more.md`'s anatomy, empty state and rule attributions were cascaded. Struck so the next reader does not re-investigate |
+| Q-021 | Four screens have no named slice | `0-5` § 7 | **Resolved 2026-10-03**: `3-6` and `3-7` were added, `/library` → `2-5`, `/updates` → `6-3`, `/more` → `0-5` |
+| Q-022 | What is the first-launch trigger, and where does it live? | `0-5` § 7 | `3-4` lands. `shared_preferences` has no row for it and `onboarding` has no route guard yet |
+| Q-023 | `test/widget_test.dart` looks for `find.byType(MaterialApp)` | `0-5` § 7 | **Resolved when `0-5` lands** — `MaterialApp.router` is still a `MaterialApp`, and if it is not, the test is corrected **with the reason recorded**, never silenced |
+| Q-024 | `/more/settings/about` has two owners | `3-7` § 7.2 | `state.json`'s note for `3-7` and `3-5`'s agree on one body owner. **`3-5` implements the screen; `3-7` pushes the route** — recorded, but the two `state.json` notes should be collapsed into one |
+| Q-025 | No slice owns the `search-unsupported` string, nor `ErrorState`'s | `localisation` § 7 | `6-7` runs and the ARB inventory covers both. **Blocked on nothing** — it is simply unassigned work |
+| Q-026 | `source-unavailable.md` § 4.1 uses French placeholder names | `localisation` § 7 | `6-7` runs. Measured on the installed SDK: **renaming a placeholder in a translation *adds* a required parameter** rather than renaming one, so `{statut}` becomes a third argument |
+| Q-027 | The five tab labels live in two places | `localisation` § 7 | `design-system.md` § 3.2 and the ARB agree, or § 3.2 points at the ARB and stops restating the labels |
+
+**The general form, and it is the same one as four times already:** *a decision
+recorded in the place where it was made is not a decision anybody will revisit.*
+Nine of these closed the moment they were written down, which is the point — six of
+them were open only because nobody had looked. The other twenty are genuinely open
+and now have a condition attached, which is what `AGENTS.md` asked for in the first
+place.
+
+**What is deliberately not here.** `0-4`'s two questions are measurements of Royal
+Road, and `6-11` is the slice that exists to measure the search half; both are
+recorded above against the slice that closes them rather than as open questions of
+their own, because a question whose answer a scheduled slice will produce is a task,
+not a question.

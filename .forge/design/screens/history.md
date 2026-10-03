@@ -33,6 +33,15 @@ flow: library-loop
 
 > The source of truth for generating this screen. It is the app's most **read-only** surface and its clearest statement of B46: what you opened is not where you stopped. The retention sheet is specified in § 11.
 
+> **One fact, one authority — and this file is the fifth place that has had to learn it.**
+> The retention window was written here **four different ways in one file**: four options, three options, five options, and four-plus-forever, across six copies (§ 3, § 5 twice, § 7, § 8, § 11.1), while `settings.md` § 8, `design-system.md` § 2.12, `6-5` § 2.2 and `3-7` § 3.3 all said five. **The form, for any fact that lives in more than one document:**
+>
+> 1. **Name one authority** — the most specific document that states the fact *for the thing itself*. Here: `settings.md` § 8 (`enum(1w|1m|3m|1y|2y)`) and `6-5` § 2.2 (`HistoryRetention`) own the value list; **this file owns the wording only** and must not restate the list.
+> 2. **Every copy says whose copy it is**, with the authority's name and section. A copy that does not name its source is a copy that will be edited independently the next time.
+> 3. **Never assert a count or a list twice in two wordings.** Write *the same five*, link, and stop — the count lives in exactly one place.
+> 4. **A new copy is written in the same edit that makes it true.** A copy added later, in a later session, is a copy nobody has checked.
+> 5. **An approved screen is not a safe place for a stale copy.** This file is `status: approved` and every gate reads all of it, so a wrong value here is a wrong value in the product. What was corrected was not a typo: it was **a control that does not exist in the design** (`Keep everything`, which B47 exists to forbid) and **a `three years` window that appears in no other document in the project**.
+
 ---
 
 ## 1. Role of the screen
@@ -91,7 +100,7 @@ AppScaffold (titleBar, bottomNav)
 ├── BoundNotice                --color-surface-raised, --radius-lg, --space-md padding
 │   ├── NoticeText             "This is what you opened, not where you stopped.
 │   │                           Clearing it never moves a remembered position."   (B46)
-│   ├── RetentionLink          "Keep for one year"  → RetentionSheet (§ 11)         (B47)
+│   ├── RetentionLink          "Keep for one year"  → SettingsChoiceSheet (§ 11)    (B47)
 │   └── ClearLink              "Clear history"      → ConfirmDialog
 ├── HistoryList                full-bleed rows, --space-md padding, --color-border rules
 │   ├── DayGroupHeader ×N      --text-overline, "TODAY" · "YESTERDAY" · "THURSDAY 12 MARCH"
@@ -100,7 +109,7 @@ AppScaffold (titleBar, bottomNav)
 │   │   ├── RowSecondary chapter title verbatim, one line, --text-body-sm       (B10)
 │   │   └── RowTertiary relative time, --text-caption, trailing
 │   └── TerminalLine           "This is the oldest entry kept. Entries older than one year are dropped."   (B47)
-└── RetentionSheet · ConfirmDialog · SnackBarHost · EmptyState · ErrorState · LoadingState
+└── SettingsChoiceSheet · ConfirmDialog · SnackBarHost · EmptyState · ErrorState · LoadingState
 ```
 
 | # | Component | Role | Source |
@@ -141,11 +150,11 @@ AppScaffold (titleBar, bottomNav)
 | Row — primary target | tap | **Open the reader at that chapter's stored position**, exactly as returning to it would (US-11's resume behaviour) | No transition into the reader | Reader at position | **B16**, **B17** |
 | Row — novel title region | tap | Push `/library/novel/:novelId` — the row's second destination, so a reader who wants the novel's other chapters does not have to go via the reader | Standard push, `--duration-normal` | Filled on the detail screen | — |
 | Row | long-press | **Nothing.** No per-row menu exists on this screen, and that is a decision rather than an omission: the only menu a log row could offer is *delete*, and delete here would have to mean "remove this line from a list", which no reader wants and B46's subject matter makes dangerous to gesture toward | — | Unchanged | **B46** |
-| Retention link | tap | Open `RetentionSheet` (§ 11) — **three months · one year (default) · three years · keep everything** | Sheet slides up `--duration-normal`, `--shadow-sheet` | Filled + sheet | **B47** |
+| Retention link | tap | Open `SettingsChoiceSheet` (§ 11) — the **same five windows `settings.md` offers**: `1 week · 1 month · 3 months · 1 year (default) · 2 years`, and **no `Keep everything`** | Sheet slides up `--duration-normal`, `--shadow-sheet` | Filled + sheet | **B47** |
 | Retention sheet | tap an option | Change the window immediately, re-render the notice and the terminal line in place, close the sheet. **Entries are dropped by age, oldest first** — changing the window shorter than the current age drops entries, and the sheet says so before the reader picks: *Entries older than three months will be dropped now* | Notice and terminal line update; SnackBar names the new window | Filled | **B47** |
 | Clear history | tap | `ConfirmDialog`: **Your 96 entries will be removed. Your library, your downloads and every remembered reading position will be kept.** Cancel is the default; Clear is `danger` and says *Clear history* in full rather than *OK* | Dialog; then the empty-no-data (a) state and a SnackBar repeating the promise | Empty | **B46**, **B47** |
 | Day group header | — | A label, not a control. It is a semantic **header** for screen readers so the list can be traversed by date | — | — | — |
-| Terminal line | — | The stated bound at the end of the list: *This is the oldest entry kept. Entries older than one year are dropped.* With **keep everything** selected, the wording changes to *This is the oldest entry kept* and the second sentence disappears — a screen that claims a bound it is not applying would be the exact failure B47 was written to avoid | — | — | **B47** |
+| Terminal line | — | The stated bound at the end of the list: *This is the oldest entry kept. Entries older than one year are dropped.* The second sentence **names the selected window**, so it is rewritten in place whenever the window changes. **There is no unbounded case**: no `Keep everything` exists, so the second sentence is never absent and a list whose bound cannot be named cannot arise — a screen that claimed a bound it was not applying, or silently dropped one, would be the exact failure B47 was written to avoid | — | — | **B47** |
 | List | scroll | Day groups scroll with the list; nothing is pinned, because nothing here is being tracked while the reader reads | — | Filled | — |
 | List | pull-to-refresh | **Absent.** Every datum on this screen is already local and none of it changes without the reader acting, so a refresh gesture would be a spinner promising a fetch that does not exist | — | — | **C14** |
 | List | search / filter / sort | **Absent, permanently** — see § 2.1. The app searches titles in one place by rule (B45), and a log is read in the order it was written | — | — | **B45** |

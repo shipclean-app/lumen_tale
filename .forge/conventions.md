@@ -192,10 +192,21 @@ if (nodes.isEmpty) {
 
 ### Tests E2E
 
-- Framework : À DÉCIDER EN PHASE 4 — blocked on a runnable target (Q-003)
-- Pattern : À DÉCIDER EN PHASE 4
-- Emplacement : À DÉCIDER EN PHASE 4
-- Commande : À DÉCIDER EN PHASE 4
+- Framework : **`integration_test`** — the Flutter SDK package (`sdk: flutter`). Chosen 2026-10-02. The decision is the *absence* of a third-party runner: first-party, ships with the SDK, and adds nothing to the reader's APK
+- Pattern : `IntegrationTestWidgetsFlutterBinding` + `integration_test`'s own `tester`, driving real flows. **No driver, no Appium, no Patrol.** A reader is a phone app; testing it through a browser-automation harness would be testing the harness
+- Emplacement : `integration_test/` at the repository root — the SDK's own convention, and deliberately **not** under `test/`, so `flutter test` never tries to run an E2E that needs a device
+- Commande : `flutter test integration_test/ -d <device>`. **Blocked on a device (Q-008).** Until then these files are written and marked unrun; a test that cannot be executed is not a test
+- Trap : `flutter pub add dev:integration_test` resolves a same-named **pub.dev** package that predates null safety and fails to solve. The SDK form is `flutter pub add 'dev:integration_test:{"sdk":"flutter"}'`
+
+> **Four `À DÉCIDER EN PHASE 4` placeholders survived a fix that claimed to discharge
+> them, and `forge-guard`'s `no_undecided_slots` reported the file clean throughout.**
+> The cause is in the guard, and it is worth recording because it is a *shape*:
+> `isUndecidedSlotLine` requires the marker to be **alone in its cell**, so
+> `— Framework : À DÉCIDER EN PHASE 4 — blocked on a runnable target (Q-003)`
+> is read as a sentence that happens to begin with the marker, not as a slot. **A
+> guard that pattern-matches a word rather than a structure will pass on the
+> decorated form of the thing it is looking for** — and the decoration is the easiest
+> thing in the world to add by accident. Finding **F-004**.
 
 **Priorities.** P0: the converter, source parsing, chapter recognition, repository round-trips, domain value objects, route constants. P1: notifier state transitions via `ProviderContainer`. P2: shared component widget tests. `10-testing.md` is the authority.
 
@@ -245,7 +256,7 @@ Any rule specific to a single slice goes in that slice's implementation plan, de
 ## Checklist de gate
 
 - [x] Every decision (naming, structure, error handling, testing) is actionable.
-- [x] The target stack is fully specified; the only remaining `À DÉCIDER` is E2E, and it is blocked on a runnable target with the reason recorded (Q-003).
+- [x] The target stack is fully specified, **and the last E2E slot is now filled** — framework, pattern, location and command were all decided on 2026-10-02. **What remains is not a decision but a device**: the tests are written and unrun until **Q-008** closes (Q-003).
 - [x] No `À DÉCIDER AVANT LA PHASE 1` box remains — auth and session are resolved as *none by design* (ADR-010).
 - [x] No rule specific to a single slice.
 - [x] Commands are documented and functional — `flutter analyze` reports zero issues and `flutter test` passes on the current tree.

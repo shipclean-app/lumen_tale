@@ -27,7 +27,16 @@
     "id": "run-muqsrfuh",
     "started_at": "2026-10-02T10:05:10.265Z",
     "mode": "guided",
-    "fast_track": null
+    "fast_track": {
+      "enabled": true,
+      "entered_at": "2026-10-03T03:50:13.436Z",
+      "scope": "plans",
+      "autonomy": "full",
+      "current_artifact": null,
+      "attempts": {},
+      "checkpoint_reached": false,
+      "escape_reason": null
+    }
   },
   "current_phase": "5",
   "phases": {
@@ -52,7 +61,7 @@
       "completed_at": "2026-10-02T21:29:24.512Z"
     },
     "5_implementation_plan": {
-      "status": "not_started"
+      "status": "in_progress"
     },
     "6_validation": {
       "status": "not_started"
@@ -69,9 +78,9 @@
       "path": ".forge/conventions.md",
       "type": "conventions",
       "status": "approved",
-      "content_hash": "sha256:e3350b0ff81b",
+      "content_hash": "sha256:92d351f1152b",
       "headings": {},
-      "updated_at": "2026-10-03T03:29:35.274Z",
+      "updated_at": "2026-10-03T03:53:36.810Z",
       "derived_from": [
         ".forge/contract.md",
         ".forge/prd.md"
@@ -983,7 +992,7 @@
       "path": ".forge/architecture.md",
       "type": "architecture",
       "status": "approved",
-      "content_hash": "sha256:bd35ad373ca8",
+      "content_hash": "sha256:6216ebdb8c36",
       "headings": {
         "1": "Overview",
         "2": "Foundations",
@@ -1021,7 +1030,7 @@
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-03T03:30:32.621Z",
+      "updated_at": "2026-10-03T03:53:36.858Z",
       "derived_from": [
         ".forge/prd.md"
       ],
@@ -2630,7 +2639,7 @@
       "path": ".forge/architecture.md",
       "type": "0-5",
       "status": "identified",
-      "content_hash": "sha256:0584cb2896a3",
+      "content_hash": "sha256:1442476fd44d",
       "updated_at": "2026-10-02T21:15:00.000Z",
       "depends_on": [
         "theme-type",
@@ -2729,13 +2738,14 @@
       "client_answer": 4,
       "status_change": 93,
       "gate_approved": 4,
-      "phase_status": 4,
+      "phase_status": 5,
       "amend": 5,
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 35,
-      "finding_raised": 3
+      "finding_raised": 4,
+      "fast_track_enter": 1
     }
   },
   "divergences": [],
@@ -2825,6 +2835,19 @@
       "correction": "Correctif: check_plans.py couvre les fondations en lisant state.foundations, et README.md § 2 le déclare. Mais le finding lui-même doit exister dans state.json — trois agents l'ont cité par son identifiant avant qu'il soit enregistré, ce qui est un signal que la convention « findings » n'est pas encore appliquée. Outil Forge en lecture seule : demander un bool --foundation.",
       "artifact": null,
       "raised_at": "2026-10-02T22:21:45.348Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-004",
+      "domain": "workflow.md",
+      "severity": "MEDIUM",
+      "origin": "session6-factcheck",
+      "status": "open",
+      "summary": "forge-guard no_undecided_slots exige que le marqueur soit SEUL dans sa cellule. « — Framework : À DÉCIDER EN PHASE 4 — blocked on a runnable target (Q-003) » est donc lu comme une phrase commençant par le marqueur, pas comme une case. Quatre placeholders réels ont survécu dans conventions.md pendant que la garde disait le fichier propre.",
+      "correction": "Correctif: les quatre cases sont remplies (framework integration_test, pattern, emplacement, commande) et la gardeouse du défaut est consignée dans conventions.md comme finding F-004. Outil Forge en lecture seule : le motif devrait trouver « À DÉCIDER » n'importe où dans une cellule de liste, pas seulement seul. Aucun mécanisme du projet ne peut détecter cette forme — c'est le sixième 'la garde passe et le défaut reste'.",
+      "artifact": null,
+      "raised_at": "2026-10-03T03:50:25.011Z",
       "promoted_to": null,
       "resolved_at": null
     }
