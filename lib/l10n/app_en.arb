@@ -81,6 +81,30 @@
   "historyJustNow": "Just now",
   "historyMinutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
   "historyHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "aboutVersion": "Version {buildName} · build {buildNumber}",
+  "aboutProvenance": "Android phone · built automatically · no store",
+  "aboutCopyVersion": "Copy version number",
+  "aboutVersionUnreadable": "The installed version number could not be read.",
+  "aboutSnackCopied": "Version number copied.",
+  "aboutGuarantee": "Installing a new version keeps your library, your downloads, your reading positions and your history. Nothing is replaced or re-downloaded.",
+  "aboutDataLabel": "YOUR DATA ON THIS DEVICE",
+  "aboutDataLibrary": "Library",
+  "aboutDataDownloaded": "Downloaded chapters",
+  "aboutDataPositions": "Reading positions",
+  "aboutDataCountUnavailable": "—",
+  "aboutDataE11": "Nothing here is backed up anywhere. If you uninstall Lumen Tale or lose this phone, all three numbers go to zero and no copy exists. Installing a new version over this one does not touch them — that is the only guarantee this app makes about your data.",
+  "aboutPrivacyLabel": "WHAT LEAVES THIS DEVICE",
+  "aboutPrivacySent1": "A chapter's page — but only after you asked for it.",
+  "aboutPrivacySent2": "One request to check whether a newer version exists — only if you tap \"Check for a new version\".",
+  "aboutPrivacyNever1": "Your library",
+  "aboutPrivacyNever2": "Your reading positions",
+  "aboutPrivacyNever3": "Your history",
+  "aboutPrivacyNever4": "Your error logs",
+  "aboutPrivacyNever5": "Crash reports",
+  "aboutPrivacyNever6": "Analytics",
+  "aboutPrivacyNever7": "A device identifier",
+  "aboutPrivacyVerify": "Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.",
+  "aboutDeliveryBody": "This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.",
   "@chapterCount": {
     "description": "Number of chapters available for a novel.",
     "placeholders": {
@@ -335,5 +359,87 @@
         "example": "3"
       }
     }
+  },
+  "@aboutVersion": {
+    "description": "B43: the reader can determine which version is installed. `buildName` and `buildNumber` arrive from Flutter's build-time Dart defines (`FLUTTER_BUILD_NAME` / `FLUTTER_BUILD_NUMBER`, ADR-011) — the app reads pubspec at build time and never parses a file at runtime.",
+    "placeholders": {
+      "buildName": {
+        "type": "String",
+        "example": "0.9.0"
+      },
+      "buildNumber": {
+        "type": "String",
+        "example": "41"
+      }
+    }
+  },
+  "@aboutProvenance": {
+    "description": "How this build reached the reader. Three facts in one line, because a reader who installed a file by hand needs to know that is normal."
+  },
+  "@aboutCopyVersion": {
+    "description": "The clipboard button. C9 says the owner must be able to determine which version is installed, and pasting a version into a bug report is how that happens."
+  },
+  "@aboutVersionUnreadable": {
+    "description": "A real failure mode: the defines are absent in a plain `flutter test` and in an IDE run. **The rest of the screen renders completely** — `Version —` is forbidden, because an em dash looks like a version and C9 requires the version to be determinable."
+  },
+  "@aboutSnackCopied": {
+    "description": ""
+  },
+  "@aboutGuarantee": {
+    "description": "B31, and the one sentence § 4bis kept when it removed `UpdateBlock`. It is the only guarantee this app makes about the reader's data, so it is read out loud here rather than discovered after an upgrade."
+  },
+  "@aboutDataLabel": {
+    "description": "The recessed block's overline. Read as a heading."
+  },
+  "@aboutDataLibrary": {
+    "description": ""
+  },
+  "@aboutDataDownloaded": {
+    "description": ""
+  },
+  "@aboutDataPositions": {
+    "description": ""
+  },
+  "@aboutDataCountUnavailable": {
+    "description": "A count that could not be computed, and NOT a zero. The distinction is the whole reason the three figures are evidence for B31: a zero says 'you have none' and a dash says 'we could not look', and a reader who took the first for the second would re-download a library they still have."
+  },
+  "@aboutDataE11": {
+    "description": "E11, in full and unhedged. This app has no backup (ADR-010), so the disclosure belongs on the page that shows what would be lost — and it names the exact operation that does NOT lose it, because a disclosure that only lists risks reads as an apology."
+  },
+  "@aboutPrivacyLabel": {
+    "description": ""
+  },
+  "@aboutPrivacySent1": {
+    "description": ""
+  },
+  "@aboutPrivacySent2": {
+    "description": "⚠️ **Written for a control § 4bis removed.** The sentence is about a button this screen does not have. It is kept because the block's claim is about the APP's network posture rather than about the button: the app sends nothing on its own account, and if a version check returns the reader must already know that one request is the whole of it. If the check is ever built, this sentence is its first line and it is already true."
+  },
+  "@aboutPrivacyNever1": {
+    "description": ""
+  },
+  "@aboutPrivacyNever2": {
+    "description": ""
+  },
+  "@aboutPrivacyNever3": {
+    "description": ""
+  },
+  "@aboutPrivacyNever4": {
+    "description": ""
+  },
+  "@aboutPrivacyNever5": {
+    "description": ""
+  },
+  "@aboutPrivacyNever6": {
+    "description": ""
+  },
+  "@aboutPrivacyNever7": {
+    "description": ""
+  },
+  "@aboutPrivacyVerify": {
+    "description": "The falsifiable form of the privacy claim. A promise that cannot be tested by the reader is marketing; airplane mode is the test, and it takes thirty seconds."
+  },
+  "@aboutDeliveryBody": {
+    "description": "B34 + C3 + C9: the app IS the file. 'There is no app store' is not a limitation to apologise for — it is why there is no account and no server holding anything."
   }
 }

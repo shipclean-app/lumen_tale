@@ -583,6 +583,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
   String historyHoursAgo(int count);
+
+  /// B43: the reader can determine which version is installed. `buildName` and `buildNumber` arrive from Flutter's build-time Dart defines (`FLUTTER_BUILD_NAME` / `FLUTTER_BUILD_NUMBER`, ADR-011) — the app reads pubspec at build time and never parses a file at runtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {buildName} · build {buildNumber}'**
+  String aboutVersion(String buildName, String buildNumber);
+
+  /// How this build reached the reader. Three facts in one line, because a reader who installed a file by hand needs to know that is normal.
+  ///
+  /// In en, this message translates to:
+  /// **'Android phone · built automatically · no store'**
+  String get aboutProvenance;
+
+  /// The clipboard button. C9 says the owner must be able to determine which version is installed, and pasting a version into a bug report is how that happens.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy version number'**
+  String get aboutCopyVersion;
+
+  /// A real failure mode: the defines are absent in a plain `flutter test` and in an IDE run. **The rest of the screen renders completely** — `Version —` is forbidden, because an em dash looks like a version and C9 requires the version to be determinable.
+  ///
+  /// In en, this message translates to:
+  /// **'The installed version number could not be read.'**
+  String get aboutVersionUnreadable;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Version number copied.'**
+  String get aboutSnackCopied;
+
+  /// B31, and the one sentence § 4bis kept when it removed `UpdateBlock`. It is the only guarantee this app makes about the reader's data, so it is read out loud here rather than discovered after an upgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Installing a new version keeps your library, your downloads, your reading positions and your history. Nothing is replaced or re-downloaded.'**
+  String get aboutGuarantee;
+
+  /// The recessed block's overline. Read as a heading.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR DATA ON THIS DEVICE'**
+  String get aboutDataLabel;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get aboutDataLibrary;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded chapters'**
+  String get aboutDataDownloaded;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Reading positions'**
+  String get aboutDataPositions;
+
+  /// A count that could not be computed, and NOT a zero. The distinction is the whole reason the three figures are evidence for B31: a zero says 'you have none' and a dash says 'we could not look', and a reader who took the first for the second would re-download a library they still have.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get aboutDataCountUnavailable;
+
+  /// E11, in full and unhedged. This app has no backup (ADR-010), so the disclosure belongs on the page that shows what would be lost — and it names the exact operation that does NOT lose it, because a disclosure that only lists risks reads as an apology.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here is backed up anywhere. If you uninstall Lumen Tale or lose this phone, all three numbers go to zero and no copy exists. Installing a new version over this one does not touch them — that is the only guarantee this app makes about your data.'**
+  String get aboutDataE11;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'WHAT LEAVES THIS DEVICE'**
+  String get aboutPrivacyLabel;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'A chapter\'s page — but only after you asked for it.'**
+  String get aboutPrivacySent1;
+
+  /// ⚠️ **Written for a control § 4bis removed.** The sentence is about a button this screen does not have. It is kept because the block's claim is about the APP's network posture rather than about the button: the app sends nothing on its own account, and if a version check returns the reader must already know that one request is the whole of it. If the check is ever built, this sentence is its first line and it is already true.
+  ///
+  /// In en, this message translates to:
+  /// **'One request to check whether a newer version exists — only if you tap \"Check for a new version\".'**
+  String get aboutPrivacySent2;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Your library'**
+  String get aboutPrivacyNever1;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Your reading positions'**
+  String get aboutPrivacyNever2;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Your history'**
+  String get aboutPrivacyNever3;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Your error logs'**
+  String get aboutPrivacyNever4;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Crash reports'**
+  String get aboutPrivacyNever5;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get aboutPrivacyNever6;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'A device identifier'**
+  String get aboutPrivacyNever7;
+
+  /// The falsifiable form of the privacy claim. A promise that cannot be tested by the reader is marketing; airplane mode is the test, and it takes thirty seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.'**
+  String get aboutPrivacyVerify;
+
+  /// B34 + C3 + C9: the app IS the file. 'There is no app store' is not a limitation to apologise for — it is why there is no account and no server holding anything.
+  ///
+  /// In en, this message translates to:
+  /// **'This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.'**
+  String get aboutDeliveryBody;
 }
 
 class _AppLocalizationsDelegate

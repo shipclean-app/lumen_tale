@@ -17,7 +17,8 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumen_tale/app/router/app_nav_destinations.dart';
+import 'package:go_router/go_router.dart' show GoRouterState;
+import 'package:lumen_tale/app/router/app_routes.dart';
 import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
@@ -559,14 +560,14 @@ void main() {
   group('the registry', () {
     tearDown(clearRegisteredScreens);
 
-    test('an unregistered destination renders a placeholder, not a crash', () {
-      // ⚠️ A `!` on the lookup would make an unwired slice crash the app on launch,
-      // in a way that reads as a provider bug.
+    test('a registered path is in the table, and an unregistered one is not', () {
+      // ⚠️ A `!` on the lookup would make an unwired slice crash the app on launch, in
+      // a way that reads as a provider bug. The table is the only thing that decides.
       registerScreen(
-        AppNavDestination.library,
-        (_, _) => const HistoryScreen(),
+        AppRoutes.history,
+        (BuildContext context, GoRouterState state) => const HistoryScreen(),
       );
-      expect(registeredScreens, hasLength(1));
+      expect(registeredScreens.keys, <String>[AppRoutes.history]);
     });
   });
 }

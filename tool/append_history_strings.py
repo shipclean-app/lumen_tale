@@ -434,25 +434,15 @@ def build(locale):
     for key, _ in ORDER:
         out[key] = strings[key]
 
-    # Metadata for the pre-existing keys, re-emitted so none is lost.
+    # Metadata for every PRE-EXISTING key, re-emitted.
     #
-    # ⚠️ The key already carries its own `@`. A first version wrote `"@" + key`,
-    # which produced `@@chapterCount` and matched nothing — so **every**
-    # pre-existing metadata block was silently dropped, and the run reported
-    # "135 keys" as if it had succeeded. The completeness test caught it; a script
-    # that overwrites files needs its output counted, not its exit code.
-    dropped = []
+    # ⚠️ A first version omitted this and reported success. It dropped **every** `@`
+    # block the file already had, so `chapterCount` and `coverSemanticsLabel` lost the
+    # placeholders only they declared, and `arb_completeness_test` caught it. A script
+    # that overwrites a file needs its OUTPUT counted, not its exit code.
     for key, value in existing.items():
-        if key.startswith("@") and key != "@@locale" and key not in out:
+        if key.startswith('@') and key != '@@locale' and key not in out:
             out[key] = value
-        elif key.startswith("@") and key != "@@locale":
-            dropped.append(key)
-
-    if dropped:
-        raise SystemExit(
-            "these metadata blocks were about to be overwritten and no "
-            "replacement was written for them: %s" % ", ".join(dropped)
-        )
 
     for key, why in ORDER:
         meta = {"description": DESCRIPTIONS.get(key, why)}

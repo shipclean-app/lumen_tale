@@ -199,7 +199,7 @@ StatefulShellBranch _branch(AppNavDestination destination) {
         // The registry is what lets both hold: `app/` owns the lookup, the feature
         // slice registers itself, and neither imports the other.
         builder: (BuildContext context, GoRouterState state) =>
-            screenBuilderFor(destination)(context, state),
+            screenBuilderFor(destination.path)(context, state),
         routes: _subRoutesFor(destination),
       ),
     ],
@@ -258,17 +258,22 @@ List<RouteBase> _subRoutesFor(AppNavDestination destination) {
         GoRoute(
           path: 'settings',
           builder: (BuildContext context, GoRouterState state) =>
-              const PlaceholderScreen(screenKey: AppRoutes.settings),
+              screenBuilderFor(AppRoutes.settings)(context, state),
           routes: <RouteBase>[
+            // ⚠️ **`screenBuilderFor` with the FULL route path, not the relative one.**
+            //
+            // The table is keyed by what `AppRoutes` spells out, and the relative
+            // `'about'` would register under a key nothing looks up — a screen that
+            // reported itself registered and rendered a placeholder.
             GoRoute(
               path: 'reader',
               builder: (BuildContext context, GoRouterState state) =>
-                  const PlaceholderScreen(screenKey: AppRoutes.settingsReader),
+                  screenBuilderFor(AppRoutes.settingsReader)(context, state),
             ),
             GoRoute(
               path: 'about',
               builder: (BuildContext context, GoRouterState state) =>
-                  const PlaceholderScreen(screenKey: AppRoutes.settingsAbout),
+                  screenBuilderFor(AppRoutes.settingsAbout)(context, state),
             ),
           ],
         ),

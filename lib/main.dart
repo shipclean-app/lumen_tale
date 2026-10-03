@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart' show GoRouterState;
-import 'package:lumen_tale/app/router/app_nav_destinations.dart';
 import 'package:lumen_tale/app/router/app_router.dart';
+import 'package:lumen_tale/app/router/app_routes.dart';
 import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/app/theme/app_theme_preferences.dart';
 import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
+import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
@@ -52,8 +53,12 @@ Future<void> main() async {
   // A destination with no entry renders a placeholder rather than throwing, so a slice
   // that lands without registering is visible in one second of running the app.
   registerScreen(
-    AppNavDestination.history,
+    AppRoutes.history,
     (BuildContext context, GoRouterState state) => const HistoryScreen(),
+  );
+  registerScreen(
+    AppRoutes.settingsAbout,
+    (BuildContext context, GoRouterState state) => const AboutScreen(),
   );
 
   runApp(

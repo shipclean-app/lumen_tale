@@ -2788,3 +2788,115 @@ the fixture still counted), and Cancel's order (no row existed).
   `clearAll` touches, and a row asserts it.
 - **Do not add a fourth time bucket to the row.** The header carries the date; the
   absence past local midnight is the design, not a gap.
+
+---
+
+## 2026-10-03 — Session 17 (same session, continued): `3-5` About, B31's three figures, and B43's version
+
+### STARTED FROM
+
+`6-5` complete at `4e05c9f`. `3-5` was the next unblocked leaf: three counts, a version
+line, and `settings-about.md`'s nine states.
+
+### DECIDED
+
+- **The registry is keyed by PATH, not by destination.** The first version keyed by
+  `AppNavDestination`, which covers the five branch roots and nothing else — and
+  `/more/settings/about` is a **sub-route** with no destination, so `3-5` could not
+  register it. A branch root is now just the route whose path happens to be a branch, so
+  one table serves both call sites.
+- **The version comes from Flutter's build-time Dart defines, and the app adds no
+  dependency to read it.** `FLUTTER_BUILD_NAME` / `FLUTTER_BUILD_NUMBER` are what
+  `flutter build` passes for exactly this; `package_info_plus` would only re-derive them.
+- **`BuildVersion` is a nullable pair, not a formatted string.** Formatting first turns
+  "missing" into `"0.9.0 · build "`, a version that looks complete and is not —
+  `settings-about.md` § 4 forbids `Version —` by name, because an em dash *looks like*
+  a version and C9 requires the installed version to be determinable.
+- **Half a version counts as unreadable.** A name with no build number identifies a
+  release line, not a build. C9 asks *which version*.
+- **A missing version blanks NOTHING.** E11 and B31's guarantee are the two most
+  important sentences on the screen and neither depends on a build number, so the error
+  is scoped *in the rendering* rather than as a second screen.
+- **Three separate count queries, and the failure shape is the reason** — not the
+  performance. One `SELECT` with three sub-selects would be cheaper and would make the
+  three figures one answer: one slow query would put all three in `loading`, and one
+  failure would blank all three. A reader who cannot see their position count must
+  still see their library count.
+- **A count that could not be computed is a DASH; a count of zero is a zero.** That
+  distinction is the entire reason the block exists: a reader who took "you have none"
+  for "we could not look" would re-download a library she still has.
+- **`countKnownChapters` counts EVERY known chapter, not only downloaded ones, and says
+  so in its header.** A `downloaded` flag does not exist yet — `8-1` owns it — and the
+  ARB label cannot carry a caveat. The header states the set and states that `8-1` must
+  change it, because a count of `chapters` afterwards would over-report every novel the
+  reader has merely *seen*.
+- **`data/library/local_counts.dart`, not `drift_library_entry_count.dart`.** The About
+  screen needed the same "how many novels" the History screen needed, so there is now one
+  function in `data/` — where the table's shape is known — and both call it. Two
+  queries that could disagree about the same figure was the defect the file name
+  `local_counts` removes.
+- **The overline carries `header: true` AND an explicit `label`.** The flag alone leaves
+  `properties.label` `null`, so anything reading the tree sees a heading with no name.
+  Same shape `DayGroupHeader` uses, for the same reason.
+- **`arb_completeness_test` gained ONE named exemption, with a reason.** `'nothing here'`
+  is a heuristic for "claims a list is empty", and E11's sentence opens with the same
+  three words while claiming that nothing here is *backed up*. Narrowing the phrase would
+  weaken the rule for every future key; rewording would diverge `settings-about.md` § 4.1
+  from the ARB on the one sentence the screen exists to state.
+- **`UpdateBlock` is gone, and so are eighteen ARB keys the design still lists.** § 4bis
+  removed the version check from v1: no success criterion requires it, `apk-pipeline`
+  already delivers builds, and it is the one control on this screen that could reach a
+  server by itself — which makes every future addition a place to be careless about B29.
+  What survives is the version line and B31's guarantee sentence, and both are here. Dead
+  copy is a defect.
+
+### FILES TOUCHED
+
+`lib/app/theme/app_version.dart` (new), `lib/features/about/**` (new, 3),
+`lib/data/library/local_counts.dart` (new, replacing `drift_library_entry_count.dart`),
+`lib/app/router/screen_registry.dart`, `lib/app/router/app_router.dart`,
+`lib/features/history/history_providers.dart`, `lib/main.dart`, both ARB files
+(+23 keys each), `tool/append_about_strings.py` (new),
+`test/features/about/about_screen_test.dart` (new, 18),
+`test/l10n/arb_completeness_test.dart`.
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **701 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+**Sabotage, six, all caught:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| a missing version renders as `0.9.0 · build ` | **2 rows** |
+| the privacy block and delivery sentence are removed | **3 rows** |
+| half a version counts as readable | *half a version counts as unreadable* |
+| a failed count renders as `0` | *a DASH, not a zero* |
+| the positions count IS the library count | *one provider failing does not blank the other two* |
+| the counts become tappable | *the counts are NOT interactive* |
+
+Three sabotages did **not** fail on the first attempt and produced test gaps rather than
+false alarms: a blanked "rest of the page" row that stopped at the data block and passed
+a screen which had lost its privacy statement; a row whose injected `AboutCounts` never
+exercised the providers; and an `isReadable` that treated half a version as whole.
+
+### NEXT SESSION SHOULD
+
+- **`3-7` Settings** — the last unblocked Wave-2 leaf. It imports `SettingsChoiceSheet`
+  and `HistoryRetention`, and everything it needs now exists.
+- **`2-1`'s source**, against Royal Road: `div.fiction-list-item.row`, `?page=N` 1-based,
+  the unpaginated chapter table, `chapter-inner chapter-content`.
+- **Consider composing `appThemePreferencesProvider` from `sharedPreferencesProvider`**,
+  the way `appHistoryRetentionProvider` now is, so the preferences interface has one
+  place instead of two.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not add a `downloaded` column** to make `aboutDownloadedCountProvider` honest.
+  `8-1` owns it, and the function's header says the change is not mechanical.
+- **Do not reach for `package_info_plus`.** The build-time defines are what ADR-011
+  already uses.
+- **Do not key the screen registry by anything but an `AppRoutes` path.** A relative
+  `'about'` registers under a key nothing looks up, and the screen reports itself
+  registered while rendering a placeholder.

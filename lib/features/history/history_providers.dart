@@ -22,7 +22,7 @@ import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/data/history/drift_history_repository.dart';
 import 'package:lumen_tale/data/history/shared_prefs_history_retention.dart';
-import 'package:lumen_tale/data/library/drift_library_entry_count.dart';
+import 'package:lumen_tale/data/library/local_counts.dart';
 import 'package:lumen_tale/domain/history/history_entry.dart';
 import 'package:lumen_tale/domain/history/history_grouping.dart';
 import 'package:lumen_tale/domain/history/history_repository.dart';
@@ -127,11 +127,14 @@ final historyEntriesProvider = FutureProvider<List<HistoryDayGroup>>((
 
 /// How many novels are in the library, for the empty state's *local fact*.
 ///
-/// `history.md` § 4 chooses the empty action from this, and it is also the basis for
-/// the *"Nothing read yet"* claim: a chapter can only be opened from a novel that is in
-/// the library, so an empty library means an unopened reader. See
-/// `drift_library_entry_count.dart` — this is a question asked of an interface `6-3`
-/// has not written yet.
+/// `history.md` § 4 chooses the empty action from this, and it is also the basis for the
+/// *"Nothing read yet"* claim: a chapter can only be opened from a novel that is in the
+/// library, so an empty library means an unopened reader.
+///
+/// It reads [localCounts.countLibraryNovels] rather than a repository, because `6-3`
+/// owns the library and has not written one — and the count lives in `data/` where the
+/// table's shape is known, so `3-5`'s About screen uses the same function for the same
+/// figure instead of a second query that could disagree.
 final libraryEntryCountProvider = FutureProvider<int>(
   (Ref ref) => countLibraryNovels(ref.watch(appDatabaseProvider)),
 );

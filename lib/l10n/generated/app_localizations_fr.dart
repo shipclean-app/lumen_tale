@@ -316,4 +316,86 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String aboutVersion(String buildName, String buildNumber) {
+    return 'Version $buildName · build $buildNumber';
+  }
+
+  @override
+  String get aboutProvenance =>
+      'Téléphone Android · compilé automatiquement · aucun magasin';
+
+  @override
+  String get aboutCopyVersion => 'Copier le numéro de version';
+
+  @override
+  String get aboutVersionUnreadable =>
+      'Le numéro de version installé n\'a pas pu être lu.';
+
+  @override
+  String get aboutSnackCopied => 'Numéro de version copié.';
+
+  @override
+  String get aboutGuarantee =>
+      'L\'installation d\'une nouvelle version conserve votre bibliothèque, vos téléchargements, vos positions de lecture et votre historique. Rien n\'est remplacé ni retéléchargé.';
+
+  @override
+  String get aboutDataLabel => 'VOS DONNÉES SUR CE TÉLÉPHONE';
+
+  @override
+  String get aboutDataLibrary => 'Bibliothèque';
+
+  @override
+  String get aboutDataDownloaded => 'Chapitres téléchargés';
+
+  @override
+  String get aboutDataPositions => 'Positions de lecture';
+
+  @override
+  String get aboutDataCountUnavailable => '—';
+
+  @override
+  String get aboutDataE11 =>
+      'Rien ici n\'est sauvegardé nulle part. Si vous désinstallez Lumen Tale ou perdez ce téléphone, ces trois nombres tombent à zéro et aucune copie n\'existe. Installer une nouvelle version par-dessus celle-ci n\'y touche pas : c\'est la seule garantie que cette application fait sur vos données.';
+
+  @override
+  String get aboutPrivacyLabel => 'CE QUI QUITTE CE TÉLÉPHONE';
+
+  @override
+  String get aboutPrivacySent1 =>
+      'La page d\'un chapitre — mais seulement après que vous l\'avez demandée.';
+
+  @override
+  String get aboutPrivacySent2 =>
+      'Une requête pour savoir si une nouvelle version existe — uniquement si vous touchez « Rechercher une nouvelle version ».';
+
+  @override
+  String get aboutPrivacyNever1 => 'Votre bibliothèque';
+
+  @override
+  String get aboutPrivacyNever2 => 'Vos positions de lecture';
+
+  @override
+  String get aboutPrivacyNever3 => 'Votre historique';
+
+  @override
+  String get aboutPrivacyNever4 => 'Vos journaux d\'erreurs';
+
+  @override
+  String get aboutPrivacyNever5 => 'Rapports de plantage';
+
+  @override
+  String get aboutPrivacyNever6 => 'Suivi d\'audience';
+
+  @override
+  String get aboutPrivacyNever7 => 'Un identifiant d\'appareil';
+
+  @override
+  String get aboutPrivacyVerify =>
+      'Vérifiez vous-même : passez le téléphone en mode avion, puis ouvrez l\'application. Votre bibliothèque, vos téléchargements et vos positions de lecture sont tous là. Il ne manque rien, parce que rien n\'a jamais été envoyé.';
+
+  @override
+  String get aboutDeliveryBody =>
+      'Cette application fonctionne uniquement sur les téléphones Android. Une nouvelle version est produite à chaque modification fusionnée, et vous l\'installez depuis le fichier, à la main. Il n\'y a ni magasin d\'applications ni compte de magasin.';
 }

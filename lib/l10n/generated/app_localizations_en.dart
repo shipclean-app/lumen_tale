@@ -313,4 +313,86 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String aboutVersion(String buildName, String buildNumber) {
+    return 'Version $buildName · build $buildNumber';
+  }
+
+  @override
+  String get aboutProvenance =>
+      'Android phone · built automatically · no store';
+
+  @override
+  String get aboutCopyVersion => 'Copy version number';
+
+  @override
+  String get aboutVersionUnreadable =>
+      'The installed version number could not be read.';
+
+  @override
+  String get aboutSnackCopied => 'Version number copied.';
+
+  @override
+  String get aboutGuarantee =>
+      'Installing a new version keeps your library, your downloads, your reading positions and your history. Nothing is replaced or re-downloaded.';
+
+  @override
+  String get aboutDataLabel => 'YOUR DATA ON THIS DEVICE';
+
+  @override
+  String get aboutDataLibrary => 'Library';
+
+  @override
+  String get aboutDataDownloaded => 'Downloaded chapters';
+
+  @override
+  String get aboutDataPositions => 'Reading positions';
+
+  @override
+  String get aboutDataCountUnavailable => '—';
+
+  @override
+  String get aboutDataE11 =>
+      'Nothing here is backed up anywhere. If you uninstall Lumen Tale or lose this phone, all three numbers go to zero and no copy exists. Installing a new version over this one does not touch them — that is the only guarantee this app makes about your data.';
+
+  @override
+  String get aboutPrivacyLabel => 'WHAT LEAVES THIS DEVICE';
+
+  @override
+  String get aboutPrivacySent1 =>
+      'A chapter\'s page — but only after you asked for it.';
+
+  @override
+  String get aboutPrivacySent2 =>
+      'One request to check whether a newer version exists — only if you tap \"Check for a new version\".';
+
+  @override
+  String get aboutPrivacyNever1 => 'Your library';
+
+  @override
+  String get aboutPrivacyNever2 => 'Your reading positions';
+
+  @override
+  String get aboutPrivacyNever3 => 'Your history';
+
+  @override
+  String get aboutPrivacyNever4 => 'Your error logs';
+
+  @override
+  String get aboutPrivacyNever5 => 'Crash reports';
+
+  @override
+  String get aboutPrivacyNever6 => 'Analytics';
+
+  @override
+  String get aboutPrivacyNever7 => 'A device identifier';
+
+  @override
+  String get aboutPrivacyVerify =>
+      'Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.';
+
+  @override
+  String get aboutDeliveryBody =>
+      'This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.';
 }

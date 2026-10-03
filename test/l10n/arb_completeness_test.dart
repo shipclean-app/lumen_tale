@@ -174,9 +174,27 @@ void main() {
         'aucun résultat',
         'nothing here',
       ];
+
+      // ⚠️ **One exemption, named, with a reason — not a widened rule.**
+      //
+      // `'nothing here'` is a heuristic for "this message claims a list is empty",
+      // and E11's sentence happens to open with the same three words while claiming
+      // something else entirely: that nothing here is *backed up*. Narrowing the
+      // phrase would weaken the rule for every future key; rewording the design's copy
+      // would diverge `settings-about.md` § 4.1 from the ARB on the one sentence the
+      // screen exists to state. An exemption with a reason is reviewable; a silent
+      // exception is not.
+      const exemptions = <String, String>{
+        'aboutDataE11':
+            'E11, and not an empty-result state: "Nothing here is backed up '
+            'anywhere" names STORAGE, not a list. settings-about.md § 4.1, and '
+            'the sentence `3-5` exists to show.',
+      };
+
       final offenders = <String>[];
       for (final arb in <_Arb>[english, french]) {
         for (final key in arb.messageKeys) {
+          if (exemptions.containsKey(key)) continue;
           final value = arb.message(key);
           if (value is! String) continue;
           final lower = value.toLowerCase();
