@@ -50,6 +50,19 @@ abstract interface class HistoryRepository {
   /// three months" are two different intentions, and the reader gets both.
   Future<int> clearAll();
 
+  /// **How many rows [clearAll] would remove.**
+  ///
+  /// ⚠️ **This is the *total*, not the aged-out count**, and getting it wrong is a lie
+  /// told in a dialog asking for consent. `historyClearDialogBody` says "your N
+  /// entries will be removed" — and `clearAll` removes every row, including the ones
+  /// inside the window. Using `countOlderThan` here would tell a reader with ten recent
+  /// chapters that *nothing* is about to be deleted, and then delete all ten.
+  ///
+  /// It exists because `purgeOlderThan` and `clearAll` already **return counts**, so a
+  /// count is not a foreign shape on this interface — it is the same question asked
+  /// before acting instead of after.
+  Future<int> countAll();
+
   /// B17's second sentence — *"the chapter read most recently for a novel comes from
   /// the position record, not from this list"*.
   ///

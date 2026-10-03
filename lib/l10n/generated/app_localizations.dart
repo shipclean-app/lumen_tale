@@ -547,6 +547,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'two years'**
   String get historyWindowTwoYears;
+
+  /// The first day header. NOT concatenated from a month name and a number: 'Today' is a word, it takes an article in some languages and an inflection in others, and a concatenation is wrong in both. E12 requires a language change to re-label the headers, which a concatenated string cannot do.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get historyDayToday;
+
+  /// The second day header, and a separate key for the same reason as historyDayToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get historyDayYesterday;
+
+  /// Every older day header. `{date}` arrives ALREADY localised from MaterialLocalizations.formatMediumDate - this key is a hole for a platform-formatted date, not a sentence, which is why the value is the same in both files.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}'**
+  String historyDayOn(String date);
+
+  /// The row's trailing time under a minute old. Deliberately the only bucketing below an hour: a reader who opened four chapters in ten minutes sees the same word on all four, and a count that ticks upward every second would make the list move under them.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get historyJustNow;
+
+  /// Minutes, with a French plural rule (`=1` vs `other`) - French has no singular-only form and a reader watching 'Il y a 1 minutes' learns to distrust the rest of the screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute ago} other{{count} minutes ago}}'**
+  String historyMinutesAgo(int count);
+
+  /// Hours, same plural rule. There is deliberately NO days-ago key: past yesterday the DAY GROUP HEADER already carries the date, and repeating it in the row would say the same thing twice on every line.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String historyHoursAgo(int count);
 }
 
 class _AppLocalizationsDelegate

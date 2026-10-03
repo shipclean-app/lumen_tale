@@ -129,6 +129,26 @@ final class DriftHistoryRepository implements HistoryRepository {
   }
 
   @override
+  Future<int> countAll() async {
+    // ⚠️ **`SELECT COUNT(*)`, over one table, with no `where`.**
+    //
+    // The clear dialog asks "how many entries will be removed" and `clearAll` removes
+    // every row — so a count that honoured the retention window would tell a reader
+    // with ten recent chapters that *nothing* is about to be deleted, and then delete
+    // all ten. The count must be the same set [clearAll] touches, or the dialog is a
+    // lie with a number in it.
+    final Expression<int> count = _db.historyEntries.id.count();
+    final TypedResult row = await (_db.selectOnly(
+      _db.historyEntries,
+    )..addColumns(<Expression<Object>>[count])).getSingle();
+    // `COUNT(*)` is never NULL — SQLite returns 0 over an empty range — but drift
+    // types the read as `int?` because it cannot know which expressions are
+    // non-nullable, and "how many will be removed?" must not be a decision the
+    // caller has to make about a `null`.
+    return row.read(count) ?? 0;
+  }
+
+  @override
   Future<List<NovelResumePoint>> readResumePoints() async {
     // B17's second sentence, and the query that keeps "resume where I stopped" working
     // after the reader clears their journal — which is the one action guaranteed to

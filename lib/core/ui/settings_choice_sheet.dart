@@ -114,40 +114,47 @@ class SettingsChoiceSheet<T extends Object> extends StatefulWidget {
   /// the committed value unchanged — B24, C8.
   final Future<void> Function(T value) onSelected;
 
-  /// Opens the sheet. Returns the committed value, or `null` if dismissed.
-  static Future<T?> show<T extends Object>(
-    BuildContext context, {
-    required String title,
-    required List<SettingsChoiceOption<T>> options,
-    required T selected,
-    required String Function(T value) labelOf,
-    required String Function(T value) warningFor,
-    required Future<void> Function(T value) onSelected,
-    String? Function(T value)? descriptionOf,
-  }) {
-    return showModalBottomSheet<T>(
-      context: context,
-      // ⚠️ `isScrollControlled` so a short sheet does not take the whole screen, and
-      // `backgroundColor: Colors.transparent` because `Material` below supplies the
-      // raised surface. A `showModalBottomSheet` default of white-on-white would be
-      // a third surface this design system does not have.
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.32),
-      builder: (BuildContext context) => SettingsChoiceSheet<T>(
-        title: title,
-        options: options,
-        selected: selected,
-        labelOf: labelOf,
-        warningFor: warningFor,
-        descriptionOf: descriptionOf,
-        onSelected: onSelected,
-      ),
-    );
-  }
-
   @override
   State<SettingsChoiceSheet<T>> createState() => _SettingsChoiceSheetState<T>();
+}
+
+/// Opens the sheet. Returns the committed value, or `null` if dismissed.
+///
+/// ⚠️ **A top-level function, not a static on [SettingsChoiceSheet].**
+/// `SettingsChoiceSheet<T>.show(…)` parses as a **named constructor** in Dart — the
+/// `Type.name(...)` form is always a constructor — so a static method is unreachable
+/// under the spelling a caller naturally reaches for, and the analyzer says
+/// *"doesn't have a constructor named show"*. The call site said what it meant; the
+/// language disagreed.
+Future<T?> showSettingsChoiceSheet<T extends Object>(
+  BuildContext context, {
+  required String title,
+  required List<SettingsChoiceOption<T>> options,
+  required T selected,
+  required String Function(T value) labelOf,
+  required String Function(T value) warningFor,
+  required Future<void> Function(T value) onSelected,
+  String? Function(T value)? descriptionOf,
+}) {
+  return showModalBottomSheet<T>(
+    context: context,
+    // ⚠️ `isScrollControlled` so a short sheet does not take the whole screen, and
+    // `backgroundColor: Colors.transparent` because the sheet's own `DecoratedBox`
+    // supplies the raised surface. A `showModalBottomSheet` default of white-on-white
+    // would be a third surface this design system does not have.
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.32),
+    builder: (BuildContext context) => SettingsChoiceSheet<T>(
+      title: title,
+      options: options,
+      selected: selected,
+      labelOf: labelOf,
+      warningFor: warningFor,
+      descriptionOf: descriptionOf,
+      onSelected: onSelected,
+    ),
+  );
 }
 
 class _SettingsChoiceSheetState<T extends Object>

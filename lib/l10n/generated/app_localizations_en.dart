@@ -277,4 +277,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get historyWindowTwoYears => 'two years';
+
+  @override
+  String get historyDayToday => 'Today';
+
+  @override
+  String get historyDayYesterday => 'Yesterday';
+
+  @override
+  String historyDayOn(String date) {
+    return '$date';
+  }
+
+  @override
+  String get historyJustNow => 'Just now';
+
+  @override
+  String historyMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes ago',
+      one: '1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String historyHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
 }

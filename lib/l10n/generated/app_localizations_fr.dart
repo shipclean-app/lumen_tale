@@ -280,4 +280,40 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get historyWindowTwoYears => 'deux ans';
+
+  @override
+  String get historyDayToday => 'Aujourd\'hui';
+
+  @override
+  String get historyDayYesterday => 'Hier';
+
+  @override
+  String historyDayOn(String date) {
+    return '$date';
+  }
+
+  @override
+  String get historyJustNow => 'À l\'instant';
+
+  @override
+  String historyMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Il y a $count minutes',
+      one: 'Il y a 1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String historyHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Il y a $count heures',
+      one: 'Il y a 1 heure',
+    );
+    return '$_temp0';
+  }
 }

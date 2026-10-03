@@ -44,6 +44,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lumen_tale/app/router/app_nav_destinations.dart';
 import 'package:lumen_tale/app/router/app_routes.dart';
 import 'package:lumen_tale/app/router/placeholder_screen.dart';
+import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/shell/app_shell.dart';
 
 /// The root navigator's key.
@@ -100,6 +101,30 @@ Future<Object?> openReader(
 /// forbids. `0-5` § 7 question 6 records that gap rather than papering over it.
 Future<Object?> openOnboarding(BuildContext context) {
   return GoRouter.of(context).push(AppRoutes.onboarding);
+}
+
+/// Opens a novel's details, **on top of** the branch the reader is already on.
+///
+/// `push`, not `go`, and the reason is different from [openReader]'s: this route
+/// *is* inside the shell, so `go` would work — but it would replace the branch's page
+/// list, so the reader who opened a novel from *History* and pressed back would land
+/// nowhere useful. A sibling detail page is a stack push; the tab is a branch switch.
+Future<Object?> openNovelDetails(
+  BuildContext context, {
+  required String novelId,
+}) {
+  return GoRouter.of(context).push(AppRoutes.novelDetailsFor(novelId));
+}
+
+/// Switches to the **Browse** branch, replacing its page list.
+///
+/// ⚠️ **`go`, and unlike [openReader] that is correct.** `/browse` is a sibling
+/// branch of a `StatefulShellRoute.indexedStack`, so switching branches means moving
+/// between navigators — there is nothing to push on top of a branch the reader has not
+/// visited, and `push` on a branch root that does not exist yet produces a route with
+/// no navigator beneath it.
+void openBrowse(BuildContext context) {
+  GoRouter.of(context).go(AppRoutes.browse);
 }
 
 GoRouter _build() {
@@ -167,8 +192,14 @@ StatefulShellBranch _branch(AppNavDestination destination) {
     routes: <RouteBase>[
       GoRoute(
         path: destination.path,
+        // ⚠️ **`screenBuilderFor`, not a direct import of a screen.**
+        //
+        // `architecture.md` § 3.1a: `app/` imports no `features/` code beyond the
+        // shell — while *"a screen is a route and a route is a row in this table"*.
+        // The registry is what lets both hold: `app/` owns the lookup, the feature
+        // slice registers itself, and neither imports the other.
         builder: (BuildContext context, GoRouterState state) =>
-            PlaceholderScreen(screenKey: destination.path),
+            screenBuilderFor(destination)(context, state),
         routes: _subRoutesFor(destination),
       ),
     ],

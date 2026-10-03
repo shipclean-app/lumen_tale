@@ -2655,3 +2655,136 @@ a second rendering**, so the copy had to exist before any of it could be written
   asserts the enum and the table have the same five members.
 - **Do not gate `onTap` on the row.** One place refuses a choice, and it is the state
   machine.
+
+---
+
+## 2026-10-03 — Session 16 (same session, continued): the `/history` screen, and a registry so `app/` need not import a feature
+
+### STARTED FROM
+
+`6-5` at `8948808` with the copy and the sheet committed. The screen itself needed nine
+states, three widgets, and — the part that turned out to be the interesting one — a way
+for the router to mount a feature screen **without `app/` importing a feature**.
+
+### DECIDED
+
+- **`app/router/screen_registry.dart`, and the router looks screens up instead of
+  importing them.** `architecture.md` § 3.1a says *"`app/` imports no `features/` code
+  beyond the shell"*, and the same section says *"a screen is a route and a route is a
+  row in this table"* — a screen slice has to be able to fill its own row. Those two
+  statements cannot both be satisfied by an import, and the grep row
+  (`app/ must not import a feature`) fired on the first attempt. The registry is the
+  way out: `app/` owns the lookup, `main.dart` registers, neither imports the other.
+  **An unregistered destination renders a `PlaceholderScreen`, never throws** — a `!`
+  on the lookup would crash the app on launch in a way that reads as a provider bug.
+- **`appHistoryRetentionProvider` is COMPOSED, not a bootstrap override.** Overriding
+  it would mean `main.dart` had to build the store's counting function, which needs the
+  `AppDatabase` — and the db is created *by* the override that would supply it. A
+  bootstrap that has to order two overrides against each other is a bootstrap with a
+  cycle in it. `sharedPreferencesProvider` is a new `core/storage` provider so the
+  theme and the retention store share **one** instance over one file.
+- **`appDatabaseProvider` uses `overrideWith` + `ref.onDispose`, not
+  `overrideWithValue`.** A process-scoped singleton should shut its handle; a database
+  holding the library, the positions and the journal (B7) is exactly that.
+- **`HistoryRepository` GAINED `countAll()` — reversing this session's earlier
+  decision.** The reason it did not belong is now visible: the clear dialog says *"your
+  N entries will be removed"*, and `clearAll` removes every row. A count that honoured
+  the retention window would tell a reader with ten recent chapters that **nothing** is
+  about to be deleted, and then delete all ten. `purgeOlderThan` and `clearAll` already
+  return counts, so a count is not a foreign shape on this interface — it is the same
+  question asked *before* acting instead of after. The earlier objection ("a 'how many'
+  onto an interface whose methods are give me or delete") was wrong: two of the four
+  methods were already "how many did you delete".
+- **The empty state's three-way split, and the discriminator for each.**
+  - **aged out** ⟸ `agedOutCount > 0` — a statement about the journal itself.
+  - **never visited** ⟸ **the library is empty**. A chapter can only be opened from a
+    novel that is in the library, so an empty library is a sound basis for "you have not
+    read anything yet" — and it is the same local fact `history.md` § 4 already uses to
+    pick the empty action.
+  - **cleared** ⟸ everything else: an empty journal with novels in it.
+  Checked in that order, because the last two are inferences from the library rather
+  than statements about the journal.
+- **`drift_library_entry_count.dart` is a temporary, and says so.** `6-3` owns the
+  library and has not landed; rather than leave two of the four empty-state strings
+  unreachable — dead ARB keys are a defect, and an unimplemented branch of § 4 is worse
+  — this counts the one column the question needs. Its header says it will be deleted
+  when `6-3` lands.
+- **Relative time has THREE buckets and no fourth.** *just now* · *N minutes* · *N
+  hours* · then **nothing**. Past local midnight the day header already carries the
+  date. The cut is `isSameLocalDay`, **not `inHours < 24`** — a `Duration` cut would
+  put *"23 hours ago"* under a header reading *Yesterday*, which is yesterday's row
+  quoting a number from today. A negative duration (phone clock behind the last write)
+  clamps to *just now*: *"opened in -4 minutes"* is a sentence no reader can act on.
+- **The row's press feedback is gated, its tap is not.** A disabled row must not
+  acknowledge a finger **and** must not be reachable, so the tap is wired
+  unconditionally and the refusal lives in `_choose` — one place, not two that can
+  disagree.
+- **Cancel is the dialog's FIRST action, and a row reads the ORDER.** Both buttons
+  present is not the requirement; on a hardware keyboard `Enter` takes the first, and a
+  destructive first action empties a reader's log on a stray keypress.
+- **The list is one flat `ListView.builder` over a pre-flattened sequence**, not a
+  `ListView` per day group: nested lists would give every group its own scroll physics
+  and its own lazy boundary.
+
+### REJECTED
+
+- **`SettingsChoiceSheet.show` as a static on the class.** `SettingsChoiceSheet<T>.show(…)`
+  parses as a **named constructor** in Dart — `Type.name(…)` is always a constructor —
+  so the analyzer said *"doesn't have a constructor named show"* while the call site said
+  exactly what it meant. It is a top-level `showSettingsChoiceSheet<T>` now.
+- **A clock time on the row** (`DateFormat.Hm()`), in favour of a relative time: it says
+  "23:47" for an entry opened *yesterday* at 23:47 and never updates, so a row that said
+  "just now" at breakfast is lying by lunchtime.
+- **`Material.elevation` for the sheet shadow.** § 1.4 keeps exactly two shadows with
+  fixed values.
+
+### FILES TOUCHED
+
+`lib/app/router/screen_registry.dart` (new), `lib/app/router/app_router.dart`,
+`lib/core/storage/shared_preferences_provider.dart` (new),
+`lib/core/ui/settings_choice_sheet.dart`, `lib/data/library/drift_library_entry_count.dart`
+(new), `lib/data/history/drift_history_repository.dart`,
+`lib/domain/history/history_repository.dart`, `lib/features/history/**` (new, 5),
+`lib/main.dart`, both ARB files (+6 keys each),
+`test/features/history/**` (new, 47).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **683 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+**Sabotage, seven:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| `clearAll` also deletes `reading_positions` | B46 row (and a compile-time block on the journal's neighbour) |
+| `countAll` honours the retention window | **2 rows fail** — the count and the full sentence |
+| `clearAll` becomes `purgeOlderThan(now)` | *leaves every reading position intact* |
+| empty state collapses never-visited into cleared | **2 rows fail** |
+| the destructive button is the first action | *Cancel is the FIRST action* |
+| `skipWidgets` skeleton `FractionallySizedBox` with infinite width | 18 rows — a layout throw, not a silent pass |
+| the sheet's catch clause narrowed to `Exception` | 6 rows (earlier commit) |
+
+Two sabotages **did not** fail on the first attempt and produced test gaps, not false
+alarms, and both were fixed by writing the row rather than by weakening the claim:
+`countAll` with a window (the first attempt filtered on `now` rather than the cutoff, so
+the fixture still counted), and Cancel's order (no row existed).
+
+### NEXT SESSION SHOULD
+
+- **`3-5` (About)** and **`3-7` (Settings)** — `3-7` imports the sheet and the enum,
+  and now has everything it needs.
+- **`2-1`'s source**, against Royal Road: `div.fiction-list-item.row`, `?page=N` 1-based,
+  the unpaginated chapter table, `chapter-inner chapter-content`.
+- **`3-7`'s `SharedPrefsThemePreferences`** has a sibling now — check whether
+  `appThemePreferencesProvider` should be composed from `sharedPreferencesProvider` the
+  same way `appHistoryRetentionProvider` is, so the prefs interface has one place.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not import a feature from `app/`.** Use `screen_registry.dart`; the grep row
+  fires on the first attempt otherwise.
+- **Do not put a window on `countAll`.** The dialog's number must be the set
+  `clearAll` touches, and a row asserts it.
+- **Do not add a fourth time bucket to the row.** The header carries the date; the
+  absence past local midnight is the design, not a gap.

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart' show GoRouterState;
+import 'package:lumen_tale/app/router/app_nav_destinations.dart';
 import 'package:lumen_tale/app/router/app_router.dart';
+import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/app/theme/app_theme_preferences.dart';
 import 'package:lumen_tale/app/theme/theme_providers.dart';
+import 'package:lumen_tale/core/database/app_database.dart';
+import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
+import 'package:lumen_tale/features/history/history_providers.dart';
+import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,12 +42,48 @@ Future<void> main() async {
 
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
+  // ⚠️ **Registration, and only registration.**
+  //
+  // `architecture.md` § 3.1a forbids `app/` importing a feature, while saying a screen
+  // *is* a route. The registry is the way out, and **this file is the composition
+  // root** — the one place whose job is to know about every layer at once. It already
+  // overrides three providers drawn from three layers; the screens join that list.
+  //
+  // A destination with no entry renders a placeholder rather than throwing, so a slice
+  // that lands without registering is visible in one second of running the app.
+  registerScreen(
+    AppNavDestination.history,
+    (BuildContext context, GoRouterState state) => const HistoryScreen(),
+  );
+
   runApp(
     ProviderScope(
       overrides: [
         appThemePreferencesProvider.overrideWithValue(
           SharedPrefsThemePreferences(prefs),
         ),
+        // ⚠️ **The instance `getInstance()` returned, shared.**
+        //
+        // Two calls return two objects over one file. The retention store and the
+        // theme both read it, and the disagreement would surface as a setting that
+        // reverts — with no error and no trace. `sharedPreferencesProvider` makes
+        // that a fact rather than a convention.
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        // ⚠️ **The database.**
+        //
+        // `appDatabaseProvider` throws until this line, for the reason the comment at
+        // the top of this file gives for the theme: a synchronous `runApp` leaves the
+        // throw live, and the first read is the first frame.
+        //
+        // `overrideWith` rather than `overrideWithValue` so the connection is **closed
+        // once**: `AppDatabase()` is a `LazyDatabase`, so nothing opens until the first
+        // query, and `ref.onDispose` is where a process-scoped singleton shuts its
+        // handle rather than waiting for the OS.
+        appDatabaseProvider.overrideWith((Ref ref) {
+          final AppDatabase db = AppDatabase();
+          ref.onDispose(db.close);
+          return db;
+        }),
       ],
       child: const LumenTaleApp(),
     ),

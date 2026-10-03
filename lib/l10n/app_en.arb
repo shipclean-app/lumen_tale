@@ -75,6 +75,12 @@
   "historyWindowThreeMonths": "three months",
   "historyWindowOneYear": "one year",
   "historyWindowTwoYears": "two years",
+  "historyDayToday": "Today",
+  "historyDayYesterday": "Yesterday",
+  "historyDayOn": "{date}",
+  "historyJustNow": "Just now",
+  "historyMinutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "historyHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
   "@chapterCount": {
     "description": "Number of chapters available for a novel.",
     "placeholders": {
@@ -293,5 +299,41 @@
   },
   "@historyWindowTwoYears": {
     "description": "The longest window the design offers. There is deliberately no sixth: design-system.md § 2.12 forbids a 'forever' option on any bounded list, because an unbounded value next to bounded ones teaches the reader the bounds are negotiable."
+  },
+  "@historyDayToday": {
+    "description": "The first day header. NOT concatenated from a month name and a number: 'Today' is a word, it takes an article in some languages and an inflection in others, and a concatenation is wrong in both. E12 requires a language change to re-label the headers, which a concatenated string cannot do."
+  },
+  "@historyDayYesterday": {
+    "description": "The second day header, and a separate key for the same reason as historyDayToday."
+  },
+  "@historyDayOn": {
+    "description": "Every older day header. `{date}` arrives ALREADY localised from MaterialLocalizations.formatMediumDate - this key is a hole for a platform-formatted date, not a sentence, which is why the value is the same in both files.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "3 October"
+      }
+    }
+  },
+  "@historyJustNow": {
+    "description": "The row's trailing time under a minute old. Deliberately the only bucketing below an hour: a reader who opened four chapters in ten minutes sees the same word on all four, and a count that ticks upward every second would make the list move under them."
+  },
+  "@historyMinutesAgo": {
+    "description": "Minutes, with a French plural rule (`=1` vs `other`) - French has no singular-only form and a reader watching 'Il y a 1 minutes' learns to distrust the rest of the screen.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "@historyHoursAgo": {
+    "description": "Hours, same plural rule. There is deliberately NO days-ago key: past yesterday the DAY GROUP HEADER already carries the date, and repeating it in the row would say the same thing twice on every line.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
   }
 }

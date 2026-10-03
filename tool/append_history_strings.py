@@ -75,6 +75,12 @@ STRINGS = {
         "historyWindowThreeMonths": "three months",
         "historyWindowOneYear": "one year",
         "historyWindowTwoYears": "two years",
+        "historyDayToday": "Today",
+        "historyDayYesterday": "Yesterday",
+        "historyDayOn": "{date}",
+        "historyJustNow": "Just now",
+        "historyMinutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+        "historyHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
     },
     "fr": {
         "historyTitle": "Historique",
@@ -145,6 +151,12 @@ STRINGS = {
         "historyWindowThreeMonths": "trois mois",
         "historyWindowOneYear": "un an",
         "historyWindowTwoYears": "deux ans",
+        "historyDayToday": "Aujourd'hui",
+        "historyDayYesterday": "Hier",
+        "historyDayOn": "{date}",
+        "historyJustNow": "À l'instant",
+        "historyMinutesAgo": "{count, plural, =1{Il y a 1 minute} other{Il y a {count} minutes}}",
+        "historyHoursAgo": "{count, plural, =1{Il y a 1 heure} other{Il y a {count} heures}}",
     },
 }
 
@@ -185,9 +197,48 @@ ORDER = [
     ("historyWindowThreeMonths", "Retention window names - DATA"),
     ("historyWindowOneYear", "Retention window names - DATA"),
     ("historyWindowTwoYears", "Retention window names - DATA"),
+    ("historyDayToday", "Day group header"),
+    ("historyDayYesterday", "Day group header"),
+    ("historyDayOn", "Day group header, older than yesterday"),
+    ("historyJustNow", "Row trailing time, under a minute"),
+    ("historyMinutesAgo", "Row trailing time"),
+    ("historyHoursAgo", "Row trailing time"),
 ]
 
 DESCRIPTIONS = {
+    "historyDayToday": (
+        "The first day header. NOT concatenated from a month name and a number: "
+        "'Today' is a word, it takes an article in some languages and an "
+        "inflection in others, and a concatenation is wrong in both. E12 requires a "
+        "language change to re-label the headers, which a concatenated string "
+        "cannot do."
+    ),
+    "historyDayYesterday": (
+        "The second day header, and a separate key for the same reason as "
+        "historyDayToday."
+    ),
+    "historyDayOn": (
+        "Every older day header. `{date}` arrives ALREADY localised from "
+        "MaterialLocalizations.formatMediumDate - this key is a hole for a "
+        "platform-formatted date, not a sentence, which is why the value is the "
+        "same in both files."
+    ),
+    "historyJustNow": (
+        "The row's trailing time under a minute old. Deliberately the only "
+        "bucketing below an hour: a reader who opened four chapters in ten minutes "
+        "sees the same word on all four, and a count that ticks upward every "
+        "second would make the list move under them."
+    ),
+    "historyMinutesAgo": (
+        "Minutes, with a French plural rule (`=1` vs `other`) - French has no "
+        "singular-only form and a reader watching 'Il y a 1 minutes' learns to "
+        "distrust the rest of the screen."
+    ),
+    "historyHoursAgo": (
+        "Hours, same plural rule. There is deliberately NO days-ago key: past "
+        "yesterday the DAY GROUP HEADER already carries the date, and repeating "
+        "it in the row would say the same thing twice on every line."
+    ),
     "historyUntitledChapter": (
         "B10 / E2: the site published no title for this chapter. Rendered here, "
         "NEVER as an index and never as a generated number - a fabricated title is "
@@ -350,6 +401,16 @@ PLACEHOLDERS = {
 
 WINDOW_PLACEHOLDER_EXAMPLE = {"en": "one year", "fr": "un an"}
 
+# `historyDayOn` takes a date the PLATFORM formatted, so both files declare the same
+# placeholder type and the same example. The string itself is the same in both
+# languages on purpose: the date arrives already localised from `MaterialLocalizations`,
+# so the ARB value is a hole, not a sentence.
+EXTRA_PLACEHOLDERS = {
+    "historyDayOn": {"date": {"type": "String", "example": "3 October"}},
+    "historyMinutesAgo": {"count": {"type": "int", "example": "7"}},
+    "historyHoursAgo": {"count": {"type": "int", "example": "3"}},
+}
+
 
 def build(locale):
     path = "lib/l10n/app_%s.arb" % locale
@@ -395,8 +456,10 @@ def build(locale):
 
     for key, why in ORDER:
         meta = {"description": DESCRIPTIONS.get(key, why)}
-        if key in PLACEHOLDERS:
-            placeholders = dict(PLACEHOLDERS[key])
+        if key in PLACEHOLDERS or key in EXTRA_PLACEHOLDERS:
+            placeholders = dict(
+                PLACEHOLDERS.get(key) or EXTRA_PLACEHOLDERS[key]
+            )
             if "window" in placeholders:
                 placeholders["window"] = {
                     "type": "String",
