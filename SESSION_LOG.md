@@ -1783,3 +1783,75 @@ format clean · `analyze --fatal-infos` **zero** · host **370 passed + 9 skippe
 - **`2-1`**, now with five measured facts: `.fiction-list-item`, `?page=N` 1-based and
   set-confirmed, chapter list **unpaginated** with `data-chapters` as the witness, no
   browse-side empty signal, and `chapter-inner chapter-content`.
+
+### `6-3` — the local counting model, and a defect in the plan's own SQL
+
+`lib/domain/library/library_update_fact.dart` (`LibraryUpdateFact`, the sealed
+`Verification`, `UnopenedCountRepository`) and
+`lib/data/library/drift_unopened_count_repository.dart`. 46 rows.
+
+**⚠️ The plan's `ORDER BY … COALESCE(n.added_at, 0)` does the opposite of what the
+plan says it does.** The plan's own comment: *a library novel with no added_at … must
+not sort first everywhere.* But `COALESCE(NULL, 0)` maps null to the **epoch**, and the
+epoch sorts **first**. So the plan's SQL sorts untimestamped novels to the top while
+claiming to prevent exactly that. The query uses `(n.added_at IS NULL), n.added_at ASC`,
+which puts nulls last — what the prose asked for and what "ties keep library order"
+(`updates.md` § 4) means. A test asserts a novel with a null `addedAt` sorts **after** a
+dated one with the same count, so the two readings cannot be confused again.
+
+**⚠️ `COALESCE(SUM(…), 0)` is redundant with `ELSE 0` inside the `CASE`, and no test can
+tell them apart — so the file says so instead of claiming otherwise.** I sabotaged each
+independently and **every row stayed green**: with `ELSE 0`, a null-joined row
+contributes 0 and `SUM` returns 0; without it, `NULL = 0` is NULL and `COALESCE` saves
+the day. Both are kept as two cheap guards on one property, and the **property** is what
+a test asserts: `unopened` is `0`, never `null`, because a nullable count makes "how
+many?" a screen's decision. The first version of that comment asserted `COALESCE` was
+required and a comment making a false claim is worse than no comment.
+
+**⚠️ `readsFrom` is not optional decoration.** drift's `customSelect` without it returns
+a value that does not re-emit — the badge would emit once and silently stop updating.
+Sabotaged: removing it fails the stream row.
+
+**LEFT JOIN vs INNER JOIN, proven.** Sabotaged to `INNER JOIN`: **2 failures** — a library
+novel with no chapter list disappears, which is B48 missed (*"I have not asked" is not
+"there are none"*).
+
+**`customSelect` rather than drift's query builder.** The plan's query is
+`SUM(CASE …)` in a group by over a `LEFT JOIN`, which drift's expression builder has no
+clean spelling for. The first attempt produced twenty minutes of cast soup nobody could
+read. The SQL *is* the specification, and the part the builder cannot express is exactly
+the part that matters.
+
+**`Verification` is sealed, and `CouldNotCheck` carries a typed failure.** `null`,
+"epoch 0" and "this instant" are three claims, and a nullable `DateTime` would let `null`
+render as "just now" in one place and "Never checked" in another.
+
+**B48's negative space is tested.** Three rows assert no table has an unread-count column,
+`schema.json` has none, and the count moves exactly when the underlying rows move —
+because it was never a number.
+
+**Two test defects worth naming, both of which had a correct *product* underneath:**
+- The B38 structural assertions searched whole files and failed **on their own doc
+  comments**, which mention "download" extensively to explain that the repository cannot.
+  A structural assertion that trips over its own explanation gets weakened, and weakening
+  it removes the check. Now the search strips comments first.
+- `markAllOpened preserves first readAt` asserted a timestamp the test itself had passed
+  to `markOpened` — which does nothing to an already-read row. Correct behaviour, wrong
+  expectation. The fixture's read time is now one named constant, because it was written
+  twice with different values (`2026-09-01` in the helper, `2026-09-02` in the
+  assertion) and a test comparing against a different number than the fixture wrote
+  cannot tell a regression from a typo.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **397 passed + 9 skipped** ·
+`check_plans` **38 clean**. Sabotage: INNER JOIN → 2 failures; `readsFrom` removed → 1;
+`markOpened` restamping `readAt` → 1; `COALESCE` removed → 0 (recorded as redundant).
+
+### NEXT SESSION SHOULD
+
+- **`0-5`**, the route table — the last Wave 1 node.
+- **`2-1`**, the Source contract, against five measured facts and no browse-side empty
+  signal.
+- **Findings to promote**: the plan's `COALESCE(added_at, 0)` sorts nulls first; `customSelect`
+  needs `readsFrom` or a stream emits once; `AppDatabase.forTesting` was a FK trap.
