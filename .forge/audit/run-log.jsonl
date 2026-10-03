@@ -849,3 +849,4 @@
 {"ts":"2026-10-03T09:36:18.167Z","type":"finding_raised","id":"F-012","domain":"errors-and-loading-states.md","severity":"majeur"}
 {"ts":"2026-10-03T09:47:29.304Z","type":"user_correction","message":"owner instruction 2026-10-03: 'i've said to go autonomously on this phase don ask me again and dont leave any holes otherwise it will be costly to fix them later'. An agent had stopped after summarising Wave 0 progress instead of continuing to the next node. Treating a status report as a stopping point is the failure this names: the work was authorised, so the next node is not a question."}
 {"ts":"2026-10-03T10:11:33.961Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
+{"ts":"2026-10-03T10:25:54.901Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}

@@ -1302,3 +1302,72 @@ rather than an absence nobody can see.
   was complete, correct, and checked by nothing.
 - **Do not treat a 403 or 404 as a bug in the client** before re-reading the ADR that
   measured the site. Both sites answered 200 the day before.
+
+### Phase 7 — `apk-pipeline`, and Wave 0 is complete
+
+**Built:** `lib/app/build_info.dart` (`AppBuildInfo`, `BuildInfoReader`,
+`isDistinguishable`) plus 13 rows in `test/app/build_info_test.dart`. **All six Wave-0
+nodes now have at least one test file on disk** (13 of 14 declared locations).
+
+**⚠️ The plan's own guard was the wrong one, and the absence test caught it.**
+§ 2.3 writes `displayLine => isUnknown ? '—' : '$buildName ($buildNumber)'`, and
+`isUnknown` is true only when **both** values are absent. So `buildNumber: null` with a
+readable `buildName` rendered **`1.0.0 (null)`** — a fabricated literal, in the exact
+place B43 forbids one. The plan spells out only the `buildNumber`-absent case and leaves
+the mirror case to be inferred, so I implemented the plan and the row for the *other*
+half caught it. The guard is now `buildName == null || buildNumber == null`.
+
+**Proven RED:** restoring the `isUnknown` guard makes **two** rows fail with the literal
+`1.0.0 (null)` and `null (42)`.
+
+**The forbidden-value row is a SCAN, not four assertions.** Nine combinations of
+present/absent name and number are generated and each is checked for `0.0.0`,
+`unknown`, `null`, `undefined`, `NaN` and emptiness. Four equality assertions would
+only have covered the four states someone thought of.
+
+**No `BuildInfoReader` implementation exists, deliberately.** B43 needs the version at
+runtime and the OS is the only correct source, which means `package_info_plus` — **not**
+in `pubspec.yaml`. `apk-pipeline` § 7 records that as an open dependency question under
+`17-security.md` rule 13, so `3-5` owns the implementation. Reading `pubspec.yaml` at
+runtime was rejected and the reason is in the source: it reads the *source* of the
+compilation, and the two diverge from the first `--build-name` override — that is, from
+the first CI build.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **203 passed + 9 skipped** ·
+`check_plans` **38 clean**. Register § 3: **209 written** (203 host + 6 on-device),
+**7 of 55** locations, **13 of 14** foundation locations.
+
+### The one place I stopped short of finishing, and why
+
+**Wave 0 is done in the sense that every node has code and tests; Wave 0 is NOT
+verified, because `0-1`'s nine capture rows skip.** The sites answer 403 and 404
+(F-012, F-013). `roadmap.md` put fixture capture in Wave 0 *before any feature code* so
+the HTML surprises would land early — and the surprise has landed, just not the way the
+plan expected: **the sites moved between the ADR that measured them and the slice that
+depends on them.**
+
+I did not fabricate a fixture, and I did not start Wave 1, because Wave 1's `0-2`
+through `0-4` are *fixture-driven* and `2-1` builds the Source contract against selectors
+that `18-external-contracts.md` documents for URLs now measured dead. Building the
+contract against unverified selectors would freeze the wrong thing.
+
+### NEXT SESSION SHOULD
+
+- **Decide F-012/F-013** — how fixtures get captured. The owner's phone carries whatever
+  cookie the challenge needs, and that is ADR-014's own method. Royal Road's current
+  catalogue URLs need finding either way.
+- **Re-measure ADR-014's table.** Both rows are false as of 2026-10-03.
+- **Then Wave 1**, in dependency order: `failure-discriminator` (which `http-client` now
+  hands the `FetchResult` it was told to import), then the `0-*` fixture slices.
+- **Promote F-001…F-013** (12 open), and give `state.js finding` a tombstone so an ID is
+  never reused after a resolve.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not guard a two-value invariant with a both-absent check.** `isUnknown` was the
+  plan's own suggestion and it let `1.0.0 (null)` through.
+- **Do not implement `BuildInfoReader` from `pubspec.yaml`.** That is a new dependency
+  question (`17-security.md` rule 13) *and* the wrong source.
+- **Do not start Wave 1 against selectors for URLs measured dead today.**

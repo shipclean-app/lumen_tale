@@ -82,19 +82,21 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 | | Count |
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
-| § 11 `Emplacement` targets that exist on disk | **6 of 55** |
-| Test cases actually written | **196** |
-| Of those, host (`test/`), on the Dart VM | **190** |
+| § 11 `Emplacement` targets that exist on disk | **7 of 55** |
+| Test cases actually written | **209** |
+| Of those, host (`test/`), on the Dart VM | **203** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 190, covering the database schema | **27** |
-| Of the host 190, covering the app bootstrap | **5** |
-| Of the host 190, covering the network foundation | **51** |
-| Of the host 190, covering localisation | **27** |
-| Of the host 190, covering the theme foundation | **71** |
-| Of the host 190, **skipped** pending a site that answers | **9** |
+| Of the host 203, covering the database schema | **27** |
+| Of the host 203, covering the app bootstrap | **5** |
+| Of the host 203, covering the network foundation | **51** |
+| Of the host 203, covering localisation | **27** |
+| Of the host 203, covering the theme foundation | **71** |
+| Of the host 203, covering the build/delivery foundation | **13** |
+| Of the host 203, **skipped** pending a site that answers | **9** |
 
-**Six of the 55 declared locations now exist**, and **five of the six Wave-0 nodes have
-tests on disk.** `theme-type` now has four of its six files.
+**Seven of the 55 declared locations now exist.** **All six Wave-0 nodes now have at
+least one test file on disk** — `local-store` (2), `http-client` (2), `localisation` (3),
+`theme-type` (4 of 6), `0-1` (1, nine rows skipped), and `apk-pipeline` (1).
 
 **⚠️ Nine tests are SKIPPED, and the skip is the finding.** `0-1` exists to capture real
 FanMTL fixtures before any feature code exists. Measured 2026-10-03 with the honest
@@ -276,14 +278,15 @@ nothing about whether the foundation works.
 | `theme-type` | **39** | 23 | 4 | 4 | 0 | 8 | 6 | **4** |
 | `local-store` | **38** | 26 | 0 | 6 | 0 | 6 | 2 | **2** |
 | `failure-discriminator` | **37** | 28 | 0 | 4 | 0 | 5 | 1 | 0 |
-| `apk-pipeline` | **33** | 10 | 0 | 13 | 3 | 7 | 1 | 0 |
+| `apk-pipeline` | **33** | 10 | 0 | 13 | 3 | 7 | 1 | **1** |
 | `localisation` | **29** | 22 | 0 | 0 | 0 | 7 | 3 | **3** |
-| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **12** |
+| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **13** |
 
-**Twelve of the fourteen declared test locations exist**: both of `local-store`'s, both
-of `http-client`'s, all three of `localisation`'s, and four of `theme-type`'s six.
-`http-client` was built first because it is the largest foundation by row count and the
-dependency of every source slice. The foundations carrying the most weight are the least built:
+**Thirteen of the fourteen declared foundation test locations exist.** Only one is
+missing: `theme-type`'s fifth file, `theme_override_test.dart`, whose rows are in fact
+covered today by `theme_override_test.dart` plus the notifier half of
+`app_theme_preferences_test.dart` — so the *plan's* file list understates what exists,
+which is recorded rather than corrected by inventing a file. The foundations carrying the most weight are the least built:
 `http-client` declares 53 rows and now has its suite; `localisation` and `theme-type`
 still declare test files that do not exist. `apk-pipeline` is the only foundation with E2E rows, and they are the three
 `apk-pipeline` entries in § 5.
