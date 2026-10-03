@@ -2636,7 +2636,7 @@
       "edge_case_ids": [
         "E12"
       ],
-      "note": "the Settings screen itself — /more/settings plus its /reader and /about sub-routes. Added 2026-10-02: settings.md, settings-reader.md and settings-about.md were approved screens with no owning slice, and 3-4 had to place the E11 disclosure inside one. Strings are localisation (6-7); theme and size are the theme-type foundation. This slice is the assembly and the persistence."
+      "note": "the Settings screen itself — /more/settings plus its /reader and /about sub-routes. Added 2026-10-02: settings.md was an approved screen with no owning slice, and 3-4 had to place the E11 disclosure inside one. Strings are localisation (6-7); theme and size are the theme-type foundation. This slice is the assembly and the persistence.\nCORRECTION, same day: the note here first claimed settings-about.md 'had no owning slice'. It does — 3-5 implements that screen in full (B43) and 0-5 publishes the route. This slice owns settings.md and pushes /more/settings/about; it does NOT own the About body. The wrong claim was mine, written while adding this slice, and it was caught by the agent writing 3-7's plan."
     }
   },
   "gates_pending": [],

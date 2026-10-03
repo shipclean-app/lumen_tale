@@ -352,3 +352,73 @@ Gate at the last commit: `forge-guard` clean except the proven `version_pins_agr
 - **Do not trust a rule file over the code.** Five of this session's findings were the *rules* being stale while eighteen screens and the schema were right. A rule file nobody has re-read since the plan changed is a liability, not a law.
 - **Do not declare an annotation and assume it applied.** `@TableIndex` inside a class body emits nothing and drift does not warn; a wrong column name emits `CREATE INDEX x ON t ()`. Both happened, both were silent, and both were caught only because a test read `sqlite_master` rather than trusting the declaration.
 - **Do not leave a gate owed a number.** § 7.1's three "not yet measurable" targets survived three phases. Two got numbers, one got deleted — and the section had meanwhile started claiming a fourth requirement it no longer stated.
+
+---
+
+## 2026-10-03 — Session 6: Phase 4 closed, Phase 5 opened, and the plans found forty things the gates could not
+
+### STARTED FROM
+
+Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and repaired (Session 5); 29 slices + 5 foundations; 24 tests. The owner approved the phase and said **go autonomous**.
+
+### DECIDED
+
+- **ADR-021** B37 ships in v1 · **ADR-022** the download mark is a column · **ADR-023** B35 (the schedule) withdrawn to `prd.md` § 9, ID retained
+- **ADR-024** `novels.author` / `description` stored, display-only, unindexed — **B45 is now enforced by the absence of an index**, not by a sentence
+- **ADR-025** B37's cancellation is in-app plus the platform's stop control. **Measured, not argued**: `workmanager` 0.10.10 is federated, and `workmanager_android` 0.10.9's `createForegroundInfo` builds with `setOngoing(true)` and **no `addAction`**; `ForegroundServiceConfig` has no action field
+- **ADR-026** `crypto` added — `Source.id` is an MD5 and nothing in the tree could compute one
+- **ADR-027** `2-6` owns `reading_positions`; `2-4` delegates the write and passes the extent it already holds
+- **Fast-track enabled**, `autonomy: full`, 7/7 conditions
+
+### REJECTED
+
+- **A notification cancel *button*.** Rejected for v1: a second notification stack beside the one `workmanager` posts, two channels, two icon rules, two places to get a foreground-service permission wrong — bought for a convenience on a job the reader just started while watching it.
+- **`flutter_local_notifications`.** Same argument, named and rejected rather than silently skipped.
+- **Keeping the reader's pixel across a font change by storing a fraction.** That would contradict ADR-009's reason for choosing a pixel. Stored a **height** instead; the quotient is recomputed and **never persisted**.
+- **`design-system.md`'s `SettingsSwitchRow` deleted now that it has zero instances.** No — components are specified ahead of use. The status is stated as *declared, unused*.
+- **Translating a document to satisfy a tool.** `coverage-check prd` is hardcoded to French headings; proven a locale false positive by renaming one heading and watching exactly one failure clear.
+- **Replacing MD5 with SHA-256** when adding `crypto`. It would invalidate every stored id while looking like a routine dependency bump.
+
+### BLOCKED
+
+- **Q-008 — a real Android phone.** Gates SC-5, `gate:upgrade-safety`, every frame-budget target and every E2E test. Nothing in Phase 5 is blocked by it; nothing in v1 can be *verified* without it.
+- **Q-004** — Novel Fire's terms unread.
+
+### THE FINDINGS
+
+Phase 5 produced **38 plans and roughly forty defects the gates could not see.** The ones that mattered:
+
+- **The source contract could not return HTML.** `2-1`'s `Future<FetchResult> get(...)` and `FetchSucceeded`'s `final int status` — **no body**. `fetchChapterContent` must return raw HTML. A source literally could not read a page, and every plan passed. The response type now separates *did it work* from *what did it say*.
+- **`core/network/` was named by three documents and owned by none.** A slice cannot call a layer no slice builds.
+- **Four screens had no owning slice**, including `source-unavailable.md` — **SC-6's only surface**.
+- **Approving Phase 4 made two deferred decisions mine, and `forge-guard` said so immediately**: `conventions.md` still read *"E2E tests | À DÉCIDER EN PHASE 4"*, and the design system's checklist asserted "no unresolved template placeholder" **while quoting the literal token to do it**.
+- **The reader's measure figure was wrong by ~3×.** 328dp at 26px is about **25 characters**, not 95; reaching 95 would need 1235dp. The *rule* was right and the *reason* was wrong.
+- **`Source.id` was an MD5 nothing could compute.** § 1.1 said "nothing else may be added" without noticing the thing it had added could not satisfy the contract three sections below.
+- **Four edge cases were assigned by topic, not by owner** — E7 (*connection lost mid-queue*) sat on `6-6`, the unread badge, which owns no queue.
+- **A reading position could not survive a text-size change.** Same pixel, different paragraph, and the earlier height was gone.
+
+### FILES TOUCHED
+
+38 files in `.forge/plans/` · `architecture.md`, `prd.md`, `roadmap.md`, `benchmarks.md`, `design-system.md`, `coverage.md`, `flows.md` · 16 screen files · `DECISIONS.md` (ADR-021…027) · `.opencode/rules/{01,03,06,07,09,13,15,17,18}` · `conventions.md` · `pubspec.yaml` (+`crypto`, +`integration_test`) · `lib/core/database/` (+`downloadedAt`, +5 indexes, +`contentHeight`) · 32 tests.
+
+### STATUS
+
+**Phases 0–4 approved. Phase 5 in progress: 38 of 38 plans written**, every one `draft`, every assigned B/E/C id traced in § 6. Graph: **38 nodes, 32 slices, 6 foundations, 60 edges, 10 waves, 0 cycles, 0 orphans.**
+
+Gate at the last commit: `forge-guard` clean except the proven `version_pins_agree` Dart false positive; `design-check` all four PASS with **48 states read**; `dependency-check --full` pass; `flutter analyze` 0; `flutter test` **32 passing**; `check_plans.py` **38 clean, 0 failures** — a checker stricter than `coverage-check.js`, which only proves headings, ids and non-empty sections.
+
+### NEXT SESSION SHOULD
+
+- **Approve the 38 plans**, then `set-status … slice <key> planned` for each and flip its front matter to match. The README declares `draft` and state says `identified`; they move together.
+- **`3-7` has no row in `architecture.md` § 3.1's inventory.** Added to `state.json` and to the wave table, missed in the slice table. One line.
+- **`2-7` declares a contract change to `2-4`** — `flutter_markdown_plus` renders a whole document in one block and virtualises nothing, so a large chapter cannot meet the frame budget without a block list. `2-7` § 8.1 proposes `ChapterText.blocks` alongside `markdown`, computed by `2-2` at write time. **That is a decision, not a note.**
+- **E2E is decided but unrunnable.** `integration_test` is added; nothing executes until Q-008. Do not let §11.4 entries drift into looking verified.
+- **Three plans were written against a `state.json` that moved under them.** The edge-case reassignment happened mid-flight. `check_plans.py` is the authority; re-run it after any write to `state.json`.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not add a slice because a document mentions a thing.** Five defects this session were a document naming something no slice owned: `core/network`, four screens, `AppScaffold`, the cause record, `reading_positions`.
+- **Do not run a blanket string replacement over a document containing the word *not*.** 42 correct citation swaps produced two sentences naming the same ADR on both sides of a contrast. After any bulk rewrite, read back the lines containing *not*, *except*, *only*, *never*.
+- **Do not check that a *rule's letter* holds and call the rule discharged.** B37's letter ("a visible notification the user can cancel") was satisfiable only by a mechanism the plugin does not have; B6's letter was satisfiable while its intent was not.
+- **Do not trust a plan that passes `coverage-check.js`.** It proves headings, ids and non-empty sections — nothing about whether § 2 is code, § 3 has every branch, or § 7 states a trap in a form an implementer obeys.
+- **Do not treat a rejected item as a closed one.** ADR-025, ADR-023 and the `flutter_local_notifications` rejection all name their restoration trigger. The trigger is the point.
