@@ -931,3 +931,82 @@ several times.
 
 - **Do not read `unknown_slice` as "nothing to check".** It means the checker did not look,
   which is the same shape as `flutter test -d` reporting green on a laptop.
+
+### F-007 fixed — and fixing it exposed three worse defects underneath
+
+The owner said *fix and go autonomous*. The fix was one line: `cmdCheckStale` resolved
+only `state['slices']`, never `state['foundations']` — the same lookup `cmdDep` already
+did correctly. Mirrored it. **`check-stale` now resolves all 38 nodes: 38 ok, 0 stale,
+0 errors.** F-007 closed.
+
+**The interesting part is what the fix uncovered.** All five foundations immediately
+reported `plan_edited` — and then `0-1`, which had reported stale, reported `ok`. That
+should not have happened with nothing changed on disk. It is F-008:
+
+> **`check-stale` overwrites `plan_hash` with the current file hash and saves it.** It can
+> report `plan_edited` **exactly once per plan**. Run 1 says stale, run 2 says clean.
+> `state.json` grew 26 lines across two runs. A gate that can only fail once is not a gate.
+
+Then F-009, which is the real one. I checked whether the drift was genuine before
+touching anything, by hashing every historical version of `local-store.md` with Forge's
+own `contentHash`:
+
+```
+b51fdad  sha256:b7187e2432d5   (phase 5 approved, all 38 plans)
+4e46fe6  sha256:b7187e2432d5
+7e2d162  sha256:b7187e2432d5
+recorded in state.json: sha256:367fc29dc1be   ← matches NO committed version
+```
+
+**37 of 38 plans are byte-identical to the Phase-5 approval commit `b51fdad`.** The only
+one that differs is `0-2`, which *I* edited this session to fix a broken pointer, and which
+is committed with that change documented. So the plans are trustworthy and the bookkeeping
+was fiction — and the scope is far wider than the five foundations:
+
+| | |
+|---|---:|
+| nodes whose `content_hash` is not the hash of their `path` | **37 / 38** |
+| nodes whose `plan_hash` is not the hash of their `plan_path` | **31 / 38** |
+
+**The 7 nodes whose `plan_hash` looked correct were exactly the ones `check-stale` had just
+rewritten** — F-008's self-heal presenting as a repair. `forge-guard`'s
+`content_hashes_current` checks 69 artefacts and **none of the 38 nodes**, which is why 37
+wrong hashes went unnoticed. Repaired by re-registering all 38 at their plan paths:
+**38/38 internally consistent**, verified.
+
+### What the repair cost, honestly
+
+`section_references` went from **broken 0 → 2**. Correcting `path` made the resolver
+re-attribute two references it had previously mis-filed, and both are real:
+
+- `theme-type.md:1195` cites `design-system.md § 0.1`; there is no `0.1`. The halation
+  argument lives under `### The contestable choices`.
+- `theme-type.md:1224` cites `design-system.md § 0.3` for the rule that `ColorScheme.fromSeed`
+  supplies the Material 3 roles. **`design-system.md` contains zero occurrences of
+  `ColorScheme` and zero of `fromSeed`.** That is not a dangling pointer — it is a plan
+  asserting a design-system rule that was never written.
+
+**Not guessed at, and not renumbered.** Pointing `0.3` at a nearby section would produce a
+reference that resolves and is wrong, which the rules call worse than one that resolves to
+nothing. Logged as **F-011** against `14-design-tokens.md`, and **`theme-type` must not be
+implemented from a plan whose stated design premise is absent.**
+
+### NEXT SESSION SHOULD
+
+- **Decide F-011 before implementing `theme-type`.** Add `0.1` and `0.3` to
+  `design-system.md`, or correct the two citations to headings that exist.
+- **Extend `forge-guard content_hashes_current` to slices and foundations.** Until it does,
+  its `pass` says nothing about the graph, and 37 wrong hashes are exactly what it missed.
+- **Fix F-008 in `state.js`** — `check-stale` must compare read-only and leave the hash to
+  an explicit `register`, or record the drift in a separate field so it survives. Add a
+  selftest that runs it twice on a mutated plan and asserts the second run still fails.
+- **Promote F-001…F-011.** Eleven findings with domains and no promotion.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not trust a green from `check-stale` that you have already run once.** It is
+  self-healing; the evidence is destroyed by the act of checking.
+- **Do not treat `unknown_slice` as "nothing to check".** It meant "not looked at" — and
+  fixing it immediately revealed that the hashes it would have read were wrong for 31 nodes.
+- **Do not assume a repair is free.** Correcting 38 `path` values surfaced two real broken
+  references that the broken state had been hiding.
