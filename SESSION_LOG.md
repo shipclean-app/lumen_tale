@@ -1227,3 +1227,78 @@ format clean · `analyze --fatal-infos` **zero** · host **165/165** · `check_p
   the seed's brightness — which is the *day* accent's, in both themes.
 - **Do not assert a proportion `design-system.md` states in prose when its table says
   otherwise.** Measure the table, assert the spread, and say which one won.
+
+### Phase 7 — `0-1` written, and the sites that were supposed to be captured are gone
+
+Wrote `test/fixtures/fixture_manifest.dart` (§ 2.3's model, verbatim) and
+`test/fixtures/fanmtl_manifest_test.dart`. Host suite **190 + 9 skipped**.
+
+**⚠️ Wave 0 is blocked by the sites themselves, measured 2026-10-03** with the honest
+`LumenTale/0.1.0 (personal reader)` UA:
+
+| Site | Result |
+|---|---|
+| FanMTL `/`, `/robots.txt`, catalogue path, `/browsetags/`, `/browsetags/all.html` | **403**, Cloudflare interstitial |
+| Royal Road `/` → `/home` | **200**, 118 173 bytes, real markup |
+| Royal Road `/fiction/1`, `/fictions/ratings`, `/fiction/best-rated`, `/fiction/updates`, `/fiction/ratings` | **404**, zero novel rows |
+
+**ADR-014 recorded both sites at 200 on 2026-10-02.** The sites moved; the client did
+not. `0-1` exists to capture fixtures *before* any feature code, so this blocks Wave 0 at
+its first slice. Logged as **F-012** and **F-013**, and measured into
+`18-external-contracts.md` § Re-measurement 2026-10-03.
+
+**No bypass, and no fabricated fixture.** ADR-014 already rejected Mihon's WebView
+technique on measurement, and C2's no-telemetry constraint plus rule 7 put a
+challenge-solving WebView out of scope independently — a Cloudflare interstitial is the
+site declining, and the correct response is to record it. Fabricating HTML and calling it
+a capture is precisely what `kind: manufactured` exists to distinguish; a green `0-1`
+built on manufactured fixtures would hand `2-1` a selector contract validated against
+nothing, which is the failure Wave 0 was created to prevent. **So the nine capture rows
+SKIP, loudly, naming F-012** — and the manifest API rows run against an in-memory
+manifest so they still prove something.
+
+**The closed-list rule was a comment until a test caught it.** § 2.2 declares `kind` a
+closed list of eight because "a free string becomes a taxonomy nobody maintains". My
+first `fromJson` accepted any string: the constant existed, was complete, and was never
+checked. **A declared invariant that nothing enforces is documentation.** `fromJson` now
+refuses a `kind` outside the list.
+
+**Two of my own mistakes, both caught immediately:**
+- Asserted `entry.capturedBy`, which does not exist — § 2.2 puts `capturedBy` on the
+  **manifest**, not on each entry. Now read once off the manifest.
+- The manifest's eleven mandatory fields are asserted **field by field**: removing any one
+  must fail. A test that only checks the list has the right length would not notice a
+  field that stopped being required.
+
+**Also found: `state.js finding` reuses finding IDs.** It numbers `F-<length + 1>` with
+no tombstone, so a finding raised after one was *resolved* can collide with the resolved
+ID. The FanMTL finding was issued as `F-011` — already used in this log for theme-type's
+broken `design-system.md` citation, fixed in `a3665d8`. Renamed by hand to `F-012`, then
+`F-013`, and both `script_failure` events are in the run log. **There is no verb to fix
+it**, which is the same gap as F-001.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **190 passed, 9 skipped** ·
+`check_plans` **38 clean**. Register § 3 recomputed: **196 written** (190 host + 6
+on-device), **6 of 55** locations, and the skipped count is now a **row in the register**
+rather than an absence nobody can see.
+
+### NEXT SESSION SHOULD
+
+- **Decide how fixtures get captured** — F-012/F-013. Capturing from the owner's phone,
+  which already carries whatever cookie the challenge needs, is the cheapest honest
+  option and needs no rule change. Royal Road's catalogue URLs need finding regardless.
+- **Re-measure ADR-014's table.** Both rows are now wrong, and `2-1`'s selectors are
+  being written against them.
+- **`apk-pipeline`** is the last Wave-0 node; its test file is declared and unwritten.
+- **Promote F-001…F-013** (12 open). And note `state.js finding` needs a tombstone.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not fabricate a fixture to make `0-1` green.** The skip is the honest state, and
+  `kind: manufactured` exists so the two can never be confused.
+- **Do not declare an invariant in a constant and assume it is enforced.** `FixtureEntry.kinds`
+  was complete, correct, and checked by nothing.
+- **Do not treat a 403 or 404 as a bug in the client** before re-reading the ADR that
+  measured the site. Both sites answered 200 the day before.

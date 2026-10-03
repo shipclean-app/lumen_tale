@@ -56,7 +56,7 @@ Until both remaining sites are measured, v1 can claim **genre browsing for all t
 
 - **Permission**: permitted. Its `robots.txt` is an **EmpireCMS** file. The `User-agent: *` block disallows exactly seven paths — `/d/`, `/e/class/`, `/e/config/`, `/e/data/`, `/e/enews/`, `/e/update/` (plus `Allow: /ads.txt`). **Novel and chapter content under `/novel/` and `/list/` is not among them.** Note precisely which paths are listed: `/e/search/` is **not** disallowed, so search is not robots-blocked here — see quirk 6. The site also publishes `/terms-of-service.html` and `/dmca.html`; re-read both before shipping. Re-check `robots.txt` on every release and honour a change.
 - **Scope**: fan-fiction / web novels. Genre taxonomy is Chinese-derived. **Eight genres, not nine**: `xianxia`, `xuanhuan`, `shounen`, `shoujo`, `romance`, `contemporary-romance`, `action`, `wuxia`. An earlier note here said nine — it had counted the `all` pseudo-entry as a genre, which it is not, and a screen cannot render nine labels when the site supplies eight.
-- **Last verified**: 2026-10-02
+- **Last verified**: 2026-10-02 — ⚠️ **superseded for reachability: see § Re-measurement 2026-10-03 at the end of this file. Every path on this site returned 403 to an honest User-Agent on that date.**
 - **URL structure** (verified by fetching, not guessed):
 
   | Purpose | Pattern | Example |
@@ -115,3 +115,55 @@ Until both remaining sites are measured, v1 can claim **genre browsing for all t
 - **Last verified**: 2026-10-02
 - **Quirks**: domain churn (above). Cloudflare that punishes browser impersonation (above). Aggregator — chapter pages may be proxied from origin sites, so chapter HTML may differ per fiction and the converter's per-source overrides will earn their keep here.
 - **Pending promotion**: `17-security.md` rule 5 — the Novel Fire measurement is general enough to become the worked example there.
+---
+
+## Re-measurement 2026-10-03 — both v1 sites moved, and Wave 0 is blocked
+
+Measured from the development machine with the **honest** User-Agent
+`LumenTale/0.1.0 (personal reader)` — the one ADR-014 measured as correct, and the
+one `17-security.md` rule 5 requires. No browser impersonation was tried, and none
+will be.
+
+| Site | Path | Result |
+|---|---|---|
+| FanMTL | `/` | **403** — Cloudflare interstitial, `challenges.cloudflare.com` in `script-src` |
+| FanMTL | `/robots.txt` | **403** |
+| FanMTL | `/list/xianxia/all-lastdotime-0.html` | **403** — the catalogue path this file documents |
+| FanMTL | `/browsetags/` | **403** — the one path this file says works |
+| FanMTL | `/browsetags/all.html` | **403** |
+| Royal Road | `/` | **302** → `/home`, then **200**, 118 173 bytes, real markup |
+| Royal Road | `/fiction/1` | **404**, 0 novel rows |
+| Royal Road | `/fictions/ratings` | **404**, 0 rows |
+| Royal Road | `/fiction/best-rated` | **404**, 0 rows |
+| Royal Road | `/fiction/updates` | **404**, 0 rows |
+| Royal Road | `/fiction/ratings` | **404**, 0 rows |
+
+**What this invalidates, precisely.** ADR-014's measurement table records FanMTL and
+Royal Road as *"200, no challenge"* and *"200, no `cf-mitigated`, no Turnstile"*
+respectively, measured 2026-10-02. One day later FanMTL challenges an honest client on
+every path, and Royal Road's catalogue and chapter paths 404. **The site changed; the
+client did not.**
+
+**What it does not change, and must not be read as changing:**
+
+- **No bypass is warranted or wanted.** ADR-014 already rejected Mihon's WebView
+  technique on measurement, and C2's no-telemetry constraint plus `17-security.md`
+  rule 7 put a challenge-solving WebView out of scope independently. A Cloudflare
+  interstitial is the site declining; the correct response is to record it, not to
+  defeat it.
+- **The selectors in this file are not thereby wrong.** `div.fiction-list` and
+  `.chapter-content` were verified against real pages on 2026-10-02. They are
+  unreachable *now*. That is a reachability fact, not a markup fact, and the two must
+  not be conflated — a selector rewritten to fit an interstitial would be a selector
+  written against an error page.
+
+**Consequence for the plan.** `roadmap.md` § 2 puts fixture capture in **Wave 0**,
+before any feature code, precisely so HTML surprises land early. Slice `0-1` cannot
+capture a catalogue page or a chapter body for **either** v1 site as measured from the
+development machine. `0-1` therefore cannot proceed to its own § 11, and `0-2`
+through `0-4` depend on its fixtures.
+
+**Recorded as F-012 (FanMTL 403) and F-013 (Royal Road 404).** The decision on how to
+capture is the owner's; the cheapest honest option is capturing from the owner's own
+phone, which already carries whatever cookie the challenge requires, and which is the
+same method ADR-014's own measurement used.

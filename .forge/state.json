@@ -1152,7 +1152,7 @@
       "path": ".forge/test-plan.md",
       "type": "test-plan",
       "status": "approved",
-      "content_hash": "sha256:4d5254cb7810",
+      "content_hash": "sha256:af3e7028aded",
       "headings": {
         "1": "The inventory",
         "2": "Coverage of the rule corpus",
@@ -1172,7 +1172,7 @@
         "11.2": "Variables and commands",
         "11.3": "Two tool defects Phase 6 had to fix to make any of this checkable"
       },
-      "updated_at": "2026-10-03T08:24:55.455Z",
+      "updated_at": "2026-10-03T10:11:33.950Z",
       "derived_from": [
         ".forge/plans/*.md section 11"
       ]
@@ -4432,7 +4432,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 261,
+      "register": 262,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 134,
@@ -4443,9 +4443,11 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 10,
+      "finding_raised": 12,
       "fast_track_enter": 1,
-      "finding_promoted": 1
+      "finding_promoted": 1,
+      "script_failure": 2,
+      "user_correction": 1
     }
   },
   "divergences": [],
@@ -4626,6 +4628,32 @@
       "correction": "Repaired in this pass by re-registering all 38 nodes at their plan paths, after which 38/38 are internally consistent (verified content_hash == hash(path) AND plan_hash == hash(plan_path) for every node). Still required: extend forge-guard's content_hashes_current to cover slices and foundations, since it checked 69 artefacts and none of the 38 nodes -- which is why 37 wrong hashes went unnoticed. Until it does, 'content_hashes_current: pass' says nothing about the graph.",
       "artifact": null,
       "raised_at": "2026-10-03T06:29:54.172Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-012",
+      "domain": "errors-and-loading-states.md",
+      "severity": "critique",
+      "origin": "forge",
+      "status": "open",
+      "summary": "MEASURED 2026-10-03: FanMTL now returns 403 with a Cloudflare interstitial ('Just a moment...', challenges.cloudflare.com script-src) for an HONEST User-Agent. Tested /, /robots.txt, a catalogue path, /browsetags/ and /browsetags/all.html -- all 403. ADR-014 measured FanMTL at '200, no challenge' with an honest UA on 2026-10-02, so the site changed within one day. Slice 0-1 cannot capture its fixtures, and roadmap Wave 0 exists precisely to capture fixtures BEFORE any code, so this blocks 0-1 through 0-4 and every slice downstream of the Source contract.",
+      "correction": "Decide how fixtures get captured. No bypass will be built: ADR-014 already rejected Mihon's WebView technique, and C1 plus the no-telemetry constraint put a challenge-solving WebView out of scope regardless. ADR-014's FanMTL row must be re-measured and 18-external-contracts.md updated, because '200, no challenge' is now false and 2-1's selectors are being written against it. Capturing from the owner's own phone, which already carries a real cf_clearance, is the honest reading of ADR-014's own method and needs no rule change.",
+      "artifact": null,
+      "raised_at": "2026-10-03T09:18:26.916Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-013",
+      "domain": "errors-and-loading-states.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "MEASURED 2026-10-03, honest UA: Royal Road's / redirects 302 to /home and serves 200 with 118173 bytes of real markup, but every deep path returns 404 with zero fiction-list rows -- /fiction/1, /fictions/ratings, /fiction/best-rated, /fiction/updates, /fiction/ratings. ADR-014 recorded 'home, best-rated catalogue, real chapter' at 200 on 2026-10-02, so the catalogue and chapter URLs have moved. Wave 0's fixture capture needs a catalogue page and a chapter body; the home page alone cannot produce either.",
+      "correction": "Find the current catalogue and chapter URLs and update 18-external-contracts.md, whose FanMTL section documents '/list/<tag>/<sort>-<page>.html' and whose Royal Road section documents a 'fiction-list' selector that no longer resolves. Until then 0-1 cannot capture fixtures for either v1 site, and 3-1's selectors are written against URLs that are measured dead.",
+      "artifact": null,
+      "raised_at": "2026-10-03T09:36:18.162Z",
       "promoted_to": null,
       "resolved_at": null
     }

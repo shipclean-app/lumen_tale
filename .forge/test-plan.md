@@ -82,19 +82,40 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 | | Count |
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
-| § 11 `Emplacement` targets that exist on disk | **4 of 55** |
-| Test cases actually written | **171** |
-| Of those, host (`test/`), on the Dart VM | **165** |
+| § 11 `Emplacement` targets that exist on disk | **6 of 55** |
+| Test cases actually written | **196** |
+| Of those, host (`test/`), on the Dart VM | **190** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 165, covering the database schema | **27** |
-| Of the host 165, covering the app bootstrap | **5** |
-| Of the host 165, covering the network foundation | **51** |
-| Of the host 165, covering localisation | **27** |
-| Of the host 165, covering the theme foundation | **55** |
+| Of the host 190, covering the database schema | **27** |
+| Of the host 190, covering the app bootstrap | **5** |
+| Of the host 190, covering the network foundation | **51** |
+| Of the host 190, covering localisation | **27** |
+| Of the host 190, covering the theme foundation | **71** |
+| Of the host 190, **skipped** pending a site that answers | **9** |
 
-**Four of the 55 declared locations now exist** — both `local-store` files, both
-`http-client` files, all three `localisation` files, and `theme-type`'s
-`lumen_colors_test.dart` — so **five of the six Wave-0 nodes have tests on disk.**
+**Six of the 55 declared locations now exist**, and **five of the six Wave-0 nodes have
+tests on disk.** `theme-type` now has four of its six files.
+
+**⚠️ Nine tests are SKIPPED, and the skip is the finding.** `0-1` exists to capture real
+FanMTL fixtures before any feature code exists. Measured 2026-10-03 with the honest
+`LumenTale/0.1.0 (personal reader)` UA:
+
+| Site | Result |
+|---|---|
+| FanMTL — `/`, `/robots.txt`, catalogue path, `/browsetags/`, `/browsetags/all.html` | **403**, Cloudflare interstitial |
+| Royal Road — `/` → `/home` | **200**, 118 173 bytes, real markup |
+| Royal Road — `/fiction/1`, `/fictions/ratings`, `/fiction/best-rated`, `/fiction/updates`, `/fiction/ratings` | **404**, zero novel rows |
+
+ADR-014 measured both sites at 200 on 2026-10-02. **The sites moved; the client did
+not.** So `0-1`'s capture rows cannot run, and the manifest API rows run against an
+in-memory manifest instead.
+
+**No fixture was fabricated to fill the gap.** Manufacturing HTML and calling it a
+capture is precisely what `kind: manufactured` exists to distinguish, and a green `0-1`
+built on manufactured fixtures would hand `2-1` a selector contract validated against
+nothing — the exact failure Wave 0 was created to prevent. Recorded as **F-012** (FanMTL
+403) and **F-013** (Royal Road 404), and measured in
+`.opencode/rules/18-external-contracts.md` § Re-measurement 2026-10-03.
 
 **One row of `localisation`'s § 11 is deliberately absent**, and its absence is the
 honest entry rather than a gap: *« the error message family resolves in both
@@ -252,15 +273,15 @@ nothing about whether the foundation works.
 | Foundation | Rows declared | Unit | Component | Integration | E2E | Manual | Test locations declared | On disk |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | `http-client` | **53** | 42 | 0 | 4 | 0 | 7 | 1 | **1** |
-| `theme-type` | **39** | 23 | 4 | 4 | 0 | 8 | 6 | **1** |
+| `theme-type` | **39** | 23 | 4 | 4 | 0 | 8 | 6 | **4** |
 | `local-store` | **38** | 26 | 0 | 6 | 0 | 6 | 2 | **2** |
 | `failure-discriminator` | **37** | 28 | 0 | 4 | 0 | 5 | 1 | 0 |
 | `apk-pipeline` | **33** | 10 | 0 | 13 | 3 | 7 | 1 | 0 |
 | `localisation` | **29** | 22 | 0 | 0 | 0 | 7 | 3 | **3** |
-| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **8** |
+| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **12** |
 
-**Eight of the fourteen declared test locations exist**: both of `local-store`'s, both of
-`http-client`'s, all three of `localisation`'s, and one of `theme-type`'s six.
+**Twelve of the fourteen declared test locations exist**: both of `local-store`'s, both
+of `http-client`'s, all three of `localisation`'s, and four of `theme-type`'s six.
 `http-client` was built first because it is the largest foundation by row count and the
 dependency of every source slice. The foundations carrying the most weight are the least built:
 `http-client` declares 53 rows and now has its suite; `localisation` and `theme-type`
