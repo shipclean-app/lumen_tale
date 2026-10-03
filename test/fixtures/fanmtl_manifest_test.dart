@@ -65,7 +65,18 @@ void main() {
       // A free string becomes a taxonomy nobody maintains.
       expect(FixtureEntry.kinds, contains('catalogue'));
       expect(FixtureEntry.kinds, contains('manufactured'));
-      expect(FixtureEntry.kinds, hasLength(8));
+      // ⚠️ **Nine, not eight** — `6-11` added `search`. The count is asserted as a
+      // NUMBER rather than as a membership list so that adding a kind is a visible
+      // edit here, which is the point of closing the list: a `String` that appears
+      // without anyone deciding it is how a taxonomy starts growing by accident.
+      expect(
+        FixtureEntry.kinds,
+        hasLength(9),
+        reason:
+            'a new kind of captured page needs a decision in this file, not just an '
+            'addition to FixtureEntry.kinds',
+      );
+      expect(FixtureEntry.kinds, contains('search'));
 
       expect(
         () => FixtureEntry.fromJson(

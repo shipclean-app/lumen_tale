@@ -2226,3 +2226,133 @@ the copy is the rollback, not the index.
 - **Do not undo a sabotage with `git checkout`.** Copy the file first.
 - **Do not add an exception subclass to fit a mapping.** `13-error-handling.md`: keep the
   hierarchy small, and add a subclass only when a caller needs to catch it specifically.
+
+---
+
+## 2026-10-03 — Session 12: Royal Road has a working search, and I wrote the verdict before measuring it
+
+### STARTED FROM
+
+`6-7` committed at `6001242` (527 tests). Wave 2 had one unblocked node left that needed no
+code I did not already have: **`6-11`** — *does Royal Road implement a search a reader
+would call useful?* An `Open items` row said **"unknown — not yet checked"** since
+2026-10-02, and ADR-015 makes `supportsSearch` a promise, so an unchecked promise is a
+guess wearing a flag.
+
+### DECIDED
+
+- **The method is ADR-015 word for word, and the negative query is not optional.** Two
+  queries that MUST match (`litrpg`, `system+fantasy`) and one that cannot
+  (`zzzqqqxxnotanovelname`), honest UA, GET, no session, redirects followed. Without the
+  control, "20 rows for `litrpg`" and "the page always shows 20 rows" are the **same
+  observation**, and a source that shows a random catalogue forever satisfies the first
+  one.
+- **A count is not the verdict; the titles are.** ADR-015 says *results a reader would
+  call useful*. All ten sampled titles carry the queried words — *Cards of Transcendence
+  - A Deck Building **LitRPG** Adventure*, *I Died to a Pole and Woke Up a Dragonborn
+  [**LitRPG System Fantasy**]* — so the test asserts ≥5 titles contain a queried word,
+  re-derived from the capture. A test asserting `rows == 20` would have passed against a
+  page that ignores the query entirely.
+- **`supportsSearch = true` for Royal Road**, and `03-source-system.md` rule 5a no longer
+  applies to this site — so `3-1` may render a search entry for it.
+- **Novel Fire is recorded as UNMEASURED, not `false`.** Every path — `/`, `/search`,
+  `/search?keywords=litrpg` — answers **403** with a `Just a moment...` interstitial
+  carrying `challenges.cloudflare.com`, on the honest UA. Rule 5a's list is *404,
+  meta-refresh, timeout, empty page*; a challenge is none of those, it is the site
+  declining to be read at all. Writing `false` from a 403 would be the guess ADR-015
+  exists to forbid, and it would permanently hide a search box for a site nobody managed
+  to look at. The `Open items` table now carries a warning that **two flags with two
+  different reasons look alike**: FanMTL is `false` because its endpoint is *absent* (a
+  property of the site, still true next month), Novel Fire is unknown because its
+  endpoint is *unreadable today* (a property of this network, which the owner's own
+  phone may answer).
+- **The verdict is a frozen capture plus a re-derivation, not a comment.** Three pages
+  (596 KB) under `test/fixtures/sources/royalroad/search/`, `verdict.json` beside them,
+  and `test/fixtures/royalroad_search_test.dart` recomputing row counts, byte counts,
+  title relevance and marker occurrence **from the pages**. `FixtureEntry.kinds` gained
+  a closed-list entry `search`, and the row asserting its length moved from 8 to 9 — the
+  point of closing a list is that adding a kind is a visible decision.
+
+### REJECTED
+
+- **`Row count == 20` as the test.** It is satisfied by a page that ignores the query. The
+  titles are the evidence.
+- **Declaring `supportsSearch = false` for Novel Fire from its 403.** Rejected above, and
+  it is the single most consequential thing this session nearly got wrong: the flag would
+  have been permanently false on the strength of a wall, and nothing would ever revisit it.
+- **A separate `kind` per measurement** (`search-verdict`, `search-control`). One kind,
+  three entries; the **pair** is the unit and the notes say so.
+
+### THE MISTAKE, in full
+
+**My first reading of `6-11`'s verdict was wrong, and wrong in the direction that made
+the site look worse.** I wrote that Royal Road's search carried **no** empty marker — and
+in the same file I listed `"No results"` among the markers I had checked, then asserted
+that no checked marker was present.
+
+The literal is there: `div.search-item.clearfix > h4.font-red-sunglo`, **"No results
+matching these criteria were found"**, in visible text, **once** on the zero-row page and
+**zero** times on either 20-row page.
+
+So the correct verdict is the opposite of the first one, and it is better news:
+`ReadStage.searchResults` becomes `zeroIsGenuine` for Royal Road, **`BrowseEmpty` becomes
+reachable**, and B22 is satisfiable there because the site supplies the signal itself.
+
+Why it happened, and this is the part worth keeping: I wrote the assertion from the
+conclusion. `0-2` had measured the **browse** side and found no marker, and I carried that
+result across to the **search** side without measuring — then wrote a test in the shape of
+"the marker is absent" that passed the *listing* step and failed the *presence* step. The
+list of candidate markers was the honest part; the conclusion was borrowed.
+
+The failure was **loud**, and that is the whole reason it cost twenty minutes and not a
+release: the test ran against the capture it was written from and failed on the first try.
+A borrowed conclusion written as a *comment* would have shipped.
+
+### The rule that comes out of it
+
+**A measurement of one page is a measurement of that page.** `0-2`'s browse-side retraction
+and `6-11`'s search-side finding are the same site, the same day, and **opposite**, and both
+are now written in `18-external-contracts.md` as two sections with an explicit warning that
+neither licenses the other. `kZeroItemsPolicyByStage` is declared per call by the source
+that made the request for exactly this reason: one stage becoming genuine must not become a
+policy on all seven.
+
+### FILES TOUCHED
+
+`test/fixtures/sources/royalroad/search/` (3 pages + `verdict.json`),
+`test/fixtures/royalroad_search_test.dart` (new, 24 rows),
+`test/fixtures/fixture_manifest.dart` (`search` kind),
+`test/fixtures/fixture_manifest_test.dart`'s sibling `royalroad_manifest_test.dart`
+(`verdict.json` excluded by exact name), `test/fixtures/fanmtl_manifest_test.dart`
+(8 → 9), `.opencode/rules/18-external-contracts.md` (Open-items table + two new sections),
+`tool/append_search_fixtures.py`.
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **551 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass** ·
+`coverage-check 6-11` **pass**.
+
+**Sabotage**: the marker text replaced by something else in the control fixture → **two**
+rows fail, the byte-count row first (the capture no longer matches what was recorded) and
+then the marker discriminator. Replaced by the copy: 24 pass.
+
+### NEXT SESSION SHOULD
+
+- **`6-5`** (History) — `history_entries` **exists**, so no migration and `schemaVersion`
+  stays 1. Read the plan's § 2 before writing code, because B47 (the list is bounded in
+  time) and B46 (reading position never is) share a screen and must not share a query.
+- **`3-5`** (About) — needs three counts. `reading_positions` exists from `2-6`; the other
+  two are novel and downloaded-chapter counts.
+- **`3-7`** (Settings) — depends on `6-5` and `6-7`.
+- **`2-1`'s source, against Royal Road** — and now with `supportsSearch` measured, so the
+  search path is buildable where before it was blocked on an open question.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not carry a measurement of one page across to another.** Two pages of the same site
+  on the same day have produced opposite answers in this project. Measure the page.
+- **Do not set `supportsSearch = false` from a 403 or a challenge.** Measure "unreadable",
+  and record that.
+- **Do not write an assertion from a conclusion you borrowed.** Write the measurement first,
+  then the row that fails when it is wrong.

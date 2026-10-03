@@ -323,6 +323,17 @@ final class FixtureEntry {
     'chapter',
     'failure-page',
     'manufactured',
+    // `6-11` — a search page, captured **with its control**: a positive query and a
+    // query that cannot match. The pair is the unit, and a taxonomy that can hold only
+    // the positive half is a taxonomy that invites recording a match count with
+    // nothing to compare it against.
+    //
+    // ⚠️ **Adding a kind is not free**, and this comment is the price of it: the list
+    // is closed so a free string cannot become a taxonomy nobody maintains, which means
+    // every real new shape of capture needs this entry rather than a new `String`. That
+    // is the intended cost — the alternative is `kind: "whatever"` loading happily, and
+    // § 2.2's row for that is the test named `a kind outside the closed list is refused`.
+    'search',
   };
 
   /// The directory the manifest was read from. Carried on every entry so

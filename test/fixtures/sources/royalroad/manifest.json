@@ -134,6 +134,55 @@
         "textCharsAtLeast": 100
       },
       "notes": "MANUFACTURED, not captured -- the only artefact 0-1 may fabricate (E4, SC-6). Byte-for-byte copy of chapter-skills-titles.html with ONE literal substitution: 'chapter-content' -> 'chapter-content-v2', applied to the whole file. Its source is a CHAPTER page, not the detail page: the detail page carries no body container at all (measured: zero occurrences of chapter-content in 1000263 bytes), so renaming there would have edited nothing and produced a fixture identical to its source. The <script> is NOT removed, no line count changed, no trailing newline added."
+    },
+    {
+      "key": "search-litrpg",
+      "file": "search/rr-search-litrpg.html",
+      "url": "/fictions/search?title=litrpg",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-03T21:27:00Z",
+      "bytes": 250980,
+      "sha256": "493ccad1e4bd86b51976785ee571ebd1ec86505694b53dc0381a08945717ef70",
+      "kind": "search",
+      "expected": {
+        "rows": 20,
+        "mustMatch": true
+      },
+      "notes": "6-11. The POSITIVE half of a measured pair: a query that MUST match. Twenty rows, and every sampled title carries \"LitRPG\" — ADR-015 asks for \"results a reader would call useful\", so the TITLES are the verdict and a count of twenty is not. Captured with the honest UA, GET, no session."
+    },
+    {
+      "key": "search-system-fantasy",
+      "file": "search/rr-search-system-fantasy.html",
+      "url": "/fictions/search?title=system+fantasy",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-03T21:27:00Z",
+      "bytes": 251066,
+      "sha256": "aa4542081c4dd140fa0a99b461f2b1087560e6a96b931806fb303eefa541760d",
+      "kind": "search",
+      "expected": {
+        "rows": 20,
+        "mustMatch": true
+      },
+      "notes": "6-11. The second positive, deliberately a DIFFERENT shape of query (\"system fantasy\", two words) so the verdict does not rest on one keyword the site happens to favour. Twenty rows; sampled titles carry \"System Fantasy\" and \"Progression\"."
+    },
+    {
+      "key": "search-no-match",
+      "file": "search/rr-search-zzzqqqxxnotanovelname.html",
+      "url": "/fictions/search?title=zzzqqqxxnotanovelname",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-03T21:27:00Z",
+      "bytes": 97498,
+      "sha256": "7e639051f796cbe679dbd768a8f488dbf016726afb64c67dfadc22fe94e84b2e",
+      "kind": "search",
+      "expected": {
+        "rows": 0,
+        "mustMatch": false,
+        "emptyMarker": true
+      },
+      "notes": "6-11. THE CONTROL, and the half that makes the other half mean anything: without it, \"20 rows for litrpg\" and \"the page always shows 20 rows\" are the same observation. Zero rows, HTTP 200, the SAME page shell (97 498 bytes against 250 980), and the site own visible marker \"No results matching these criteria were found\" inside div.search-item.clearfix > h4.font-red-sunglo. Present once here, absent from BOTH 20-row pages — a marker that appears everywhere discriminates nothing. The verdict lives in search/verdict.json and is re-derived from these three pages by test/fixtures/royalroad_search_test.dart."
     }
   ],
   "pagination": [
@@ -170,5 +219,6 @@
       "confirmationBasis": null,
       "notes": "Present but NOT CONFIRMED: only one reviews page was captured, and a parameter read off an href is a hypothesis. Recorded because a source seeing a pager on a fiction page must know it is the reviews tab and not the chapter list."
     }
-  ]
+  ],
+  "notes": "| 2026-10-03 `6-11`: three search pages added under `search/` — two queries that MUST match and one control that cannot — plus `search/verdict.json`. Royal Road `supportsSearch` is TRUE, measured from the titles rather than a status code, and its search side carries the site own empty marker \"No results matching these criteria were found\". The BROWSE side has no marker and stays `zeroIsBroken`; the two are different pages and one measurement must not become a policy on both. Novel Fire was NOT measurable on the same day (403 Cloudflare interstitial, honest UA), so its flag stays unmeasured rather than false."
 }

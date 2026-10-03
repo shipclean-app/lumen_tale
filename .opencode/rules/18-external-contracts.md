@@ -43,10 +43,20 @@ Two further sites were selected for v1 on 2026-10-02. **FanMTL** is the **first*
 | Site | `supportsSearch` | Basis |
 |---|---|---|
 | FanMTL | **false** | Measured 2026-10-02. GET and POST both 404 with a meta-refresh, including for a query that should match, session or no session. Genre browsing works and is the intended path. |
-| Royal Road | **unknown — not yet checked** | Must be fetched and judged before any claim. |
-| Novel Fire | **unknown — not yet checked** | Blocked additionally by Q-004. |
+| Royal Road | **true** | **Measured 2026-10-03 by `6-11`.** `/fictions/search?title=<q>` returns 200 and 20 rows for two queries that MUST match, with every sampled title carrying the queried words; the control query that cannot match returns 0 rows with the site's own "No results matching these criteria were found" marker. The **rows and the titles** are the verdict — a 200 and a count of 20 are not. See *Royal Road — the search side DOES have an empty marker* below. |
+| Novel Fire | **unknown — and NOT because it was never checked** | `6-11` checked on 2026-10-03: `/`, `/search` and `/search?keywords=litrpg` all answer **403** with a `Just a moment...` interstitial carrying `challenges.cloudflare.com`, on the honest UA. **A 403 challenge is not `false`** — rule 5a's list is 404, meta-refresh, timeout, empty page, and a challenge is none of those; the site declined to be read at all. Also blocked on Q-004. |
 
-Until both remaining sites are measured, v1 can claim **genre browsing for all three** and **search for none of them**. That is a correct v1, not a gap: it is what the contract promises when `supportsSearch` is false.
+**v1 therefore claims genre browsing for all three, and search for Royal Road only.** That
+is a correct v1, not a gap: `supportsSearch = false` means the UI offers genres instead
+of a search box (rule 5a), and a site whose search is **unmeasured** must not be shown a
+search box, because the flag is a promise and an unmeasured promise is a guess.
+
+⚠️ **Two flags, two reasons, one table.** FanMTL is `false` because its endpoint is
+**absent**; Novel Fire is unknown because its endpoint is **unreadable**. They look
+similar in this table and they are different facts: the first is a property of the site
+that will still be true next month, and the second is a property of *this network on this
+day* that a phone on the owner's own connection may answer. Collapsing them would record a
+guess as a property of the site.
 
 ---
 
@@ -108,6 +118,25 @@ Until both remaining sites are measured, v1 can claim **genre browsing for all t
 ### Novel Fire — https://novelfire.net
 
 - **Permission**: unknown. **Blocked on the project owner confirming terms** (Q-004).
+- **⚠️ `supportsSearch`: STILL UNMEASURED, and the reason changed on 2026-10-03.**
+  `6-11` fetched the site's own search with the honest UA on 2026-10-03 and got, for
+  **every** path tried — `/`, `/search`, `/search?keywords=litrpg` —
+
+  | Path | Result |
+  |---|---|
+  | `https://novelfire.net/` | **403**, `Just a moment...`, `challenges.cloudflare.com` in `script-src` |
+  | `https://novelfire.net/search` | **403**, same interstitial |
+  | `https://novelfire.net/search?keywords=litrpg` | **403**, same interstitial, 5 420 bytes |
+
+  ⚠️ **A challenge is NOT `supportsSearch = false`.** Rule 5a says a 404, a
+  meta-refresh, a timeout or an empty page means the endpoint is not there. A **403
+  interstitial** is none of those: the site declined to be read at all, so there is no
+  evidence about search. Writing `false` from this would be exactly the guess ADR-015
+  exists to forbid, and it would permanently disable a search box for a site nobody
+  managed to look at. The honest entry stays **unmeasured**, and ADR-014's 2026-10-02
+  row ("200 with an honest UA") is now stale for this site — the same day FanMTL moved
+  to 403.
+
 - **Cloudflare: present — and impersonating a browser makes it WORSE.** Measured 2026-10-02 against the home page:
 
   | User-Agent | Result |
@@ -200,14 +229,71 @@ part of the contract, not a nicety.
 `class="chapter-content"` match finds **nothing**: measured zero paragraphs on a page
 that has 106 of them. The class sits on a div that *also* carries `chapter-inner`.
 
-**⚠️ B22's third state has NO site-supplied marker on this site.** Measured: a zero-row
-catalogue (`/fictions/search?tags_add=99nonexistenttag`, HTTP 200, 239 765 bytes) carries
-no "nothing here", no "no results", no "no fictions". **This contradicts what the section
-above anticipated** — it recorded that this site's empty catalogue volunteers an empty
-marker. It does not. `2-1` must therefore distinguish *"could not read"* from *"no
-results"* by **page shape** (rows present, container present), never by a marker string,
-because there is no marker to find. A marker-based implementation would classify every
-empty catalogue as "no results", including one that failed to parse.
+**⚠️ B22's third state has NO site-supplied marker on the BROWSE side of this site.**
+Measured: a zero-row catalogue (`/fictions/search?tags_add=99nonexistenttag`, HTTP 200,
+239 765 bytes) carries no "nothing here", no "no results", no "no fictions". **This
+contradicts what the section above anticipated** — it recorded that this site's empty
+catalogue volunteers an empty marker. It does not. `2-1` must therefore distinguish
+*"could not read"* from *"no results"* by **page shape** (rows present, container
+present), never by a marker string, because there is no marker to find. A marker-based
+implementation would classify every empty catalogue as "no results", including one that
+failed to parse.
+
+---
+
+## Royal Road — the search side DOES have an empty marker, measured 2026-10-03 (`6-11`)
+
+**This is the other half of the row above, and the two must not be merged.** The
+measurement above is about the **browse** side. `6-11` fetched the site's own **search**
+with the honest UA and the answer is the opposite.
+
+| Path tried (honest UA, `curl -L`, no session) | Result |
+|---|---|
+| `/fictions/search?title=litrpg` | **200**, 250 980 bytes, **20 rows**, titles carrying "LitRPG" |
+| `/fictions/search?title=system+fantasy` | **200**, 251 066 bytes, **20 rows**, titles carrying "System Fantasy" / "Progression" |
+| `/fictions/search?title=zzzqqqxxnotanovelname` | **200**, 97 498 bytes, **0 rows**, and the site's own marker |
+
+**`supportsSearch = true` for Royal Road.** ADR-015's criterion is *"results a reader
+would call useful"*, and a count of 20 is not that — so the **titles** were read: all
+ten sampled titles carry the queried words. The control query is what makes that mean
+anything; without it, "20 rows for `litrpg`" and "the page always shows 20 rows" are the
+same observation.
+
+**The zero-row search carries the site's own marker:**
+
+```
+div.search-item.clearfix > h4.font-red-sunglo
+  "No results matching these criteria were found"
+```
+
+Present **once** on the zero-row page, **zero** times on either 20-row page, and in
+**visible text**. A marker that appears everywhere discriminates nothing, so it is
+recorded on both sides and re-derived from the capture by
+`test/fixtures/royalroad_search_test.dart`.
+
+⚠️ **This row corrects a claim made earlier the same day.** The first reading of
+`6-11`'s recorded verdict said the marker did **not** exist — and it listed
+`"No results"` among the markers it had checked while asserting that no checked marker
+was present. The list contained its own answer. The assertion was written from the
+conclusion, and it failed on the first run against the page it was written from. See
+`SESSION_LOG.md` session 12.
+
+**Consequence, and it is per stage, per source.** `ReadStage.searchResults` becomes
+`zeroIsGenuine` for Royal Road and `BrowseEmpty` becomes **reachable there, on search
+only**. The browse side stays `zeroIsBroken`: a zero-row catalogue page carries no
+marker, so it is *reported* rather than shown as an empty page. **One stage becoming
+genuine must not become a policy on all seven**, which is precisely why
+`kZeroItemsPolicyByStage` is declared per call by the source that made the request.
+
+**What was NOT measured**, and is therefore not claimed: POST vs GET (the GET works, and
+rule 5a asks about the endpoint); author search, tag search and combined filters; and
+rate limiting — finding out whether repeated searches earn a 429 is not something to
+find out by hammering.
+
+**Frozen capture**: `test/fixtures/sources/royalroad/search/` (three pages, 596 KB) and
+`verdict.json`. The limit of a frozen fixture is written into the file: the test
+re-derives the verdict **from the capture**, so a change in the capture is caught — and a
+change in the **live** site is not, because nothing re-fetches.
 
 **Pagination is real and checkable.** `/fictions/active-popular` and `?page=2` return
 byte-different pages with 20 distinct fiction rows each — verified by hashing the sorted

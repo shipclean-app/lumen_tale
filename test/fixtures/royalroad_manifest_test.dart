@@ -68,10 +68,20 @@ void main() {
           // the files below — so it is covered, just not by this manifest. Excluding
           // it here is correct; excluding it because it is "another kind of file"
           // in general is not, so the exclusion is by exact name.
+          //
+          // ⚠️ Same reasoning, same rule: `search/verdict.json` is a **measurement**
+          // `6-11` wrote about the three search pages, not a captured page. The three
+          // HTML files ARE declared entries (`kind: search`); this JSON is what a test
+          // re-derives FROM them. Excluding it by exact name, like the other
+          // measurement, keeps the row's meaning intact — and the reason it is worth
+          // an entry at all is that the re-derivation is the point: the search verdict
+          // is a claim someone could write from memory, and here it is a claim a test
+          // recomputes.
           .where(
             (File f) =>
                 f.path.split('/').last != 'manifest.json' &&
-                f.path.split('/').last != 'empty-signal.json',
+                f.path.split('/').last != 'empty-signal.json' &&
+                f.path.split('/').last != 'verdict.json',
           )
           .map(
             (File f) => f.path
