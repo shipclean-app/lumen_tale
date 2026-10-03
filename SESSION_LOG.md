@@ -2476,3 +2476,88 @@ project:
   routine action rather than a wrong-looking row.
 - **Do not assert at a resolution the database does not deliver.** State the guarantee at
   the one that exists and write down the limit.
+
+---
+
+## 2026-10-03 — Session 14 (same session, continued): the retention store, and a count that has to run before a purge
+
+### STARTED FROM
+
+`6-5` committed at `3b763e3` with the domain and the drift repository in place and the
+slice honestly `in_progress`. What was missing was `HistoryRetentionStore` — and **`3-7`
+cannot start without it**, because Settings' *Keep history for* row reads the same value.
+
+### DECIDED
+
+- **The count is strictly-before, and the purge is strictly-before, and a row asserts
+  they agree.** If the count were `<=` and the purge `<`, a reader would read a notice
+  saying *"three entries will be dropped"* and watch two vanish — told a falsehood by the
+  one number on the screen that is supposed to be honest. The row takes the count,
+  purges, and asserts `purged == announced`.
+- **The predicate is built by drift's builder, not written as SQL text.** The first
+  version interpolated `'${exclusive ? '<' : '<='}'` into a `customSelect` and carried a
+  comment saying it mirrored `purgeOlderThan`. That is **two statements of one rule, one
+  of them a string**, and no test can compare them without parsing SQL. Now the expression
+  *is* the statement: `purgeOlderThan` uses `isSmallerThanValue` and so does this.
+- **The store takes a `HistoryOlderThanCounter` function, not a repository.** A bare
+  function parameter is a shape everything satisfies and nothing documents; a named
+  `typedef` carries the rule *strictly before the cutoff* in its own name. And
+  `HistoryRepository` does **not** gain a count method — it would put a *"how many"* onto
+  an interface whose other methods are "give me" or "delete", and every implementation
+  would then have to answer a question the **screen** is asking.
+- **`SettingsPersistenceException` is NOT an `AppException`.** The AppException hierarchy
+  is for failures the UI maps to a message *by cause* (B22), and this cause is "the OS
+  declined to write a byte" — a different kind of thing. Merging them would make
+  `13-error-handling.md` rule 5's mapping carry a case it has no sentence for.
+- **`row.read(count) ?? 0`.** `COUNT(*)` is never NULL, but drift types the read as `int?`
+  because it cannot know which expressions are non-nullable. A nullable count makes
+  *"how many will be dropped?"* a **screen's decision** — the screen would have to decide
+  whether `null` means zero, unknown, or "show nothing", and those give three different
+  notices. B48's argument, verbatim, and it is the same one.
+
+### BLOCKED — still, and it is the same blocker
+
+- **The `/history` screen is not built.** `history.md` § 4 specifies nine states, three
+  with a second rendering: loading (eight `NovelRow` skeletons, **no cover** — this variant
+  has none), empty-never-visited (whose action depends on a **local fact** — *Browse a
+  source* when the library is empty, *Open your library* when it is not), empty-no-data
+  **split in two** because "cleared by the reader" and "aged out" are different events
+  with different emotional weight, and a load error that must name **three survivals by
+  name** because the fear is data loss and there is no backup (ADR-010).
+- **Its copy does not exist yet**, so this is not just a widget job: ~20 keys × 2
+  languages. **`6-5` stays `in_progress`.**
+
+### FILES TOUCHED
+
+`lib/data/history/shared_prefs_history_retention.dart` (new),
+`test/data/history/shared_prefs_history_retention_test.dart` (10).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **604 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+**Sabotage, all three, on both sides:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| count uses `<=` while the purge uses `<` | *an entry EXACTLY at the cutoff is not counted* **fails** |
+| the write ignores a platform refusal | *a platform refusal throws rather than pretending* **fails** |
+| a read creates the key | **2 rows fail** — *creates nothing*, *round-trips through its name* |
+
+### NEXT SESSION SHOULD
+
+- **The `/history` screen**, copy first: the nine states in `history.md` § 4, then
+  `SettingsChoiceSheet` (§ 2.12, shared, owned here because its rows *are* the
+  `HistoryRetention` values), `BoundNotice`, `DayGroupHeader`, and the confirm dialog
+  whose body is B46 in one sentence. `3-7` imports that sheet with the **same enum** —
+  the dependency edge is `3-7 → 6-5`, and a local `RetentionSheet` with its own five
+  values would produce two rebirths of the same component.
+- **`3-5`** (About), then **`3-7`** (Settings).
+- **`2-1`'s source, against Royal Road.**
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not write the announcement count and the purge as two statements.** They must be
+  the same predicate; a test that compares them is what keeps them so.
+- **Do not add a count method to `HistoryRepository`.** The question belongs to the screen.
