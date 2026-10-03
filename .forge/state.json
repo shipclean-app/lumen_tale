@@ -1091,7 +1091,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T07:15:19.583Z",
+      "updated_at": "2026-10-03T10:29:16.581Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -4432,7 +4432,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 263,
+      "register": 264,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 134,
@@ -4443,10 +4443,10 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 12,
+      "finding_raised": 13,
       "fast_track_enter": 1,
       "finding_promoted": 1,
-      "script_failure": 2,
+      "script_failure": 3,
       "user_correction": 1
     }
   },
@@ -4654,6 +4654,19 @@
       "correction": "Find the current catalogue and chapter URLs and update 18-external-contracts.md, whose FanMTL section documents '/list/<tag>/<sort>-<page>.html' and whose Royal Road section documents a 'fiction-list' selector that no longer resolves. Until then 0-1 cannot capture fixtures for either v1 site, and 3-1's selectors are written against URLs that are measured dead.",
       "artifact": null,
       "raised_at": "2026-10-03T09:36:18.162Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-014",
+      "domain": "data-and-state.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "state.json registers .forge/design/design-system.md under TWO keys, 'design-system' and 'design_system', with different content_hash values. Both were approved with the same hash; registering either updates only that key, so the other drifts and forge-guard reports content_hashes_current + no_content_drift as an out-of-band edit -- a wrong diagnosis that sends a reader looking for an editor rather than at a duplicate registration. Measured 2026-10-03 while amending design-system.md to close F-011.",
+      "correction": "Have register() detect that the target path is already registered under another key and either refuse with the existing key named, or update both. Also add a guard check for two deliverable entries sharing one path, since 'two names for one artefact' is exactly the ambiguity the project already forbids for requirement ids.",
+      "artifact": null,
+      "raised_at": "2026-10-03T10:32:03.393Z",
       "promoted_to": null,
       "resolved_at": null
     }
