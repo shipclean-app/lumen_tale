@@ -415,7 +415,7 @@ Phase 5 produced **38 plans and roughly forty defects the gates could not see.**
 
 ### STATUS
 
-**Phases 0–4 approved. Phase 5 `in_progress`: 38 of 38 plans written**, every one `status: identified`, every assigned B/E/C id traced in § 6 before § 7. Graph: **38 nodes, 32 slices, 6 foundations, 60 edges, 10 waves, 0 cycles, 0 orphans.** Schema: **6 tables, 42 columns, 5 indexes, `schemaVersion` 1.**
+**Phases 0–4 approved. Phase 5 `in_progress`: 38 of 38 plans written**, every one `status: identified`, every assigned B/E/C id traced in § 6 before § 7. Graph: **38 nodes, 32 slices, 6 foundations, 62 edges, 10 waves, 0 cycles, 0 orphans, 0 missing.** Schema: **6 tables, 42 columns, 5 indexes, `schemaVersion` 1.**
 
 > **Three corrections from the fact-check, all of which had been wrong in the entry's favour.**
 > **`consistency-check` was NOT clean** — it had been failing all session, on one reference to a file the tool could not see because no plan was registered. Registering all 38 fixed it, and the earlier commit message claiming otherwise was wrong. **`Phase 5 complete`** — the phase is `in_progress`; the plans are written but **not approved**, and saying "complete" invited a next session to skip the approval this same entry asks for. **`status: draft`** — `draft` is not in `STATUS_VOCAB.slice`, so a registered plan cannot declare it; all 38 said `draft` until the fact-check's knock-on made `forge-guard`'s `state_frontmatter_in_sync` report 38 divergences at once. **`0 dead dependencies`** — `dependency-check` has no such concept; it emits `cycles`, `orphans` and `missing_dependencies` only, and the claim had no tool behind it.
@@ -423,18 +423,87 @@ Phase 5 produced **38 plans and roughly forty defects the gates could not see.**
 Gate output at the last commit, captured rather than recalled:
 
 ```
-python3 .forge/plans/check_plans.py   →  38 clean · 0 missing · 0 failures · 6 warnings
+python3 .forge/plans/check_plans.py   →  38 clean · 0 missing · 0 failures · 6 warnings   (0 cross-plan failures)
 flutter analyze                        →  No issues found!
 flutter test                           →  00:04 +32: All tests passed!
 dart format --set-exit-if-changed .    →  clean
 design-check contrast|tokens|tokens-used|component-parity → all pass, 48 states read
 forge-guard all                        →  clean except version_pins_agree (proven false positive)
 consistency-check                      →  CLEAN
-dependency-check --full                →  pass · 38 nodes · 60 edges · 10 waves · 0 cycles · 0 orphans
+dependency-check --full                →  pass · 38 nodes · 62 edges · 10 waves · 0 cycles · 0 orphans · 0 missing
 forge-guard fast-track --scope=plans --autonomy=full → pass
 ```
 
 The six `check_plans.py` warnings are all finding **F-003** — `coverage-check.js slice` reads `state.slices` only, so a foundation's `rule_ids` are never mechanically checked. `check_plans.py` covers them; the Forge script cannot, and it is read-only.
+
+### THE SIXTH PASS — 2026-10-03, two reviewers with fresh eyes, then a fact-check of this very entry
+
+**Six review rounds had already run. This one found nine substantive defects and then, on being
+told to assume the log itself was wrong, thirteen false claims in the log.** The recurrence is
+the finding: *every one of the nine lives between two documents*, because no gate in the battery
+compared two documents to each other.
+
+**`state.json` registered none of the 38 plans.** Every node carried `path: .forge/architecture.md`
+and no `plan_path`, so `consistency-check` could not index a single plan — its one failure was a
+*correct* reference to a file it could not see — and `forge-guard`'s drift check read a
+`content_hash` that was `null` everywhere, so **an out-of-band edit to any plan was undetectable**.
+`state.js register` is not the fix: on trial it replaced the whole entry, dropping `depends_on`,
+`rule_ids` and `impl_wave`. `.forge/plans/hash_plans.js` writes two fields and asserts that
+nothing was lost.
+
+**Two gates failed the instant the plans became visible, and both were right.** All 38 said
+`status: draft` while their slice said `identified` — and **`draft` is not in `STATUS_VOCAB.slice`**,
+so the template and my own README were both wrong for a registered plan. A `⤷` (U+2937) sat in
+`3-6.md`, in the shape of corruption that parses fine.
+
+**The worst defect was not a name.** `2-8` declared a second `SharedPreferences`, a second provider
+pair, and a `Future<bool>` « ne lève jamais » controller for two values `theme-type` already owned
+end to end. `theme-type`'s `select()` writes **then** mutates and **throws** — that is B24, and
+`2-8` *consumes* B24 rather than owning it. **So one preference had two failure semantics**, and
+which one governed depended on which layer answered. One preference means one stack and one error
+contract, whatever the indirection is called.
+
+**`check_plans.py` gained `check_cross_plan()` — three rules that compare plans with each other —
+and found eleven of the eleven on its first run.** Two of its first-draft rules were themselves
+wrong: it compared `lib/core/x.dart` against `core/x.dart` (36 false positives), and it read an
+enum's member list off a body containing a `static fromStorage`, reporting the foundation's own
+enum as a second spelling of itself. **A check with false positives gets switched off**, so
+narrowing the rule is part of writing it, not an admission against it.
+
+**Four checks now exist that did not**, and each was proven RED before being trusted:
+
+| Check | Proved red by |
+|---|---|
+| `check_counts()` — counts and inventory rows against `state.json` | typing `30` back into a document that listed 32 |
+| `check_cross_plan()` — paths, imports, enums across plans | it fired 11 times unprompted |
+| `no_content_drift` over the plans | editing one plan, catching `6-3` and only `6-3` out of 68 |
+| `no_undecided_slots` reading a decorated marker | **it did not** — that is finding F-004 |
+
+**F-004 is the one to remember.** `isUndecidedSlotLine` requires the marker to be **alone in its
+cell**, so `— Framework : À DÉCIDER EN PHASE 4 — blocked on a runnable target` reads as a sentence
+beginning with the marker, not as a slot. **Four real placeholders sat in `conventions.md` while
+the guard reported the file clean**, because I had fixed line 43 and left 195–198. That is the
+seventh time this project has met the shape: *a guard that pattern-matches a word rather than a
+structure passes on the decorated form of the thing it is looking for*, and the decoration is the
+easiest thing in the world to add by accident.
+
+**A subagent ran `git stash push -- .forge` while another agent was writing into that tree.** It
+survived only because the stash was popped intact and verified afterwards. Recorded as a
+correction: **a baseline belongs in a `git worktree` at HEAD**, never in the tree you are
+measuring.
+
+**Five corrections added to `LEARNINGS.md`** (23 → 28), of which the two with the clearest
+promotion target are the double-write-path and the plan-code-does-not-compile pair. *The first
+draft of this line said ten. It was written before the edits were counted rather than after, which
+is the exact failure this pass spent its length documenting.*
+
+### WHAT A SUBAGENT COST THAT DID NOT REPORT
+
+Two fix agents were dispatched over disjoint file sets and **both returned without a report, and
+one had changed three of its eight files.** The gate made the shortfall visible in seconds, which
+is the argument for a mechanical check over a self-report: `check_plans.py` went 11 → 3 → 0 and
+each step was measured rather than believed. **An agent's silence is not a result; a count moving
+is.**
 
 ### WHAT LANDED AFTER THE ENTRY ABOVE WAS FIRST WRITTEN
 

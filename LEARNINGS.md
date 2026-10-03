@@ -91,6 +91,22 @@ The **contrast** is the form, and it is not decorative. "There was a problem wit
 - 2026-10-02 — Don't write a drift guard and call it a guard until you have seen it fail: a test that has only ever been green is a decoration. The snapshot-drift test was proven red by adding a column without re-dumping (`columns drifted on chapters`) and green again on restore.
   → domain: `10-testing.md` | Seen: applying the "reports zero and passes" correction to my own new test, 2026-10-02
 
+- 2026-10-03 — Don't give one preference two write paths, even when the second one is only "a thin interface". `2-8` declared its own `SharedPreferences`, its own provider pair and a `Future<bool>` « ne lève jamais » controller for two values `theme-type` already owned end to end with a `select()` that throws. **Two layers, two failure semantics, one preference** — and the reader's behaviour then depended on which layer answered. One preference means one stack and one error contract, whatever the indirection is for.
+  → domain: `05-state-management.md` | Seen: a plan re-declaring a foundation's whole provider layer with the opposite error contract, 2026-10-03
+
+- 2026-10-03 — A plan's code must compile as written, and the pseudocode is the part nobody runs. `http-client` § 3.1's `build()` used `rateLimiter` twice and never declared it; `6-11` called a constructor with a `userAgent:` parameter its class did not have; `2-1` listed five files to create **with no directory**, so its own § 2 imports resolved to nothing. Three instances of one shape, and not one is visible to `flutter analyze` because the file does not exist.
+  → domain: `08-coding-standards.md` | Seen: three plans in one pass, all copy-pasteable code blocks, 2026-10-03
+
+- 2026-10-03 — A cross-document check must compare **the same thing twice**, and must be able to say when it cannot. `check_plans.py`'s duplicate-path rule compared `lib/core/x.dart` against `core/x.dart` and reported 36 false positives; its enum rule read a member list off an enum body containing a `static fromStorage` and reported the foundation's own enum as a second spelling of itself. **A check with false positives gets switched off, and a switched-off check is worse than the gap it was closing** — so narrowing the rule is part of writing it, not an admission.
+  → domain: `10-testing.md` | Seen: two noisy rules in a check written the same afternoon, 2026-10-03
+
+- 2026-10-03 — Assert the bounds of every edit you make by line index, and match on the invariant rather than on decorative formatting. Replacing `2-8` § 3.4 by exact string failed twice on a box-drawing rule of the wrong width; the third attempt asserted `startswith` on the invariant line and the assertions fired on my own wrong assumption instead of writing a mangled block into the file. **The assertion's value is proven by the time it fires on you.**
+  → domain: `08-coding-standards.md` | Seen: a `sub()` helper failing on an 80-column rule, 2026-10-03
+
+- 2026-10-03 — Don't `git stash` a directory another agent or process is writing to. One fix agent ran `git stash push -- .forge` to get a clean baseline while a second agent had uncommitted edits in five files in that tree. It survived only because the stash was popped intact and verified. **A baseline belongs in a `git worktree` at HEAD, never in the working tree you are measuring.**
+  → domain: `12-ai-agent-workflow.md` | Seen: two agents editing `.forge/plans/` at once, 2026-10-03
+
+
 Promotion is the path that moves a correction from the journal into a rule. It happens once the rule set exists.
 
 - **Correction → rule.** When the rule set changes, every entry in `## Corrections` is re-read: if it is still true, it is turned into a rule in the file that owns the named domain, and the entry says so in one line. If it is no longer true, it is struck from `## Corrections` with a note on why.
