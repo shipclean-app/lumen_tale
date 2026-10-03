@@ -82,13 +82,27 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 | | Count |
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
-| § 11 `Emplacement` targets that exist on disk | **2 of 55** |
-| Test cases actually written | **89** |
-| Of those, host (`test/`), on the Dart VM | **83** |
+| § 11 `Emplacement` targets that exist on disk | **3 of 55** |
+| Test cases actually written | **116** |
+| Of those, host (`test/`), on the Dart VM | **110** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 83, covering the database schema | **27** |
-| Of the host 83, covering the app bootstrap | **5** |
-| Of the host 83, covering the network foundation | **51** |
+| Of the host 110, covering the database schema | **27** |
+| Of the host 110, covering the app bootstrap | **5** |
+| Of the host 110, covering the network foundation | **51** |
+| Of the host 110, covering localisation | **27** |
+
+**Three of the 55 declared locations now exist** — both `local-store` files, both
+`http-client` files, and all three `localisation` files — so **four of the six Wave-0
+nodes have their declared tests on disk.**
+
+**One row of `localisation`'s § 11 is deliberately absent**, and its absence is the
+honest entry rather than a gap: *« the error message family resolves in both
+languages »* names **41** keys of the `source-unavailable` family. Those strings do not
+exist yet — no slice has authored them. Writing a loop over the three keys that *do*
+exist would produce a green row covering 3 of 41, which is the "a check reporting
+something it did not measure" shape this project has hit repeatedly. The row stays
+unwritten until the 41 strings exist, and `localized_strings_test.dart` says so in its
+own header.
 
 **`http-client` is the second foundation with its declared tests on disk** — 51 rows in
 `http-client_test.dart` and `no_telemetry_test.dart`, against a plan that declares
@@ -241,12 +255,12 @@ nothing about whether the foundation works.
 | `local-store` | **38** | 26 | 0 | 6 | 0 | 6 | 2 | **2** |
 | `failure-discriminator` | **37** | 28 | 0 | 4 | 0 | 5 | 1 | 0 |
 | `apk-pipeline` | **33** | 10 | 0 | 13 | 3 | 7 | 1 | 0 |
-| `localisation` | **29** | 22 | 0 | 0 | 0 | 7 | 3 | 0 |
-| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **2** |
+| `localisation` | **29** | 22 | 0 | 0 | 0 | 7 | 3 | **3** |
+| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **7** |
 
-**Three of fourteen declared test locations exist**: both of `local-store`'s (the
-database cases) and `http-client`'s. `http-client` is the largest foundation by row count
-and is the dependency of every source slice, so it was built first. The foundations carrying the most weight are the least built:
+**Seven of the fourteen declared test locations exist**: both of `local-store`'s, both of
+`http-client`'s, and all three of `localisation`'s. `http-client` was built first because
+it is the largest foundation by row count and the dependency of every source slice. The foundations carrying the most weight are the least built:
 `http-client` declares 53 rows and now has its suite; `localisation` and `theme-type`
 still declare test files that do not exist. `apk-pipeline` is the only foundation with E2E rows, and they are the three
 `apk-pipeline` entries in § 5.

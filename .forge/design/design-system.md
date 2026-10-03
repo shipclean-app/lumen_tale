@@ -58,6 +58,43 @@ exempt   --color-border = purely decorative rule between list rows; carries no i
 **Core loop**: *find a novel, download it, read it offline, resume where I stopped, notice when a tracked novel has a new chapter.*
 
 **Density**: **normal**, leaning airy in the reader and compact in the library.
+
+### 0.1 Why night is a cold field, not a warm one
+
+**Cited by `theme-type.md` § 6, which is why it is numbered rather than prose.**
+
+The obvious night theme is a warm dark field with warm text, and every competitor
+ships it. It is the wrong choice for this product, and § 1's contestable choice states
+why: **warm text on a warm dark field raises halation at low brightness, which is
+precisely the condition under which a reader turns the brightness down.** A cool field
+carrying warm-white text keeps the page looking unlit and the prose looking lit.
+
+The consequence for the token layer is that the amber accent reads as *lamplight* on a
+cool field, so it must never be used as an error colour — `error` is a desaturated brick
+(`#8A3228` day / `#EE8B76` night) precisely so it cannot compete with it.
+
+C11 makes this load-bearing rather than decorative: reading happens one-handed, at night
+or in transit, often on a phone at minimum brightness.
+
+### 0.3 Do not take `error` from the Material 3 seed
+
+**Cited by `theme-type.md` § 7, which is why it is numbered rather than prose.**
+
+`ColorScheme.fromSeed` supplies the Material 3 **roles** — `primary`, `secondary`,
+`surface`, `onSurface` and the rest — and deriving them from a seed is the correct and
+intended use. What it must not be used for is the roles this product has an opinion
+about:
+
+| Role | Why the seed's value is refused |
+|---|---|
+| `error` | A seed-derived red competes with the amber accent on a dark field. See § 0.1. |
+| `warning`, `info`, `success` | Material has no source for them and this app declares its own. |
+| `surfaceRaised`, `surfaceSunken` | Elevation must read as a boundary, not a glow — see § 2's flat rule. |
+| `borderField`, `borderFocus`, `borderStrong` | Not Material roles at all. `borderFocus` is the focus ring, which `14-design-tokens.md` owns and WCAG 1.4.11 measures at 3:1. |
+
+**The testable form.** `app/theme/` asserts every one of these is **overridden**, and
+fails on a seed value that reaches the screen — a theme test that only checks the roles
+Material provides would pass on a theme that had quietly got all five wrong.
 Justification: the two dominant surfaces have opposite jobs. The reader must be the most generous surface in the app — it is the one the user stares at for twenty minutes at a time, so it gets a 16px minimum body, a 1.7 line-height and a 65–75 character measure. The library is a *scan* surface: it is glanced at to answer "what do I have and what is new", so rows stay 72dp with title and status on two lines. Applying one density to both would either crowd the prose or waste the library.
 
 ### Design skill — required, and absent here

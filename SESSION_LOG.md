@@ -1079,3 +1079,72 @@ format clean · `analyze --fatal-infos` **zero** · host **83/83** (was 32) ·
   replaces them, and the User-Agent goes with them.
 - **Do not assume a plan's test row is self-consistent.** Row 4 above is a plan whose
   expectation contradicts its own constant, and the code was right.
+
+### Phase 7 — `localisation` implemented, and one row deliberately not written
+
+**Built:** `lib/l10n/arb_key_derivation.dart` — the screen/dotted → flat camelCase rule
+as code, because a rule that lives only in prose cannot be tested. **27 rows** across the
+three files § 11 declares, so `localisation` is the third foundation with its tests on
+disk and **7 of 14** declared locations exist overall. Host suite **110/110**.
+
+**Four things worth writing down:**
+
+1. **The derivation's first version produced `sourceUnavailablecausenoConnectionkicker`.**
+   camelCasing each segment and joining them does not mark the boundary BETWEEN two
+   segments, so the whole thing came out as one word. The fix upper-cases the head of
+   every segment after the first. A test row caught it; nothing else would have.
+2. **The plan's row « a key present on two screens is one key » is ambiguous as written.**
+   It says `settings.md` and `settings-reader.md` both write `error.write` → one
+   `settingsErrorWrite`, but read literally the two slugs differ, so the rows contradict.
+   **The resolution is that `settings-reader` is a FILE name, not a slug** — both screens
+   live under `settings`. Implemented that way, and added the converse row (a genuinely
+   different slug yields a genuinely different key) so the row above cannot be satisfied
+   by a function ignoring the slug.
+3. **The `@key` metadata row had to be narrowed to be true.** 14 of 16 ARB keys have no
+   metadata block, and that is correct: gen-l10n only needs `@key` to *infer* placeholders
+   and plurals, and a plain literal has none. The row now asserts that every key
+   **carrying a placeholder** declares itself — and additionally asserts the two that do
+   need it have it, so the check cannot pass by finding nothing.
+4. **The 41-key error family row is absent, on purpose.** `localisation` § 11 asks that
+   « the error message family resolves in both languages » across **41** `source-unavailable`
+   keys. **Those strings do not exist** — no slice has authored them. A loop over the
+   three keys that do exist would be a green row covering 3 of 41. The row is left
+   unwritten, `localized_strings_test.dart` says so in its own header, and the register
+   records the absence. **A specification row is not a green tick.**
+
+**Also added, so `fr` cannot silently resolve to English:** a row asserting every shared
+key returns *different* text in the two locales. Each locale's own assertions pass
+happily if one of them falls through to the other; only the comparison catches it (E12).
+
+**Proven RED before trusted:** deleting `navBrowse` from `app_fr.arb` → the
+completeness row **fails** naming the key, restored → green.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **110/110** · `check_plans`
+**38 clean, 0 failures**. Register § 3 recomputed to **116 written** (110 host + 6
+on-device), **3 of 55** declared locations, **7 of 14** foundation locations.
+
+### Still open, and not hidden
+
+- **The on-device suite was NOT re-run** — the Z2577 is disconnected. The 6/6 from
+  earlier today stands; today's run is reported as *not executed*, not as passing.
+- **Wave 0 is not complete.** `theme-type` (39 rows, 6 files) and `0-1` (21 rows) remain,
+  and `apk-pipeline` is largely discharged by the CI workflow but declares one test file.
+- **`theme-type`'s design premise now exists** — § 0.1 and § 0.3 were added to
+  `design-system.md`, so F-011's citations resolve. `broken: 3 → 0`.
+
+### NEXT SESSION SHOULD
+
+- **`theme-type` next**, then `0-1`. That clears Wave 0 and opens `2-1`, which is the
+  gate on the whole source pipeline.
+- **Author the 41 `source-unavailable` strings** when the slice that owns them lands, then
+  add the row that is currently absent.
+- **Re-run the on-device suite** when the phone is back.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not camelCase segments and join them.** The boundary between two segments needs an
+  upper-cased head, or the key is one unpronounceable word.
+- **Do not write a coverage row over 3 of the 41 keys it names.** The number in the plan
+  is the specification; a green tick over a subset is a lie about it.

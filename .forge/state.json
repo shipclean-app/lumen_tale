@@ -1053,7 +1053,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:64468ccb27c0",
+      "content_hash": "sha256:96995e5b5721",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -1061,6 +1061,8 @@
         "3": "Navigation patterns",
         "4": "Grid and layout",
         "0.0": "Colour class declaration",
+        "0.1": "Why night is a cold field, not a warm one",
+        "0.3": "Do not take `error` from the Material 3 seed",
         "1.1": "Colours",
         "1.2": "Typography",
         "1.3": "Spacing",
@@ -1089,7 +1091,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T04:01:53.199Z",
+      "updated_at": "2026-10-03T07:15:19.583Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1100,13 +1102,57 @@
         "B28",
         "B44",
         "C13"
-      ]
+      ],
+      "amended_from": "sha256:64468ccb27c0",
+      "amended_at": "2026-10-03T07:14:24.144Z",
+      "amendment": {
+        "reason": "test",
+        "changes": null,
+        "renumbered": null,
+        "added_sections": [],
+        "headings": {
+          "0": "Visual direction",
+          "1": "Design tokens",
+          "2": "Primitive components",
+          "3": "Navigation patterns",
+          "4": "Grid and layout",
+          "0.0": "Colour class declaration",
+          "1.1": "Colours",
+          "1.2": "Typography",
+          "1.3": "Spacing",
+          "1.4": "Shadows",
+          "1.5": "Borders",
+          "1.6": "Motion",
+          "1.7": "Breakpoints",
+          "1.8": "Mapping to Flutter",
+          "2.1": "`NovelRow`",
+          "2.2": "`ChapterListTile`",
+          "2.3": "`PrimaryButton` / `SecondaryButton` / `TextButton`",
+          "2.4": "`TextField`",
+          "2.5": "`StatusChip`",
+          "2.6": "`ReaderControls`",
+          "2.7": "`EmptyState`, `ErrorState`, `LoadingState`",
+          "2.8": "`AppScaffold`",
+          "2.9": "`Switch`",
+          "2.10": "`SettingsRow`",
+          "2.11": "`SettingsSwitchRow`",
+          "2.12": "`SettingsChoiceSheet`",
+          "3.1": "Structure",
+          "3.2": "Main navigation",
+          "3.3": "Breadcrumbs",
+          "3.4": "Transitions",
+          "3.5": "Routing",
+          "4.1": "Base grid",
+          "4.2": "Layouts"
+        }
+      },
+      "previous_status": "approved"
     },
     "test_plan": {
       "path": ".forge/test-plan.md",
       "type": "test-plan",
       "status": "approved",
-      "content_hash": "sha256:52b26662dddc",
+      "content_hash": "sha256:5a7a091d3b9f",
       "headings": {
         "1": "The inventory",
         "2": "Coverage of the rule corpus",
@@ -1126,7 +1172,7 @@
         "11.2": "Variables and commands",
         "11.3": "Two tool defects Phase 6 had to fix to make any of this checkable"
       },
-      "updated_at": "2026-10-03T07:11:58.795Z",
+      "updated_at": "2026-10-03T07:27:58.012Z",
       "derived_from": [
         ".forge/plans/*.md section 11"
       ]
@@ -4386,13 +4432,13 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 258,
+      "register": 260,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 133,
+      "status_change": 134,
       "gate_approved": 4,
       "phase_status": 11,
-      "amend": 5,
+      "amend": 7,
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,
