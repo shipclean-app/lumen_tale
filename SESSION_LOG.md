@@ -1541,3 +1541,79 @@ format clean · `analyze --fatal-infos` **zero** · host **243 passed + 9 skippe
   response, and the builder refuses both.
 - **Do not trust a refusal that has never rejected anything.** Three of the nine above
   did not fire when first written, and a validator is only known once it has failed.
+
+### `failure-discriminator` — B22 expressed in the type system
+
+Wave 1's load-bearing foundation. Four pure-Dart files, no `package:flutter`, no
+provider, no selector, no clock:
+
+| File | What |
+|---|---|
+| `lib/core/error/source_failure.dart` | `SourceFailure` sealed + six causes |
+| `lib/domain/sources/browse_outcome.dart` | `BrowseSucceeded` / `BrowseFailed` / `BrowseEmpty` |
+| `lib/domain/sources/read_attempt.dart` | `ContentProbe`, `ReadStage`, `ZeroItemsPolicy`, `ReadAttempt` |
+| `lib/domain/sources/outcome_discriminator.dart` | `classify` — nine branches, all of which return |
+
+`classify` imports `fetch_result.dart` and does not touch it, which is the only way the
+dependency runs the right way round: `http-client` is wave 0 and owns the type,
+`failure-discriminator` is wave 2 and consumes it.
+
+**Three defects found by writing the tests, all of them real:**
+
+1. **The six causes had no value equality.** The first `expect(cause, const
+   NoConnection(host: 'x'))` compared two identical failures and got
+   `Expected: <Instance of 'NoConnection'> / Actual: <Instance of 'NoConnection'>` —
+   the failure *text* of a missing `operator ==`. A value carrier whose equality is
+   identity cannot go in a `Set`, cannot be compared by a screen and cannot be
+   asserted on, so "an outcome is a value" would have been a comment rather than a
+   property. Fixed by hand, and the header says why it is hand-written: `core/` is
+   the leaf layer and imports nothing from `lib/`, so a codegen `part` file there puts
+   a build dependency at the bottom of the graph — and each of these is five
+   primitive fields, where `freezed` would emit more code than it replaces plus a
+   `copyWith` nobody wants.
+2. **`BrowseEmpty` was reachable in 12 combinations, not 1.** My own test asserted
+   `reached == 1` from the plan's wording ("appears in *one* of the count/signal
+   combinations") and measured 12. The **12 is correct** — 2 counts × 6 stages, all
+   with a signal — and the assertion was the thing that was wrong. The test now
+   asserts the half that matters and that the plan actually means: **no signal-less
+   combination ever reaches `BrowseEmpty`** (0 of 36), and not every combination does.
+   A test asserting a wrong constant is worse than no test, because it is green until
+   the arithmetic changes.
+3. **`retriable` could not be looped over six causes.** `ItemRemovedAtSource` is
+   produced **only** by `6-4`, which is the only layer holding the site's answer, so
+   driving it through `classify` yields a `BrowseSucceeded`. Split into two tests: the
+   five producible causes must return the cause that went in *and* agree on
+   `retriable`, and all six are pinned against the § 3.4 table by value — which is
+   stronger than self-consistency, since a cause that flipped its answer now fails
+   rather than agreeing with itself.
+
+**Two proven RED by sabotage**, because a green suite proves nothing about whether it
+can go red:
+
+- moving the signal check **after** the count check — the exact § 3.2 mistake — fails
+  1 test (`a present signal with results wins over the count`);
+- returning `BrowseSucceeded([])` instead of `SourceLayoutChanged` on an absent
+  container — **the SC-6 defect itself** — fails 9.
+
+**§ 3.5's coherence test runs against Royal Road, not FanMTL.** The plan names
+`fanmtl-broken-layout.html`; FanMTL is unreachable from here (F-012) so `0-1`
+manufactured the pair from Royal Road, which it could reach. What § 3.5 asks for is a
+property of the *classifier*, and the three outcomes — absent probe, empty container,
+forged signal — are produced from that one file with no network. The test also pins
+the pair: the intact capture really did have `.chapter-inner.chapter-content`, and the
+manufactured one really does not, on a page that is otherwise well formed and 92 KB of
+prose.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **287 passed + 9 skipped** ·
+`check_plans` **38 clean** · every declared foundation test location now exists.
+
+### NEXT SESSION SHOULD
+
+- **`2-1`, the Source contract**, against captured facts: five-segment chapter URLs,
+  `chapter-inner chapter-content`, **and no site empty-result marker at all** — which
+  means `BrowseEmpty` is unreachable on Royal Road and page shape is the only
+  discriminator. `0-2` is what measures that, and it is blocked on FanMTL, so `2-1`
+  must be written for the two-state reality the capture shows.
+- **`0-2`, `0-3`, `2-6`, `6-3`, `0-5`** — the rest of Wave 1.

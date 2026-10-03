@@ -82,21 +82,22 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 | | Count |
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
-| § 11 `Emplacement` targets that exist on disk | **7 of 55** |
-| Test cases actually written | **249** |
-| Of those, host (`test/`), on the Dart VM | **243** |
+| § 11 `Emplacement` targets that exist on disk | **8 of 55** |
+| Test cases actually written | **293** |
+| Of those, host (`test/`), on the Dart VM | **287** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 243, covering the database schema | **27** |
-| Of the host 243, covering the app bootstrap | **5** |
-| Of the host 243, covering the network foundation | **51** |
-| Of the host 243, covering localisation | **27** |
-| Of the host 243, covering the theme foundation | **71** |
-| Of the host 243, covering the build/delivery foundation | **13** |
-| Of the host 243, **fixture-manifest suites** | **43** |
-| Of the host 243, **manifest-builder refusals** | **15** |
-| Of the host 243, **skipped** — FanMTL unreachable | **9** |
+| Of the host 287, covering the database schema | **27** |
+| Of the host 287, covering the app bootstrap | **5** |
+| Of the host 287, covering the network foundation | **51** |
+| Of the host 287, covering localisation | **27** |
+| Of the host 287, covering the theme foundation | **71** |
+| Of the host 287, **the failure discriminator** | **44** |
+| Of the host 287, covering the build/delivery foundation | **13** |
+| Of the host 287, **fixture-manifest suites** | **43** |
+| Of the host 287, **manifest-builder refusals** | **15** |
+| Of the host 287, **skipped** — FanMTL unreachable | **9** |
 
-**Seven of the 55 declared locations exist, and all six Wave-0 nodes have at least one
+**Eight of the 55 declared locations exist, and all six Wave-0 nodes have at least one
 test file on disk** — `local-store` (2), `http-client` (2), `localisation` (3),
 `theme-type` (4 of 6), `0-1` (1 declared + 1 extra), and `apk-pipeline` (1). The
 `0-1` count is 7 because `royalroad_manifest_test.dart` is an **addition**: no plan
@@ -315,19 +316,28 @@ nothing about whether the foundation works.
 | `http-client` | **53** | 42 | 0 | 4 | 0 | 7 | 1 | **1** |
 | `theme-type` | **39** | 23 | 4 | 4 | 0 | 8 | 6 | **4** |
 | `local-store` | **38** | 26 | 0 | 6 | 0 | 6 | 2 | **2** |
-| `failure-discriminator` | **37** | 28 | 0 | 4 | 0 | 5 | 1 | 0 |
+| `failure-discriminator` | **37** | 28 | 0 | 4 | 0 | 5 | 2 | **2** |
 | `apk-pipeline` | **33** | 10 | 0 | 13 | 3 | 7 | 1 | **1** |
 | `localisation` | **29** | 22 | 0 | 0 | 0 | 7 | 3 | **3** |
-| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **13** |
+| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **15** | **14** |
 
-**Thirteen of the fourteen declared foundation test locations exist.** Only one is
-missing: `theme-type`'s fifth file, `theme_override_test.dart`, whose rows are in fact
-covered today by `theme_override_test.dart` plus the notifier half of
-`app_theme_preferences_test.dart` — so the *plan's* file list understates what exists,
-which is recorded rather than corrected by inventing a file. The foundations carrying the most weight are the least built:
-`http-client` declares 53 rows and now has its suite; `localisation` and `theme-type`
-still declare test files that do not exist. `apk-pipeline` is the only foundation with E2E rows, and they are the three
-`apk-pipeline` entries in § 5.
+**Every declared foundation test location now exists.** `failure-discriminator` closed
+the last gap with its two files, `outcome_discriminator_test.dart` and
+`source_failure_test.dart`.
+
+⚠️ **The 15 declared locations vs 14 that existed before this is not a discrepancy to
+explain away.** The plan's *file list* is the authority for the count, and
+`theme-type` declares `theme_override_test.dart` as a fifth file; what is on disk today
+is `theme_override_test.dart` plus the notifier half of
+`app_theme_preferences_test.dart`, so the *rows* were covered while the *declared
+location* was not. The extra file was not invented to make a number agree —
+`check_plans.py` derives the count from the plans and compares it to the sentence in
+this section, so a hand-edited total fails the guard rather than passing review.
+
+`apk-pipeline` remains the only foundation with E2E rows, and they are the three
+`apk-pipeline` entries in § 5. **A location existing is not the same as its rows being
+written**: `theme-type` declares six files and now has five, and the six test files
+it should have are the reason it is not yet complete.
 
 **What each foundation's tests must be able to fail on**, so "implemented" cannot be
 claimed from a passing import:
