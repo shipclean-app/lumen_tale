@@ -134,6 +134,27 @@ apart. Do not edit a plan's `status:` by hand.
 
 ### Re-hashing a plan after editing it
 
+### How `set-status` decides which file to mirror into
+
+**`pathKeyFor()` is `entry.plan_path || null` — `plan_path` alone, not
+`path || plan_path`.** An earlier version of this file claimed the latter. The
+difference is not cosmetic: with only `path` set, `set-status` mirrors **nothing**
+(the target is `null`), so a status change lands in `state.json` and never
+reaches a file. Registering `plan_path` is what makes the mirror work at all,
+which is the second reason F-9's fix was worth doing beyond the index.
+
+Concretely, on a slice or a foundation:
+
+```bash
+node "$FORGE/scripts/state.js" set-status "$ROOT" slice       <key> planned
+node "$FORGE/scripts/state.js" set-status "$ROOT" foundation <key> planned
+```
+
+**The `kind` argument is not optional decoration** — `slice` and `foundation`
+address different buckets, and passing the wrong one fails with a key that
+looks like it worked. The 32 slices and the 6 foundations need different
+words, and getting it wrong leaves six nodes silently at `identified`.
+
 `state.json` carries a `content_hash` per node, and `forge-guard`'s
 `content_hashes_current` compares it against the file. **Every edit to a plan
 therefore needs a re-hash**, or the gate reports it as an out-of-band edit:

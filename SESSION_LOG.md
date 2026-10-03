@@ -336,7 +336,9 @@ Gate at the last commit: `forge-guard` clean except the proven `version_pins_agr
 - **Get the owner to approve `architecture.md`, then `set-status … deliverable architecture approved` and re-hash.** Phase 5 cannot start until it is `approved`, and `fast-track` re-checks it.
 - **Phase 5: 30 per-slice plans** from `templates/implementation-plan.md.tmpl`, via `forge-implementer`., which points at `.forge/plans/6-10.md` and has never existed.
 - **`6-10` needed a rule-to-slice home.** ADR-021 gave it B37 and § 3.2 lists it under US-10. **Both were done in Session 6.**
-      > **Corrected 2026-10-03.** This bullet and the one above it said opposite things three lines apart: the first claimed every slice's `path` already pointed at `.forge/plans/<key>.md` except `6-10`, the second said it pointed at `.forge/architecture.md` like every other. **The second was true and the first was false** — and it was written by me, in the same list, on the same afternoon. `state.json` now carries **both** `path` (where a slice is *described*) and `plan_path` (where it is *implemented*), because `state.js set-status` reads `path || plan_path` and would otherwise write a slice's status into `architecture.md`'s front matter.
+      > **Corrected 2026-10-03.** This bullet and the one above it said opposite things three lines apart: the first claimed every slice's `path` already pointed at `.forge/plans/<key>.md` except `6-10`, the second said it pointed at `.forge/architecture.md` like every other. **The second was true and the first was false** — and it was written by me, in the same list, on the same afternoon. `state.json` now carries **both** `path` (where a slice is *described*) and `plan_path` (where it is *implemented*), and the second one is not bookkeeping — it is what makes the mirror work.
+
+> **Corrected again the same day.** This first said `set-status` reads `path || plan_path` and "would otherwise write a slice's status into `architecture.md`'s front matter". **It reads `entry.plan_path || null` — `plan_path` alone** (`state.js` `pathKeyFor()`, line 87). The wrong version was *scarier* than the truth, which is exactly why it survived: with `plan_path` set the mirror writes into the plan; with only `path` set the target is `null` and **nothing is mirrored at all**. *A wrong claim lasts longer when it is more dramatic than the truth, because more dramatic is more plausible.* Verified by running it: 32 slices + 6 foundations, both sides land on `planned`, `architecture.md` untouched, graph intact.
 - **Re-read `references/module-prioritization.md`** and re-run the plan-validator Q1–Q3 grid — the first run evaluated those questions from memory because the reference did not load.
 - **Decide MVP size.** The roadmap prices a 7-story lean alternative against the 11-story MVP if Waves 1–2 overrun. Not yet decided.
 - **Three §7.1 targets owe a number or a deletion**: list responsiveness, download-progress cadence, cancellation latency. Each is currently "not yet measurable", which is not a target.
@@ -415,7 +417,7 @@ Phase 5 produced **38 plans and roughly forty defects the gates could not see.**
 
 ### STATUS
 
-**Phases 0–4 approved. Phase 5 `in_progress`: 38 of 38 plans written**, every one `status: identified`, every assigned B/E/C id traced in § 6 before § 7. Graph: **38 nodes, 32 slices, 6 foundations, 62 edges, 10 waves, 0 cycles, 0 orphans, 0 missing.** Schema: **6 tables, 42 columns, 5 indexes, `schemaVersion` 1.**
+**Phases 0–5 approved. Phase 6 `in_progress`: 38 of 38 plans written and owner-approved**, all 38 now `status: planned` on **both** sides — `state.json` and each plan's front matter — verified equal on all 38. Every assigned B/E/C id is traced in § 6 before § 7. Graph: **38 nodes, 32 slices, 6 foundations, 62 edges, 10 waves, 0 cycles, 0 orphans, 0 missing.** Schema: **6 tables, 42 columns, 5 indexes, `schemaVersion` 1.**
 
 > **Three corrections from the fact-check, all of which had been wrong in the entry's favour.**
 > **`consistency-check` was NOT clean** — it had been failing all session, on one reference to a file the tool could not see because no plan was registered. Registering all 38 fixed it, and the earlier commit message claiming otherwise was wrong. **`Phase 5 complete`** — the phase is `in_progress`; the plans are written but **not approved**, and saying "complete" invited a next session to skip the approval this same entry asks for. **`status: draft`** — `draft` is not in `STATUS_VOCAB.slice`, so a registered plan cannot declare it; all 38 said `draft` until the fact-check's knock-on made `forge-guard`'s `state_frontmatter_in_sync` report 38 divergences at once. **`0 dead dependencies`** — `dependency-check` has no such concept; it emits `cycles`, `orphans` and `missing_dependencies` only, and the claim had no tool behind it.
@@ -435,6 +437,58 @@ forge-guard fast-track --scope=plans --autonomy=full → pass
 ```
 
 The six `check_plans.py` warnings are all finding **F-003** — `coverage-check.js slice` reads `state.slices` only, so a foundation's `rule_ids` are never mechanically checked. `check_plans.py` covers them; the Forge script cannot, and it is read-only.
+
+### PHASE 5 APPROVED BY THE OWNER — 2026-10-03
+
+**"i approve phase."** Phase 5 is `approved`, all 38 plans are `planned`, and `current_phase`
+is 6.
+
+**The approval moved both sides at once, and the mechanism is worth stating because an earlier
+version of this entry got it wrong.** `set-status` resolves its mirror target through
+`pathKeyFor()`, which is **`entry.plan_path || null` — `plan_path` alone**. So
+
+```bash
+node "$FORGE/scripts/state.js" set-status "$ROOT" slice       <key> planned   # ×32
+node "$FORGE/scripts/state.js" set-status "$ROOT" foundation <key> planned   # ×6
+```
+
+writes `planned` into `state.json` **and** into the plan's front matter in one gesture, and
+verified equal on all 38 afterwards. **`architecture.md` was not touched** — the concern this
+entry originally recorded.
+
+*Two things cost a retry.* **`slice` and `foundation` are different buckets**: passing `slice`
+for all 38 left the six foundations silently at `identified`, and the failure looks like success
+because the command exits zero on a key it did not find in the other bucket's terms. And the
+earlier claim — `path || plan_path` — was wrong, and *more dramatic* than the truth: with only
+`path` set the target is `null` and **nothing is mirrored at all**. **A wrong claim survives
+longer when it is more dramatic than the truth, because more dramatic reads as more plausible.**
+
+### WHAT PHASE 6 NEEDS, AND IT IS NOT WHAT THE NAME SUGGESTS
+
+`current_phase_has_deliverables` was run deliberately rather than worked around. It says Phase 6
+expects a deliverable named **`test_plan`**, and **it does not exist**.
+
+Each of the 38 plans carries its own § 11 *Plan de tests*, and `10-testing.md` states the
+conventions — but there is **no consolidated register of the project's tests**: no single place
+that lists every suite, says which rule each one defends, or shows which of them can actually be
+run in a Codespace. That is a real gap, and it is the same shape as the twenty-nine unregistered
+questions closed earlier in the session: *a thing that exists 38 times in pieces and zero times
+whole.*
+
+Phase 6 is therefore `not_started` — the honest status, since nothing has been produced for it —
+and the guard's own rule exempts a `not_started` phase. **The check was allowed to keep passing
+by being right about something else, which is the only acceptable reason a check stops
+complaining.**
+
+### THE ENVIRONMENT LIMIT IS NOW THE OWNER'S OWN STATEMENT, NOT MY ASSUMPTION
+
+**"you are on GitHub Codespaces so verification on a mobile device isn't possible."** Recorded on
+**Q-008** as a *measured environmental fact*. The consequence for how this corpus is read:
+**no deliverable ever made an on-device claim that was verified here, and none could have.**
+§ 7.1's frame budgets, SC-5, `gate:upgrade-safety` and every § 11.4 E2E entry are
+**specifications and an unrun suite.** They must not be written up as observations, and Phase 6's
+test plan is exactly where that distinction has to be made explicit — it is the one artifact whose
+whole job is to say which tests have been *run*.
 
 ### THE SIXTH PASS — 2026-10-03, two reviewers with fresh eyes, then a fact-check of this very entry
 
