@@ -82,12 +82,19 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 | | Count |
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
-| § 11 `Emplacement` targets that exist on disk | **1 of 55** |
-| Test cases actually written | **38** |
-| Of those, host (`test/`), on the Dart VM | **32** |
+| § 11 `Emplacement` targets that exist on disk | **2 of 55** |
+| Test cases actually written | **89** |
+| Of those, host (`test/`), on the Dart VM | **83** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 32, covering the database schema | **27** |
-| Of the host 32, covering the app bootstrap | **5** |
+| Of the host 83, covering the database schema | **27** |
+| Of the host 83, covering the app bootstrap | **5** |
+| Of the host 83, covering the network foundation | **51** |
+
+**`http-client` is the second foundation with its declared tests on disk** — 51 rows in
+`http-client_test.dart` and `no_telemetry_test.dart`, against a plan that declares
+`test/core/network/http_client_test.dart`. Two of the 55 declared locations now exist,
+up from one. That is still a small minority, and § 8's table is the honest measure of
+what is left.
 
 **Roughly one row in fifty exists.** A § 11 is a promise the owning slice makes, not
 a description of the current tree. No gate can check a promise — this file exists so
@@ -229,7 +236,7 @@ nothing about whether the foundation works.
 
 | Foundation | Rows declared | Unit | Component | Integration | E2E | Manual | Test locations declared | On disk |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| `http-client` | **53** | 42 | 0 | 4 | 0 | 7 | 1 | 0 |
+| `http-client` | **53** | 42 | 0 | 4 | 0 | 7 | 1 | **1** |
 | `theme-type` | **39** | 23 | 4 | 4 | 0 | 8 | 6 | 0 |
 | `local-store` | **38** | 26 | 0 | 6 | 0 | 6 | 2 | **2** |
 | `failure-discriminator` | **37** | 28 | 0 | 4 | 0 | 5 | 1 | 0 |
@@ -237,10 +244,11 @@ nothing about whether the foundation works.
 | `localisation` | **29** | 22 | 0 | 0 | 0 | 7 | 3 | 0 |
 | **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **2** |
 
-**Two of fourteen declared test locations exist, and both are `local-store`'s** — they are
-the 32 host cases in § 3. The foundations carrying the most weight are the least built:
-`http-client` declares 53 rows and has none, and it is the dependency of every source
-slice. `apk-pipeline` is the only foundation with E2E rows, and they are the three
+**Three of fourteen declared test locations exist**: both of `local-store`'s (the
+database cases) and `http-client`'s. `http-client` is the largest foundation by row count
+and is the dependency of every source slice, so it was built first. The foundations carrying the most weight are the least built:
+`http-client` declares 53 rows and now has its suite; `localisation` and `theme-type`
+still declare test files that do not exist. `apk-pipeline` is the only foundation with E2E rows, and they are the three
 `apk-pipeline` entries in § 5.
 
 **What each foundation's tests must be able to fail on**, so "implemented" cannot be

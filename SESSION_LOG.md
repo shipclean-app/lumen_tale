@@ -1010,3 +1010,72 @@ implemented from a plan whose stated design premise is absent.**
   fixing it immediately revealed that the hashes it would have read were wrong for 31 nodes.
 - **Do not assume a repair is free.** Correcting 38 `path` values surfaced two real broken
   references that the broken state had been hiding.
+
+### Phase 7 — `http-client` implemented (wave 0, critical path)
+
+The owner said *fix and go autonomous, and don't leave any holes*. So: implemented the
+foundation the whole source pipeline waits on, and finished the F-011 hole rather than
+deferring it.
+
+**Built, on the plan's § 2.2 contracts (10 files):** `lib/core/network/` —
+`fetch_result.dart`, `http_response.dart`, `http_client.dart`, `http_policy.dart`,
+`source_endpoint.dart`, `retry_after.dart`, `body_decoder.dart`,
+`host_rate_limiter.dart`, `source_http_client.dart`; and `lib/core/error/app_exception.dart`.
+**Tests: 51 rows** across the two files § 11 declares, so `http-client` is now the
+second foundation with its tests on disk (3 of 14 locations, up from 2).
+
+**Four things the plan did not know, found by reading the installed source:**
+
+1. **`BaseOptions` has no `userAgent` field in dio 5.11.1** — the agent goes in `headers`.
+2. **⚠️ A request-level `headers` map REPLACES the base headers, it does not merge**
+   (`options.dart`: `headers: headers ?? effectiveHeaders`). Passing only
+   `Accept-Encoding` per request would have **silently dropped the User-Agent** — a 403 on
+   exactly the sites ADR-014 measured. The base headers are now merged forward explicitly
+   and `the User-Agent reaches the base headers, not an option` fails if that changes.
+3. **`HttpDate.parse` throws `HttpException`, not `FormatException`.** My first draft
+   caught `FormatException`, so the catch never fired and an unreadable `Retry-After`
+   propagated an `HttpException` out of the transport. § 3.4's branch 3 was unreachable.
+   **The test found it, which is the whole argument for writing the row.**
+4. **The plan's own `Retry-After` test row is wrong.** It asks for
+   `07:28:00 GMT → ±1s`, but § 2.4 sets `maxRetryAfter = 10 minutes`; measured from 07:00
+   the 28-minute delta clamps to 600 and the row fails **while the code is right**. Fixed
+   the reference point to 07:26 and added a separate row proving the clamp — a date-format
+   test that only passes because the value is out of range is not testing the format.
+
+**Also two of my own mistakes, caught and corrected:** `_declarationsOfSealedFetchResult()`
+returned a hardcoded `1` (a test that passes for the wrong reason — it now walks `lib/`),
+and the meta-charset test built its bytes with `replaceAll('é','é')`, a no-op on a
+UTF-8 literal that looked like it did something.
+
+**Every new check proven RED before trusted**, by breaking the thing it watches:
+- adding `print("telemetry")` to `core/network` → `logs nothing` **fails**
+- swapping `on HttpException` back to `on ArgumentError` → `unparseable Retry-After`
+  **fails**
+
+**F-011 closed, not deferred.** `theme-type` cited `design-system.md § 0.3` for a rule
+about `ColorScheme.fromSeed`, in a file containing **zero** occurrences of
+`ColorScheme`. Rather than repoint the citation at a nearby section, § 0.1 and § 0.3 were
+**added to `design-system.md` as numbered sections**, so the citations now resolve to the
+rules they always meant to name.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **83/83** (was 32) ·
+`check_plans` **38 clean, 0 failures**. Register § 3 recomputed: **89** written,
+**83 host + 6 on-device**, **2 of 55** declared locations exist.
+
+### NEXT SESSION SHOULD
+
+- **`localisation` (29 rows, 3 files) then `theme-type` (39 rows, 6 files)**, then `0-1`
+  (21) and `apk-pipeline` (33, largely discharged by the CI workflow). That clears Wave 0.
+- **Re-run the on-device suite when the Z2577 is connected.** It was disconnected at the
+  end of this pass and the run is reported as **not re-verified**, not as passing.
+- **`failure-discriminator`** is wave 2 and `http-client` now gives it the `FetchResult`
+  it was told to import rather than declare.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not pass request-level `headers` to dio without merging the base ones.** It
+  replaces them, and the User-Agent goes with them.
+- **Do not assume a plan's test row is self-consistent.** Row 4 above is a plan whose
+  expectation contradicts its own constant, and the code was right.
