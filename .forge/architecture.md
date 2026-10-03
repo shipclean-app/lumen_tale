@@ -190,7 +190,7 @@ This foundation exists before any feature because **Q-008** blocks every device 
 
 ### 3.1 Inventory
 
-36 items: 6 foundations + **30 scheduled slices** — plus `6-8` and `6-9`, withdrawn from v1 for want of a rule (see § 3.1). `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
+38 items: 6 foundations + **32 scheduled slices** — plus `6-8` and `6-9`, withdrawn from v1 for want of a rule (see § 3.1). `wave` is the **computed topological** wave; `milestone` is the roadmap's grouping (see § 6.3).
 
 | Slice | Key | Wave | Depends on | Responsibility |
 |---|---|---|---|---|
@@ -218,6 +218,7 @@ This foundation exists before any feature because **Q-008** blocks every device 
 | `3.3` | `3-3` | 6 | `3-2`, `2-3` | Download one chapter; delete one chapter |
 | `3.4` | `3-4` | 5 | `2-5` | First-run disclosure that the library is not recoverable |
 | `3.6` | `3-6` | 5 | `3-1`, `failure-discriminator` | **The source-unavailable screen — `/browse/:sourceId/unavailable`.** SC-6's only surface: a site that cannot be read says so in words, distinguishes the **four** causes, and never shows an empty list as an answer (B22, C12) |
+| `3.7` | `3-7` | 2 | `0-5`, `theme-type`, `localisation` | **The Settings screen** — `/more/settings` plus its `/reader` and `/about` sub-routes. Strings are `localisation`, values are `theme-type`; this slice is the assembly and the persistence. **It does NOT own the About body** — `3-5` does. Added 2026-10-02: `settings.md` was an approved screen with no owning slice, and `3-4` had to place the E11 disclosure inside one |
 | `3.5` | `3-5` | 1 | `apk-pipeline` | About screen with the installed version |
 | `5.1` | `5-1` | 7 | `3-3` | Download queue, six bulk choices |
 | `5.2` | `5-2` | 8 | `5-1` | Pause/resume/cancel; queue survives closure |

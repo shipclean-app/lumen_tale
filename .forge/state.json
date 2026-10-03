@@ -71,7 +71,7 @@
       "status": "approved",
       "content_hash": "sha256:e3350b0ff81b",
       "headings": {},
-      "updated_at": "2026-10-03T03:10:53.494Z",
+      "updated_at": "2026-10-03T03:29:35.274Z",
       "derived_from": [
         ".forge/contract.md",
         ".forge/prd.md"
@@ -97,7 +97,7 @@
         "5": "Ce qui reviendra au client",
         "6": "Comment saurons-nous que c'est fini"
       },
-      "updated_at": "2026-10-03T03:10:54.117Z",
+      "updated_at": "2026-10-03T03:29:35.323Z",
       "requires": [
         "B1",
         "B4",
@@ -121,7 +121,7 @@
     "prd": {
       "path": ".forge/prd.md",
       "type": "prd",
-      "status": "stale",
+      "status": "approved",
       "content_hash": "sha256:bb8172373a94",
       "headings": {
         "1": "Executive summary",
@@ -146,7 +146,7 @@
         "7.4": "Internationalization",
         "7.5": "Availability / resilience"
       },
-      "updated_at": "2026-10-03T03:10:54.204Z",
+      "updated_at": "2026-10-03T03:29:35.374Z",
       "version": "1",
       "amended_from": "sha256:eb7a8e0b4010",
       "amended_at": "2026-10-02T22:20:36.589Z",
@@ -679,7 +679,7 @@
         "2.2": "Dreame / Webnovel — the competitive baseline",
         "2.3": "The gap we can actually exploit"
       },
-      "updated_at": "2026-10-03T03:10:54.289Z",
+      "updated_at": "2026-10-03T03:29:35.421Z",
       "requires": [
         "B1",
         "B28",
@@ -727,7 +727,7 @@
         "7.2": "Two contradictions between approved documents, flagged not resolved",
         "8.1": "Where the implementation order deliberately diverges from the reader's order"
       },
-      "updated_at": "2026-10-03T03:10:54.364Z",
+      "updated_at": "2026-10-03T03:29:35.473Z",
       "version": "1",
       "derived_from": [
         ".forge/prd.md"
@@ -836,7 +836,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T03:12:06.611Z",
+      "updated_at": "2026-10-03T03:29:35.527Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -855,7 +855,7 @@
       "status": "approved",
       "content_hash": "sha256:1b8dad9d8c3a",
       "headings": {},
-      "updated_at": "2026-10-03T03:10:54.473Z",
+      "updated_at": "2026-10-03T03:29:35.574Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -889,7 +889,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-03T03:10:54.524Z",
+      "updated_at": "2026-10-03T03:29:35.652Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -928,7 +928,7 @@
         "4.3": "Failure in the middle of the work",
         "4.4": "The honest limitation in the download flow"
       },
-      "updated_at": "2026-10-03T03:10:54.575Z",
+      "updated_at": "2026-10-03T03:29:35.742Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md",
@@ -964,7 +964,7 @@
         "6.3": "MigrateSource",
         "8.1": "What we add that Mihon does not have"
       },
-      "updated_at": "2026-10-03T03:10:54.637Z",
+      "updated_at": "2026-10-03T03:29:35.913Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md",
@@ -983,7 +983,7 @@
       "path": ".forge/architecture.md",
       "type": "architecture",
       "status": "approved",
-      "content_hash": "sha256:3570c6310e40",
+      "content_hash": "sha256:bd35ad373ca8",
       "headings": {
         "1": "Overview",
         "2": "Foundations",
@@ -1021,7 +1021,7 @@
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-03T03:12:06.463Z",
+      "updated_at": "2026-10-03T03:30:32.621Z",
       "derived_from": [
         ".forge/prd.md"
       ],
@@ -1078,7 +1078,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T03:12:06.560Z",
+      "updated_at": "2026-10-03T03:29:36.167Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1290,7 +1290,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-03T03:10:54.790Z",
+      "updated_at": "2026-10-03T03:29:36.269Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1317,7 +1317,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-03T03:10:54.862Z",
+      "updated_at": "2026-10-03T03:29:36.378Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1344,7 +1344,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-03T03:10:54.929Z",
+      "updated_at": "2026-10-03T03:29:36.435Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1371,7 +1371,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-03T03:10:54.980Z",
+      "updated_at": "2026-10-03T03:29:36.525Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1397,7 +1397,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-03T03:10:55.050Z",
+      "updated_at": "2026-10-03T03:29:36.589Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1423,7 +1423,7 @@
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-03T03:10:55.121Z",
+      "updated_at": "2026-10-03T03:29:36.657Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1450,7 +1450,7 @@
         "1.1": "The two modes of one route",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-03T03:10:55.168Z",
+      "updated_at": "2026-10-03T03:29:36.774Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1477,7 +1477,7 @@
         "1.1": "Why this screen is in overflow and not a tab — the reason, argued",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-03T03:10:55.218Z",
+      "updated_at": "2026-10-03T03:29:36.852Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1505,7 +1505,7 @@
         "11.1": "`SortFilterSheet`",
         "11.2": "`BulkDownloadSheet` and `RemoveFromLibraryDialog`"
       },
-      "updated_at": "2026-10-03T03:10:55.267Z",
+      "updated_at": "2026-10-03T03:29:36.971Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1534,7 +1534,7 @@
         "11.2": "The similar-title warning (B40)",
         "11.3": "Chapter selection, and a gap in the design system recorded rather than papered over"
       },
-      "updated_at": "2026-10-03T03:10:55.315Z",
+      "updated_at": "2026-10-03T03:29:37.040Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1562,7 +1562,7 @@
         "11.1": "`NovelActionSheet`",
         "11.2": "A note on the in-progress check state, and on a divergence in the design system"
       },
-      "updated_at": "2026-10-03T03:10:55.365Z",
+      "updated_at": "2026-10-03T03:29:37.104Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1589,7 +1589,7 @@
         "2.1": "Anti-generic — mandatory",
         "11.1": "`RetentionSheet` and the clear confirmation"
       },
-      "updated_at": "2026-10-03T03:10:55.409Z",
+      "updated_at": "2026-10-03T03:29:37.178Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1616,7 +1616,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-03T03:10:55.461Z",
+      "updated_at": "2026-10-03T03:29:37.237Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1643,7 +1643,7 @@
         "2.1": "Anti-generic — mandatory",
         "4.1": "User-visible copy — both languages (B28)"
       },
-      "updated_at": "2026-10-03T03:10:55.538Z",
+      "updated_at": "2026-10-03T03:29:37.284Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1669,7 +1669,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`MoreRow` — declared here because it exists only for this screen"
       },
-      "updated_at": "2026-10-03T03:10:55.591Z",
+      "updated_at": "2026-10-03T03:29:37.328Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1695,7 +1695,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`SourceRow`"
       },
-      "updated_at": "2026-10-03T03:10:55.634Z",
+      "updated_at": "2026-10-03T03:29:37.381Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1721,7 +1721,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`StatRow` and `SourceBar`"
       },
-      "updated_at": "2026-10-03T03:10:55.684Z",
+      "updated_at": "2026-10-03T03:29:37.452Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1746,7 +1746,7 @@
         "11": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory"
       },
-      "updated_at": "2026-10-03T03:10:55.734Z",
+      "updated_at": "2026-10-03T03:29:37.505Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -2651,7 +2651,7 @@
       "register": 212,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 92,
+      "status_change": 93,
       "gate_approved": 4,
       "phase_status": 4,
       "amend": 5,

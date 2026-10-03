@@ -1,6 +1,6 @@
 ---
 type: prd
-status: stale
+status: approved
 generated_at: 2026-10-02
 version: 3
 ---

@@ -237,6 +237,45 @@ CONTRACT_METHODS = [
 ]
 
 
+def check_counts():
+    """The numbers architecture.md states about itself must equal the state it
+    describes. This session wrote '30 scheduled slices' in a document that
+    listed 32, because two slices were added after the sentence was written."""
+    arch = ROOT / '.forge/architecture.md'
+    if not arch.exists():
+        return
+    state = json.loads((ROOT / '.forge/state.json').read_text())
+    s, f = len(state['slices']), len(state['foundations'])
+    text = arch.read_text(encoding='utf-8')
+
+    m = re.search(r'(\d+) items: (\d+) foundations \+ \*\*(\d+) scheduled slices\*\*', text)
+    if not m:
+        fail(arch, 'no "N items: F foundations + S scheduled slices" line found — the '
+                   'document must state its own size, and the checker must find it')
+    elif (int(m.group(1)), int(m.group(2)), int(m.group(3))) != (s + f, f, s):
+        fail(arch, f'states {m.group(1)} items / {m.group(2)} foundations / '
+                   f'{m.group(3)} slices; state.json has {s + f} / {f} / {s}')
+
+    # every node must have an inventory row, or the document does not describe
+    # its own plan. A slice in state.json and absent from § 3.1 is a slice an
+    # implementer reading the architecture cannot find.
+    missing = [k for k in list(state['slices']) + list(state['foundations'])
+               if f'| `{k}` |' not in text]
+    if missing:
+        fail(arch, f'nodes in state.json with no § 3.1 inventory row: {missing}')
+
+    # the wave listing must have the same number of waves the checker computes
+    waves = [int(n) for n in re.findall(r'^W(\d+)\s', text, re.M)]
+    if waves:
+        declared = max(waves) + 1
+        computed = state['index'].get('impl_waves')
+        if isinstance(computed, list) and computed:
+            n = len(computed)
+            if declared != n:
+                fail(arch, f'§ 6.1 lists waves W0..W{declared - 1} ({declared}); '
+                           f'state.json computes {n}')
+
+
 def check_corpus():
     targets = [
         ROOT / '.forge/architecture.md',
@@ -262,6 +301,7 @@ def check_corpus():
 
 def main():
     check_corpus()
+    check_counts()
     state = json.loads((ROOT / '.forge/state.json').read_text())
     wanted = {k: (v.get('rule_ids', []), v.get('edge_case_ids', []), False)
               for k, v in state['slices'].items()}
