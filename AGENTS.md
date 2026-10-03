@@ -80,7 +80,8 @@ Detail: `03-source-system.md`. Conversion: `04-html-to-markdown.md`.
 | `dart run build_runner build` | Regenerate riverpod / freezed / json_serializable / drift code. **No flag** — `--delete-conflicting-outputs` was removed and is silently ignored, so passing it prints a warning and does nothing |
 | `dart run drift_dev schema dump lib/core/database/app_database.dart lib/core/database/schema.json` | Export the drift schema snapshot after a table change. **Two** arguments — with one it prints usage and exits 0, so it looks like it ran |
 | `dart run drift_dev identify-databases` | List the drift databases in the project and their schema version |
-| `flutter build apk` | Android build — **unvalidated here**, no Android SDK (Q-003) |
+| `flutter build apk` | Android build — **verified 2026-10-03** (Q-003 closed). Needs `ANDROID_HOME=/home/tleguede/Android/Sdk` and a **JDK ≤ 21**; the SDK's bundled Java 25 cannot run Gradle 8.14 |
+| `flutter test -d <id>` | **Does not run on the device** for files under `test/` — the flag is silently ignored. Only `flutter test integration_test/ -d <id>` deploys, and it refuses an unknown device. See `test-plan.md` § 4.2 |
 
 Flutter lives at `/home/codespace/flutter/bin`. Generated files (`*.g.dart`, `*.freezed.dart`, `*.drift.dart`, `lib/l10n/generated/`) are committed and excluded from analysis.
 

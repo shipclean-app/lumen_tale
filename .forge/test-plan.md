@@ -56,9 +56,11 @@ the knowledge no easier to find.
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
 | § 11 `Emplacement` targets that exist on disk | **1 of 55** |
-| Test cases actually written | **32** |
-| Of those, covering the database schema | **27** |
-| Of those, covering the app bootstrap | **5** |
+| Test cases actually written | **38** |
+| Of those, host (`test/`), on the Dart VM | **32** |
+| Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
+| Of the host 32, covering the database schema | **27** |
+| Of the host 32, covering the app bootstrap | **5** |
 
 **Roughly one row in fifty exists.** A § 11 is a promise the owning slice makes, not
 a description of the current tree. No gate can check a promise — this file exists so
@@ -66,23 +68,62 @@ the difference is on the record rather than discovered at slice 5.
 
 ## 4. The split that Q-008 draws
 
-**1383 rows can run here; 270 cannot.** That is not a defect in the plans, it is
-the shape of the project, and stating it prevents the failure mode this project has hit
-seven times: *a check reporting something it did not measure*.
+> **Amended 2026-10-03, against measurement.** The text this replaces was written
+> when no phone and no SDK were reachable, and it asserted two things that have since
+> been measured false. Both corrections are recorded here rather than by quietly
+> rewriting the section, because the original reasoning was sound *given what was
+> known* — the error was environmental, not analytical.
+
+**1383 rows can run here; 270 cannot.** The 270 figure is unchanged. What changed is
+**why**:
 
 | Cannot run here | Why | What it would take |
 |---:|---|---|
-| 11 E2E rows | need a real Android phone | **Q-008** — a device and a way to install an APK |
+| 11 E2E rows | need a real Android phone | a device and a way to install an APK — **both now available**; still unrun because **0 of 32 slices are implemented** |
 | 259 manual verifications | visual, a11y, or judgement calls | a human, or a screenshot oracle |
 
-ADR-011 already makes the APK build a CI dependency, so the **build** needs no device.
-Only **observation** does. The consequence, to be repeated in every report that touches
-this corpus:
+### 4.1 Two claims here that measurement refuted
 
-> **No on-device claim in this project was verified, and none could have been.**
-> § 7.1's frame budgets, SC-5, `gate:upgrade-safety` and all 11 E2E rows are
-> **specifications** — not slow results, not failed results. They are numbers nobody has
-> yet observed, and this register is where that is written down.
+**"ADR-011 already makes the APK a CI dependency, so the build needs no device."**
+Half true, and the reassuring half was the wrong one to lean on. The build needs no
+*CI* — it runs here. `flutter build apk --debug` succeeded against a **nubia Z2577,
+Android 16 / API 36, arm64-v8a** toolchain, and `lib/arm64-v8a/libsqlite3.so`
+(1 732 360 bytes) is inside the APK. **Q-003 closes.** CI is now a second place the
+build is verified, not the only one.
+
+**"A device and a way to install an APK" was recorded as unavailable.** A real phone
+is connected over USB and `adb install` succeeds. What was actually missing was not the
+device but **the mechanism to run a test on it**, which is § 4.2.
+
+### 4.2 `flutter test` cannot run a test on a phone — and says so silently
+
+The most consequential thing measured on 2026-10-03. `flutter test -d <id>` accepts a
+device id and **ignores it** for any file under `test/`. Verified three ways, all
+returning `os=linux`: a real device id, a **fabricated** device id, and no flag at all.
+A fabricated id reported `All tests passed!` after running the whole suite on the
+laptop — which is how a false green gets written into a log as a result.
+
+| Location | Fabricated device id | Result |
+|---|---|---|
+| `test/` | silently ignored | suite runs **on the host**, prints `All tests passed!` |
+| `integration_test/` | `No supported devices found` | **refuses to run** |
+
+So `integration_test/` cannot produce a false green and `test/` can. **Any future
+device claim must cite a file under `integration_test/`; a `-d` flag on a `flutter
+test` invocation is not evidence of anything.** The 6 on-device cases in § 3 live in
+`integration_test/device_proof_test.dart` for exactly this reason, and their first
+assertion is `Platform.isAndroid` — a suite that cannot tell a phone from a laptop
+proves nothing on either.
+
+### 4.3 What is still unproven
+
+> **§ 7.1's frame budgets, SC-5, `gate:upgrade-safety` and all 11 E2E rows remain
+> specifications — not slow results, not failed results.** A device exists and the
+> build is verified; **no product behaviour has been observed on it**, because no slice
+> is implemented. The sentence this section used to carry — *"no on-device claim in
+> this project was verified, and none could have been"* — was true when written,
+> became false about the toolchain, and is true again about the **application**: the
+> only thing measured on a phone is the database layer.
 
 ## 5. The whole E2E suite, all 11 rows
 

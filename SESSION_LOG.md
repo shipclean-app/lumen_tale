@@ -638,3 +638,137 @@ Four further commits closed defects found by a final re-read, and two of them we
 - **Do not check that a *rule's letter* holds and call the rule discharged.** B37's letter ("a visible notification the user can cancel") was satisfiable only by a mechanism the plugin does not have; B6's letter was satisfiable while its intent was not.
 - **Do not trust a plan that passes `coverage-check.js`.** It proves headings, ids and non-empty sections — nothing about whether § 2 is code, § 3 has every branch, or § 7 states a trap in a form an implementer obeys.
 - **Do not treat a rejected item as a closed one.** ADR-025, ADR-023 and the `flutter_local_notifications` rejection all name their restoration trigger. The trigger is the point.
+
+---
+
+## 2026-10-03 — Session 7: the device existed all along
+
+### STARTED FROM
+
+Phase 6 `in_progress`, `test_plan` the only `draft` deliverable, 32 slices all
+`planned` and **none implemented**. The owner asked me to check the session logs for
+the device tests I had said were needed, and connected a phone.
+
+**Two recorded claims turned out to be false, and both were mine.** Q-003 said
+*"this environment has no Android SDK"*; Q-008 said *"Confirmed unresolvable from this
+environment, by the owner: you are on GitHub Codespaces so verification on a mobile
+device isn't possible."* The second was an environmental fact recorded in a
+decision register, where a future session would read it as a property of the world.
+
+### DECIDED
+
+- **Q-003 CLOSES — YES, by measurement.** An SDK was installed all along (platforms
+  34/35/36, build-tools 36.1.0, **all licences accepted**). `flutter build apk --debug`
+  succeeded in 707s, which is its stated closing condition. Then went past the letter:
+  `lib/arm64-v8a/libsqlite3.so` (1 732 360 bytes) is inside the APK, and
+  `integration_test/device_proof_test.dart` opened a real database **on the phone**
+  through the app's own `_openLazy()`. 6/6 on-device. **Packaged is not loaded** — a
+  `.so` that ships and fails to `dlopen` still gives a green build — so the suite is
+  what distinguishes them. It also produced the first evidence that **B32's only
+  enforcement** holds against Android's SQLite rather than only the host's.
+- **Q-008 stays OPEN, with its premise answered.** A real phone, a working install
+  path and a working on-device test mechanism are all now available; its exit criteria
+  are about *product behaviour* — read a chapter offline, run the upgrade-safety drill
+  — and **0 of 32 slices are implemented**, so nothing exists to observe. It is no
+  longer blocked by hardware.
+- **The screen is black, and that is correct.** `main.dart` builds `MaterialApp` with
+  no `home`, no `routes`, no `onGenerateRoute`. The app runs; it has nothing to show.
+  "Runs on a phone" and "displays a UI" are separate claims and only the first is true.
+- **Kept Flutter's migrator edits to `android/gradle.properties`**
+  (`android.builtInKotlin=false`, `android.newDsl=false`). They are Flutter 3.47
+  compatibility shims pinning legacy AGP 8.11.1 behaviour and are why the build works.
+  Committed deliberately so a later session does not "tidy them away".
+- **Installed Temurin JDK 21** at `~/tools/jdk/jdk-21.0.12.1+1` and selected it with
+  `flutter config --jdk-dir`, rather than bumping the Gradle wrapper.
+
+### REJECTED
+
+- **Bumping Gradle to 9.1+ to accommodate Java 25.** The obvious fix, and a stack
+  change: it would move AGP compatibility and wrapper pins to make a *local* toolchain
+  work, on a project whose own rules say a stack change needs an ADR. A JDK on the side
+  changes nothing in the repository. The Gradle/AGP/Kotlin deprecation warnings Flutter
+  printed are real and are **deferred, not dismissed** — see NEXT SESSION SHOULD.
+- **`flutter pub add dev:integration_test`.** Turned out it was **already** in
+  `dev_dependencies` (`sdk: flutter`), declared in Session 5 and never used because
+  `integration_test/` did not exist. The dependency was never the blocker; the empty
+  directory was. `pubspec.yaml` and `pubspec.lock` are unchanged.
+- **Reporting the first green `flutter test -d` run as an on-device result.** See
+  BLOCKED — this was wrong and I retracted it in the same session.
+- **Leaving `android/gradle.properties` dirty.** An unexplained build-time edit to a
+  committed file is how a stack change arrives without an ADR.
+
+### BLOCKED
+
+- **The headline finding: `flutter test -d <id>` does not run on a device.** It
+  accepts a device id and **silently ignores it** for any file under `test/`. I
+  verified three ways — real id, **fabricated** id, and no flag — all reporting
+  `os=linux`. The fabricated id reported `All tests passed!` after running the whole
+  suite on the laptop. **I initially reported those 32 passes as on-device and that was
+  false; the retraction is the point of this entry.** Against a fabricated id, a file
+  under `integration_test/` fails loudly with `No supported devices found` — so
+  `integration_test/` cannot produce a false green and `test/` can. A `-d` flag on a
+  `flutter test` invocation is not evidence of anything.
+- **SC-5, `gate:upgrade-safety` and all 11 E2E rows remain specifications.** Not slow
+  results, not failed results. Hardware is ready; the application does not exist.
+- **`check_plans.py` could not run at all**: `ROOT` and `FORGE` were hardcoded to
+  Codespaces paths (`/workspaces/lumen_tale`, `/home/codespace/.agents/skills/forge`),
+  so `FileNotFoundError` on `.forge/state.json`. This is the tool `test-plan.md` §6
+  relies on to keep its numbers derived — a regenerator that cannot run is an
+  invitation to hand-edit, which §6 names as *the* recurring defect. Both paths are now
+  resolved from `__file__` / `$FORGE`. It now reports **38 clean · 0 missing**.
+- **`check_plans.py --test-plan` is not a mode.** `sys.argv[1:]` is a slice-name
+  filter, so `--test-plan` matched nothing and printed `no failures` — a green that
+  measured zero plans. Found because the count was suspiciously clean, not because
+  anything complained.
+- **`forge-guard version_pins_agree` fails, pre-existing.** It reads the JSON field
+  named `version` in `.dart_tool/package_graph.json` as a package name and reports one
+  conflict listing 100+ unrelated versions. Confirmed pre-existing: `pubspec.lock` is
+  unchanged. Recorded as **F-005** against `testing.md` rather than dismissed, because
+  a permanently-red check is how a real conflict gets waved through.
+
+### FILES TOUCHED
+
+| File | Change |
+|---|---|
+| `integration_test/device_proof_test.dart` | **new** — 6 on-device cases; asserts `Platform.isAndroid` first |
+| `android/gradle.properties` | Flutter migrator shims, committed deliberately |
+| `.forge/plans/check_plans.py` | `ROOT`/`FORGE` resolved from `__file__` and `$FORGE` |
+| `.forge/test-plan.md` | §3 counts 32 → 38 (32 host + 6 device); §4 amended with §4.1–4.3 |
+| `DECISIONS.md` | Q-003 **closed**; Q-008 premise answered, entry retracted in place |
+| `AGENTS.md` | `flutter build apk` no longer "unvalidated"; added the `flutter test -d` trap |
+
+### STATUS
+
+`flutter analyze` **zero issues** · `dart format` clean · host suite **32/32** ·
+**on-device 6/6 on a nubia Z2577, Android 16 / API 36, arm64-v8a** · `forge-guard all`
+**16/17**, the one failure pre-existing and logged as F-005 · Q-003 closed · Q-008 open
+on implementation, not on hardware · Phase 6 still `in_progress`, `test_plan` still
+`draft` — **unchanged by this session, deliberately: a device does not advance a phase.**
+
+### NEXT SESSION SHOULD
+
+- **Promote F-005** (`--resolve F-005 --promoted-to=testing.md`) once the guard is fixed.
+- **Answer the deprecation warnings Flutter printed**: Gradle 8.14 → ≥ 9.1, AGP 8.11.1 →
+  ≥ 9.0.1, Kotlin 2.2.20 → ≥ 2.3.20. Deferred with a reason (a stack change needs an
+  ADR), not ignored. They will become hard failures.
+- **Put the first real UI on the device.** It runs; it renders nothing. That is now the
+  cheapest possible moment to find out whether the theme and typography survive ARM64.
+- **Use `integration_test/` for every future device claim**, and keep a
+  `Platform.isAndroid`-style assertion first in each file. The infra is now proven and
+  was sitting unused for two sessions.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not trust `-d` on `flutter test`.** A fabricated device id produces
+  `All tests passed!`. This is the eighth time this project has recorded a check
+  reporting something it did not measure, and the first time it produced a **green
+  result I was about to write down as a device measurement**. See `test-plan.md` § 4.2.
+- **Do not read "the APK builds" as "the app works".** It launched to a black screen
+  because `MaterialApp` has no `home`. A packaged `.so` is not a loaded `.so`.
+- **Do not let the device close a question whose exit criteria are behavioural.**
+  Q-008 asked whether a *chapter can be read offline*. No slice exists to read one.
+- **Do not bump the Gradle wrapper to dodge a local JDK problem.** The JDK went
+  sideways; the wrapper is a project-wide decision.
+- **Do not assume a green script measured something.** `--test-plan` printed
+  `no failures` over zero plans, and `version_pins_agree` is red for a reason that has
+  nothing to do with dependencies.

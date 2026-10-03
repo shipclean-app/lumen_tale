@@ -1103,18 +1103,24 @@
     },
     "test_plan": {
       "path": ".forge/test-plan.md",
-      "type": "test_plan",
+      "type": "test-plan",
       "status": "draft",
-      "content_hash": "sha256:21e029abf7a4",
+      "content_hash": "sha256:bdb75ed6a7a1",
       "headings": {
         "1": "The inventory",
         "2": "Coverage of the rule corpus",
         "3": "What is written, as opposed to planned",
         "4": "The split that Q-008 draws",
         "5": "The whole E2E suite, all 11 rows",
-        "6": "What Phase 6 does next"
+        "6": "What Phase 6 does next",
+        "4.1": "Two claims here that measurement refuted",
+        "4.2": "`flutter test` cannot run a test on a phone — and says so silently",
+        "4.3": "What is still unproven"
       },
-      "updated_at": "2026-10-03T04:28:00.858Z"
+      "updated_at": "2026-10-03T05:53:18.331Z",
+      "derived_from": [
+        ".forge/plans/*.md section 11"
+      ]
     }
   },
   "index": {
@@ -2751,7 +2757,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 213,
+      "register": 214,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 132,
@@ -2762,7 +2768,7 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 4,
+      "finding_raised": 5,
       "fast_track_enter": 1
     }
   },
@@ -2866,6 +2872,19 @@
       "correction": "Correctif: les quatre cases sont remplies (framework integration_test, pattern, emplacement, commande) et la gardeouse du défaut est consignée dans conventions.md comme finding F-004. Outil Forge en lecture seule : le motif devrait trouver « À DÉCIDER » n'importe où dans une cellule de liste, pas seulement seul. Aucun mécanisme du projet ne peut détecter cette forme — c'est le sixième 'la garde passe et le défaut reste'.",
       "artifact": null,
       "raised_at": "2026-10-03T03:50:25.011Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-005",
+      "domain": "testing.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "forge-guard version_pins_agree is a false positive: it scans .dart_tool/package_graph.json and reads the JSON field named 'version' as if it were a package name, emitting one conflict that lists 100+ unrelated versions. Verified 2026-10-03 to fail on a tree whose pubspec.lock is unchanged, so it is a pre-existing checker bug and not a dependency conflict.",
+      "correction": "Exclude .dart_tool/ from the version-pin scan, or keep only keys that resolve to real packages in pubspec.lock. Until it is fixed, version_pins_agree must be read as noise -- which is precisely how a genuine version conflict would be waved through.",
+      "artifact": null,
+      "raised_at": "2026-10-03T05:53:56.262Z",
       "promoted_to": null,
       "resolved_at": null
     }

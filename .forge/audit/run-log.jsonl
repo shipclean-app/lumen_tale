@@ -735,3 +735,5 @@
 {"ts":"2026-10-03T04:27:33.037Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
 {"ts":"2026-10-03T04:27:38.896Z","type":"phase_status","phase":"6_validation","from":"not_started","to":"in_progress"}
 {"ts":"2026-10-03T04:28:00.863Z","type":"hash","kind":"deliverable","entry":"test_plan","content_hash":"sha256:21e029abf7a4"}
+{"ts":"2026-10-03T05:53:18.336Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
+{"ts":"2026-10-03T05:53:56.265Z","type":"finding_raised","id":"F-005","domain":"testing.md","severity":"majeur"}

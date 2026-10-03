@@ -15,14 +15,47 @@ Sections are extracted from the `^## ` heading lines, NOT by
 at offset 1, which silently cut every section short.
 """
 import json
+import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path('/workspaces/lumen_tale')
+# Resolved from this file's own location, never hardcoded. This used to be
+# `Path('/workspaces/lumen_tale')`, which made the count regenerator — the very
+# mechanism `test-plan.md` §6 relies on to keep its numbers honest — unrunnable
+# outside the Codespace it was written in. A derived count you cannot regenerate
+# is a count you will eventually hand-edit, which is the defect the register
+# warns about. `.forge/plans/check_plans.py` -> parents[2] is the project root.
+ROOT = Path(__file__).resolve().parents[2]
 PLANS = ROOT / '.forge/plans'
-FORGE = Path('/home/codespace/.agents/skills/forge')
+
+
+def _find_forge() -> Path:
+    """Locate the Forge skill directory.
+
+    Also was hardcoded to a Codespace path. `$FORGE` wins when set; otherwise the
+    usual install locations are probed. Checked callers only need the scripts to
+    exist, so a missing directory degrades to a clear error rather than a wrong
+    answer.
+    """
+    candidates = []
+    env = os.environ.get('FORGE')
+    if env:
+        candidates.append(Path(env))
+    home = Path.home()
+    candidates += [
+        home / '.agents/skills/forge',
+        home / '.config/opencode/skills/forge',
+        ROOT / '.opencode/skills/forge',
+    ]
+    for c in candidates:
+        if (c / 'scripts').is_dir():
+            return c
+    return candidates[0]
+
+
+FORGE = _find_forge()
 
 # (number, exact heading text as coverage-check.js greps for it)
 HEADINGS = [
