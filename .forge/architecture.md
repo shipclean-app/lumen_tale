@@ -442,6 +442,15 @@ Two traps, both hit while writing this, both silent:
 | Source **registry** | Dart code | ADR-013: a static registry, not rows. `sources` holds only the app's *local state* of each compiled-in source |
 | Any **file-existence probe** | nothing — `chapters.downloadedAt` is the mark | ADR-022: B33 deletes one chapter's copy, so a probe could not distinguish *deleted on purpose* from *file lost*, and B9 requires 10 000 chapters visibly marked, which is not a list operation |
 | Any **unread count** | derived: `count(chapters.is_read = 0)` | B48. A stored count is a second source of truth free to disagree with the rows it counts — B14 violated by construction |
+| **Cause record** — `causeClass`, `causeEvidence`, `whatWasBeingRead`, `causeFirstSeenAt`, and the appended `causeObservations` | **`<support>/diagnostics/<sourceId>.json`**, one file per source, written to a `.part` then renamed | `source-unavailable.md` § 8 requires a **persisted** record with evidence, stage and observations, and **no table in § 4 holds it** — `sources.lastErrorCode` (§ 4.6) carries the case **name** only, no evidence and no observations, and `6-4` writes it. It is the chapter body's argument applied to a **growing** journal: an observation must be wholly there or wholly absent, so "is this cause accurate" has to be a property of an atomic write rather than of a transaction. § 4.8 records that no schema test can prove such an ordering, so a row-per-observation table would push the proof out of reach instead of satisfying it |
+
+**Why the record is a file and not a seventh table.** A table would mean a
+migration, `schemaVersion: 2`, and B31's upgrade-safety work — for a record with
+one writer, one reader and one reader screen. A file is reversible by deleting it,
+and it reuses the discipline `2-3` already proves for the chapter body (`rename()`
+after the write, never before). The cost of the choice is stated rather than
+hidden: a file cannot be queried in SQL, and this screen needs exactly one record
+per source, which is one read rather than a query.
 
 **Storage location** (§ 4.7): application **support** directory, never cache. The OS may evict a cache directory, and B7 requires a stored chapter to stay readable.
 
@@ -477,6 +486,8 @@ Two traps, both hit while writing this, both silent:
 **One declared guard that cannot be declared here.** The template's `forge:ddl-refuse` mechanism proves a *constraint* refuses an operation by executing it. Two of the above are declared that way (`RESTRICT` refuses the delete). The rest are behaviour tests rather than DDL guards, because the DDL itself does not express them — the no-concurrency-column rule and the derived-count rule are absences, and an absence has no statement to refuse.
 
 **And one property that no test in this table can prove, stated because the table looks complete.** B6's safety comes from the **ordering** — the atomic rename in slice `2-3` happens *before* `downloadedAt` is written — not from the column. The three tests above prove the column behaves (absent by default, cleared per-chapter by B33, independent of `isRead`); none of them can prove that no code path writes the mark first. That is a property of `2-3`'s write sequence and it belongs to **slice `2-3`'s** test plan, not to the schema's. Recorded here so that a reader of a full-green table does not conclude B6 is fully discharged when half of it lives two slices away.
+
+**A second one, of the same kind, for the cause record of § 4.7 — and it is part of why that record is a file rather than a table.** The record has an ordering property too: an appended observation must land whole or not at all, which is why its writer uses `.part` + `rename()`. **No schema test can prove that, and no amount of schema work ever could** — the ordering lives in the *writer*, and the schema has no statement to refuse. It could not be a table in the first place, because a row per observation would put that proof *inside* a transaction, and the finding above is precisely that a transaction is the wrong place for a property this product cares about. So the proof is **a test on the record's writer**, deliberately not a row in this table: `3-6`'s test plan injects a failure between the `.part` write and the rename and asserts the previous record survives intact, and asserts no reader ever observes a `.part`. A guard that can only live in the wrong place is not a weaker guard — it is no guard, and writing it as a schema test would have made this table look fuller while proving nothing.
 
 ---
 
@@ -542,6 +553,27 @@ abstract class ParsedHttpSource extends HttpSource {
 | `ItemRemovedAtSource` | which item | **no** | go back; the rest is unaffected |
 | `StorageFull` | bytes needed | **no** | free space, then resume |
 | `ParseFailed` | file path | **no** | report the bug |
+
+**The `Carries` column is not an identity field, and the table reads as though it
+were one until this paragraph says otherwise.** Each row names the single **fact**
+that cause carries *so the screen can write its evidence line* — that is all the
+column is for, and the list is deliberately not uniform:
+
+- **No cause carries a `sourceId`.** Which source failed is **context, not
+  payload**: it is the route parameter on `/browse/:sourceId/unavailable`, and the
+  cause record is keyed by source (§ 4.7). Putting it on the cause would make a
+  typed fact carry the one identifier a source is under no obligation to publish.
+- **`RateLimited` carries no host and no source, and that is deliberate. A 429
+  belongs to a host, not to a source.** Two sources can share one `baseUrl`, and
+  one host can serve both, so a `sourceId` on a rate-limit cause would be a claim
+  the transport cannot honestly make — and `FetchRateLimited` is produced by the
+  transport, before any source is known to be at fault. The host is available
+  exactly where it is true and nowhere else: the limiter's slot, which is keyed by
+  host (`http-client` § 3.2; `B23`, two sites share nothing). So
+  `FetchRateLimited` carries `retryAfter` and `status`, and nothing more.
+- `NoConnection`, by contrast, **does** carry a `host`, and the table's `—` on
+  that row is stale: a transport failure names the host it failed against, and
+  no other row does that. `failure-discriminator` § 2.2 gives it one.
 
 **Prohibited**: a bare `Exception`, a `String` reason, or an `errorCode` free-text field the platform interprets. B41's rule that the platform never interprets a source's values applies to failures too.
 

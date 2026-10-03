@@ -449,7 +449,11 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 ### 2.12 `SettingsChoiceSheet`
 
-**Role**: the single-value picker for a `navigate` row — theme (3 values), text size (5 values), history retention (5 values). **Not language**: B28 forbids an in-app language switch, because the platform already owns that value and a second source of truth for it is a bug waiting to happen. One component for all of them, so every choice in the app is made the same way.
+**Role**: the single-value picker for a `navigate` row **that cannot name its own answer in the value line** — a set of short named values with nothing to demonstrate — in v1 **exactly one instance: history retention (5 time windows)**, on Settings root. **Not language**: B28 forbids an in-app language switch, because the platform already owns that value and a second source of truth for it is a bug waiting to happen. One component for every choice of that shape, so those choices are all made the same way.
+
+**Not the theme, and not the text size — a decision, not an omission.** `settings-reader.md` § 3 builds a **three-segment control** for the theme and a **five-step ladder** for the text size, and its § 11 already reconciled the segments with `Switch` § 2.9. This section is the other half of that reconciliation. **The ladder and the segments won, and the reason is the number of visits, not the number of values.** A reader adjusting the text size is not choosing once: they are *trying sizes* — a dozen times in a session, and twenty more over a year. A sheet answers one question per opening, *what are my options and which is set*; a ladder answers a different one, *show me the same paragraph at each size*. A sheet can only give the second by sending the reader away to look, which is why `settings-reader.md` puts the specimen on the page. And the ladder is strictly cheaper in taps — one lands on a size, against open, scroll, tap, dismiss — so it is the right shape for the value a reader reaches for repeatedly. **Three values is not an argument for a sheet either.** The theme's effect is *enumerable*, so all three names sit on the control at once: that is the same distinction `settings-reader.md` § 11 draws when it calls a segmented control the answer for an enumerable effect and a `consequence` line the answer for a hidden one.
+
+**What would bring a value back to a sheet**, so the line above is a rule and not a preference: more options than fit a row of equal columns (the ladder holds exactly five at 360dp, and `settings-reader.md` § 6 says why a sixth would fold), an option that needs a **description** rather than a name, or a value the reader changes less than about once a session. Retention passes the first test — *"1 week"* will not fit a fifth column at 62dp — and would fail the others, so it is a sheet.
 
 **États** — every state this component must render:
 
@@ -464,7 +468,11 @@ Every component below declares its variants, sizes, **all** states and its slots
 
 **No "forever" option on any bounded list.** B47 requires the history to be bounded by time, and a settings list that offers an unbounded value next to bounded ones teaches the reader the bounds are negotiable.
 
+**Status in v1: declared, and used once.** History retention, on `settings.md`. The two controls this section used to claim — theme and text size — are `settings-reader.md`'s segments and ladder, for the reason given above. Like `SettingsSwitchRow` below, it is a component with a small number of instances on purpose: a single-value picker that appears in one place is a vocabulary the second place can reuse, and the second place gets it free rather than inventing a fourth shape.
+
 **Why every setting switch carries a `consequence` line.** The general rule: a switch whose effect is **destructive, invisible, or surprising when wrong** must say in words what the position means. Two worked examples earned it. *Checking for new chapters* was the original (**B35**, now withdrawn — ADR-023). *Remove after reading* earned it and was then **cut**, because **B32**/**B33** make deletion per-chapter and explicit, so the switch was asserting an effect the rules did not permit. **Both are gone, and `SettingsSwitchRow` therefore has ZERO instances in v1.** It stays declared — components are specified ahead of use, and deleting a primitive because today's screens do not need it is how a design system loses its vocabulary — but the honest status is *declared, unused*, not *in use*. **It returns whole** with the first v2 setting that needs it; the B35 restoration in `prd.md` § 9 is one candidate. *History retention* (**B47**, one year), and *theme* (**B26**). A switch with a label but no consequence is a switch the reader has to guess about, and B35's "off by default" is meaningless if the reader cannot see what turning it on would do. The reader has no title bar at all — its title lives in the revealed controls, so the first thing on screen when a chapter opens is prose.
+
+> **The trailing mention of *history retention* and *theme* is stale, and is corrected here rather than left to a reader.** Those two are **not switches and carry no `consequence` line**: retention is a `SettingsChoiceSheet` (§ 2.12) and theme is `settings-reader.md`'s three-segment control. The rule they were listed under does not apply to them. They are named here because they are the two settings whose *effect is invisible* — a bounded window silently drops history, and a `system` override silently follows the phone — and for both, **the control names its own values**, which is the alternative this design system prefers to an explanatory sentence. `settings-reader.md` § 11 states the theme half of this in full; the retention half is the same argument, and `settings.md` § 4 `Filled` is where the window's own name is always on the row.
 
 ---
 
@@ -523,7 +531,11 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 
 `go_router` shell routes (ADR-008), one `StatefulShellRoute` per bottom-nav destination so each tab keeps its own scroll position and back stack.
 
-**Fifteen routes, and this table is reconciled against the eighteen screen files** — every route a screen pushes appears here, and every route here is pushed by a screen. That reconciliation is not free: it was checked on 2026-10-02 and it found four discrepancies, all of which had been sitting here as "verified":
+**Fifteen routes, and this table is reconciled against the eighteen screen files — in BOTH directions.** Every route a screen pushes appears here, *and* every route here is pushed by a screen.
+
+**The two directions are not the same check, and the second was missing.** The first pass compared *this table* against *what screens push*, which finds a screen pushing something the table lacks. It does **not** find a screen pushing something that was never in the table to begin with — and `more.md` did exactly that, pushing `/settings` twice and `/settings-about` once while this table has always said `/more/settings`. **A reconciliation that runs one way is a check that reports zero on the half it does not look at**, which is the failure this project has now hit in four separate places. Both directions are named below, and the second is the one that found a live defect after the first had been declared clean.
+
+The reconciliation is not free: checked on 2026-10-02, it found five discrepancies, all of which had been sitting here as "verified":
 
 | Discrepancy | Resolution |
 |---|---|
@@ -531,7 +543,9 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 | `/browse/:sourceId/unavailable` pushed by `source-unavailable.md`, absent here | **Added** |
 | `/more/settings/reader` and `/more/settings/about` pushed by `settings-reader.md` and `settings-about.md`, absent here | **Added** — they are sub-routes of `/more/settings`, reached from `settings.md`'s rows |
 | `/more/sources` and `/more/stats` were here with no slice behind them | **Removed** 2026-10-02 with slices `6-9` and `6-8`; the screens are designed and return in v2 |
+| **`more.md` pushed `/settings` and `/settings-about`, neither of which was ever in this table** | **Corrected** to `/more/settings` and `/more/settings/about`. Found only when the reconciliation ran in the *second* direction — see above |
 
+```
 /library                        /library/novel/:novelId
 /updates          /history
 /browse           /browse/:sourceId    /browse/:sourceId/genre/:genre

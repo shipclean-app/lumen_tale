@@ -109,9 +109,9 @@ AppScaffold (titleBar "Reader settings", bottomNav kept)
 | # | Component | Role | Source |
 |---|---|---|---|
 | 1 | `AppScaffold` | Title bar + retained bottom nav | `design-system.md` § 2.8 |
-| 2 | `SizeStep` | One of the five `--reader-*` steps, selectable, with its pixel figure | slice-local — see § 10 |
+| 2 | `SizeLadder` | One of the five `--reader-*` steps, selectable, with its pixel figure | slice-local — see § 10. **Named here by `design-system.md` § 2.12 as amended, which withdrew the text size from `SettingsChoiceSheet`**; the argument is § 11 |
 | 3 | `Specimen` | The recessed, measure-capped prose column | `design-system.md` § 2.3 ("the reader's prose column is not a card") |
-| 4 | `ThemeSegments` | Three single-select segments over `enum(system\|day\|night)` | slice-local wrapper over the platform segmented control (ADR-001) |
+| 4 | `ThemeSegments` | Three single-select segments over `enum(system\|day\|night)` | slice-local wrapper over the platform segmented control (ADR-001). **Named here by `design-system.md` § 2.12 as amended, which withdrew the theme from `SettingsChoiceSheet`**; the argument is § 11 |
 | 5 | `GroupLabel` | `--text-overline` section label | `design-system.md` § 1.2 |
 | 6 | `DeferredList` | The list of things that are **absent**, written as prose | slice-local; deliberately not a component — it is text, and text has no states |
 
@@ -222,7 +222,7 @@ AppScaffold (titleBar "Reader settings", bottomNav kept)
 
 | Field | Type | Origin | Required | Possible error |
 |---|---|---|---|---|
-| `readingScale` | `enum(sm\|md\|lg\|xl\|xxl)` | `shared_preferences`, global | yes | Read failure → the screen-level Load error is *not* raised here; the ladder falls back to `md` and the theme to `system`, **because a default the reader never chose is recoverable and a blank screen is not**. Write failure → snap-back + snackbar |
+| `readingScale` | `enum(sm\|md\|lg\|xl\|xxl)` | `shared_preferences`, global | yes | Read failure → **no screen-level Load error is raised here, and none is raised on Settings root either** (`settings.md` § 4 declines that state for the same reason): the store is resolved once at bootstrap and an unknown value falls back to `md`, **because a default the reader never chose is recoverable and a blank screen is not**. Write failure → snap-back + snackbar |
 | `themeOverride` | `enum(system\|day\|night)` | `shared_preferences`, global | yes | Same |
 | `phoneTextScale` | `double` | platform | yes | Absent → `1.0`; the specimen is the reader at the chosen step, not multiplied twice |
 | `specimenSeed` | `String` | local, the first stored Markdown paragraph on the device | no | Absent → the app stand-in, with the `--text-caption` note. Unreadable → the stand-in + `--color-warning` line |
@@ -262,7 +262,7 @@ AppScaffold (titleBar "Reader settings", bottomNav kept)
 - [x] No design value left "to be defined". Every colour, size, duration and easing cited exists in `design-system.md` with a value.
 - [x] Every B/E/C ID on this screen appears in § 9.
 - [x] `forge-guard placeholders` reports nothing here.
-- [x] Consistent with `design-system.md`: the specimen obeys the reader scale, the 1.72 line-height held at every step, and the measure cap that `design-system.md` § 1.2 states as deliberate.
+- [x] Consistent with `design-system.md`: the specimen obeys the reader scale, the 1.72 line-height held at every step, and the measure cap that `design-system.md` § 1.2 states as deliberate. **§ 2.12 was amended, not obeyed by silence**: it no longer lists the text size or the theme as `SettingsChoiceSheet` instances, and § 11 carries the argument for the ladder and the segments.
 - [x] **Every token cited by this screen exists in the design system, with the value it is given here.** The full citation table is § 12.
 - [x] **No token outside the design system was needed, and no ramp token is cited with a value.** The accent's pressed steps are declared in the design system without values, so they are named here by role and not written as hex.
 
@@ -285,7 +285,17 @@ The following are **absent from this screen: not disabled, not greyed out, not m
 
 The list above is rendered on the screen itself, as seven lines of `--text-body-sm` `--color-text-secondary` prose under the group label `NOT IN THIS VERSION`. That is the one place in this app where absence is drawn: a reader who has read a competitor's settings and does not see a justification mode here is entitled to know it was decided rather than forgotten. Each line names **why**, not just what — a list of seven absent controls with no reasons reads as an unfinished screen, and one with reasons reads as a decision.
 
-**One reconciliation with `design-system.md` § 2.9.** That section names four settings whose effect is not obvious and requires each to carry a `consequence` line: *checking for new chapters*, *remove after reading*, *history retention* and *theme*. The first, second and third are switches or choice rows on Settings root, which is where they appear. **Theme is not a switch here — it is a three-segment control**, and it needs no `consequence` line because the control names all three of its values at once: the reader can see that `Follow the phone`, `Day` and `Night` exist before choosing, rather than reading a sentence explaining what a two-state control would do. A switch with a consequence line is the design system's answer for an effect that is *hidden*; a segmented control is the answer for an effect that is *enumerable*, and this one is enumerable. Both routes reach the same stored `themeOverride`, and the reader's `themeButton` cycles the same three values in the same order.
+**Two reconciliations with `design-system.md`, and both name a shape that lost.**
+
+**One with § 2.9 (`Switch`).** That section names four settings whose effect is not obvious and requires each to carry a `consequence` line: *checking for new chapters*, *remove after reading*, *history retention* and *theme*. The first, second and third are switches or choice rows on Settings root, which is where they appear. **Theme is not a switch here — it is a three-segment control**, and it needs no `consequence` line because the control names all three of its values at once: the reader can see that `Follow the phone`, `Day` and `Night` exist before choosing, rather than reading a sentence explaining what a two-state control would do. A switch with a consequence line is the design system's answer for an effect that is *hidden*; a segmented control is the answer for an effect that is *enumerable*, and this one is enumerable. Both routes reach the same stored `themeOverride`, and the reader's `themeButton` cycles the same three values in the same order.
+
+**One with § 2.12 (`SettingsChoiceSheet`), and the sheet lost.** § 2.12 used to list this screen's two controls as instances of `SettingsChoiceSheet` — theme (3 values), text size (5 values). It no longer does: **§ 2.12 was amended to name history retention as its one v1 instance, and this screen's ladder and segments are what it now points at.** The reasoning, because a screen file that adopts a design-system decision without arguing it is not reconciling, it is obeying:
+
+- **The text size is not chosen once.** A reader who opens a sheet of five sizes is answering *which one is set*; a reader who walks a ladder is answering *how does my book look at each of these*. The second is the question they actually have, and it is the question the specimen on this page exists to answer. A sheet would answer it only by sending the reader out to look — which is the entire reason this is a screen rather than a sheet (`settings-reader.md` § 1: *the preview needs room*).
+- **The visit frequency decides it.** Text size is adjusted a dozen times in a session and repeatedly for years; retention is set once and then lives. A shape that costs four taps per change is the wrong shape for the value a reader reaches for most often — open, scroll, tap, dismiss, against one tap on a step already in view.
+- **Three values is not a reason for a sheet.** The theme's effect is *enumerable*, so all three names sit on the control at once; that is the same argument the paragraph above makes against a `consequence` line, applied to a sheet instead of a switch.
+
+**What this costs, stated rather than hidden**: `SettingsChoiceSheet` now has **one** instance in the whole app, and two settings that look like siblings on other platforms get three different shapes here. That is the price of matching each control to how its value is actually used, and it is cheaper than the alternative — one uniform picker that is wrong for the value the reader touches most. § 2.12 keeps the component declared for exactly this reason: **the next screen that needs a single-value picker should reuse it, not invent a fourth shape.**
 
 ---
 

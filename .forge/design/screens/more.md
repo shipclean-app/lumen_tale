@@ -132,11 +132,13 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 |---|---|---|---|---|---|
 | `MoreRow` | tap | Push the destination route | Standard `--duration-normal` slide | Destination's own screen | — |
 | `MoreRow` → Downloads | tap | Push `/more/downloads`; `value` shows the live queue state | — | `downloads` | **B5** |
-| `MoreRow` → History retention | tap | Push `/settings`, scrolled to the History section | — | `settings` | **B47** |
+| `MoreRow` → History retention | tap | Push **`/more/settings`**, scrolled to the History section | — | `settings` | **B47** |
 
 > **Two rows removed, and the removal is the point.** `Sources` and `Stats` were `MoreRow`s here until 2026-10-02. Their slices — `6-9` and `6-8` — were withdrawn because **no success criterion SC-1..SC-6 requires either**: B1 says which sites ship and says nothing about hiding one, and US-12's four criteria are a history list, resume, offline and retention, with no figures in them. **A nav row with no slice behind it is the same defect as a designed control with no slice**, which is what ADR-023 removed from `settings.md`. The rows come back whole in v2; the screens and their designs are untouched.
-| `MoreRow` → Settings | tap | Push `/settings` | — | `settings` | **B26 B27 B28** |
-| `MoreRow` → About | tap | Push `/settings-about` | — | `settings-about` | **B43** |
+| `MoreRow` → Settings | tap | Push **`/more/settings`** | — | `settings` | **B26 B27 B28** |
+
+> **Three rows pushed routes that were never in the route table, and the reconciliation that should have caught it looked only one way.** This screen pushed `/settings` twice and `/settings-about` once, while `design-system.md` § 3.5 lists **`/more/settings`**, **`/more/settings/reader`** and **`/more/settings/about`**. § 3.5 was diffed against all eighteen screen files on 2026-10-02 and the diff **passed** — because it compared *the table* against *what screens push*, which finds a screen pushing something the table lacks and does **not** find a screen pushing something that was never in the table. This was found by running the second direction, after the first had been declared clean. **A one-way reconciliation is a check that reports zero on the half it does not look at.**
+| `MoreRow` → About | tap | Push **`/more/settings/about`** | — | `settings-about` | **B43** |
 | Bottom-nav More (re-tap) | tap | **No-op that scrolls to top** — Mihon pushes Settings on re-tap (`MoreTab.kt:56-58`) | — | Filled | — |
 | Section label | — | Not interactive. A label that expands is a label that hides destinations | — | — | — |
 

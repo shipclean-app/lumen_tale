@@ -1813,7 +1813,8 @@
         "B22",
         "B23",
         "B24"
-      ]
+      ],
+      "note": "the four-outcome vocabulary (BrowseOutcome, ReadAttempt, ContentProbe, OutcomeDiscriminator) and SourceFailure, in lib/core/error/. It does NOT own lib/core/network/fetch_result.dart: FetchResult is produced by core/network and therefore DEFINED by http-client (wave 0), which this foundation depends on and imports. Added 2026-10-03: the dependency ran backwards for that one type — this plan wrote FetchResult while declaring a dependency on the layer that produces it, so the consumer owned the producer's type. A consumer writing its producer's type is an inverted dependency, hence a cycle, hence two answers to 'what did the transport do'. depends_on and depended_on_by are unchanged; only file ownership moved."
     },
     "localisation": {
       "path": ".forge/architecture.md",
@@ -1867,7 +1868,7 @@
         "C7",
         "B29"
       ],
-      "note": "the dio client, typed exception boundary and rate limiter. Added 2026-10-02: core/network/ was named by conventions.md, the layer table and three slices, and owned by none — a layer no slice builds is a layer no slice can call."
+      "note": "the dio client, typed exception boundary and rate limiter. Added 2026-10-02: core/network/ was named by conventions.md, the layer table and three slices, and owned by none — a layer no slice builds is a layer no slice can call.\nCORRECTION, 2026-10-03: this foundation now OWNS lib/core/network/fetch_result.dart. FetchResult (FetchSucceeded, FetchTransportFailed, FetchRateLimited) and HttpResponse are defined here at wave 0, and failure-discriminator (wave 2) imports FetchResult without adding a field — its plan used to write the file. The dependency direction was already correct in state.json (failure-discriminator.depends_on lists http-client); only file ownership was reversed, so the graph did not move. Also settled here: HttpClient.get returns Future<HttpResponse> (outcome + status + body + contentType), never a bare FetchResult — a discriminator carries no body, so a source could not read a page; and AppException lives in lib/core/error/, not core/utils/errors/ (13-error-handling.md corrected)."
     }
   },
   "modules": {},

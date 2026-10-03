@@ -4,7 +4,19 @@ Typed exceptions. We deliberately do **not** use a `Result<T>` / `Either` return
 
 ## The hierarchy
 
-`core/utils/errors/`:
+`core/error/`:
+
+> **This path moved. It was `core/utils/errors/`.** `architecture.md` § 1.2 — the
+> folder-structure table, which is the authority on paths — declares `core/error/`
+> for the `AppException` hierarchy, and § 5.2 describes it as *one type per cause*.
+> Three reasons for `core/error/`: the layer table names it; `failure-discriminator`
+> already writes `SourceFailure` there, so the two files sit side by side; and
+> `core/utils/` is a *different* directory inside `core`, so a type living under
+> `core/utils/errors/` would be an internal `core` import, which the layer table
+> forbids (`core` may import external packages only). Recorded here because this
+> project has fixed the same fact in one document four times and left the other
+> copies behind — if you meet `core/utils/errors` anywhere, this paragraph is the
+> answer, and the import to write is `package:lumen_tale/core/error/<file>.dart`.
 
 ```dart
 sealed class AppException implements Exception {

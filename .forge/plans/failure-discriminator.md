@@ -56,9 +56,11 @@ in real use ». Cette fondation est donc la plus porteuse du projet, et
 vraie page capturée dont le conteneur de contenu a été renommé. Elle répond 200,
 elle est bien formée, elle n'est pas vide, et le parseur n'y trouve rien.
 
-**Rien de tout cela n'est un écran.** La fondation produit cinq fichiers Dart
- purs, sans un seul import de `package:flutter`, testables sans binding de
-widget. `source-unavailable.md` — l'écran qui consomme ces quatre issues — est
+**Rien de tout cela n'est un écran.** La fondation produit **quatre** fichiers Dart purs —
+ `SourceFailure`, `BrowseOutcome`, `ReadAttempt`, `OutcomeDiscriminator` — sans un seul
+ import de `package:flutter`, testables sans binding de widget. `FetchResult` n'en est
+ pas un : il appartient à `http-client` (vague 0) et cette fondation l'importe
+ (§ 2.2, § 8). `source-unavailable.md` — l'écran qui consomme ces quatre issues — est
 construit par `3-1`, et **SC-6 ne se démontre qu'à travers cet écran**, jamais à
 travers cette fondation.
 
@@ -230,43 +232,25 @@ final class ParseFailed extends SourceFailure {
 ```
 
 ```dart
-// lib/core/network/fetch_result.dart
+// ⚠️ `lib/core/network/fetch_result.dart` n'est **PAS** écrit par cette
+//    fondation, et le fichier n'est pas créé.
 //
-// The transport's vocabulary, and the ONLY thing the classifieur learns about
-// the network. `core/network` imports nothing internal, so this file sits here
-// and `domain` reads it — the direction the layer table allows.
+// Il appartient à `http-client` — vague **0** — qui le définit en § 2.2 avec
+// exactement les mêmes trois cas : `FetchSucceeded(status)`,
+// `FetchTransportFailed(host)`, `FetchRateLimited(retryAfter, status)` sur la
+// base scellée `FetchResult`.
 //
-// A 4xx or 5xx is NOT a distinct case here: it arrives as `FetchSucceeded` with
-// its status, and the classifieur decides. That is deliberate — deciding "this
-// is a refusal" at the transport would put the taxonomy in two places.
-
-sealed class FetchResult {
-  const FetchResult();
-}
-
-/// A response was received. [status] may be any HTTP status; 2xx is the only
-/// range the classifieur reads as content.
-final class FetchSucceeded extends FetchResult {
-  const FetchSucceeded({required this.status});
-
-  final int status;
-}
-
-/// No response was received at all. E5.
-final class FetchTransportFailed extends FetchResult {
-  const FetchTransportFailed({required this.host});
-
-  final String host;
-}
-
-/// 429, or any status the shared limiter turned into a backoff.
-/// `17-security.md` règle 6: `Retry-After` is honoured.
-final class FetchRateLimited extends FetchResult {
-  const FetchRateLimited({required this.retryAfter, required this.status});
-
-  final Duration retryAfter;
-  final int status;
-}
+// ⚠️ Un 4xx ou un 5xx n'y est TOUJOURS PAS un cas distinct : il arrive en
+//    `FetchSucceeded` avec son statut, et c'est le classifieur qui décide.
+//    Décider « ceci est un refus » au transport mettrait la taxonomie en deux
+//    endroits.
+//
+// Cette fondation **l'importe** — `import
+// 'package:lumen_tale/core/network/fetch_result.dart';` — et n'y ajoute aucun
+// champ. C'est la seule façon que la dépendance tourne dans le bon sens :
+// `state.json` déclare `failure-discriminator.depends_on = ['0-1', '0-2',
+// 'http-client']`, donc le producteur est vague 0 et le consommateur vague 2. Un
+// producteur qui importerait son propre consommateur aurait un cycle.
 ```
 
 ```dart
@@ -318,6 +302,7 @@ final class BrowseEmpty<T> extends BrowseOutcome<T> {
 
 ```dart
 // lib/domain/sources/read_attempt.dart
+import 'package:lumen_tale/core/network/fetch_result.dart';
 
 /// What was being read when the read failed. `source-unavailable.md` § 8 names
 /// this field `whatWasBeingRead`, and its four values are the four it lists.
@@ -413,11 +398,17 @@ final class ReadAttempt {
 
   final ReadStage stage;
 
-  /// What the transport did.
+  /// What the transport did — **the discriminator, not the response**.
+  ///
+  /// `http-client` § 2.2 hands the caller an `HttpResponse` whose `.outcome` is
+  /// this value and whose `.body` is the page. The classifieur is given **only**
+  /// the first: what it judges is never the body, and the body never reaches it.
+  /// A source reads the body itself, probes it with its own selectors, and puts
+  /// the verdict in [content].
   final FetchResult fetch;
 
   /// What the source's selectors found. `null` only when the transport produced
-  /// no body to parse — which never happens on a 2xx, and which § 3.2 treats as
+  /// no body to parse — which never happens on a 2xx, and which § 3.1 treats as
   /// a parse failure rather than as an absence.
   final ContentProbe? content;
 
@@ -477,8 +468,8 @@ final class OutcomeDiscriminator {
 
 **Aucun appel sortant.** Cette fondation ne parle à aucun site : elle classe ce
 qu'une couche de transport lui a déjà remis. Le premier producteur réel de
-`FetchResult` est `core/network`, qui **n'a aujourd'hui aucune slice qui le
-possède** — voir § 7.
+`FetchResult` est `core/network`, et cette couche **a un propriétaire** :
+`http-client`, vague **0** (voir § 8).
 
 Ce qui est promis à l'appelant :
 
@@ -717,8 +708,9 @@ aucune horloge                        B48/B49 : un « dernier passage » se lit
 ### 4.1 Arbre de composants
 
 ```
-Aucun composant d'interface. Cette fondation produit cinq fichiers Dart purs
-et leurs tests. Le premier écran qui les consomme est `3-1`
+Aucun composant d'interface. Cette fondation produit **quatre** fichiers Dart purs
+et leurs tests — `FetchResult` n'en fait pas partie, il est écrit par
+`http-client` (§ 2.2, § 8). Le premier écran qui les consomme est `3-1`
 (`/browse/:sourceId/unavailable`).
 
 SourceFailure (sealed)                    lib/core/error/source_failure.dart
@@ -730,6 +722,9 @@ SourceFailure (sealed)                    lib/core/error/source_failure.dart
 └── ParseFailed           { path, isRetriable }
 
 FetchResult (sealed)                      lib/core/network/fetch_result.dart
+                                          ⚠️ DÉFINI PAR http-client (vague 0) —
+                                          cette fondation l'importe et n'y
+                                          ajoute rien (§ 2.2, § 8)
 ├── FetchSucceeded        { status }
 ├── FetchTransportFailed  { host }
 └── FetchRateLimited      { retryAfter, status }
@@ -751,7 +746,7 @@ OutcomeDiscriminator                       lib/domain/sources/outcome_discrimina
 | Composant | Type | Fichier cible | Props | State | Événements |
 |---|---|---|---|---|---|
 | `SourceFailure` + 6 | hiérarchie `sealed` | `lib/core/error/source_failure.dart` | — | aucun | — |
-| `FetchResult` + 3 | hiérarchie `sealed` | `lib/core/network/fetch_result.dart` | — | aucun | — |
+| `FetchResult` + 3 | hiérarchie `sealed` — **écrite par `http-client`**, importée ici | `lib/core/network/fetch_result.dart` | — | aucun | — |
 | `BrowseOutcome` + 3 | hiérarchie `sealed` | `lib/domain/sources/browse_outcome.dart` | — | aucun | — |
 | `ContentProbe` + 3 | hiérarchie `sealed` | `lib/domain/sources/read_attempt.dart` | — | aucun | — |
 | `ReadStage`, `ZeroItemsPolicy` | `enum` | idem | — | aucun | — |
@@ -838,6 +833,21 @@ constate, pas la fondation.
 
 ## 7. Pièges à éviter
 
+- **⚠️ Ne pas écrire `lib/core/network/fetch_result.dart` depuis cette
+  fondation.** Le comportement correct (dépendance, `state.json`
+  `depends_on`) est : `http-client` le définit en vague 0, et cette fondation
+  fait `import 'package:lumen_tale/core/network/fetch_result.dart';` sans y
+  toucher. Le fondement est qu'un producteur qui écrit le type de son propre
+  consommateur a une dépendance inversée : `failure-discriminator` est vague 2,
+  `http-client` vague 0, donc le second doit exister avant le premier. Deux
+  fichiers pour un seul type donneraient deux réponses à « qu'est-ce que le
+  transport a fait ? », et c'est la même faute que la taxonomie en deux endroits.
+- **⚠️ Ne pas demander au classifieur de juger un corps qu'il n'a pas.** Le
+  comportement correct (`http-client` § 2.2) est que la source analyse la page
+  elle-même — `parseDocument(response.body)` — et rend `ContentProbe`.
+  `ReadAttempt.fetch` est le **discriminant** ; un `ReadAttempt` qui porterait un
+  corps ferait de la fondation une seconde source de vérité sur le HTML du site,
+  et le classifieur commencerait à décider de ce qu'il ne peut pas voir.
 - **⚠️ Ne pas renvoyer `BrowseSucceeded(items: [])` quand une exception a été
   levée.** Le comportement correct (**B22**) est `BrowseFailed(NoConnection(host))`.
   Une liste vide est une **affirmation** — elle dit « le site n'a rien » — et une
@@ -882,18 +892,17 @@ constate, pas la fondation.
   ferait dépendre le verdict d'un état partagé entre deux sites, et un logger
   créerait le seul endroit du produit d'où une cause pourrait sortir.
 
-**Trois questions ouvertes. Elles ne sont pas des détails d'implémentation, et
-aucune n'est tranchée ici.**
+**Trois questions, dont deux ouvertes. Elles ne sont pas des détails
+d'implémentation, et les deux ouvertes ne sont pas tranchées ici.**
 
-1. **`core/network` n'a aucune slice qui le possède.** `state.json` liste
-   `apk-pipeline`, `local-store`, `failure-discriminator`, `localisation` et
-   `theme-type` comme fondations : aucune n'est le client dio, et aucune slice ne
-   le déclare dans `depends_on`. Cette fondation définit le vocabulaire que la
-   couche de transport devra produire ; elle ne la construit pas. **Option la
-   moins coûteuse et réversible** : `2-1`, premier consommateur, construit le
-   minimum — client dio, User-Agent honnête, limiteur, et le mapping vers
-   `FetchResult`. **Question ouverte** : à qui appartient `core/network` en
-   entier, et est-ce `2-1` qui doit le porter ?
+1. **`core/network` n'a aucune slice qui le possède — résolue, et la résolution
+   change ce que cette fondation écrit.** `state.json` range `http-client` parmi
+   les fondations, vague **0** : elle possède `lib/core/network/` en entier,
+   **y compris `lib/core/network/fetch_result.dart`**. Cette fondation définit
+   le vocabulaire qui **classe** — `BrowseOutcome`, `ReadAttempt`,
+   `ContentProbe`, `OutcomeDiscriminator`, `SourceFailure` — et **importe** le
+   discriminant du transport. Elle ne construit pas la couche de transport, et
+   elle n'écrit plus le type qu'elle consomme. Voir § 2.2 et § 8.
 2. **`architecture.md` § 2.2 dit « trois états », et § 5.1 montre quatre
    méthodes qui renvoient `NovelsPage` et non `BrowseOutcome<NovelsPage>`.** La
    prose de § 5.1 est explicite (« Every one of these returns `BrowseOutcome<T>`
@@ -919,6 +928,7 @@ aucune n'est tranchée ici.**
 |---|---|---|---|
 | `0-1` | data — la fixture `fanmtl-broken-layout.html` | `identified` | **BLOCK.** § 3.5 ne peut pas s'écrire. Le reste de la fondation est implémentable sans elle |
 | `0-2` | data — la réponse mesurée à « FanMTL a-t-il un signal de vide ? » | `identified` | **BLOCK pour `2-1`, pas pour cette fondation.** La fondation implémente les trois états quoi qu'il advienne ; c'est `2-1` qui décide quel `ReadStage` peut atteindre `BrowseEmpty`. **Sans `0-2`, la branche 7 n'est atteignable pour aucune source et `2-1` n'a que deux états** — ce qui est un résultat correct et doit être dit à l'écran, pas un blocage |
+| `http-client` | data — **`FetchResult` et ses trois cas**, c'est-à-dire le discriminant que `ReadAttempt` porte et que `classify` examine | `identified`, **vague 0** | **Aucun repli, et il ne doit pas y en avoir.** Le type est écrit **une fois**, à un seul endroit, par le vague 0 — c'est la raison pour laquelle cette fondation est vague 2 et le déclare dans `depends_on`. Si `http-client` n'existe pas encore, `classify` n'est pas implémentable ; mais **écrire `fetch_result.dart` ici ne lève pas le blocage**, cela l'aggrave : un producteur qui écrit le type de son consommateur a une dépendance inversée, donc un cycle, donc deux réponses à « qu'est-ce que le transport a fait ? » |
 | `failure-discriminator` lui-même | — | ce plan | `13-error-handling.md` pour la hiérarchie d'exceptions, `architecture.md` § 5.2 pour la liste des causes |
 | `package:html` | data — analyzer la fixture dans le test | installé | aucun |
 
@@ -934,7 +944,7 @@ qui écrit `sources.lastErrorCode`), `6-1` (Royal Road, qui produit les mêmes
 ### Phase 1 — Couche de données
 
 - [ ] Créer `lib/core/error/source_failure.dart` : `SourceFailure` + les six causes, chacune avec son `isRetriable` (§ 2.2)
-- [ ] Créer `lib/core/network/fetch_result.dart` : `FetchResult` + les trois issues de transport (§ 2.2)
+- [ ] **Ne pas créer** `lib/core/network/fetch_result.dart` : le fichier appartient à `http-client`, vague 0. Cette fondation écrit `import 'package:lumen_tale/core/network/fetch_result.dart';` et c'est tout (§ 2.2, § 7, § 8). Vérifier qu'il n'existe qu'**un seul** `FetchResult` dans `lib/`
 - [ ] **Aucun schéma à ajouter.** `sources.lastErrorCode` et `queue_items.errorCode` existent déjà ; cette fondation n'écrit dans aucun (§ 3.6)
 
 ### Phase 2 — Logique métier
@@ -951,8 +961,8 @@ qui écrit `sources.lastErrorCode`), `6-1` (Royal Road, qui produit les mêmes
 
 ### Phase 4 — Intégration
 
-- [ ] Vérifier qu'aucun des cinq fichiers n'importe `package:flutter` — `domain` doit rester du Dart pur (`02-architecture.md`)
-- [ ] Vérifier que `core/error` et `core/network` **n'importent rien** de `lib/`
+- [ ] Vérifier qu'aucun des **quatre** fichiers n'importe `package:flutter` — `domain` doit rester du Dart pur (`02-architecture.md`)
+- [ ] Vérifier que `core/error` **n'importe rien** de `lib/` (c'est un fichier de cette fondation)
 - [ ] Aucun routage, aucune permission, aucune migration
 
 ### Phase 5 — Tests et polish
@@ -980,7 +990,8 @@ qui écrit `sources.lastErrorCode`), `6-1` (Royal Road, qui produit les mêmes
 - [ ] **B22** — un statut ∉ [200, 300) produit `SourceUnavailable(status)`, y compris 404 et 503, et **jamais** `BrowseEmpty`.
 - [ ] **B22** — `SourceLayoutChanged.failedSelector` est la chaîne du sélecteur passée dans `ReadAttempt.expectedSelector`, et non `'(non déclaré)'` dès que le champ est renseigné.
 - [ ] **B23** — `classify` est une fonction pure : deux appels successifs avec deux `ReadAttempt` différents ne partagent aucun état, et l'ordre des appels n'influence aucun résultat.
-- [ ] **B23** — aucun des cinq fichiers n'a de champ d'instance, de cache, ni de référence à un singleton.
+- [ ] **B23** — aucun des **quatre** fichiers n'a de champ d'instance, de cache, ni de référence à un singleton.
+- [ ] **B22 / § 8** — `grep -rn "sealed class FetchResult" lib/` ne renvoie qu'**une** ligne, dans `lib/core/network/fetch_result.dart`. Un second `FetchResult` — écrit ici, ou ailleurs — est un échec, même s'il est identique.
 - [ ] **B24** — pour les six causes, `BrowseFailed.reason.isRetriable == BrowseFailed.retriable`, sans exception.
 - [ ] **B24** — `SourceLayoutChanged`, `ParseFailed` et `ItemRemovedAtSource` sont `isRetriable == false`, donc aucun écran ne peut leur associer un bouton de réessai.
 - [ ] **B24** — les neuf branches de § 3.1 retournent ; il n'existe aucun chemin qui traverse `classify` sans rendre d'issue. Une instruction `final outcome = classify(x); assert(outcome is BrowseSucceeded);` doit compiler sans cast nullable.

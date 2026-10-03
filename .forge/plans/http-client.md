@@ -100,14 +100,70 @@ aucun jeton, aucun identifiant de session n'est écrit par ce client, et le
 ### 2.2 Types et interfaces
 
 ```dart
+// lib/core/network/fetch_result.dart
+//
+// ⚠️ LE FICHIER EST À CE PLAN, PAS À CELUI DU CLASSIFIEUR.
+//
+// `http-client` est vague **0** et `failure-discriminator` est vague **2**, qui
+// le déclare dans `depends_on`. Un producteur qui n'écrirait pas le type dont son
+// consommateur a besoin aurait une dépendance inversée : le vague 2 importerait
+// un type qu'il aurait lui-même défini. Donc **cette fondation écrit
+// `FetchResult`**, et `failure-discriminator` fait
+// `import 'package:lumen_tale/core/network/fetch_result.dart';` sans y toucher.
+//
+// Ce que ce type est : **le discriminant du transport**. Il dit ce que le
+// transport a fait, jamais ce que le site a répondu — `HttpResponse` (§ 2.2)
+// porte la réponse. Les deux voyagent ensemble, et `FetchResult` ne se déplace
+// jamais seul.
+//
+// Un 4xx ou un 5xx n'est **PAS** un cas distinct ici : il arrive en
+// `FetchSucceeded` avec son statut, et le classifieur décide. Décider « ceci est
+// un refus » au transport mettrait la taxonomie de B22 en deux endroits.
+
+sealed class FetchResult {
+  const FetchResult();
+}
+
+/// A response was received. [status] may be any HTTP status; 2xx is the only
+/// range the classifieur reads as content.
+final class FetchSucceeded extends FetchResult {
+  const FetchSucceeded({required this.status});
+
+  final int status;
+}
+
+/// No response was received at all. E5.
+final class FetchTransportFailed extends FetchResult {
+  const FetchTransportFailed({required this.host});
+
+  final String host;
+}
+
+/// 429, or any status the shared limiter turned into a backoff.
+/// `17-security.md` règle 6: `Retry-After` is honoured.
+///
+/// ⚠️ **Pas de `host`, et surtout pas de `sourceId`.** Un 429 appartient à un
+/// HÔTE, pas à une source : deux sources peuvent partager un `baseUrl`, et un
+/// hôte peut servir les deux. L'hôte est déjà dans le slot du limiteur, keyed by
+/// host (§ 3.2) ; le porter ici serait une seconde copie d'un fait qui existe,
+/// libre de diverger. `architecture.md` § 5.2 le dit dans les mêmes termes.
+final class FetchRateLimited extends FetchResult {
+  const FetchRateLimited({required this.retryAfter, required this.status});
+
+  final Duration retryAfter;
+  final int status;
+}
+```
+
+```dart
 // lib/core/network/http_response.dart
 //
-// Le transport EST le premier producteur de `FetchResult`
-// (`failure-discriminator` § 2.2). `FetchResult` lui-même ne porte que trois
-// faits — un statut, un hôte, une durée — et il est PRODUIIT par
-// `failure-discriminator`. Ce que ce fichier ajoute est le CORPS de la réponse,
-// sans lequel `ContentProbe`, `parseDocument` et `fetchChapterContent` n'ont rien
-// à examiner.
+// Le transport EST le premier producteur de `FetchResult` — et il en est aussi
+// le **seul** propriétaire du fichier, § 2.2 juste au-dessus. `FetchResult`
+// lui-même ne porte que trois faits — un statut, un hôte, une durée — et aucun
+// corps. Ce que ce fichier ajoute est le CORPS de la réponse, sans lequel
+// `ContentProbe`, `parseDocument` et `fetchChapterContent` n'ont rien à
+// examiner.
 
 import 'fetch_result.dart';
 
@@ -115,7 +171,9 @@ import 'fetch_result.dart';
 ///
 /// `FetchResult` ne peut pas voyager seul : il décrit *ce que le transport a fait*,
 /// pas *ce que le site a répondu*. Les deux vont ensemble, et ce type est le seul
-/// endroit où ils sont assemblés.
+/// endroit où ils sont assemblés. `2-1` § 2.3 rend **ce** type, jamais
+/// `FetchResult` : une source a besoin du statut pour classer **et** du corps
+/// pour parser, et rendre le seul discriminant l'empêcherait de lire une page.
 final class HttpResponse {
   const HttpResponse({
     required this.outcome,
@@ -187,17 +245,21 @@ String setUrlWithoutDomain(Uri absolute);
 ```dart
 // lib/core/error/app_exception.dart
 //
-// ⚠️ CHEMIN CONTESTÉ — voir § 7, question ouverte 1.
-// `13-error-handling.md` écrit `core/utils/errors/` ; `architecture.md` § 1.2
-// écrit `core/error/`, et § 5.2 dit de `core/error` « one type per cause ». Deux
-// documents, deux chemins pour la même classe. Ce plan suit § 1.2 + § 5.2 parce
-// que deux documents le nomment contre un, et parce que `failure-discriminator`
-// a déjà écrit `SourceFailure` dans `lib/core/error/source_failure.dart`.
+// ⚠️ CHEMIN TRANCHÉ — `lib/core/error/`, voir § 7, question 1.
+//
+// Il régnait deux chemins pour la même classe : `13-error-handling.md` écrivait
+// `core/utils/errors/`, `architecture.md` § 1.2 et § 5.2 écrivaient
+// `core/error/`. **`lib/core/error/` est canonique**, pour trois raisons qui ne
+// sont pas des préférences : la table des couches de `architecture.md` § 1.2 —
+// l'autorité sur les chemins — le nomme ; `failure-discriminator` y a déjà écrit
+// `SourceFailure` ; et `13-error-handling.md` a été corrigé sur ce point, son
+// chemin précédent est noté dans le fichier lui-même.
 //
 // La hiérarchie est celle de `13-error-handling.md`, mot pour mot. Elle est
 // **cachée derrière `core/error/` et non `core/utils/`** pour une seconde
 // raison, mécanique : la table des couches de `02-architecture.md` dit que `core`
-// n'importe « que des paquets externes, aucun autre répertoire de `lib/` ».
+// n'importe « que des paquets externes, aucun autre répertoire de `lib/` » — et
+// `core/utils/` est un autre répertoire de `core`, donc un import interne.
 
 /// La racine de toute erreur applicative nommée.
 sealed class AppException implements Exception {
@@ -770,8 +832,10 @@ HttpClient (interface Dart)                    lib/core/network/http_client.dart
 
 HttpResponse                                  lib/core/network/http_response.dart
 FetchResult (3 cas)                           lib/core/network/fetch_result.dart
-                                              ⚠️ DÉCLARÉ par failure-discriminator —
-                                              voir § 7, question ouverte 2
+                                              ⚠️ DÉFINI ICI — vague 0. C'est le
+                                              PLAN QUI L'ÉCRIT, parce que
+                                              failure-discriminator est vague 2
+                                              et l'a en dépendance (§ 7 q. 2)
 SourceEndpoint                                lib/core/network/source_endpoint.dart
 HostRateLimiter                               lib/core/network/host_rate_limiter.dart
 HttpPolicy · HttpTimeouts                     lib/core/network/http_policy.dart
@@ -787,6 +851,7 @@ AppException · NetworkException               lib/core/error/app_exception.dart
 | `SourceHttpClient` | `final class` | idem | `Dio`, `SourceEndpoint`, `HostRateLimiter`, `DateTime Function()` | **par hôte, dans le limiteur** | `get` · `resolve` |
 | `setUrlWithoutDomain` | fonction top-level | idem | — | aucun | — |
 | `HttpResponse` | valeur immuable | `lib/core/network/http_response.dart` | 4 champs nommés | aucun | — |
+| `FetchResult` + 3 | hiérarchie `sealed` — **propriété de cette fondation** | `lib/core/network/fetch_result.dart` | — | aucun | — |
 | `SourceEndpoint` | valeur immuable | `lib/core/network/source_endpoint.dart` | `baseUrl` | aucun | `resolve` · `host` |
 | `HostRateLimiter` | `final class` | `lib/core/network/host_rate_limiter.dart` | `Duration Function()` (attente), `DateTime Function()` | `Map<String, SlotState>`, **jamais global** | `acquire` · `block` · `slot` |
 | `HttpPolicy` · `HttpTimeouts` | classes de constantes | `lib/core/network/http_policy.dart` | — | aucun | — |
@@ -923,6 +988,20 @@ et aucun n'est perdu de vue.
   (**B29**, **C2**, `architecture.md` § 5.3) est : **aucun** `logger` dans
   `lib/core/network/`. Le `DioException` voyage comme `cause`, et le texte d'un
   chapitre n'est jamais écrit, à aucun niveau, y compris en debug.
+- **⚠️ Ne pas rendre `FetchResult` à la place de `HttpResponse`.** Le
+  comportement correct (**B22**, `2-1` § 2.3) est
+  `Future<HttpResponse> get(...)` : `FetchResult` est le **discriminant** — ce
+  que le transport a fait — et il ne porte aucun corps. Rendre le discriminant
+  seul ne laisse à la source ni page à parser ni HTML à rendre, donc
+  `ContentProbe` reste `ParseBroke` sur toutes les pages, donc tout devient
+  `SourceLayoutChanged`, donc SC-6 devient indiscernable d'un site qui marche.
+  C'est pour cela que `FetchResult` reste **sans champ** : lui en ajouter un
+  ferait de lui une réponse mal formée au lieu d'un discriminant.
+- **⚠️ Ne pas laisser `failure-discriminator` écrire `fetch_result.dart`.** Le
+  comportement correct (§ 7 question 2, dépendance `state.json`) est : le vague 0
+  écrit le type, le vague 2 l'importe. Un producteur qui écrit le type de son
+  consommateur a une dépendance inversée, donc un cycle — et deux réponses à
+  « qu'est-ce que le transport a fait ? ».
 - **⚠️ Ne pas mettre de `cookieJar`.** Le comportement correct
   (`17-security.md` règle 8, **B4**) est : aucun cookie, aucun jeton, aucune
   identité. Un `cookieJar` persistant est un secret à disque et une identité à
@@ -945,43 +1024,47 @@ et aucun n'est perdu de vue.
   compilation dans deux répertoires créerait une dépendance de la vague 0 vers un
   fichier écrit en vague 1.
 
-**Trois questions ouvertes. Aucune n'est tranchée ici, et aucune ne doit l'être en
-silence.**
+**Trois questions qui étaient ouvertes. Les trois sont tranchées, et il faut
+écrire par quoi — une question ouverte qu'on laisse en place en prétendant
+l'inverse est la forme la plus courante d'un document qui ment.**
 
-1. **`AppException` a deux chemins dans trois documents.**
-   `13-error-handling.md` écrit `core/utils/errors/` ; `architecture.md` § 1.2
-   écrit `core/error/`, et § 5.2 dit de `core/error` *one type per cause*. Les
-   deux sont dans la table des couches comme « core », donc ni l'un ni l'autre ne
-   viole `02-architecture.md` — mais **un même nom de classe à deux endroits est
-   exactement la seconde source de vérité que B22 interdit ailleurs.**
-   **Option la moins coûteuse et réversible** : `lib/core/error/`, parce que deux
-   documents le nomment contre un, et que `failure-discriminator` y a déjà écrit
-   `SourceFailure`.
-   **Question ouverte** : quel chemin est canonique, et faut-il un amendement
-   `state.js amend` pour aligner `13-error-handling.md` ?
-2. **`FetchResult` est déclaré par `failure-discriminator` mais produit par
-   `core/network`, et `http-client` est vague 0 tandis que
-   `failure-discriminator` est vague 2.** `state.json` donne
-   `failure-discriminator.depends_on = ['0-1','0-2','http-client']`, donc le
-   producteur est censé exister avant le consommateur — sauf que le **type** est
-   écrit dans le fichier du consommateur.
-   **Option la moins coûteuse et réversible** : `lib/core/network/fetch_result.dart`
-   est écrit **une fois**, par le premier des deux à passer, avec exactement les
-   trois cas que `failure-discriminator` § 2.2 spécifie, et le second ne le
-   modifie pas. Les deux plans nomment déjà le même chemin, donc ils convergent.
-   **Question ouverte** : `state.json` devrait-il déclarer `http-client →
-   fetch_result` explicitement, ou la dépendance actuelle est-elle suffisante ?
-3. **`2-1` § 2.3 déclare `Future<FetchResult> get(String relativePath)` — et
-   `FetchResult` ne porte aucun corps.** `Source.fetchChapterContent` doit
-   renvoyer du HTML brut (`03-source-system.md` règle 11) et `ContentProbe` doit
-   examiner un document analysé : un `FetchResult` seul ne peut donc pas les
-   nourrir, et la signature de `2-1` est incomplète telle qu'elle est écrite.
-   **Option la moins coûteuse et réversible** : `HttpResponse` (§ 2.2) —
-   `outcome` + `status` + `body` + `contentType` — et `2-1` appelle `get()` puis
-   lit `response.body`. `FetchResult` reste ce que `failure-discriminator`
-   déclare, et `core/network` reste son premier producteur, comme § 2.2 l'écrit.
-   **Question ouverte** : `2-1` § 2.3 doit-il être amendé pour nommer
-   `HttpResponse` ? Ce plan ne le fait pas et ne le doit pas.
+1. **`AppException` avait deux chemins dans trois documents — TRANCHÉE :
+   `lib/core/error/`.** `13-error-handling.md` écrivait `core/utils/errors/` ;
+   `architecture.md` § 1.2 et § 5.2 écrivaient `core/error/`. Les deux sont dans
+   la table des couches comme « core », donc ni l'un ni l'autre ne viole
+   `02-architecture.md` — mais **un même nom de classe à deux endroits est
+   exactement la seconde source de vérité que B22 interdit ailleurs.** Décision :
+   `lib/core/error/`, parce que la table des couches de `architecture.md` § 1.2 —
+   l'autorité sur les chemins — le nomme, que `failure-discriminator` y a déjà
+   écrit `SourceFailure`, et que **`13-error-handling.md` a été corrigé** : il
+   écrit désormais `core/error/` et note sur place que le chemin précédent était
+   `core/utils/errors/` et pourquoi il a bougé. Une décision qui ne corrige que
+   les copies qu'on a sous les yeux laisse les autres ; le fichier corrigé porte
+   donc la trace, pour que la prochaine occurrence puisse être reconnue.
+2. **`FetchResult` était écrit par le consommateur — TRANCHÉE : c'est cette
+   fondation qui l'écrit.** `http-client` est vague 0, `failure-discriminator`
+   vague 2, et `state.json` donne
+   `failure-discriminator.depends_on = ['0-1','0-2','http-client']` : le
+   producteur est censé exister avant le consommateur, donc le **type** doit être
+   dans le fichier du producteur. `lib/core/network/fetch_result.dart` est donc
+   écrit ici, en § 2.2, avec exactement les trois cas — `FetchSucceeded`,
+   `FetchTransportFailed`, `FetchRateLimited` — et `failure-discriminator`
+   l'importe sans y ajouter un champ. Il n'y a **pas** d'amendement
+   `state.js` à faire : la dépendance déclarée est déjà dans le bon sens, c'est
+   l'appartenance du fichier qui était à l'envers. Réponse à « la dépendance
+   actuelle suffit-elle ? » : oui, et le graphe n'a pas bougé d'un cran.
+3. **`2-1` déclarait `Future<FetchResult> get(String relativePath)` alors que
+   `FetchResult` ne porte aucun corps — TRANCHÉE : `2-1` rend un
+   `HttpResponse`.** `Source.fetchChapterContent` doit renvoyer du HTML brut
+   (`03-source-system.md` règle 11) et `ContentProbe` doit examiner un document
+   analysé : ni l'un ni l'autre n'a quelque chose à examiner dans un objet qui
+   ne porte qu'un statut. `HttpResponse` (§ 2.2) —
+   `outcome` + `status` + `body` + `contentType` — est l'unique endroit où le
+   discriminant et le corps voyagent ensemble, et `2-1` a été amendé en
+   conséquence : § 2.3 rend `Future<HttpResponse>`, § 3.3 / § 3.7 / § 3.8 font
+   `fetch = response.outcome` puis `parseDocument(response.body)`, et § 7 porte
+   le piège. **`FetchResult` reste ce que § 2.2 définit ici** et garde ses trois
+   cas : il n'a ni perdu son rôle ni gagné un champ.
 
 ---
 
@@ -990,7 +1073,7 @@ silence.**
 | Dépend de | Nature | Statut | Fallback si absent |
 |---|---|---|---|
 | `dio` 5.11.1 | data — le client HTTP | installé | aucun. Sans lui il n'y a pas de réseau, et il n'y a pas de repli : `HttpClient` est une abstraction sur `dio`, pas sur `dart:io` |
-| `failure-discriminator` | data — **le vocabulaire `FetchResult`** | `identified`, vague 2 | **Pas bloquant pour l'écriture du fichier, bloquant pour l'exactitude.** § 7 question 2 : le premier des deux à passer écrit `fetch_result.dart` avec les trois cas de `failure-discriminator` § 2.2. Si cette fondation passe avant, elle l'écrit à l'identique |
+| `failure-discriminator` | data — **aucune**. La dépendance est dans l'autre sens | `identified`, vague 2 | **Pas bloquant du tout, et c'est le point.** Cette fondation **possède** `lib/core/network/fetch_result.dart` : `FetchResult`, `FetchSucceeded`, `FetchTransportFailed` et `FetchRateLimited` sont écrits ici, en § 2.2, à la vague **0**. `failure-discriminator` (vague 2) les **importe** et n'y ajoute aucun champ — `state.json` le déclare dans son `depends_on`, ce qui est cohérent : le vague 2 dépend du vague 0. Une dépendance inverse aurait été un cycle. Voir § 7 question 2 |
 | `0-5` | data — le bootstrap, `SourceManager`, le provider du limiteur | `identified` | **Le limiteur est instancié par `0-5`**, pas ici. Sans lui, `core/network` est complet et simplement non câblé |
 | `apk-pipeline` | data — fournit `LUMEN_BUILD_NAME` par `--dart-define` | `identified` | **Aucun impact sur le fonctionnement.** `appVersion` est un paramètre ; une version vide donne `LumenTale/unknown (personal reader)`, qui nomme toujours l'application honnêtement |
 | `package:crypto` | data — non utilisé ici | installé | aucun. `versionId` n'est **pas** lu par cette fondation : il sert à calculer `Source.id`, et `SourceManager` le fait |
@@ -1007,9 +1090,9 @@ manuelle), `3-1` et `3-6` (les écrans de browse et d'échec).
 
 ### Phase 1 — Couche de données
 
-- [ ] Créer `lib/core/error/app_exception.dart` : `AppException` `sealed` + `NetworkException` + `CancelledException` (§ 2.2) — **chemin en question ouverte 1, § 7**
+- [ ] Créer `lib/core/error/app_exception.dart` : `AppException` `sealed` + `NetworkException` + `CancelledException` (§ 2.2) — **chemin `lib/core/error/`, tranché en § 7 question 1**
 - [ ] Créer `lib/core/network/http_policy.dart` : `HttpPolicy` + `HttpTimeouts` (§ 2.4)
-- [ ] Créer `lib/core/network/fetch_result.dart` : les **trois** cas, exactement ceux de `failure-discriminator` § 2.2 (§ 7 question 2)
+- [ ] Créer `lib/core/network/fetch_result.dart` : `FetchResult` + les **trois** cas, ici et nulle part ailleurs (§ 2.2, § 7 question 2 — cette fondation est le propriétaire, vague 0)
 - [ ] Créer `lib/core/network/http_response.dart` : `HttpResponse` (§ 2.2)
 - [ ] **Aucun schéma de base.** Aucune migration, `schemaVersion` reste à 1
 
@@ -1071,6 +1154,11 @@ manuelle), `3-1` et `3-6` (les écrans de browse et d'échec).
 - [ ] **B22** — `badCertificate` produit `FetchTransportFailed` et **jamais** `SourceUnavailable(status: 0)`, et la `cause` porte le mot `certificate`.
 - [ ] **B22** — aucun `DioException` ne sort de `HttpClient.get` : le test capture `expect(() async => …, throwsA(isNot(isA<DioException>())))` sur les neuf bras.
 - [ ] **B22** — un `Exception` et un `Object` non-`DioException` produisent tous deux `FetchTransportFailed`, jamais une exception nue (`13-error-handling.md` règle 1).
+- [ ] **B22** — `grep -rn "sealed class FetchResult" lib/` ne renvoie qu'**une** ligne, dans `lib/core/network/fetch_result.dart` : le discriminant a un propriétaire et un seul (§ 7 question 2).
+- [ ] **B22** — `HttpClient.get` rend un `HttpResponse`, jamais un `FetchResult` : `grep -rn "Future<FetchResult>" lib/` ne renvoie rien, et `2-1` compile sans modification (§ 7 question 3).
+- [ ] **B22 / § 2.2** — `HttpResponse.body` alimente `parseDocument` sur une page réelle : le test passe une `HttpResponse` de `http-client` à `FanMtlSource` et obtient un `ContentProbe` (`test/sources/fanmtl_source_http_test.dart`).
+- [ ] **B22** — `FetchRateLimited` ne porte **ni** `host` **ni** `sourceId` : le test l'assert sur le type, parce qu'un `429` appartient à un hôte et que le slot du limiteur est déjà keyed by host (§ 2.2, `architecture.md` § 5.2).
+- [ ] **C5** — `AppException` est dans `lib/core/error/` et **nulle part ailleurs** : `grep -rn "class AppException" lib/` ne renvoie qu'une ligne, sous `lib/core/error/`, et `grep -rn "core/utils/errors" lib/` ne renvoie **rien** (§ 7 question 1). Les documents qui citent encore l'ancien chemin sont signalés au rapport de revue — `13-error-handling.md` est corrigé, les autres sont hors du périmètre de cette slice.
 - [ ] **C5 / C12** — `NoConnection.host` et `NetworkException.host` sont un nom d'hôte : `Uri.parse(endpoint.baseUrl).host`, jamais `toString()`. Un test l'affirme sur une `baseUrl` avec une porte (`https://www.fanmtl.com:443`) et sur une requête contenant une chaîne (`?q=secret`).
 - [ ] **C5** — `SourceEndpoint.baseUrl` sans barre oblique finale résout `/novel/x.html` en `https://www.fanmtl.com/novel/x.html` ; avec une barre finale, l'**assertion** de § 3.1 déclenche.
 - [ ] **C11** — `HttpTimeouts` déclare exactement `connect`, `send`, `receive`, toutes positives, et le test les lit depuis la classe plutôt que de répéter les chiffres.
@@ -1120,6 +1208,10 @@ Emplacement : `test/core/network/http_client_test.dart`
 | URLs | `a baseUrl without a trailing slash resolves correctly` | `/novel/x.html` | C5 |
 | | `a relative path is never stored as an absolute URL` | `setUrlWithoutDomain(resolve('/a?b=c')) == '/a?b=c'` | C5, `03-…` règle 3 |
 | | `a host is a hostname and never a path or a query` | `:443` et `?q=secret` | C12, C5 |
+| `FetchResult` | `FetchResult is declared once and only in core/network` | grep `sealed class FetchResult` | § 7 q. 2 |
+| | `the rate-limited case carries no host and no source id` | `FetchRateLimited` n'expose ni `host` ni `sourceId` | § 2.2, C5 |
+| `HttpResponse` | `the response carries the body and the discriminator together` | `response.outcome is FetchSucceeded(200)` **et** `response.body` non vide | § 7 q. 3 |
+| | `a body that was empty is an empty body and not a missing one` | `status != 0` avec `body == ''` reste un `FetchSucceeded` | § 2.2 |
 
 Emplacement complémentaire : `test/core/network/no_telemetry_test.dart`
 
@@ -1141,7 +1233,7 @@ limiteur de débit serait un test qui ne teste rien.
 | Flow | Scénario | IDs couverts |
 |---|---|---|
 | `http-client → failure-discriminator` | une `HttpResponse` réelle de chaque type donne le `BrowseOutcome` attendu par les neuf bras du classifieur | B22, C7 |
-| `http-client → 2-1` | `FanMtlSource` passe par `HttpClient.get` et rend un `ContentProbe` | B22, E8 |
+| `http-client → 2-1` | `FanMtlSource` passe par `HttpClient.get` et rend un `ContentProbe` **à partir de `response.body`** | B22, E8, § 7 q. 3 |
 | `http-client → 3-6` | la ligne de preuve affichée sur `/browse/:sourceId/unavailable` est `status` ou `host`, jamais une exception | B24, C12 |
 
 ### 11.4 Tests E2E

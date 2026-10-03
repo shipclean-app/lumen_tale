@@ -67,6 +67,12 @@ The **contrast** is the form, and it is not decorative. "There was a problem wit
 - 2026-10-02 — Don't satisfy a rule's letter when its intent has no state to live in. **B6** said a chapter "is *marked as downloaded* only once it is completely present" and **B33** deletes one chapter's copy; the schema held no mark, so "marked" was a per-row filesystem probe and a deliberate deletion was indistinguishable from never having downloaded. A rule that nothing in the schema can express is a rule nothing verifies — check that each rule has a column, a derived value, or a named check, not only a sentence in the PRD.
   → domain: `10-testing.md` | Seen: the red-team pass on Phase 4, 2026-10-02
 
+- 2026-10-03 — Don't open a file for writing and then read it back to build the value you are about to write. `open(p, 'w')` truncates **immediately**, so the read that follows returns `''`, and the file is destroyed by the statement meant to update it. It cost a 77 KB plan, recovered only because it was committed; **anything not yet committed is one careless statement from gone.** Read into a variable, transform, then write once — which is what `.forge/plans/`'s own `patch.py` does, and why that helper exists at all.
+  → domain: `12-ai-agent-workflow.md` | Seen: adding a §10 criterion to `.forge/plans/0-5.md` during the Phase 5 review, 2026-10-03
+
+- 2026-10-03 — Don't reconcile a table against the files it governs in one direction and call it reconciled. `design-system.md` § 3.5 was diffed against all eighteen screen files and declared clean, then a screen was found pushing three routes that had **never** been in the table — because the diff compared the table *to* what screens push, which finds a missing entry and cannot find an invented one. **A one-way reconciliation is a check that reports zero on the half it does not look at**, which is the fourth time this project has hit that shape in a fourth disguise.
+  → domain: `12-ai-agent-workflow.md` | Seen: the `more.md` route pushes, 2026-10-03
+
 - 2026-10-02 — Don't let a bulk-edit script report success it did not verify. A `str.replace` patch helper printed `ok` unconditionally; five of nine replacements had silently matched nothing because the text had been reflowed by `dart format` or by an earlier edit in the same run, and the run's own log said every one had landed.
   → domain: `12-ai-agent-workflow.md` | Seen: re-reading five files back after a fix batch and finding the claims false, 2026-10-02
 
