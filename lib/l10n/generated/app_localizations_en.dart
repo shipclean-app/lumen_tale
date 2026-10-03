@@ -153,4 +153,128 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionReportBug => 'Report the problem';
+
+  @override
+  String get historyTitle => 'History';
+
+  @override
+  String get historyUntitledChapter => 'Untitled';
+
+  @override
+  String get historyUntitledNovel => 'Untitled';
+
+  @override
+  String get historyLoadingTitle => 'Loading history';
+
+  @override
+  String get historyEmptyTitle => 'Nothing read yet';
+
+  @override
+  String get historyEmptyBody =>
+      'The chapters you open appear here, newest first.';
+
+  @override
+  String get historyEmptyActionBrowse => 'Browse a source';
+
+  @override
+  String get historyEmptyActionLibrary => 'Open your library';
+
+  @override
+  String get historyClearedTitle => 'History cleared';
+
+  @override
+  String get historyClearedBody =>
+      'Your library, your downloads and every remembered position were kept.';
+
+  @override
+  String get historyAgedOutTitle =>
+      'Everything older than one year was dropped';
+
+  @override
+  String get historyAgedOutBody => 'Your reading positions were kept.';
+
+  @override
+  String get historyLoadErrorTitle => 'Your history could not be read';
+
+  @override
+  String get historyLoadErrorBody =>
+      'Your library, your downloaded chapters and every remembered reading position are unaffected.';
+
+  @override
+  String get historyNoticeTitle => 'History is bounded by time';
+
+  @override
+  String get historyNoticeBody =>
+      'Clearing it never moves a remembered reading position.';
+
+  @override
+  String get historyRetentionLabel => 'Keep history for';
+
+  @override
+  String get historyRetentionChange => 'Change';
+
+  @override
+  String get historyClearAction => 'Clear history';
+
+  @override
+  String get historyClearDialogTitle => 'Clear history?';
+
+  @override
+  String historyClearDialogBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entries will be removed.',
+      one: 'One entry will be removed.',
+      zero: 'No entries will be removed.',
+    );
+    return '$_temp0 Your library, your downloads and every remembered reading position will be kept.';
+  }
+
+  @override
+  String get historyClearDialogConfirm => 'Clear history';
+
+  @override
+  String historyTerminalLine(String window) {
+    return 'This is the oldest entry kept. Entries older than $window are dropped, oldest first.';
+  }
+
+  @override
+  String get historySheetTitle => 'Keep history for';
+
+  @override
+  String historySheetWarning(String window) {
+    return 'Entries older than $window will be dropped, oldest first. Your reading positions are never affected.';
+  }
+
+  @override
+  String get historySheetWarningNone =>
+      'No entries will be dropped. Your reading positions are never affected.';
+
+  @override
+  String get historySnackCleared =>
+      'History cleared. Your reading positions were kept.';
+
+  @override
+  String get historySnackNotCleared => 'History was not cleared.';
+
+  @override
+  String historySnackWindowChanged(String window) {
+    return 'History is now kept for $window.';
+  }
+
+  @override
+  String get historyWindowOneWeek => 'one week';
+
+  @override
+  String get historyWindowOneMonth => 'one month';
+
+  @override
+  String get historyWindowThreeMonths => 'three months';
+
+  @override
+  String get historyWindowOneYear => 'one year';
+
+  @override
+  String get historyWindowTwoYears => 'two years';
 }

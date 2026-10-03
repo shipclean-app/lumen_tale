@@ -2561,3 +2561,97 @@ cannot start without it**, because Settings' *Keep history for* row reads the sa
 - **Do not write the announcement count and the purge as two statements.** They must be
   the same predicate; a test that compares them is what keeps them so.
 - **Do not add a count method to `HistoryRepository`.** The question belongs to the screen.
+
+---
+
+## 2026-10-03 — Session 15 (same session, continued): the `/history` copy, and `SettingsChoiceSheet`
+
+### STARTED FROM
+
+`6-5` at `16545f7` with the retention store committed and the screen still missing.
+The screen is not just a widget: `history.md` § 4 specifies **nine states, three with
+a second rendering**, so the copy had to exist before any of it could be written.
+
+### DECIDED
+
+- **The ARB files are written by `tool/append_history_strings.py`, not by hand.** B28
+  demands French *and* English for every user-visible string, and two hand edits can
+  leave the files a key apart. One table, two files, cannot.
+- **`SettingsChoiceSheet` is generic over `T`, and owns no list of windows.**
+  `design-system.md` § 2.12 says *"a screen may not restate the list"*. A sheet
+  written against `HistoryRetention` would be a **second statement of which five
+  windows exist**, beside the enum — and a sixth window would then need three edits.
+  The widget takes options + a `labelOf` + a `warningFor`; `6-5` supplies all three
+  from the enum.
+- **It is owned by `6-5`, not `3-7`.** Its rows ARE `HistoryRetention`'s values and its
+  warning sentence comes from `countOlderThan`, both declared here. `3-7` imports it —
+  the only direction the edge can take, since `3-7` already reads the enum and the
+  store from `6-5`.
+- **`on Object`, not `on Exception`.** `SettingsPersistenceException` is deliberately
+  not an `AppException`, so a narrower clause lets the one failure this state exists
+  for escape as an unhandled async error — on a modal sheet that is a **silent no-op**:
+  the sheet sits there looking unchanged and the tap appears to have done nothing.
+- **`onSelected` IS the write, not a notification.** § 11.1's *Submit error* keeps the
+  sheet open on the **previous** window. A sheet that popped before the write and told
+  the caller afterwards has already closed by the time the failure arrives.
+- **There is no "pending" selection.** A tap commits; a commit lands or throws. A
+  preview plus an *Apply* button would have a state where the reader has chosen
+  something the app has not stored — C8's state, reached one step earlier.
+- **`catch Object`, snap back, disclose.** B24 and C8: a refused write must not leave
+  the reader looking at a window the app cannot honour.
+- **The press feedback is gated, the tap is not.** A disabled row must not acknowledge
+  a finger, and it must also not be *reachable* — so the tap is wired unconditionally
+  and the refusal lives in one place, `_choose`, which is the state machine's rule
+  rather than the row's presentation. Gating `onTap` made the row a **second** place
+  deciding "may this be chosen", free to disagree with the first.
+- **Arrow keys walk past a disabled row, in the direction of travel.** Falling back to
+  "the first enabled row" jumps *backwards*, so ↓ onto a disabled row moves focus up
+  the list — and on the row where it matters it lands where it started, so the key
+  appears to do nothing.
+
+### REJECTED
+
+- **`Material.elevation` for the sheet shadow.** § 1.4 keeps exactly two shadows with
+  fixed values; an elevation would pick its own and there would be a third nobody
+  approved. The shadow is `LumenShadows.of(context).sheet` on a `DecoratedBox`.
+- **A row-per-window list inside the widget.** See DECIDED.
+
+### FILES TOUCHED
+
+`lib/l10n/app_en.arb`, `lib/l10n/app_fr.arb` (+34 keys each),
+`tool/append_history_strings.py` (new),
+`lib/core/ui/settings_choice_sheet.dart` (new),
+`test/l10n/history_strings_test.dart` (new, 22),
+`test/core/ui/settings_choice_sheet_test.dart` (new, 23).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **649 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+**Sabotage, six, all caught:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| the checkmark moves **before** the write (C8) | *does NOT move while the write is in flight* |
+| `on Exception` instead of `on Object` | **6 rows fail** — the whole *submit error* group |
+| arrow keys track the committed row, not the focused one | *move focus and wrap at both ends* |
+| a disabled row is still selectable | *a disabled row cannot be selected* |
+| arrow keys fall back to the first enabled row | *walk PAST a disabled row* |
+| a failed write keeps the new value and hides the error | **4 rows fail** |
+
+### NEXT SESSION SHOULD
+
+- **`HistoryScreen` itself** — the nine states of `history.md` § 4, plus the
+  `BoundNotice`, `DayGroupHeader` and the `NovelRow` `history` variant (no cover),
+  plus the router entry replacing `PlaceholderScreen` on the history branch. Its
+  providers go in `features/history/`.
+- **`3-5`** (About) and **`3-7`** (Settings, which imports the sheet).
+- **`2-1`'s source**, against Royal Road.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not add a window name to `SettingsChoiceSheet`.** It holds no list, and a row
+  asserts the enum and the table have the same five members.
+- **Do not gate `onTap` on the row.** One place refuses a choice, and it is the state
+  machine.

@@ -1,8 +1,6 @@
 {
   "@@locale": "en",
-
   "appTitle": "Lumen Tale",
-
   "navLibrary": "Library",
   "navBrowse": "Browse",
   "navUpdates": "Updates",
@@ -10,19 +8,73 @@
   "navMore": "More",
   "navDownloads": "Downloads",
   "navSettings": "Settings",
-
   "commonRetry": "Retry",
   "commonCancel": "Cancel",
   "commonBack": "Back",
   "commonErrorTitle": "Something went wrong",
   "commonErrorBody": "The operation could not be completed.",
-
   "libraryEmptyTitle": "Your library is empty",
   "libraryEmptyBody": "Add a novel from Browse to start reading.",
-
   "browseEmptyBody": "No source is available yet.",
-
   "chapterCount": "{count, plural, =0{No chapters} =1{1 chapter} other{{count} chapters}}",
+  "coverSemanticsLabel": "Cover of {title}",
+  "errorNoConnection": "No connection. Your downloaded chapters stay readable.",
+  "errorRateLimited": "The site asked us to slow down. Try again shortly.",
+  "errorRateLimitedIn": "The site asked us to slow down. Try again in {seconds} seconds.",
+  "errorSourceLayoutChanged": "This site has changed its layout. The app can no longer read it.",
+  "errorSourceUnavailable": "This site is not responding. Try again later.",
+  "errorItemRemovedAtSource": "This novel is no longer on the site. The rest of your library is untouched.",
+  "errorStorageFull": "Storage is full. Free some space, then try again.",
+  "errorParseFailed": "A file for this novel could not be read. Please report it to whoever maintains this app.",
+  "errorSiteUnreadable": "This site could not be read. Your other sources work normally.",
+  "errorSettingsLoad": "Your settings could not be loaded.",
+  "errorSettingsWrite": "This setting could not be saved. It will keep its previous value.",
+  "errorHistoryClear": "History could not be cleared.",
+  "errorCountUnavailable": "That count could not be computed.",
+  "warningNotifications": "Notifications are turned off in your phone's settings.",
+  "checkCancelled": "Check cancelled.",
+  "browseEmpty": "This site has nothing to show here.",
+  "browseSucceeded": "Read successfully.",
+  "downloadQueued": "Queued for download",
+  "downloadDownloading": "Downloading",
+  "downloadDone": "Downloaded",
+  "downloadFailed": "Download interrupted. You can try it again.",
+  "actionFreeSpace": "Free space",
+  "actionReportBug": "Report the problem",
+  "historyTitle": "History",
+  "historyUntitledChapter": "Untitled",
+  "historyUntitledNovel": "Untitled",
+  "historyLoadingTitle": "Loading history",
+  "historyEmptyTitle": "Nothing read yet",
+  "historyEmptyBody": "The chapters you open appear here, newest first.",
+  "historyEmptyActionBrowse": "Browse a source",
+  "historyEmptyActionLibrary": "Open your library",
+  "historyClearedTitle": "History cleared",
+  "historyClearedBody": "Your library, your downloads and every remembered position were kept.",
+  "historyAgedOutTitle": "Everything older than one year was dropped",
+  "historyAgedOutBody": "Your reading positions were kept.",
+  "historyLoadErrorTitle": "Your history could not be read",
+  "historyLoadErrorBody": "Your library, your downloaded chapters and every remembered reading position are unaffected.",
+  "historyNoticeTitle": "History is bounded by time",
+  "historyNoticeBody": "Clearing it never moves a remembered reading position.",
+  "historyRetentionLabel": "Keep history for",
+  "historyRetentionChange": "Change",
+  "historyClearAction": "Clear history",
+  "historyClearDialogTitle": "Clear history?",
+  "historyClearDialogBody": "{count, plural, =0{No entries will be removed.} =1{One entry will be removed.} other{{count} entries will be removed.}} Your library, your downloads and every remembered reading position will be kept.",
+  "historyClearDialogConfirm": "Clear history",
+  "historyTerminalLine": "This is the oldest entry kept. Entries older than {window} are dropped, oldest first.",
+  "historySheetTitle": "Keep history for",
+  "historySheetWarning": "Entries older than {window} will be dropped, oldest first. Your reading positions are never affected.",
+  "historySheetWarningNone": "No entries will be dropped. Your reading positions are never affected.",
+  "historySnackCleared": "History cleared. Your reading positions were kept.",
+  "historySnackNotCleared": "History was not cleared.",
+  "historySnackWindowChanged": "History is now kept for {window}.",
+  "historyWindowOneWeek": "one week",
+  "historyWindowOneMonth": "one month",
+  "historyWindowThreeMonths": "three months",
+  "historyWindowOneYear": "one year",
+  "historyWindowTwoYears": "two years",
   "@chapterCount": {
     "description": "Number of chapters available for a novel.",
     "placeholders": {
@@ -32,8 +84,6 @@
       }
     }
   },
-
-  "coverSemanticsLabel": "Cover of {title}",
   "@coverSemanticsLabel": {
     "description": "Accessibility label for a novel cover thumbnail.",
     "placeholders": {
@@ -43,18 +93,12 @@
       }
     }
   },
-
-  "errorNoConnection": "No connection. Your downloaded chapters stay readable.",
   "@errorNoConnection": {
     "description": "E5. The sentence says what stays usable, not only what failed."
   },
-
-  "errorRateLimited": "The site asked us to slow down. Try again shortly.",
   "@errorRateLimited": {
     "description": "C7. A 429 with no usable Retry-After header."
   },
-
-  "errorRateLimitedIn": "The site asked us to slow down. Try again in {seconds} seconds.",
   "@errorRateLimitedIn": {
     "description": "C7. The duration comes from the site's Retry-After header, never from a guess.",
     "placeholders": {
@@ -64,104 +108,190 @@
       }
     }
   },
-
-  "errorSourceLayoutChanged": "This site has changed its layout. The app can no longer read it.",
   "@errorSourceLayoutChanged": {
     "description": "E4 / SC-6. Nothing to retry: this is a defect to report."
   },
-
-  "errorSourceUnavailable": "This site is not responding. Try again later.",
   "@errorSourceUnavailable": {
     "description": "A non-success status. Retriable later, so Retry is honest."
   },
-
-  "errorItemRemovedAtSource": "This novel is no longer on the site. The rest of your library is untouched.",
   "@errorItemRemovedAtSource": {
     "description": "E9. One item vanished; the sentence says so, or the reader thinks data was lost."
   },
-
-  "errorStorageFull": "Storage is full. Free some space, then try again.",
   "@errorStorageFull": {
     "description": "C8. The only cause whose sentence contains an action that actually works."
   },
-
-  "errorParseFailed": "A file for this novel could not be read. Please report it to whoever maintains this app.",
   "@errorParseFailed": {
     "description": "C12. The action is report, because nothing can repair a failed conversion."
   },
-
-  "errorSiteUnreadable": "This site could not be read. Your other sources work normally.",
   "@errorSiteUnreadable": {
     "description": "B22. 'Your other sources': one site failing is not the app failing."
   },
-
-  "errorSettingsLoad": "Your settings could not be loaded.",
   "@errorSettingsLoad": {
     "description": "A startup failure, therefore never a screen state. See the comment on main()."
   },
-
-  "errorSettingsWrite": "This setting could not be saved. It will keep its previous value.",
   "@errorSettingsWrite": {
     "description": "The control snaps back and says why: showing a value it could not store is worse than a visible failure."
   },
-
-  "errorHistoryClear": "History could not be cleared.",
   "@errorHistoryClear": {
     "description": "B46: reading position is not involved, and the sentence must not let the reader think it is."
   },
-
-  "errorCountUnavailable": "That count could not be computed.",
   "@errorCountUnavailable": {
     "description": "B48: an uncertain count says it is uncertain; it is never estimated."
   },
-
-  "warningNotifications": "Notifications are turned off in your phone's settings.",
   "@warningNotifications": {
     "description": "A warning, not an error: the app works, the phone decided."
   },
-
-  "checkCancelled": "Check cancelled.",
   "@checkCancelled": {
     "description": "Exists so the mapping is complete; 13-error-handling.md rule 7 means cancelled, not failed."
   },
-
-  "browseEmpty": "This site has nothing to show here.",
   "@browseEmpty": {
     "description": "B22: the third state, distinct from failure, and available only where the site supplies its own signal."
   },
-
-  "browseSucceeded": "Read successfully.",
   "@browseSucceeded": {
     "description": "Almost never displayed; it exists so the mapping is exhaustive and testable."
   },
-
-  "downloadQueued": "Queued for download",
   "@downloadQueued": {
     "description": "One of the four DownloadState values. B37: the queue is visible and cancellable before the first byte."
   },
-
-  "downloadDownloading": "Downloading",
   "@downloadDownloading": {
     "description": "The in-progress state. The percentage is a number, never an estimate of the time left."
   },
-
-  "downloadDone": "Downloaded",
   "@downloadDone": {
     "description": "B6: the word appears only after the atomic rename, so the file is whole."
   },
-
-  "downloadFailed": "Download interrupted. You can try it again.",
   "@downloadFailed": {
     "description": "Retriable because nothing was written: the write is atomic."
   },
-
-  "actionFreeSpace": "Free space",
   "@actionFreeSpace": {
     "description": "The action for errorStorageFull. It works, so it is offered."
   },
-
-  "actionReportBug": "Report the problem",
   "@actionReportBug": {
     "description": "The action for errorParseFailed and errorSourceLayoutChanged. No Retry button repairs either."
+  },
+  "@historyTitle": {
+    "description": "Screen title"
+  },
+  "@historyUntitledChapter": {
+    "description": "B10 / E2: the site published no title for this chapter. Rendered here, NEVER as an index and never as a generated number - a fabricated title is a sentence the app invented and the reader would believe."
+  },
+  "@historyUntitledNovel": {
+    "description": "A novel whose stored title is empty. The same rule as the chapter: a placeholder, never an index."
+  },
+  "@historyLoadingTitle": {
+    "description": "Accessibility label while the list loads. Eight skeletons, no cover - the `history` variant of NovelRow declares no cover slot, and a loading state that shows one promises an image the filled rows will not have."
+  },
+  "@historyEmptyTitle": {
+    "description": "US-12 distinguishes 'never opened anything' from 'opened things and then cleared them'. This is the FIRST; the second is historyClearedTitle."
+  },
+  "@historyEmptyBody": {
+    "description": "Says what the screen is FOR, in the reader's terms, and states the order it will be in."
+  },
+  "@historyEmptyActionBrowse": {
+    "description": "The empty action depends on a LOCAL FACT: this one when the library is empty, historyEmptyActionLibrary when it is not. A fixed string would point at a library the reader does not have."
+  },
+  "@historyEmptyActionLibrary": {
+    "description": "The other half of the same local fact. Deciding by what is already on the phone is the difference between 'where do I go next' and 'here is a button'."
+  },
+  "@historyClearedTitle": {
+    "description": "Empty - no data (a). history.md § 4 splits this state in two because being cleared BY THE READER and being AGED OUT are different events with different emotional weight."
+  },
+  "@historyClearedBody": {
+    "description": "B46 said out loud, on the screen where the fear lives. Repeated in the clear confirmation, in this state, and in the store-failure sentence - four times, because it is the thing a reader on a device with no backup is actually afraid of."
+  },
+  "@historyAgedOutTitle": {
+    "description": "Empty - no data (b). Distinct from historyClearedTitle because nobody did this on purpose."
+  },
+  "@historyAgedOutBody": {
+    "description": "Both empty-no-data states say WHAT SURVIVED. An empty list after a destructive action that says nothing is the moment a reader goes looking for what else just disappeared."
+  },
+  "@historyLoadErrorTitle": {
+    "description": "Load error. The only failure this screen can have is its own local store - nothing on it ever needed a network (C14)."
+  },
+  "@historyLoadErrorBody": {
+    "description": "Unusually specific because the fear here is data loss and this app has no backup (ADR-010). Naming the three survivals by name is what stops the reader assuming the worst."
+  },
+  "@historyNoticeTitle": {
+    "description": "B47 stated on the screen where the fear lives: the list is bounded, and something else is not."
+  },
+  "@historyNoticeBody": {
+    "description": "B46 in one line."
+  },
+  "@historyRetentionLabel": {
+    "description": "A row WITH this label goes somewhere - it opens the sheet. The absence of a chevron would say the value can be changed in place, which it cannot."
+  },
+  "@historyRetentionChange": {
+    "description": "The action that opens SettingsChoiceSheet. 'Change' rather than 'Keep for one year': the value is printed next to it, and a label repeating it would be two places to update on every window change."
+  },
+  "@historyClearAction": {
+    "description": "The only destructive action on the most read-only screen in the app, and it says exactly what it clears. Never 'OK', never 'Delete'."
+  },
+  "@historyClearDialogTitle": {
+    "description": "A question, not a statement. 'Clear history?' lets the reader cancel without reading the body."
+  },
+  "@historyClearDialogBody": {
+    "description": "Clear confirmation",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "96"
+      }
+    }
+  },
+  "@historyClearDialogConfirm": {
+    "description": "The destructive button, in full. 'OK' on a dialog that empties a reader's log is a button asking them to trust a process they have just been told nothing about."
+  },
+  "@historyTerminalLine": {
+    "description": "B47's stated bound, at the END of the list, so a reader who scrolls to the bottom finds the limit rather than having it announced only at the top. There is no unbounded case, so this sentence is never absent: a screen that claimed a bound it was not applying is the exact failure B47 was written to avoid.",
+    "placeholders": {
+      "window": {
+        "type": "String",
+        "example": "one year"
+      }
+    }
+  },
+  "@historySheetTitle": {
+    "description": "design-system.md § 2.12's SettingsChoiceSheet. `3-7` renders its rows from the SAME HistoryRetention enum, which is what makes 'the same five windows' a fact rather than a promise."
+  },
+  "@historySheetWarning": {
+    "description": "The sentence above the options, BEFORE the reader chooses. It names the window currently highlighted and promises positions are untouched.",
+    "placeholders": {
+      "window": {
+        "type": "String",
+        "example": "one year"
+      }
+    }
+  },
+  "@historySheetWarningNone": {
+    "description": "The same sentence when the chosen window would drop nothing. A reader must not be told entries will be dropped when none will."
+  },
+  "@historySnackCleared": {
+    "description": "Success. It repeats the promise from the empty state, because a reader who has just emptied a list is exactly the reader who will wonder what else went with it."
+  },
+  "@historySnackNotCleared": {
+    "description": "Submit error: the list did NOT change. An optimistic empty list is a record of something that never happened."
+  },
+  "@historySnackWindowChanged": {
+    "description": "Success after a window change. It NAMES the new window, because a screen saying 'one year' in the notice and 'three months' in the snackbar is two lies.",
+    "placeholders": {
+      "window": {
+        "type": "String",
+        "example": "one year"
+      }
+    }
+  },
+  "@historyWindowOneWeek": {
+    "description": "The five window names are DATA, not screen copy: HistoryRetention.cutoffFrom is computed from the enum's Duration, and this string is only what a reader reads. Two representations of one window, and a test asserts the enum has exactly these five members."
+  },
+  "@historyWindowOneMonth": {
+    "description": "See historyWindowOneWeek."
+  },
+  "@historyWindowThreeMonths": {
+    "description": "See historyWindowOneWeek."
+  },
+  "@historyWindowOneYear": {
+    "description": "The default window. HistoryRetention.defaultWindow is this member, and a test asserts it rather than trusting the string."
+  },
+  "@historyWindowTwoYears": {
+    "description": "The longest window the design offers. There is deliberately no sixth: design-system.md § 2.12 forbids a 'forever' option on any bounded list, because an unbounded value next to bounded ones teaches the reader the bounds are negotiable."
   }
 }

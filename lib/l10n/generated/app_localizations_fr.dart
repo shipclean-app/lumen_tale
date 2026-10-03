@@ -155,4 +155,129 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get actionReportBug => 'Signaler le problème';
+
+  @override
+  String get historyTitle => 'Historique';
+
+  @override
+  String get historyUntitledChapter => 'Sans titre';
+
+  @override
+  String get historyUntitledNovel => 'Sans titre';
+
+  @override
+  String get historyLoadingTitle => 'Chargement de l\'historique';
+
+  @override
+  String get historyEmptyTitle => 'Rien de lu pour l\'instant';
+
+  @override
+  String get historyEmptyBody =>
+      'Les chapitres que vous ouvrez apparaissent ici, du plus récent au plus ancien.';
+
+  @override
+  String get historyEmptyActionBrowse => 'Parcourir une source';
+
+  @override
+  String get historyEmptyActionLibrary => 'Ouvrir votre bibliothèque';
+
+  @override
+  String get historyClearedTitle => 'Historique effacé';
+
+  @override
+  String get historyClearedBody =>
+      'Votre bibliothèque, vos téléchargements et toutes vos positions de lecture ont été conservés.';
+
+  @override
+  String get historyAgedOutTitle =>
+      'Tout ce qui datait de plus d\'un an a été supprimé';
+
+  @override
+  String get historyAgedOutBody =>
+      'Vos positions de lecture ont été conservées.';
+
+  @override
+  String get historyLoadErrorTitle => 'Votre historique n\'a pas pu être lu';
+
+  @override
+  String get historyLoadErrorBody =>
+      'Votre bibliothèque, vos chapitres téléchargés et toutes vos positions de lecture ne sont pas affectés.';
+
+  @override
+  String get historyNoticeTitle => 'L\'historique est borné par le temps';
+
+  @override
+  String get historyNoticeBody =>
+      'Effacer l\'historique ne déplace jamais une position de lecture retenue.';
+
+  @override
+  String get historyRetentionLabel => 'Durée de conservation';
+
+  @override
+  String get historyRetentionChange => 'Changer';
+
+  @override
+  String get historyClearAction => 'Effacer l\'historique';
+
+  @override
+  String get historyClearDialogTitle => 'Effacer l\'historique ?';
+
+  @override
+  String historyClearDialogBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entrées seront supprimées.',
+      one: 'Une entrée sera supprimée.',
+      zero: 'Aucune entrée ne sera supprimée.',
+    );
+    return '$_temp0 Votre bibliothèque, vos téléchargements et toutes vos positions de lecture seront conservés.';
+  }
+
+  @override
+  String get historyClearDialogConfirm => 'Effacer l\'historique';
+
+  @override
+  String historyTerminalLine(String window) {
+    return 'Voici l\'entrée la plus ancienne conservée. Les entrées de plus de $window seront supprimées, les plus anciennes d\'abord.';
+  }
+
+  @override
+  String get historySheetTitle => 'Durée de conservation';
+
+  @override
+  String historySheetWarning(String window) {
+    return 'Les entrées de plus de $window seront supprimées, les plus anciennes d\'abord. Vos positions de lecture ne sont jamais affectées.';
+  }
+
+  @override
+  String get historySheetWarningNone =>
+      'Aucune entrée ne sera supprimée. Vos positions de lecture ne sont jamais affectées.';
+
+  @override
+  String get historySnackCleared =>
+      'Historique effacé. Vos positions de lecture ont été conservées.';
+
+  @override
+  String get historySnackNotCleared => 'L\'historique n\'a pas été effacé.';
+
+  @override
+  String historySnackWindowChanged(String window) {
+    return 'L\'historique est désormais conservé $window.';
+  }
+
+  @override
+  String get historyWindowOneWeek => 'une semaine';
+
+  @override
+  String get historyWindowOneMonth => 'un mois';
+
+  @override
+  String get historyWindowThreeMonths => 'trois mois';
+
+  @override
+  String get historyWindowOneYear => 'un an';
+
+  @override
+  String get historyWindowTwoYears => 'deux ans';
 }

@@ -343,6 +343,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report the problem'**
   String get actionReportBug;
+
+  /// Screen title
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get historyTitle;
+
+  /// B10 / E2: the site published no title for this chapter. Rendered here, NEVER as an index and never as a generated number - a fabricated title is a sentence the app invented and the reader would believe.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get historyUntitledChapter;
+
+  /// A novel whose stored title is empty. The same rule as the chapter: a placeholder, never an index.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get historyUntitledNovel;
+
+  /// Accessibility label while the list loads. Eight skeletons, no cover - the `history` variant of NovelRow declares no cover slot, and a loading state that shows one promises an image the filled rows will not have.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading history'**
+  String get historyLoadingTitle;
+
+  /// US-12 distinguishes 'never opened anything' from 'opened things and then cleared them'. This is the FIRST; the second is historyClearedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing read yet'**
+  String get historyEmptyTitle;
+
+  /// Says what the screen is FOR, in the reader's terms, and states the order it will be in.
+  ///
+  /// In en, this message translates to:
+  /// **'The chapters you open appear here, newest first.'**
+  String get historyEmptyBody;
+
+  /// The empty action depends on a LOCAL FACT: this one when the library is empty, historyEmptyActionLibrary when it is not. A fixed string would point at a library the reader does not have.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse a source'**
+  String get historyEmptyActionBrowse;
+
+  /// The other half of the same local fact. Deciding by what is already on the phone is the difference between 'where do I go next' and 'here is a button'.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your library'**
+  String get historyEmptyActionLibrary;
+
+  /// Empty - no data (a). history.md § 4 splits this state in two because being cleared BY THE READER and being AGED OUT are different events with different emotional weight.
+  ///
+  /// In en, this message translates to:
+  /// **'History cleared'**
+  String get historyClearedTitle;
+
+  /// B46 said out loud, on the screen where the fear lives. Repeated in the clear confirmation, in this state, and in the store-failure sentence - four times, because it is the thing a reader on a device with no backup is actually afraid of.
+  ///
+  /// In en, this message translates to:
+  /// **'Your library, your downloads and every remembered position were kept.'**
+  String get historyClearedBody;
+
+  /// Empty - no data (b). Distinct from historyClearedTitle because nobody did this on purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything older than one year was dropped'**
+  String get historyAgedOutTitle;
+
+  /// Both empty-no-data states say WHAT SURVIVED. An empty list after a destructive action that says nothing is the moment a reader goes looking for what else just disappeared.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reading positions were kept.'**
+  String get historyAgedOutBody;
+
+  /// Load error. The only failure this screen can have is its own local store - nothing on it ever needed a network (C14).
+  ///
+  /// In en, this message translates to:
+  /// **'Your history could not be read'**
+  String get historyLoadErrorTitle;
+
+  /// Unusually specific because the fear here is data loss and this app has no backup (ADR-010). Naming the three survivals by name is what stops the reader assuming the worst.
+  ///
+  /// In en, this message translates to:
+  /// **'Your library, your downloaded chapters and every remembered reading position are unaffected.'**
+  String get historyLoadErrorBody;
+
+  /// B47 stated on the screen where the fear lives: the list is bounded, and something else is not.
+  ///
+  /// In en, this message translates to:
+  /// **'History is bounded by time'**
+  String get historyNoticeTitle;
+
+  /// B46 in one line.
+  ///
+  /// In en, this message translates to:
+  /// **'Clearing it never moves a remembered reading position.'**
+  String get historyNoticeBody;
+
+  /// A row WITH this label goes somewhere - it opens the sheet. The absence of a chevron would say the value can be changed in place, which it cannot.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep history for'**
+  String get historyRetentionLabel;
+
+  /// The action that opens SettingsChoiceSheet. 'Change' rather than 'Keep for one year': the value is printed next to it, and a label repeating it would be two places to update on every window change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get historyRetentionChange;
+
+  /// The only destructive action on the most read-only screen in the app, and it says exactly what it clears. Never 'OK', never 'Delete'.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get historyClearAction;
+
+  /// A question, not a statement. 'Clear history?' lets the reader cancel without reading the body.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history?'**
+  String get historyClearDialogTitle;
+
+  /// Clear confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No entries will be removed.} =1{One entry will be removed.} other{{count} entries will be removed.}} Your library, your downloads and every remembered reading position will be kept.'**
+  String historyClearDialogBody(int count);
+
+  /// The destructive button, in full. 'OK' on a dialog that empties a reader's log is a button asking them to trust a process they have just been told nothing about.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get historyClearDialogConfirm;
+
+  /// B47's stated bound, at the END of the list, so a reader who scrolls to the bottom finds the limit rather than having it announced only at the top. There is no unbounded case, so this sentence is never absent: a screen that claimed a bound it was not applying is the exact failure B47 was written to avoid.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the oldest entry kept. Entries older than {window} are dropped, oldest first.'**
+  String historyTerminalLine(String window);
+
+  /// design-system.md § 2.12's SettingsChoiceSheet. `3-7` renders its rows from the SAME HistoryRetention enum, which is what makes 'the same five windows' a fact rather than a promise.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep history for'**
+  String get historySheetTitle;
+
+  /// The sentence above the options, BEFORE the reader chooses. It names the window currently highlighted and promises positions are untouched.
+  ///
+  /// In en, this message translates to:
+  /// **'Entries older than {window} will be dropped, oldest first. Your reading positions are never affected.'**
+  String historySheetWarning(String window);
+
+  /// The same sentence when the chosen window would drop nothing. A reader must not be told entries will be dropped when none will.
+  ///
+  /// In en, this message translates to:
+  /// **'No entries will be dropped. Your reading positions are never affected.'**
+  String get historySheetWarningNone;
+
+  /// Success. It repeats the promise from the empty state, because a reader who has just emptied a list is exactly the reader who will wonder what else went with it.
+  ///
+  /// In en, this message translates to:
+  /// **'History cleared. Your reading positions were kept.'**
+  String get historySnackCleared;
+
+  /// Submit error: the list did NOT change. An optimistic empty list is a record of something that never happened.
+  ///
+  /// In en, this message translates to:
+  /// **'History was not cleared.'**
+  String get historySnackNotCleared;
+
+  /// Success after a window change. It NAMES the new window, because a screen saying 'one year' in the notice and 'three months' in the snackbar is two lies.
+  ///
+  /// In en, this message translates to:
+  /// **'History is now kept for {window}.'**
+  String historySnackWindowChanged(String window);
+
+  /// The five window names are DATA, not screen copy: HistoryRetention.cutoffFrom is computed from the enum's Duration, and this string is only what a reader reads. Two representations of one window, and a test asserts the enum has exactly these five members.
+  ///
+  /// In en, this message translates to:
+  /// **'one week'**
+  String get historyWindowOneWeek;
+
+  /// See historyWindowOneWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'one month'**
+  String get historyWindowOneMonth;
+
+  /// See historyWindowOneWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'three months'**
+  String get historyWindowThreeMonths;
+
+  /// The default window. HistoryRetention.defaultWindow is this member, and a test asserts it rather than trusting the string.
+  ///
+  /// In en, this message translates to:
+  /// **'one year'**
+  String get historyWindowOneYear;
+
+  /// The longest window the design offers. There is deliberately no sixth: design-system.md § 2.12 forbids a 'forever' option on any bounded list, because an unbounded value next to bounded ones teaches the reader the bounds are negotiable.
+  ///
+  /// In en, this message translates to:
+  /// **'two years'**
+  String get historyWindowTwoYears;
 }
 
 class _AppLocalizationsDelegate
