@@ -772,3 +772,120 @@ on implementation, not on hardware · Phase 6 still `in_progress`, `test_plan` s
 - **Do not assume a green script measured something.** `--test-plan` printed
   `no failures` over zero plans, and `version_pins_agree` is red for a reason that has
   nothing to do with dependencies.
+
+---
+
+## 2026-10-03 — Session 8: closing Phase 6, and the numbers I typed instead of deriving
+
+### STARTED FROM
+
+Phase 6 `in_progress` with `test_plan` the only `draft` deliverable, and Session 7's
+device work committed. The owner asked for Phase 6 to be done autonomously. **Phase 6's
+gate is six checklist items**, and measuring the register against them found **four of six
+missing** — so "autonomously" meant writing most of the deliverable, not approving it.
+
+### DECIDED
+
+- **Constraints are an id type and the register never counted them.** `C1`–`C14` exist,
+  13 of them are cited in plans' § 11, and § 2 reported only B and E. Adding the row
+  found a **second** hole: **C13** (*no login, no profiles, no sync*) appears in § 11
+  prose but in no test row. Truth is **12 of 14**, not 13.
+- **The three uncovered ids are two absences and one oversight, and only one is
+  excusable.** E21 and C10 are both the Novel Fire question (Q-004) — blocked on the
+  owner. **C13 is blocked on nobody having written the test**, it is owed to
+  `local-store` and `http-client`, and it is the most testable of the three. Recorded as
+  owed rather than written, because a register specifies tests and does not implement them.
+- **ADR-011 decided a GitHub Actions workflow on 2026-10-02 and no workflow file
+  existed.** An approved decision with nothing built on it. There is now
+  `.github/workflows/ci.yml` implementing five gates, triggered on `master` because that
+  is the default branch — a workflow naming a nonexistent branch never runs and reports
+  success.
+- **CI asserts more than "the build exited 0".** It greps the finished APK for
+  `lib/arm64-v8a/libsqlite3.so`, because a packaged library that fails to `dlopen` still
+  produces a green build. Verified both directions against a real APK.
+- **Gates 7 and 8 are deliberately not CI jobs.** One needs hardware nobody has, the
+  other needs 0-of-32 slices. A workflow that blocks every merge is not a safety net.
+- **The Chrome MCP gate item does not apply and saying so is the correct answer.**
+  `C3` is explicit: no web, no desktop, no tablet. A 19-row Chrome checklist would be 19
+  rows of *cannot run* — coverage that measures nothing. Answered with the Android
+  equivalents (`integration_test` + `tester`, `adb exec-out screencap`) and 19 screens
+  ordered by which becomes runnable first.
+- **The one genuinely broken section pointer in the corpus is fixed.** `0-2.md` cited
+  `architecture.md § 6.11`, which does not exist — it was a *line number* in § 3.1's
+  table, and § 6 ends at 6.6. The plan already documented the mistake in a warning; the
+  checker was reading the citation inside that warning. **broken: 3 → 0.**
+
+### REJECTED
+
+- **Hand-writing the pyramid counts.** I did exactly that on the first pass — 1170 /
+  338 / 173 — and they were **wrong**; the real figures are 880 / 334 / 169. They came
+  from nowhere, which is the defect this register spends § 6 warning about. Replaced with
+  derived values, and `check_plans.py` now verifies § 7 and § 8 so the numbers cannot
+  drift again. **The mistake was caught only because the checker was written afterwards
+  to recompute them — a check written before the claim, not after.**
+- **Rewording three documents to silence `section_references`.** The 3 remaining
+  "unknown file" reports point at files that **exist** — two in `.opencode/rules/`, one
+  a slice plan — and the checker indexes neither directory. Editing correct prose to
+  satisfy a parser is changing the input to get green. Logged as **F-006** instead.
+- **Adding `forge-guard` to CI.** `forge-guard.js` lives in the Forge skill directory,
+  which is not vendored here, so the job would fail on a missing path rather than on a
+  defect — a red X meaning nothing. Documented as gate 5, run locally.
+- **Floating the Flutter version in CI.** Pinned to 3.47.6 so a toolchain change arrives
+  as a visible diff rather than an unexplained red build.
+
+### BLOCKED
+
+- **Gate 7 (on-device) could not be re-run at the end of the pass.** The Z2577 dropped
+  off USB mid-session and `adb kill-server && adb start-server` did not recover it. **Not
+  reported as passing on that basis**: the 6/6 stands from the run earlier in the day,
+  and after the owner reconnected the phone it was **re-run and reproduced 6/6**, with
+  `persist.log.tag` still `I` across the reconnect. Recorded because a check that could
+  not run must announce what it did not cover.
+- **`version_pins_agree`** still fails — **F-005**, pre-existing, a checker bug.
+- **`section_references`** still fails on 3 unknown targets — **F-006**, a checker scope
+  gap. `broken` is 0.
+- **6 findings are open and unpromoted** (F-001…F-006). Promotion means editing rule files,
+  which belongs to `project-rules-architect`; Forge routes findings and does not write
+  rules. Not this session's to close.
+
+### FILES TOUCHED
+
+| File | Change |
+|---|---|
+| `.github/workflows/ci.yml` | **new** — ADR-011's workflow: gates 1, 2, 3, 4, 6 + native-lib assertion |
+| `.forge/test-plan.md` | §2 constraints row; §6 rewritten; **§7–§11 added** (pyramid, foundations, regression, screens, environments) |
+| `.forge/plans/check_plans.py` | verifies §2's constraints row, §7's tiers, §8's per-foundation counts; C10/C13 guards; E21 guard de-brittled |
+| `.forge/plans/0-2.md` | the broken `§ 6.11` pointer, without degrading the note that explains it |
+
+### STATUS
+
+`dart format` clean · `flutter analyze --fatal-infos` **zero issues** · host **32/32** ·
+**on-device 6/6, re-verified after reconnect** · `check_plans.py` **38 clean, 0 failures** ·
+`forge-guard` **16/17** (F-005) · `section_references` **broken 0**, 3 unknown (F-006) ·
+`test_plan` still **`draft`** — Phase 6's gate is human and has not been passed.
+
+### NEXT SESSION SHOULD
+
+- **Pass or fail the Phase 6 gate.** `test_plan` is written and verified; it is waiting
+  on an explicit approval, not on more work.
+- **Write C13's test row** in `local-store` and `http-client`: no user/profile/session
+  table in the schema, no auth or sync dependency in `pubspec.yaml`, no provider reaching
+  the network for identity. It is owed and it is not blocked on anything.
+- **Promote F-001…F-006** via `project-rules-architect`. Six findings with domains and no
+  promotion have changed nothing, which is the condition the rule names.
+- **Run CI once.** The workflow has never executed on GitHub. It passes locally gate by
+  gate, which is not the same as having run there.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not type a number into `test-plan.md`.** I did, on the first pass, and all three
+  were wrong. The register's premise is that its counts are derived; § 7 and § 8 now have
+  a checker because of it.
+- **Do not call a plan's § 11 passing proof that a foundation works.**
+  `coverage-check.js` verifies structure — headings, ids, non-empty sections — and never
+  behaviour. **2 of 14 declared foundation test locations exist.**
+- **Do not edit a document to quiet a checker.** The three remaining `unknown file`
+  reports point at files that exist; the checker simply does not index
+  `.opencode/rules/` or `.forge/plans/`.
+- **Do not add a CI job that needs hardware this project does not have**, and do not let
+  the E2E rows into CI while 0 of 32 slices exist.

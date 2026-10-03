@@ -434,7 +434,7 @@ def check_test_plan():
                 if all(not c for c in cells):
                     continue
                 n += 1
-                ids |= set(re.findall(r'\b(?:B\d{1,2}|E\d{1,2})\b', ' '.join(cells)))
+                ids |= set(re.findall(r'\b(?:B\d{1,2}|E\d{1,2}|C\d{1,2})\b', ' '.join(cells)))
                 if 'E2E' in title:
                     e2e.append((name, ' '.join(cells)[:88]))
             key = f'{num}|{title}'
@@ -449,6 +449,11 @@ def check_test_plan():
         r'^\| (B\d+) \|', prd[prd.index('## 4. Business rules'):prd.index('## 5. Constraints')], re.M)}
     live_e = {m.group(1) for m in re.finditer(
         r'^\| (E\d+) \|', prd[prd.index('## 6. Edge cases'):prd.index('## 7. Non-functional')], re.M)}
+    # Constraints were the one id type § 2 never reported. They are ids like any
+    # other and a plan cites them in § 11, so the register either counts them or
+    # it is quietly asserting coverage it never measured.
+    live_c = {m.group(1) for m in re.finditer(
+        r'^\| (C\d+) \|', prd[prd.index('## 5. Constraints'):prd.index('## 6. Edge cases')], re.M)}
 
     text = plan_doc.read_text(encoding='utf-8')
     total = sum(rows.values())
@@ -475,7 +480,8 @@ def check_test_plan():
                        f'{len(plans)} do')
 
     for label, live, have in (('business rules', live_b, len(live_b & ids)),
-                              ('edge cases', live_e, len(live_e & ids))):
+                              ('edge cases', live_e, len(live_e & ids)),
+                              ('constraints', live_c, len(live_c & ids))):
         m = re.search(rf'^\| {label} [^|]* \| (\d+) \| \*\*(\d+)\*\*', text, re.M | re.I)
         if not m:
             fail(plan_doc, f'§ 2 has no {label} row')
@@ -483,13 +489,26 @@ def check_test_plan():
             fail(plan_doc, f'§ 2 says {label}: {m.group(1)} live, {m.group(2)} tested; '
                            f'the truth is {len(live)} live, {have} tested')
 
-    # E21's absence from § 11 is a recorded fact, not a silent hole. If it ever
-    # gains a § 11 row the note above the table becomes wrong, so fail loudly.
+    # E21's absence from § 11 is a recorded fact, not a silent hole. The guard
+    # checks substance, not wording: it used to grep for the literal phrase "the
+    # wrong section", so rewording § 2 — without changing a single fact about
+    # E21 — turned the register red. A guard that fails on a synonym teaches
+    # authors to keep the magic words rather than to keep the meaning.
     if 'E21' not in ids:
-        note = 'the wrong section' in text and 'Q-004' in text
-        if not note:
-            fail(plan_doc, 'E21 has no § 11 row and § 2 no longer explains why — '
-                           'either add the row or say where its check lives')
+        explains = 'E21' in text and ('2-1' in text or 'Q-004' in text)
+        if not explains:
+            fail(plan_doc, 'E21 has no § 11 row and § 2 no longer says where its '
+                           'check lives — name the plan (2-1) or the blocker (Q-004)')
+
+    # C10 and C13 are the two absences, and they are not the same kind of absence:
+    # C10 is blocked on Q-004 (the owner must read Novel Fire's terms), while C13
+    # is blocked on nobody having written the test. Only the first is excusable.
+    for cid in ('C10', 'C13'):
+        if cid not in ids:
+            if not (cid in text and 'Q-004' in text):
+                fail(plan_doc, f'{cid} has no § 11 row and § 2 does not say so — '
+                               'either add the row or state that its verification '
+                               'is blocked on Q-004, as E21 already is')
 
     present = sum(1 for _, _, l in locs if (ROOT / l).exists())
     m = re.search(r'exist on disk \| \*\*(\d+) of (\d+)\*\*', text)
@@ -504,6 +523,48 @@ def check_test_plan():
         fail(plan_doc, '§ 4 has no E2E row-count row')
     elif int(m.group(1)) != len(e2e):
         fail(plan_doc, f'§ 4 says {m.group(1)} E2E rows; the plans contain {len(e2e)}')
+    # § 7 re-expresses § 1's subsets as pyramid tiers, and § 8 breaks the same rows
+    # down per foundation. Both are typed numbers in a document whose whole premise
+    # is that its numbers are derived. These checks are what stops that premise
+    # from being decoration: they were proven RED first (the table shipped with
+    # 1170/338/173, invented, and this failed it).
+    tiers = {}
+    for num, label in (('1', 'Unit'), ('2', 'Component'), ('3', 'Integration'),
+                       ('4', 'E2E'), ('5', 'Manual')):
+        tiers[label] = sum(v for k, v in rows.items() if k.startswith(num + '|'))
+    for label, n in tiers.items():
+        m = re.search(rf'^\|\s*\*?\*?\d?\.?\s*{label}\*?\*?\s*\|[^|]*\|[^|]*\|[^|]*\| \*\*(\d+)\*\* \|',
+                      text, re.M)
+        if not m:
+            fail(plan_doc, f'§ 7 has no {label} row carrying a count')
+        elif int(m.group(1)) != n:
+            fail(plan_doc, f'§ 7 says {label} = {m.group(1)}; the plans contain {n}')
+
+    # Per-foundation rows, each of which must appear in § 8 with its own count.
+    for name in sorted(p.stem for p in PLANS.glob('*.md') if p.stem != 'README'):
+        body = re.search(r'^##\s+11\..*?(?=^##\s+12\.|\Z)',
+                         (PLANS / f'{name}.md').read_text(encoding='utf-8'), re.M | re.S)
+        if not body:
+            continue
+        seg = body.group(0)
+        marks = [(x.start(), x.group(1)) for x in SUB.finditer(seg)]
+        n = 0
+        for i, (pos, _num) in enumerate(marks):
+            chunk = seg[pos:marks[i + 1][0] if i + 1 < len(marks) else len(seg)]
+            for line in chunk.split('\n'):
+                if not line.startswith('|') or SEP.match(line):
+                    continue
+                cells = [c.strip() for c in line.strip().strip('|').split('|')]
+                if not cells or cells[0] in ('Cible', 'Target'):
+                    continue
+                if all(not c for c in cells):
+                    continue
+                n += 1
+        m = re.search(rf'^\| `{re.escape(name)}` \| \*\*(\d+)\*\*', text, re.M)
+        if m and int(m.group(1)) != n:
+            fail(plan_doc, f'§ 8 says {name} declares {m.group(1)} rows; its § 11 '
+                           f'contains {n}')
+
     if len(re.findall(r'^- \*\*[\w-]+\*\* — ', text, re.M)) != len(e2e):
         fail(plan_doc, f'§ 5 lists {len(re.findall(r"^- \\*\\*[\\w-]+\\*\\* — ", text, re.M))} '
                        f'E2E entries; the plans contain {len(e2e)}')

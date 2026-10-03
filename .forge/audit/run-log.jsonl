@@ -737,3 +737,7 @@
 {"ts":"2026-10-03T04:28:00.863Z","type":"hash","kind":"deliverable","entry":"test_plan","content_hash":"sha256:21e029abf7a4"}
 {"ts":"2026-10-03T05:53:18.336Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
 {"ts":"2026-10-03T05:53:56.265Z","type":"finding_raised","id":"F-005","domain":"testing.md","severity":"majeur"}
+{"ts":"2026-10-03T06:11:27.402Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
+{"ts":"2026-10-03T06:14:00.454Z","type":"finding_raised","id":"F-006","domain":"workflow.md","severity":"majeur"}
+{"ts":"2026-10-03T06:15:07.616Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
+{"ts":"2026-10-03T06:16:42.729Z","type":"register","deliverable":"0-2","path":".forge/plans/0-2.md","kind":"slice"}

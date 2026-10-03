@@ -1105,19 +1105,27 @@
       "path": ".forge/test-plan.md",
       "type": "test-plan",
       "status": "draft",
-      "content_hash": "sha256:bdb75ed6a7a1",
+      "content_hash": "sha256:f7cf8101a0c5",
       "headings": {
         "1": "The inventory",
         "2": "Coverage of the rule corpus",
         "3": "What is written, as opposed to planned",
         "4": "The split that Q-008 draws",
         "5": "The whole E2E suite, all 11 rows",
-        "6": "What Phase 6 does next",
+        "6": "What Phase 6 produced",
+        "7": "The pyramid",
+        "8": "Foundation tests come before every business slice",
+        "9": "The regression suite, and the command for each part",
+        "10": "Per-screen verification",
+        "11": "Environments, and their variables",
         "4.1": "Two claims here that measurement refuted",
         "4.2": "`flutter test` cannot run a test on a phone — and says so silently",
-        "4.3": "What is still unproven"
+        "4.3": "What is still unproven",
+        "11.1": "The device",
+        "11.2": "Variables and commands",
+        "11.3": "Two tool defects Phase 6 had to fix to make any of this checkable"
       },
-      "updated_at": "2026-10-03T05:53:18.331Z",
+      "updated_at": "2026-10-03T06:15:07.614Z",
       "derived_from": [
         ".forge/plans/*.md section 11"
       ]
@@ -1944,11 +1952,11 @@
       "plan_hash": "sha256:92796904c7c7"
     },
     "0-2": {
-      "path": ".forge/architecture.md",
-      "type": "0-2",
+      "path": ".forge/plans/0-2.md",
+      "type": "implementation-plan",
       "status": "planned",
-      "content_hash": "sha256:c2159a7797e8",
-      "updated_at": "2026-10-03T04:17:51.711Z",
+      "content_hash": "sha256:9f883149f33b",
+      "updated_at": "2026-10-03T06:16:42.726Z",
       "depends_on": [
         "0-1"
       ],
@@ -1965,7 +1973,46 @@
         "E8"
       ],
       "plan_path": ".forge/plans/0-2.md",
-      "plan_hash": "sha256:1a1c0eaab3ce"
+      "plan_hash": "sha256:9f883149f33b",
+      "headings": {
+        "1": "Résumé de la slice",
+        "2": "Contrats de données (code)",
+        "3": "Algorithmes critiques",
+        "4": "Plan composants",
+        "5": "Gestion d'état (state management)",
+        "6": "Traçabilité des règles",
+        "7": "Pièges à éviter",
+        "8": "Dépendances",
+        "9": "Checklist de tâches",
+        "10": "Critères d'acceptation",
+        "11": "Plan de tests",
+        "2.1": "Schémas de validation",
+        "2.2": "Types Dart — réels, copiables",
+        "2.3": "Contrats API",
+        "3.1": "Mesurer une fixture",
+        "3.2": "Décider le verdict — les cinq issues",
+        "3.3": "Enregistrer, puis vérifier que l'enregistrement est honnête",
+        "3.4": "Les deux corrections de § 2.2 — **la version livrée**",
+        "4.1": "Arbre de composants",
+        "4.2": "Composants",
+        "4.3": "États par écran",
+        "4.4": "Formulaires",
+        "6.1": "Règles métier (B*)",
+        "6.2": "Edge cases (E*)",
+        "6.3": "Contraintes (C*)",
+        "11.1": "Tests unitaires",
+        "11.2": "Tests de composants",
+        "11.3": "Tests d'intégration",
+        "11.4": "Tests E2E",
+        "11.5": "Vérifications manuelles"
+      },
+      "slice": "0-2",
+      "derived_from": [
+        ".forge/prd.md",
+        ".forge/architecture.md",
+        ".forge/design/design-system.md",
+        ".forge/design/screens"
+      ]
     },
     "0-3": {
       "path": ".forge/architecture.md",
@@ -2757,7 +2804,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 214,
+      "register": 217,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 132,
@@ -2768,7 +2815,7 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 5,
+      "finding_raised": 6,
       "fast_track_enter": 1
     }
   },
@@ -2885,6 +2932,19 @@
       "correction": "Exclude .dart_tool/ from the version-pin scan, or keep only keys that resolve to real packages in pubspec.lock. Until it is fixed, version_pins_agree must be read as noise -- which is precisely how a genuine version conflict would be waved through.",
       "artifact": null,
       "raised_at": "2026-10-03T05:53:56.262Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-006",
+      "domain": "workflow.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "consistency-check.js section_references reports 3 'references_to_unknown_file' that are not defects: .opencode/rules/ and .forge/plans/ are both absent from its index, so a document citing a rule file (18-external-contracts.md, 06-database.md) or a slice plan (localisation.md) is reported as pointing at nothing. Measured 2026-10-03 after the one genuine broken pointer (0-2.md citing architecture.md 6.11, a line number misread as a section) was fixed; broken is now 0.",
+      "correction": "Extend referenceIndex to cover .opencode/rules/*.md and .forge/plans/*.md, or classify a target that exists on disk outside .forge as 'external target, not indexed' rather than 'unknown'. Until then section_references cannot pass, and a check that can never pass is a check nobody reads.",
+      "artifact": null,
+      "raised_at": "2026-10-03T06:14:00.451Z",
       "promoted_to": null,
       "resolved_at": null
     }
