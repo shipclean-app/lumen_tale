@@ -114,6 +114,34 @@ rule file in a form an implementer would find.
 
 ## 5. Status vocabulary
 
-Plans are `draft` until the gate. `state.js set-status … slice <key> planned` moves a
-slice from `identified` to `planned`, and the plan's front matter `status:` follows.
-A plan that says `Status: draft` while its slice says `planned` is a contradiction.
+**Every plan's front matter says `status: identified`, and that is the only correct
+value.** Forge's `STATUS_VOCAB.slice` is
+`identified | planned | in_progress | implemented | validated` — **`draft` is not in
+it**. A plan registered as a slice that declares `status: draft` fails
+`forge-guard`'s `state_frontmatter_in_sync`, which is what happened when these 38
+plans were first registered: all 38 diverged at once.
+
+So the two documents do **not** use different vocabularies here. `identified` means
+"the plan exists and is written; it has not been validated". `planned` is the next
+step, and it is reached by:
+
+```bash
+node "$FORGE/scripts/state.js" set-status /workspaces/lumen_tale slice <key> planned
+```
+
+which writes **both** the state and the plan's front matter, so they cannot drift
+apart. Do not edit a plan's `status:` by hand.
+
+### Re-hashing a plan after editing it
+
+`state.json` carries a `content_hash` per node, and `forge-guard`'s
+`content_hashes_current` compares it against the file. **Every edit to a plan
+therefore needs a re-hash**, or the gate reports it as an out-of-band edit:
+
+```bash
+node .forge/plans/hash_plans.js    # uses forge-lib's own contentHash()
+```
+
+**Do not hand-write the hash.** It is taken over the *front-matter-stripped,
+normalised* body, not the raw bytes — a byte-level `sha256` makes all 38 plans
+report as drifted while looking perfectly correct.

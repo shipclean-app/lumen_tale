@@ -1758,7 +1758,7 @@
       "path": ".forge/architecture.md",
       "type": "apk-pipeline",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:479157e04535",
       "updated_at": "2026-10-02T17:15:09.520Z",
       "depends_on": [],
       "depended_on_by": [
@@ -1768,13 +1768,15 @@
       "rule_ids": [
         "B31",
         "B34"
-      ]
+      ],
+      "plan_path": ".forge/plans/apk-pipeline.md",
+      "plan_hash": "sha256:69d0bdb31cf0"
     },
     "local-store": {
       "path": ".forge/architecture.md",
       "type": "local-store",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:b7187e2432d5",
       "updated_at": "2026-10-02T17:15:09.582Z",
       "depends_on": [],
       "depended_on_by": [
@@ -1790,13 +1792,15 @@
         "B31",
         "B32",
         "B46"
-      ]
+      ],
+      "plan_path": ".forge/plans/local-store.md",
+      "plan_hash": "sha256:367fc29dc1be"
     },
     "failure-discriminator": {
       "path": ".forge/architecture.md",
       "type": "failure-discriminator",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:2b2e30104eae",
       "updated_at": "2026-10-02T17:15:09.642Z",
       "depends_on": [
         "0-1",
@@ -1814,13 +1818,15 @@
         "B23",
         "B24"
       ],
-      "note": "the four-outcome vocabulary (BrowseOutcome, ReadAttempt, ContentProbe, OutcomeDiscriminator) and SourceFailure, in lib/core/error/. It does NOT own lib/core/network/fetch_result.dart: FetchResult is produced by core/network and therefore DEFINED by http-client (wave 0), which this foundation depends on and imports. Added 2026-10-03: the dependency ran backwards for that one type — this plan wrote FetchResult while declaring a dependency on the layer that produces it, so the consumer owned the producer's type. A consumer writing its producer's type is an inverted dependency, hence a cycle, hence two answers to 'what did the transport do'. depends_on and depended_on_by are unchanged; only file ownership moved."
+      "note": "the four-outcome vocabulary (BrowseOutcome, ReadAttempt, ContentProbe, OutcomeDiscriminator) and SourceFailure, in lib/core/error/. It does NOT own lib/core/network/fetch_result.dart: FetchResult is produced by core/network and therefore DEFINED by http-client (wave 0), which this foundation depends on and imports. Added 2026-10-03: the dependency ran backwards for that one type — this plan wrote FetchResult while declaring a dependency on the layer that produces it, so the consumer owned the producer's type. A consumer writing its producer's type is an inverted dependency, hence a cycle, hence two answers to 'what did the transport do'. depends_on and depended_on_by are unchanged; only file ownership moved.",
+      "plan_path": ".forge/plans/failure-discriminator.md",
+      "plan_hash": "sha256:926a09a40fdb"
     },
     "localisation": {
       "path": ".forge/architecture.md",
       "type": "localisation",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:133c46ad7028",
       "updated_at": "2026-10-02T17:15:09.699Z",
       "depends_on": [],
       "depended_on_by": [
@@ -1831,13 +1837,15 @@
       "impl_wave": 0,
       "rule_ids": [
         "B28"
-      ]
+      ],
+      "plan_path": ".forge/plans/localisation.md",
+      "plan_hash": "sha256:47d5fdb523d2"
     },
     "theme-type": {
       "path": ".forge/architecture.md",
       "type": "theme-type",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:676cae8234eb",
       "updated_at": "2026-10-02T17:15:09.755Z",
       "depends_on": [],
       "depended_on_by": [
@@ -1849,13 +1857,15 @@
       "rule_ids": [
         "B26",
         "B27"
-      ]
+      ],
+      "plan_path": ".forge/plans/theme-type.md",
+      "plan_hash": "sha256:bbd0470f9c8f"
     },
     "http-client": {
       "path": ".forge/architecture.md",
       "type": "http-client",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:ede232f95bdf",
       "updated_at": "2026-10-02T22:35:00.000Z",
       "depends_on": [],
       "depended_on_by": [
@@ -1868,7 +1878,9 @@
         "C7",
         "B29"
       ],
-      "note": "the dio client, typed exception boundary and rate limiter. Added 2026-10-02: core/network/ was named by conventions.md, the layer table and three slices, and owned by none — a layer no slice builds is a layer no slice can call.\nCORRECTION, 2026-10-03: this foundation now OWNS lib/core/network/fetch_result.dart. FetchResult (FetchSucceeded, FetchTransportFailed, FetchRateLimited) and HttpResponse are defined here at wave 0, and failure-discriminator (wave 2) imports FetchResult without adding a field — its plan used to write the file. The dependency direction was already correct in state.json (failure-discriminator.depends_on lists http-client); only file ownership was reversed, so the graph did not move. Also settled here: HttpClient.get returns Future<HttpResponse> (outcome + status + body + contentType), never a bare FetchResult — a discriminator carries no body, so a source could not read a page; and AppException lives in lib/core/error/, not core/utils/errors/ (13-error-handling.md corrected)."
+      "note": "the dio client, typed exception boundary and rate limiter. Added 2026-10-02: core/network/ was named by conventions.md, the layer table and three slices, and owned by none — a layer no slice builds is a layer no slice can call.\nCORRECTION, 2026-10-03: this foundation now OWNS lib/core/network/fetch_result.dart. FetchResult (FetchSucceeded, FetchTransportFailed, FetchRateLimited) and HttpResponse are defined here at wave 0, and failure-discriminator (wave 2) imports FetchResult without adding a field — its plan used to write the file. The dependency direction was already correct in state.json (failure-discriminator.depends_on lists http-client); only file ownership was reversed, so the graph did not move. Also settled here: HttpClient.get returns Future<HttpResponse> (outcome + status + body + contentType), never a bare FetchResult — a discriminator carries no body, so a source could not read a page; and AppException lives in lib/core/error/, not core/utils/errors/ (13-error-handling.md corrected).",
+      "plan_path": ".forge/plans/http-client.md",
+      "plan_hash": "sha256:75113e07b961"
     }
   },
   "modules": {},
@@ -1877,7 +1889,7 @@
       "path": ".forge/architecture.md",
       "type": "0-1",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:86ddd33efa7a",
       "updated_at": "2026-10-02T17:15:07.825Z",
       "depends_on": [],
       "depended_on_by": [
@@ -1896,13 +1908,15 @@
         "E3",
         "E4",
         "E22"
-      ]
+      ],
+      "plan_path": ".forge/plans/0-1.md",
+      "plan_hash": "sha256:92796904c7c7"
     },
     "0-2": {
       "path": ".forge/architecture.md",
       "type": "0-2",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:297aa2a76b50",
       "updated_at": "2026-10-02T17:15:07.874Z",
       "depends_on": [
         "0-1"
@@ -1918,13 +1932,15 @@
         "E2",
         "E4",
         "E8"
-      ]
+      ],
+      "plan_path": ".forge/plans/0-2.md",
+      "plan_hash": "sha256:1a1c0eaab3ce"
     },
     "0-3": {
       "path": ".forge/architecture.md",
       "type": "0-3",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:f9cb00557a0c",
       "updated_at": "2026-10-02T17:15:07.932Z",
       "depends_on": [
         "0-1"
@@ -1940,13 +1956,15 @@
       ],
       "edge_case_ids": [
         "E4"
-      ]
+      ],
+      "plan_path": ".forge/plans/0-3.md",
+      "plan_hash": "sha256:e12ae939768e"
     },
     "0-4": {
       "path": ".forge/architecture.md",
       "type": "0-4",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:5a9b8983ba33",
       "updated_at": "2026-10-02T17:15:08.005Z",
       "depends_on": [
         "0-1",
@@ -1961,13 +1979,15 @@
         "B44"
       ],
       "edge_case_ids": [],
-      "note": "research slice: its output is a classification record, not code. B44 is attached because deciding what is furniture is the mechanism by which raw HTML never reaches the converted output."
+      "note": "research slice: its output is a classification record, not code. B44 is attached because deciding what is furniture is the mechanism by which raw HTML never reaches the converted output.",
+      "plan_path": ".forge/plans/0-4.md",
+      "plan_hash": "sha256:7eed69ef88d1"
     },
     "2-1": {
       "path": ".forge/architecture.md",
       "type": "2-1",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:c4c90712bf6a",
       "updated_at": "2026-10-02T17:15:08.083Z",
       "depends_on": [
         "0-1",
@@ -2003,13 +2023,15 @@
         "E8",
         "E10",
         "E16"
-      ]
+      ],
+      "plan_path": ".forge/plans/2-1.md",
+      "plan_hash": "sha256:528f846678bb"
     },
     "2-2": {
       "path": ".forge/architecture.md",
       "type": "2-2",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:53cef10d934d",
       "updated_at": "2026-10-02T20:02:53.220Z",
       "depends_on": [
         "2-1",
@@ -2029,13 +2051,15 @@
         "E3",
         "E18",
         "E22"
-      ]
+      ],
+      "plan_path": ".forge/plans/2-2.md",
+      "plan_hash": "sha256:537442ebc841"
     },
     "2-3": {
       "path": ".forge/architecture.md",
       "type": "2-3",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:ce38ac0e43a0",
       "updated_at": "2026-10-02T17:15:08.201Z",
       "depends_on": [
         "2-2"
@@ -2053,13 +2077,15 @@
       "edge_case_ids": [
         "E14",
         "E15"
-      ]
+      ],
+      "plan_path": ".forge/plans/2-3.md",
+      "plan_hash": "sha256:2628667508e9"
     },
     "2-4": {
       "path": ".forge/architecture.md",
       "type": "2-4",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:16c07ab4866b",
       "updated_at": "2026-10-02T17:15:08.255Z",
       "depends_on": [
         "2-3",
@@ -2074,13 +2100,15 @@
         "B7",
         "B25"
       ],
-      "edge_case_ids": []
+      "edge_case_ids": [],
+      "plan_path": ".forge/plans/2-4.md",
+      "plan_hash": "sha256:b16731dd4935"
     },
     "2-5": {
       "path": ".forge/architecture.md",
       "type": "2-5",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:fda61959edfa",
       "updated_at": "2026-10-02T17:15:08.331Z",
       "depends_on": [
         "local-store",
@@ -2100,13 +2128,15 @@
       "edge_case_ids": [
         "E17"
       ],
-      "note": "also owns the /library screen"
+      "note": "also owns the /library screen",
+      "plan_path": ".forge/plans/2-5.md",
+      "plan_hash": "sha256:1b555214b53f"
     },
     "2-6": {
       "path": ".forge/architecture.md",
       "type": "2-6",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:b9ad869405e7",
       "updated_at": "2026-10-02T17:15:08.392Z",
       "depends_on": [
         "local-store"
@@ -2119,13 +2149,15 @@
         "B16",
         "B27"
       ],
-      "edge_case_ids": []
+      "edge_case_ids": [],
+      "plan_path": ".forge/plans/2-6.md",
+      "plan_hash": "sha256:9e054b40521e"
     },
     "2-7": {
       "path": ".forge/architecture.md",
       "type": "2-7",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:0d5d5a0a257e",
       "updated_at": "2026-10-02T17:15:08.460Z",
       "depends_on": [
         "2-4"
@@ -2140,13 +2172,15 @@
       ],
       "edge_case_ids": [
         "E14"
-      ]
+      ],
+      "plan_path": ".forge/plans/2-7.md",
+      "plan_hash": "sha256:ccda79054cd8"
     },
     "2-8": {
       "path": ".forge/architecture.md",
       "type": "2-8",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:0e6cd13446c3",
       "updated_at": "2026-10-02T17:15:08.534Z",
       "depends_on": [
         "theme-type",
@@ -2162,13 +2196,15 @@
         "E12",
         "E13",
         "E14"
-      ]
+      ],
+      "plan_path": ".forge/plans/2-8.md",
+      "plan_hash": "sha256:1f76738abe32"
     },
     "3-1": {
       "path": ".forge/architecture.md",
       "type": "3-1",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:9d641e550ccc",
       "updated_at": "2026-10-02T17:15:08.619Z",
       "depends_on": [
         "2-1",
@@ -2191,13 +2227,15 @@
         "E5",
         "E8",
         "E19"
-      ]
+      ],
+      "plan_path": ".forge/plans/3-1.md",
+      "plan_hash": "sha256:936846bb4f4f"
     },
     "3-2": {
       "path": ".forge/architecture.md",
       "type": "3-2",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:ee626df73f62",
       "updated_at": "2026-10-02T17:15:08.705Z",
       "depends_on": [
         "3-1",
@@ -2216,13 +2254,15 @@
       "edge_case_ids": [
         "E3",
         "E10"
-      ]
+      ],
+      "plan_path": ".forge/plans/3-2.md",
+      "plan_hash": "sha256:626927336fd0"
     },
     "3-3": {
       "path": ".forge/architecture.md",
       "type": "3-3",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:dd38e35efaef",
       "updated_at": "2026-10-02T17:15:08.758Z",
       "depends_on": [
         "3-2",
@@ -2240,13 +2280,15 @@
       ],
       "edge_case_ids": [
         "E6"
-      ]
+      ],
+      "plan_path": ".forge/plans/3-3.md",
+      "plan_hash": "sha256:92597b0c7a0f"
     },
     "3-4": {
       "path": ".forge/architecture.md",
       "type": "3-4",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:e04d577cd939",
       "updated_at": "2026-10-02T17:15:08.822Z",
       "depends_on": [
         "2-5",
@@ -2260,13 +2302,15 @@
       ],
       "edge_case_ids": [
         "E11"
-      ]
+      ],
+      "plan_path": ".forge/plans/3-4.md",
+      "plan_hash": "sha256:bb189ca600d8"
     },
     "3-5": {
       "path": ".forge/architecture.md",
       "type": "3-5",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:89ca0c7ae32c",
       "updated_at": "2026-10-02T17:15:08.873Z",
       "depends_on": [
         "apk-pipeline",
@@ -2277,13 +2321,15 @@
       "rule_ids": [
         "B43"
       ],
-      "edge_case_ids": []
+      "edge_case_ids": [],
+      "plan_path": ".forge/plans/3-5.md",
+      "plan_hash": "sha256:a04ed9738a88"
     },
     "5-1": {
       "path": ".forge/architecture.md",
       "type": "5-1",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:5c33b23ccd1d",
       "updated_at": "2026-10-02T17:15:08.933Z",
       "depends_on": [
         "3-3"
@@ -2300,13 +2346,15 @@
         "E6",
         "E7",
         "E15"
-      ]
+      ],
+      "plan_path": ".forge/plans/5-1.md",
+      "plan_hash": "sha256:676fbeec27b2"
     },
     "5-2": {
       "path": ".forge/architecture.md",
       "type": "5-2",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:786b8667c8bf",
       "updated_at": "2026-10-02T17:15:08.989Z",
       "depends_on": [
         "5-1"
@@ -2322,13 +2370,15 @@
       "edge_case_ids": [
         "E7",
         "E15"
-      ]
+      ],
+      "plan_path": ".forge/plans/5-2.md",
+      "plan_hash": "sha256:2866149f2fd7"
     },
     "5-3": {
       "path": ".forge/architecture.md",
       "type": "5-3",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:4b676214837c",
       "updated_at": "2026-10-02T17:15:09.044Z",
       "depends_on": [
         "5-2"
@@ -2343,13 +2393,15 @@
       "edge_case_ids": [
         "E7",
         "E20"
-      ]
+      ],
+      "plan_path": ".forge/plans/5-3.md",
+      "plan_hash": "sha256:6e6ad934be9b"
     },
     "6-1": {
       "path": ".forge/architecture.md",
       "type": "6-1",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:6a6527e16d5f",
       "updated_at": "2026-10-02T17:15:09.108Z",
       "depends_on": [
         "0-3",
@@ -2380,13 +2432,15 @@
         "E18",
         "E19",
         "E21"
-      ]
+      ],
+      "plan_path": ".forge/plans/6-1.md",
+      "plan_hash": "sha256:4890a48b88c2"
     },
     "6-2": {
       "path": ".forge/architecture.md",
       "type": "6-2",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:93e53d7e6f72",
       "updated_at": "2026-10-02T17:15:09.161Z",
       "depends_on": [
         "3-1",
@@ -2402,13 +2456,15 @@
         "E5",
         "E8",
         "E19"
-      ]
+      ],
+      "plan_path": ".forge/plans/6-2.md",
+      "plan_hash": "sha256:58669f9b8b0d"
     },
     "6-3": {
       "path": ".forge/architecture.md",
       "type": "6-3",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:e66b33213363",
       "updated_at": "2026-10-02T17:15:09.231Z",
       "depends_on": [
         "local-store"
@@ -2429,13 +2485,15 @@
       "edge_case_ids": [
         "E9"
       ],
-      "note": "also owns the /updates screen"
+      "note": "also owns the /updates screen",
+      "plan_path": ".forge/plans/6-3.md",
+      "plan_hash": "sha256:44d75c947cba"
     },
     "6-4": {
       "path": ".forge/architecture.md",
       "type": "6-4",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:9faf49b3d460",
       "updated_at": "2026-10-02T17:15:09.285Z",
       "depends_on": [
         "2-1",
@@ -2456,13 +2514,15 @@
         "E9",
         "E16"
       ],
-      "note": "also owns the manual check's UI in /updates; the 2-1 edge is the Source contract — added 2026-02 because the graph placed this two waves before the contract it calls"
+      "note": "also owns the manual check's UI in /updates; the 2-1 edge is the Source contract — added 2026-02 because the graph placed this two waves before the contract it calls",
+      "plan_path": ".forge/plans/6-4.md",
+      "plan_hash": "sha256:a8cdad110fb1"
     },
     "6-5": {
       "path": ".forge/architecture.md",
       "type": "6-5",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:e2ffde50b0b8",
       "updated_at": "2026-10-02T17:15:09.347Z",
       "depends_on": [
         "2-6",
@@ -2475,13 +2535,15 @@
         "B46",
         "B47"
       ],
-      "edge_case_ids": []
+      "edge_case_ids": [],
+      "plan_path": ".forge/plans/6-5.md",
+      "plan_hash": "sha256:dbf6689ec9e2"
     },
     "6-6": {
       "path": ".forge/architecture.md",
       "type": "6-6",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:5dfc8cc426ef",
       "updated_at": "2026-10-02T17:15:09.404Z",
       "depends_on": [
         "0-5",
@@ -2497,13 +2559,15 @@
       ],
       "edge_case_ids": [
         "E17"
-      ]
+      ],
+      "plan_path": ".forge/plans/6-6.md",
+      "plan_hash": "sha256:5f4439a9a238"
     },
     "6-7": {
       "path": ".forge/architecture.md",
       "type": "6-7",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:170b24725756",
       "updated_at": "2026-10-02T17:15:09.460Z",
       "depends_on": [
         "localisation",
@@ -2516,13 +2580,15 @@
       ],
       "edge_case_ids": [
         "E12"
-      ]
+      ],
+      "plan_path": ".forge/plans/6-7.md",
+      "plan_hash": "sha256:f7fa63e7a9e7"
     },
     "6-10": {
       "path": ".forge/architecture.md",
       "type": "6-10",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:2ea6bef905a4",
       "updated_at": "2026-10-02T20:50:00.000Z",
       "depends_on": [
         "6-4"
@@ -2532,13 +2598,15 @@
       "rule_ids": [
         "B37"
       ],
-      "edge_case_ids": []
+      "edge_case_ids": [],
+      "plan_path": ".forge/plans/6-10.md",
+      "plan_hash": "sha256:b3f9cf6f5874"
     },
     "6-11": {
       "path": ".forge/architecture.md",
       "type": "6-11",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:3f47d72dc8dd",
       "updated_at": "2026-10-02T21:05:00.000Z",
       "depends_on": [
         "0-3"
@@ -2554,13 +2622,15 @@
         "E4",
         "E8",
         "E21"
-      ]
+      ],
+      "plan_path": ".forge/plans/6-11.md",
+      "plan_hash": "sha256:5c0fd5e88cd4"
     },
     "0-5": {
       "path": ".forge/architecture.md",
       "type": "0-5",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:0584cb2896a3",
       "updated_at": "2026-10-02T21:15:00.000Z",
       "depends_on": [
         "theme-type",
@@ -2588,13 +2658,15 @@
         "E11",
         "E12"
       ],
-      "note": "also owns AppScaffold (design-system § 2.8) and the /more screen"
+      "note": "also owns AppScaffold (design-system § 2.8) and the /more screen",
+      "plan_path": ".forge/plans/0-5.md",
+      "plan_hash": "sha256:871f73968e8c"
     },
     "3-6": {
       "path": ".forge/architecture.md",
       "type": "3-6",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:70958e3f3c51",
       "updated_at": "2026-10-02T22:10:00.000Z",
       "depends_on": [
         "3-1",
@@ -2612,13 +2684,15 @@
         "E5",
         "E8"
       ],
-      "note": "SC-6 only has a surface here: /browse/:sourceId/unavailable. Added 2026-10-02 because source-unavailable.md was an approved screen with no slice at all."
+      "note": "SC-6 only has a surface here: /browse/:sourceId/unavailable. Added 2026-10-02 because source-unavailable.md was an approved screen with no slice at all.",
+      "plan_path": ".forge/plans/3-6.md",
+      "plan_hash": "sha256:a2be42ca2b9e"
     },
     "3-7": {
       "path": ".forge/architecture.md",
       "type": "3-7",
       "status": "identified",
-      "content_hash": null,
+      "content_hash": "sha256:81f0a7a37982",
       "updated_at": "2026-10-02T22:20:00.000Z",
       "depends_on": [
         "0-5",
@@ -2637,7 +2711,9 @@
       "edge_case_ids": [
         "E12"
       ],
-      "note": "the Settings screen itself — /more/settings plus its /reader and /about sub-routes. Added 2026-10-02: settings.md was an approved screen with no owning slice, and 3-4 had to place the E11 disclosure inside one. Strings are localisation (6-7); theme and size are the theme-type foundation. This slice is the assembly and the persistence.\nCORRECTION, same day: the note here first claimed settings-about.md 'had no owning slice'. It does — 3-5 implements that screen in full (B43) and 0-5 publishes the route. This slice owns settings.md and pushes /more/settings/about; it does NOT own the About body. The wrong claim was mine, written while adding this slice, and it was caught by the agent writing 3-7's plan."
+      "note": "the Settings screen itself — /more/settings plus its /reader and /about sub-routes. Added 2026-10-02: settings.md was an approved screen with no owning slice, and 3-4 had to place the E11 disclosure inside one. Strings are localisation (6-7); theme and size are the theme-type foundation. This slice is the assembly and the persistence.\nCORRECTION, same day: the note here first claimed settings-about.md 'had no owning slice'. It does — 3-5 implements that screen in full (B43) and 0-5 publishes the route. This slice owns settings.md and pushes /more/settings/about; it does NOT own the About body. The wrong claim was mine, written while adding this slice, and it was caught by the agent writing 3-7's plan.",
+      "plan_path": ".forge/plans/3-7.md",
+      "plan_hash": "sha256:4a505c5e4f64"
     }
   },
   "gates_pending": [],

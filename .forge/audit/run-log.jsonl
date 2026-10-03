@@ -672,3 +672,4 @@
 {"ts":"2026-10-03T03:29:37.454Z","type":"hash","kind":"screen","entry":"stats","content_hash":"sha256:3c70f3374282"}
 {"ts":"2026-10-03T03:29:37.507Z","type":"hash","kind":"screen","entry":"reader-chapter-sheet","content_hash":"sha256:bd53325ba8f1"}
 {"ts":"2026-10-03T03:30:32.628Z","type":"hash","kind":"deliverable","entry":"architecture","content_hash":"sha256:bd35ad373ca8"}
+{"ts":"2026-10-03T03:42:17.044Z","type":"register","deliverable":"2-3","path":".forge/plans/2-3.md","kind":"slice"}

@@ -2,7 +2,7 @@
 type: implementation-plan
 slice: theme-type
 module: theme
-status: draft
+status: identified
 generated_at: 2026-10-02
 derived_from:
   - .forge/prd.md
