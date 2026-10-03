@@ -835,3 +835,4 @@
 {"ts":"2026-10-03T06:28:13.420Z","type":"stale_clear","slice":"theme-type","reasons":[],"drifted":[]}
 {"ts":"2026-10-03T06:29:40.006Z","type":"finding_promoted","id":"F-007","promoted_to":"workflow.md"}
 {"ts":"2026-10-03T06:29:54.175Z","type":"finding_raised","id":"F-010","domain":"data-and-state.md","severity":"critique"}
+{"ts":"2026-10-03T06:35:31.981Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}

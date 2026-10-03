@@ -53,15 +53,25 @@ enforces the cell count, so the disagreement cannot recur silently.
 |---|---|---|---|
 | **E21** | Novel Fire does not ship | Verified, but in `2-1.md`'s § 10, not § 11 | Yes — the check exists |
 | **C10** | Novel Fire's terms confirmed before any scraper | Blocked on **Q-004** | Yes — nothing to test until the owner answers |
-| **C13** | No login, no profiles, no sync, no cross-device migration | Discharged by the absence of such code | **No — see below** |
+| **C13** | No login, no profiles, no sync, no cross-device migration | Discharged by the absence of such code, and **claimed present by five plans' § 11 preambles** | **No — see below** |
 
 **C13's absence is the actionable one.** It is not blocked on a question; it is blocked on
 nobody having written the test. It is also the *most* testable of the three: a row
 asserting the schema declares no user, profile or session table, that `pubspec.yaml`
-carries no auth or sync dependency, and that no `Riverpod` provider reaches the network
-for identity, would discharge C13 mechanically. **That row belongs to `local-store` and
-`http-client`, and it is owed.** It is recorded here rather than written, because this
-register specifies tests and does not implement them.
+carries no auth or sync dependency, and that no provider reaches the network for identity,
+would discharge C13 mechanically.
+
+**And it is worse than an omission — it is masked by a false claim.** Five plans
+(`0-5`, `2-6`, `3-4`, `6-5`, `6-7`) each close their § 11 with a preamble checklist
+reading *« Chaque ID B\*/E\*/C\* du périmètre apparaît en § 6 »* followed by the ids in
+scope — **and C13 is on that list in every one of them.** Not one of those five § 11 tables
+contains a row for C13. The checklist asserts coverage that the section it heads does not
+deliver, which is why a cell-counting scan is the only thing that found it: the prose says
+yes and the table says nothing.
+
+*An earlier draft of this section named `local-store` and `http-client` as C13's owners.
+That was my inference and it was wrong* — the plans that scope C13 are the five named
+above. Corrected here rather than left to be discovered by the next reader.
 
 *Stated rather than quietly fixed, because the fix would be cosmetic and the fact is
 not:* two of the three uncovered items in the entire rule corpus are the same unresolved

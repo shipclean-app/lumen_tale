@@ -1106,7 +1106,7 @@
       "path": ".forge/test-plan.md",
       "type": "test-plan",
       "status": "approved",
-      "content_hash": "sha256:f7cf8101a0c5",
+      "content_hash": "sha256:d5197c225476",
       "headings": {
         "1": "The inventory",
         "2": "Coverage of the rule corpus",
@@ -1126,7 +1126,7 @@
         "11.2": "Variables and commands",
         "11.3": "Two tool defects Phase 6 had to fix to make any of this checkable"
       },
-      "updated_at": "2026-10-03T06:20:49.766Z",
+      "updated_at": "2026-10-03T06:35:31.978Z",
       "derived_from": [
         ".forge/plans/*.md section 11"
       ]
@@ -4386,7 +4386,7 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 256,
+      "register": 257,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 133,
