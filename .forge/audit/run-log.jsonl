@@ -842,3 +842,4 @@
 {"ts":"2026-10-03T07:15:06.386Z","type":"register","deliverable":"design_system","path":".forge/design/design-system.md","kind":"deliverable"}
 {"ts":"2026-10-03T07:15:19.592Z","type":"status_change","kind":"deliverable","key":"design_system","from":"stale","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/design/design-system.md","from":"stale","to":"approved"}}
 {"ts":"2026-10-03T07:27:58.016Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}
+{"ts":"2026-10-03T08:24:55.458Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}

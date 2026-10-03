@@ -1148,3 +1148,82 @@ on-device), **3 of 55** declared locations, **7 of 14** foundation locations.
   upper-cased head, or the key is one unpronounceable word.
 - **Do not write a coverage row over 3 of the 41 keys it names.** The number in the plan
   is the specification; a green tick over a subset is a lie about it.
+
+### Phase 7 — `theme-type` implemented, and the test found a real theme bug
+
+**Built** (8 files under `lib/app/theme/`): `lumen_colors.dart`, `lumen_spacing.dart`,
+`lumen_radius.dart`, `shadows.dart`, `motion.dart`, `reader_scale.dart`,
+`theme_override.dart`, `app_theme_preferences.dart`, `app_theme.dart`. **55 rows** in
+`lumen_colors_test.dart`, `reader_scale_test.dart`, `theme_override_test.dart` and
+`theme_providers_test.dart`. Host suite **165/165**. **Five of six Wave-0 nodes now have
+tests on disk** (8 of 14 foundation locations).
+
+**⚠️ A REAL BUG, found by the E13 row, not by reading the code:**
+
+`ColorScheme.fromSeed` derives `brightness` from the **seed's** luminance, and the seed is
+the day amber in *both* themes. So `AppTheme.night()` was returning a scheme reporting
+`Brightness.light` while every one of its sixteen tokens said night. The colours were
+right, nothing threw, and **every consumer of `Theme.of(context).brightness` was wrong.**
+
+This is the second instance in two sessions of a *default that silently disagrees with the
+thing it configures* — the first was dio replacing base headers and eating the
+User-Agent. Both were found by a test that asked a behavioural question, and neither was
+visible from `analyze`, from a build, or from reading the file. Fixed by passing
+`brightness:` explicitly, and the row now asserts the scheme directly so it stays fixed.
+
+**The E13 row took four attempts, and every failure is recorded in the file:**
+
+1. asserting `colorScheme.primary` — wrong, that is a seed role, not the accent.
+2. driving it through `themeMode` + `platformBrightnessTestValue` — `MaterialApp` resolves
+   `themeMode` against its own platform brightness, which the test binding reports as
+   `light` and does not move on a `pumpWidget`.
+3. swapping `theme` while **reusing the same `MaterialApp` element** — Flutter reuses the
+   element and `MaterialApp` had already resolved brightness from the first theme.
+4. finally: read the **accent token** (what this foundation owns) and give each theme its
+   own subtree **key** so the swap is real.
+
+**Three plan defects found and corrected in place, not worked around:**
+
+- **`ReaderTextScale` cannot declare `index`** — every Dart enum already has one, so the
+  plan's `int get index` does not compile. Renamed `stepIndex`.
+- **§ 1.2 contradicts itself on line height.** The prose says **1.72** and the table
+  tabulates five pairs that are **1.6875, 1.7222, 1.7000, 1.6957, 1.6923**. The table is
+  what renders, so the table wins; the test asserts the **spread** (< 0.04) rather than a
+  figure the design system itself refutes. A first draft asserted 1.72 and failed on three
+  of five steps — "fixing" it would have meant editing the table to match the prose, which
+  is rewriting the design system to fit a test.
+- **A fourth plan file split.** § 4.1 lists `lumen_radius.dart`, `shadows.dart` and
+  `motion.dart` as separate files; they are written as three.
+
+**Two of my own test bugs, both the "passes for the wrong reason" kind:**
+
+- The night-error assertion measured `day.error` on `night.background` and **never read
+  `night.error`**, so making `LumenColors.night()` reuse the day error kept every row
+  green. Both columns are now measured as columns — verified by sabotaging night and
+  watching **two** rows fail.
+- A first E13 draft asserted in-tree brightness against the binding's platform
+  brightness. Fixed only after the probe showed `night().colorScheme.brightness` was
+  genuinely wrong — the harness problem and the product bug were tangled together, and
+  the probe is what separated them.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **165/165** · `check_plans`
+**38 clean**. Register § 3 recomputed: **171 written** (165 host + 6 on-device),
+**4 of 55** locations.
+
+### NEXT SESSION SHOULD
+
+- **Finish `theme-type`'s remaining 5 test files** (`app_theme_preferences_test.dart`,
+  `reader_scale_widget_test.dart`, `theme_override_test.dart` partially covered) — 55 of
+  39 declared rows are written, so the surplus is in `lumen_colors_test.dart`; reconcile
+  the count against the plan rather than leaving it over.
+- **`0-1`** (21 rows), then **`apk-pipeline`**. That clears Wave 0 and opens `2-1`.
+- **Re-run the on-device suite** when the Z2577 reconnects.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not trust a colour scheme's brightness.** Derive it from the seed and it becomes
+  the seed's brightness — which is the *day* accent's, in both themes.
+- **Do not assert a proportion `design-system.md` states in prose when its table says
+  otherwise.** Measure the table, assert the spread, and say which one won.

@@ -82,18 +82,19 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 | | Count |
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
-| § 11 `Emplacement` targets that exist on disk | **3 of 55** |
-| Test cases actually written | **116** |
-| Of those, host (`test/`), on the Dart VM | **110** |
+| § 11 `Emplacement` targets that exist on disk | **4 of 55** |
+| Test cases actually written | **171** |
+| Of those, host (`test/`), on the Dart VM | **165** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 110, covering the database schema | **27** |
-| Of the host 110, covering the app bootstrap | **5** |
-| Of the host 110, covering the network foundation | **51** |
-| Of the host 110, covering localisation | **27** |
+| Of the host 165, covering the database schema | **27** |
+| Of the host 165, covering the app bootstrap | **5** |
+| Of the host 165, covering the network foundation | **51** |
+| Of the host 165, covering localisation | **27** |
+| Of the host 165, covering the theme foundation | **55** |
 
-**Three of the 55 declared locations now exist** — both `local-store` files, both
-`http-client` files, and all three `localisation` files — so **four of the six Wave-0
-nodes have their declared tests on disk.**
+**Four of the 55 declared locations now exist** — both `local-store` files, both
+`http-client` files, all three `localisation` files, and `theme-type`'s
+`lumen_colors_test.dart` — so **five of the six Wave-0 nodes have tests on disk.**
 
 **One row of `localisation`'s § 11 is deliberately absent**, and its absence is the
 honest entry rather than a gap: *« the error message family resolves in both
@@ -251,16 +252,17 @@ nothing about whether the foundation works.
 | Foundation | Rows declared | Unit | Component | Integration | E2E | Manual | Test locations declared | On disk |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | `http-client` | **53** | 42 | 0 | 4 | 0 | 7 | 1 | **1** |
-| `theme-type` | **39** | 23 | 4 | 4 | 0 | 8 | 6 | 0 |
+| `theme-type` | **39** | 23 | 4 | 4 | 0 | 8 | 6 | **1** |
 | `local-store` | **38** | 26 | 0 | 6 | 0 | 6 | 2 | **2** |
 | `failure-discriminator` | **37** | 28 | 0 | 4 | 0 | 5 | 1 | 0 |
 | `apk-pipeline` | **33** | 10 | 0 | 13 | 3 | 7 | 1 | 0 |
 | `localisation` | **29** | 22 | 0 | 0 | 0 | 7 | 3 | **3** |
-| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **7** |
+| **Total** | **229** | **151** | **4** | **31** | **3** | **40** | **14** | **8** |
 
-**Seven of the fourteen declared test locations exist**: both of `local-store`'s, both of
-`http-client`'s, and all three of `localisation`'s. `http-client` was built first because
-it is the largest foundation by row count and the dependency of every source slice. The foundations carrying the most weight are the least built:
+**Eight of the fourteen declared test locations exist**: both of `local-store`'s, both of
+`http-client`'s, all three of `localisation`'s, and one of `theme-type`'s six.
+`http-client` was built first because it is the largest foundation by row count and the
+dependency of every source slice. The foundations carrying the most weight are the least built:
 `http-client` declares 53 rows and now has its suite; `localisation` and `theme-type`
 still declare test files that do not exist. `apk-pipeline` is the only foundation with E2E rows, and they are the three
 `apk-pipeline` entries in § 5.
