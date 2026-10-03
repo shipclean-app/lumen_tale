@@ -570,6 +570,21 @@ Bottom navigation, 5 destinations. Single column throughout. No drawer: a drawer
 
 `go_router` shell routes (ADR-008), one `StatefulShellRoute` per bottom-nav destination so each tab keeps its own scroll position and back stack.
 
+#### 3.5.1 How the shell is mounted, and the one thing that is not obvious
+
+`go_router` composes with no `Scaffold` in the shell. The five branches live inside one `StatefulShellRoute`, whose `builder` returns a **`Column`**: the `navigationShell` above, one private `NavigationBar` below. Two reasons, both measured while building `0-5`:
+
+- **Two `Scaffold`s would give every screen two `SafeArea`s**, and the shell's bar would sit *under* the screen's own — three symptoms, one cause. `AppScaffold` is the only `Scaffold` in the app.
+- **A `NavigationRail` is excluded at every width** (ADR-019), so there is no layout in which the shell would want a `Scaffold` of its own.
+
+**The reader and onboarding are `push`ed, never `go`-n.** They are root-level routes, because that is the only placement in `go_router` that renders outside the shell — no tab bar, per the table below. `GoRouter.go` **replaces** the root page list, so navigating to a root-level route with `go` unmounts the shell: the reader loses the tab they came from, that tab's back stack, and its scroll position, and `pop` then has nothing to pop — a reader who opens a chapter from *Updates* and presses back leaves the app. `GoRouter.push` **appends** to it (verified in go_router 18.0.2 `lib/src/match.dart`, `RouteMatchList.push`), so the shell stays mounted underneath and `pop` returns where the reader came from.
+
+So the capability is exposed as `openReader` / `openOnboarding` in `app_router.dart`, and a feature that wrote `context.go(AppRoutes.readerFor(…))` would compile, work on the happy path, and silently destroy the navigation stack. There is a grep row for it in `test/app/shell/app_shell_test.dart`.
+
+**The reader has no transition in.** § 3.4 said so; this is where it becomes a `NoTransitionPage` on the route rather than something each reader screen remembers.
+
+#### 3.5.2 Fifteen routes
+
 **Fifteen routes, and this table is reconciled against the eighteen screen files — in BOTH directions.** Every route a screen pushes appears here, *and* every route here is pushed by a screen.
 
 **The two directions are not the same check, and the second was missing.** The first pass compared *this table* against *what screens push*, which finds a screen pushing something the table lacks. It does **not** find a screen pushing something that was never in the table to begin with — and `more.md` did exactly that, pushing `/settings` twice and `/settings-about` once while this table has always said `/more/settings`. **A reconciliation that runs one way is a check that reports zero on the half it does not look at**, which is the failure this project has now hit in four separate places. Both directions are named below, and the second is the one that found a live defect after the first had been declared clean.

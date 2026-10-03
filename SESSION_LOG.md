@@ -1986,3 +1986,129 @@ the only honest one.
 - **Do not treat `check_plans.py` passing as "the plans are implemented"**. It checks
   headings and ids; the code is the only proof, and the last commit before this one was
   proof of the opposite.
+
+---
+
+## 2026-10-03 — Session 10: `0-5`, and the route the plan had wrong
+
+### STARTED FROM
+
+Session 9's repair committed at `e0015ed`: 502 tests green, tree compiling, Forge state
+telling the truth. `0-5` is the last Wave 1 node — *routing*, not a screen. Eighteen
+screens had no route to mount on.
+
+### DECIDED
+
+- **`AppShell` is a `Column`, not a `Scaffold`, and `AppScaffold` is the only `Scaffold`
+  in the app.** Two would give every screen two `SafeArea`s and put the shell's bar under
+  the screen's own. Three symptoms, one cause.
+- **`FilterList`… no. `openReader` and `openOnboarding` use `push`, and `go` is not
+  available to a caller.** The plan § 2.3 wrote `/reader/…` as a root-level route with
+  `parentNavigatorKey: branchKeys.first`, and **go_router rejects that**: a
+  `parentNavigatorKey` must name a shell's key or the root's, and a root-level route's
+  parent is the root. The plan's own § 11.2 tab asserted `appRouter` starts on `/library`,
+  so it passed every gate while never being instantiated — nothing ran it.
+- **The real consequence is worse than the crash.** `go()` **replaces** the root page
+  list; `push()` **appends** to it (`RouteMatchList.push` →
+  `_createNewMatchUntilIncompatible`, go_router 18.0.2 `lib/src/match.dart`, read in the
+  installed source). So a root-level reader navigated with `go` unmounts the shell: the
+  reader loses the tab they came from, that tab's stack, its scroll position, and `pop`
+  then has nothing to pop — a reader who opens a chapter from *Updates* and presses back
+  **leaves the app**. The capability is therefore exposed as `openReader`, which contains
+  the correct call and nothing else, and a grep row forbids `.go(AppRoutes.readerFor`.
+- **`/library/novel/:novelId/chapter/:chapterId` is NOT declared.** `0-5` § 7 question 1
+  asked who owned it. `design-system.md` § 3.5's table already answered: **removed**
+  2026-10-02, because every screen that opens a chapter pushes `/reader/…` (3 call sites,
+  0 for the other form). The plan's § 2.2 was written from a pre-removal reading.
+- **`navMore` is written, in both ARB files, in this commit.** `0-5` § 7 question 3 said
+  the label test "fails, and that is the correct outcome while the `localisation`
+  foundation has not written the key". The foundation **is** built and did not write it —
+  so that row was not a demonstration, it was a defect that would have shipped. B28 is
+  not satisfied by four of five labels.
+- **The icons are this slice's choice and are named as such.** § 3.2 gives labels, not
+  icons. The bundled Material set, one outlined/filled pair each. The testable property is
+  not "which glyph" but *every destination has a pair and the two differ* — otherwise a
+  selected tab is indistinguishable from an unselected one.
+
+### REJECTED
+
+- **Nesting the reader under the Library branch with a root `parentNavigatorKey`**, which
+  is go_router's canonical "full-screen route" example. It renders above the shell and
+  `pop` works — but the URL becomes `/library/reader/…`, which is a third spelling of a
+  destination § 3.5 already reconciled, **and** opening a chapter from *History* would
+  switch the reader to the Library tab. Changing three screen files and a reconciled
+  design table to buy a property `push` gives for free is the worse trade.
+- **Adding `@visibleForTesting` hooks to production code** for the router's shape. The
+  structural claims ("this is a top-level `final`", "main awaits its preferences") have
+  no runtime witness, so they are **grep rows** with a witness string each, matching the
+  idiom `no_telemetry_test.dart` already established. Adding a hook to production code so
+  a test can assert a fact about production code is the defect the grep exists to avoid.
+- **Weakening `avoid_redundant_argument_values` for the `immersive` row.** `showBottomNav`
+  defaults to `true`, and that default *is* the trap: a reader screen that forgets to set
+  the state gets `true` without asking. The row now omits the flag and proves the default
+  loses to the state anyway.
+
+### BLOCKED
+
+- **F-012 (FanMTL 403) unchanged and still the only open finding.** No bypass, no
+  impersonation, no second Chrome instance. `2-1`'s catalogue selectors stay unfilled:
+  § 7 question 3 says a guessed selector has **no recovery** — it matches nothing, every
+  page reads as `SourceLayoutChanged`, and SC-6's manufactured fixture becomes
+  indistinguishable from a working site.
+- **On-device suite**: `YBZ2577ALDAC000899` still absent from `adb devices`.
+
+### FILES TOUCHED
+
+`lib/app/router/{app_routes,app_nav_destinations,app_router,placeholder_screen}.dart`,
+`lib/app/shell/app_shell.dart`, `lib/core/ui/app_scaffold.dart`, `lib/main.dart`,
+`lib/l10n/app_{en,fr}.arb` + generated,
+`test/app/router/app_router_test.dart`, `test/app/shell/app_shell_test.dart`,
+`.forge/design/design-system.md` (amended, §§ 3.5.1–3.5.2).
+
+### STATUS
+
+`dart format` clean · `flutter analyze --fatal-infos` **zero** · host **502 passed +
+9 skipped** · `forge-guard all` **pass** · `consistency-check all` **pass** ·
+`coverage-check 0-5` **pass** · `design-check` contrast / tokens / component-parity
+**pass**.
+
+**Sabotage, each on both sides** — because a check that has never failed is a check that
+has never been tested:
+
+| Sabotage | Result |
+|---|---|
+| `immersive` honours `showBottomNav` again | the immersive row **fails** — a `nav` key is found |
+| `openReader` uses `go` instead of `push` | *the reader is above the shell, so back returns there* **fails** |
+| FR `navMore` renamed `Plus` → `Encore` | *the labels are § 3.2 word for word* **fails**: `Expected: 'Plus' Actual: 'Encore'` |
+| `navMore` deleted from both ARBs | `arb_completeness_test` cannot even compile the app's label row — the key is a build-time dependency, which is stronger than a red row |
+
+Two test defects found and fixed in this session's own tests, both of the "a check that
+never looked at the requirement" family:
+
+- The provider-override grep was written as an **absence** check, copied from its
+  neighbours, so it forbade the exact line the requirement needs and passed while
+  asserting nothing. It is a **presence** check now, and it counts.
+- `await openReader(...)` **hung the row for four minutes** and looked like a router
+  deadlock. `GoRouter.push` returns a future that completes when the route is **popped**.
+  Three rows now use `unawaited`, and say why.
+
+### NEXT SESSION SHOULD
+
+- **Wave 2**: `0-4`, `3-5`, `6-5`, `6-7`, `3-7`, `6-11` — the foundations are built and
+  these are the slices that consume them.
+- **`2-1`'s source implementations, against Royal Road.** `div.fiction-list-item.row`,
+  `?page=N` 1-based, an unpaginated chapter table with `data-chapters=716` as the witness,
+  and `chapter-inner chapter-content` for the body. FanMTL stays unimplemented while
+  F-012 is open.
+- **Every screen slice fills exactly one `PlaceholderScreen`.** The route table is the
+  contract; each one names the route it stands in for, so the reader of a failed route
+  knows which slice is missing.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not add a testing hook to production code to make a structural claim testable.**
+  Write the grep, and give the pattern a witness.
+- **Do not `go()` the reader.** The grep row forbids it and says what breaks.
+- **Do not pass `-d <device-id>` to `flutter test` for a file under `test/`.** The flag is
+  silently ignored and a fabricated id still passes. Only `integration_test/` deploys, and
+  it refuses an unknown device.

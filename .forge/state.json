@@ -1000,7 +1000,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:96995e5b5721",
+      "content_hash": "sha256:6db43aa123b1",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -1035,10 +1035,12 @@
         "3.3": "Breadcrumbs",
         "3.4": "Transitions",
         "3.5": "Routing",
+        "3.5.1": "How the shell is mounted, and the one thing that is not obvious",
+        "3.5.2": "Fifteen routes",
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T19:40:14.031Z",
+      "updated_at": "2026-10-03T21:11:01.866Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1050,13 +1052,27 @@
         "B44",
         "C13"
       ],
-      "amended_from": "sha256:64468ccb27c0",
-      "amended_at": "2026-10-03T07:14:24.144Z",
+      "amended_from": "sha256:96995e5b5721",
+      "amended_at": "2026-10-03T21:10:55.723Z",
       "amendment": {
-        "reason": "test",
-        "changes": null,
+        "reason": "0-5 built the shell and two composition facts had to be written down where the screens will read them: AppShell is a Column (two Scaffolds means two SafeAreas), and the root-level reader must be PUSHED because go() replaces the root page list and unmounts the shell. Both were measured while implementing, and both are the kind of thing a future slice re-derives wrongly.",
+        "changes": [
+          ".forge/design/design-system.md — new #### 3.5.1 \"How the shell is mounted\": AppShell is a Column and not a Scaffold (two Scaffolds = two SafeAreas, bar under the screen own).",
+          ".forge/design/design-system.md — new #### 3.5.1: the reader and onboarding are push-ed, never go-n. go REPLACES the root page list and unmounts the shell; push APPENDS (go_router 18.0.2 lib/src/match.dart RouteMatchList.push).",
+          ".forge/design/design-system.md — new #### 3.5.1: the reader transition becomes a NoTransitionPage on the route, so it is the routers contract and not each reader screens memory.",
+          ".forge/design/design-system.md — former paragraph \"Fifteen routes, ...\" becomes #### 3.5.2. No existing section number moved; 3.5 keeps its number and 3.6 never existed."
+        ],
         "renumbered": null,
-        "added_sections": [],
+        "added_sections": [
+          {
+            "section": "3.5.1",
+            "now": "How the shell is mounted, and the one thing that is not obvious"
+          },
+          {
+            "section": "3.5.2",
+            "now": "Fifteen routes"
+          }
+        ],
         "headings": {
           "0": "Visual direction",
           "1": "Design tokens",
@@ -1064,6 +1080,8 @@
           "3": "Navigation patterns",
           "4": "Grid and layout",
           "0.0": "Colour class declaration",
+          "0.1": "Why night is a cold field, not a warm one",
+          "0.3": "Do not take `error` from the Material 3 seed",
           "1.1": "Colours",
           "1.2": "Typography",
           "1.3": "Spacing",
@@ -1089,6 +1107,8 @@
           "3.3": "Breadcrumbs",
           "3.4": "Transitions",
           "3.5": "Routing",
+          "3.5.1": "How the shell is mounted, and the one thing that is not obvious",
+          "3.5.2": "Fifteen routes",
           "4.1": "Base grid",
           "4.2": "Layouts"
         }
@@ -4245,9 +4265,9 @@
     "0-5": {
       "path": ".forge/plans/0-5.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:1442476fd44d",
-      "updated_at": "2026-10-03T06:27:53.849Z",
+      "updated_at": "2026-10-03T21:13:01.847Z",
       "depends_on": [
         "theme-type",
         "localisation"
@@ -4475,13 +4495,13 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 279,
+      "register": 280,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 146,
+      "status_change": 149,
       "gate_approved": 4,
       "phase_status": 11,
-      "amend": 9,
+      "amend": 10,
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,

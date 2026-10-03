@@ -24,6 +24,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get navHistory => 'Historique';
 
   @override
+  String get navMore => 'Plus';
+
+  @override
   String get navDownloads => 'Téléchargements';
 
   @override
