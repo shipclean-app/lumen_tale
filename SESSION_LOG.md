@@ -359,7 +359,7 @@ Gate at the last commit: `forge-guard` clean except the proven `version_pins_agr
 
 ### STARTED FROM
 
-Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and repaired (Session 5); 29 slices + 5 foundations; 24 tests. The owner approved the phase and said **go autonomous**.
+Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and repaired (Session 5); 29 slices + 5 foundations; 24 tests; the gate open pending the owner's approval. The owner approved the phase and said **go autonomous**.
 
 ### DECIDED
 
@@ -368,7 +368,10 @@ Phases 0–3 approved. `architecture.md` drafted, red-teamed by three agents and
 - **ADR-025** B37's cancellation is in-app plus the platform's stop control. **Measured, not argued**: `workmanager` 0.10.10 is federated, and `workmanager_android` 0.10.9's `createForegroundInfo` builds with `setOngoing(true)` and **no `addAction`**; `ForegroundServiceConfig` has no action field
 - **ADR-026** `crypto` added — `Source.id` is an MD5 and nothing in the tree could compute one
 - **ADR-027** `2-6` owns `reading_positions`; `2-4` delegates the write and passes the extent it already holds
+- **ADR-028** `core/error/` holds the exception hierarchy; `core/utils/` keeps the logger
 - **Fast-track enabled**, `autonomy: full`, 7/7 conditions
+
+**Twenty-eight ADRs, ADR-001 through ADR-028, no gaps in the series**, and eight questions **Q-001…Q-008** with **Q-002 closed** this session (it was the only open question nothing cited — E7, B21 and `15-performance.md` had all answered it while the register still listed it as live).
 
 ### REJECTED
 
@@ -403,14 +406,41 @@ Phase 5 produced **38 plans and roughly forty defects the gates could not see.**
 
 ### STATUS
 
-**Phases 0–4 approved. Phase 5 in progress: 38 of 38 plans written**, every one `draft`, every assigned B/E/C id traced in § 6. Graph: **38 nodes, 32 slices, 6 foundations, 60 edges, 10 waves, 0 cycles, 0 orphans.**
+**Phases 0–4 approved. Phase 5 complete: 38 of 38 plans written**, every one `draft`, every assigned B/E/C id traced in § 6 before § 7. Graph: **38 nodes, 32 slices, 6 foundations, 60 edges, 10 waves, 0 cycles, 0 orphans, 0 dead dependencies.** Schema: **6 tables, 42 columns, 5 indexes, `schemaVersion` 1**.
 
-Gate at the last commit: `forge-guard` clean except the proven `version_pins_agree` Dart false positive; `design-check` all four PASS with **48 states read**; `dependency-check --full` pass; `flutter analyze` 0; `flutter test` **32 passing**; `check_plans.py` **38 clean, 0 failures** — a checker stricter than `coverage-check.js`, which only proves headings, ids and non-empty sections.
+Gate output at the last commit, captured rather than recalled:
+
+```
+python3 .forge/plans/check_plans.py   →  38 clean · 0 missing · 0 failures · 6 warnings
+flutter analyze                        →  No issues found!
+flutter test                           →  00:04 +32: All tests passed!
+dart format --set-exit-if-changed .    →  clean
+design-check contrast|tokens|tokens-used|component-parity → all pass, 48 states read
+forge-guard all                        →  clean except version_pins_agree (proven false positive)
+consistency-check                      →  CLEAN
+dependency-check --full                →  pass · 38 nodes · 60 edges · 10 waves · 0 cycles · 0 orphans
+forge-guard fast-track --scope=plans --autonomy=full → pass
+```
+
+The six `check_plans.py` warnings are all finding **F-003** — `coverage-check.js slice` reads `state.slices` only, so a foundation's `rule_ids` are never mechanically checked. `check_plans.py` covers them; the Forge script cannot, and it is read-only.
+
+### WHAT LANDED AFTER THE ENTRY ABOVE WAS FIRST WRITTEN
+
+Four further commits closed defects found by a final re-read, and two of them were mine:
+
+- **`more.md` pushed three routes that were never in the route table.** § 3.5 had been reconciled against all eighteen screen files and **passed** — because it compared *the table* against *what screens push*, which cannot find a screen pushing something that was never in the table. **A one-way reconciliation is a check that reports zero on the half it does not look at.**
+- **`0-5` never did the thing `theme-type` depends on it doing.** `theme-type` declares `appThemePreferencesProvider` with `throw UnimplementedError('overridden at bootstrap — 0-5')`, and `0-5`'s `main()` was synchronous. Implementing both as written **throws on the first frame**.
+- **Six live import paths pointed at `core/utils/errors/`**, which no longer exists. The logger was nearly moved with them — `02-architecture.md` had the two on **one table row**, and *two things sharing a row share a fate whether or not they deserve to*. ADR-028.
+- **`2-1` did not type-check**, and my first correction invented a `.whenEmpty` method to make the wrong line look right. Inventing API to excuse a defect is its own failure mode.
+
+**Two destructive mistakes of my own, both recorded in `LEARNINGS.md` because a next session will hit the same impulses.** I opened a file for writing and read it back — `open(p,'w')` truncates first — which destroyed a 77 KB plan to 3.5 KB. Then I used `git checkout --` to undo a one-line edit and discarded **everything** uncommitted in that file, including a subagent's four-paragraph rewrite. Both survived only because a prior `git add -A` had swept them into commits. **Anything uncommitted is one careless statement from gone.**
+
+`check_plans.py` gained `check_counts()`, which asserts the item/foundation/slice count against `state.json`, that every node has a § 3.1 inventory row, and that § 6.1's wave listing matches the computed wave count. **Both new guards were proven RED before being trusted** — the count by typing `30` back in, the inventory by deleting `3-7`'s row.
 
 ### NEXT SESSION SHOULD
 
 - **Approve the 38 plans**, then `set-status … slice <key> planned` for each and flip its front matter to match. The README declares `draft` and state says `identified`; they move together.
-- **`3-7` has no row in `architecture.md` § 3.1's inventory.** Added to `state.json` and to the wave table, missed in the slice table. One line.
+- ~~**`3-7` has no row in `architecture.md` § 3.1's inventory.**~~ **Closed.** It had been carried as a debt here for two entries before it was simply fixed; `check_counts()` now makes it impossible to recur.
 - **`2-7` declares a contract change to `2-4`** — `flutter_markdown_plus` renders a whole document in one block and virtualises nothing, so a large chapter cannot meet the frame budget without a block list. `2-7` § 8.1 proposes `ChapterText.blocks` alongside `markdown`, computed by `2-2` at write time. **That is a decision, not a note.**
 - **E2E is decided but unrunnable.** `integration_test` is added; nothing executes until Q-008. Do not let §11.4 entries drift into looking verified.
 - **Three plans were written against a `state.json` that moved under them.** The edge-case reassignment happened mid-flight. `check_plans.py` is the authority; re-run it after any write to `state.json`.
