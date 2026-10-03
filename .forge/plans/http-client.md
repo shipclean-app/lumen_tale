@@ -429,7 +429,10 @@ final class HttpTimeouts {
 ### 3.1 Construction du client (couvre **C7**, et les règles 5 et 7 de `17-security.md**)
 
 ```
-HttpClient build(SourceEndpoint endpoint, {required String appVersion}):
+HttpClient build(SourceEndpoint endpoint, HostRateLimiter rateLimiter,
+                 {required String appVersion}):
+  # `rateLimiter` est un paramètre et non un global : le limiteur tient un état
+  # par hôte, donc deux clients ne doivent pas le partager (B23, § 3.2).
   assert(!endpoint.baseUrl.endsWith('/'))
       # 03-source-system.md règle 2. Une assertion, pas un runtime throw : une
       # baseUrl avec barre finale produit `https://host//novel/x.html`, qui est
@@ -848,7 +851,7 @@ AppException · NetworkException               lib/core/error/app_exception.dart
 | Composant | Type | Fichier cible | Props | State | Événements |
 |---|---|---|---|---|---|
 | `HttpClient` | interface Dart | `lib/core/network/http_client.dart` | — | — | — |
-| `SourceHttpClient` | `final class` | idem | `Dio`, `SourceEndpoint`, `HostRateLimiter`, `DateTime Function()` | **par hôte, dans le limiteur** | `get` · `resolve` |
+| `SourceHttpClient` | `final class` | `lib/core/network/source_http_client.dart` | `Dio`, `SourceEndpoint`, `HostRateLimiter` (3 arguments positionnels — § 3.1) | **par hôte, dans le limiteur** | `get` · `resolve` |
 | `setUrlWithoutDomain` | fonction top-level | idem | — | aucun | — |
 | `HttpResponse` | valeur immuable | `lib/core/network/http_response.dart` | 4 champs nommés | aucun | — |
 | `FetchResult` + 3 | hiérarchie `sealed` — **propriété de cette fondation** | `lib/core/network/fetch_result.dart` | — | aucun | — |
@@ -1101,7 +1104,8 @@ manuelle), `3-1` et `3-6` (les écrans de browse et d'échec).
 - [ ] Créer `lib/core/network/source_endpoint.dart` : `resolve` + `host` (§ 2.2)
 - [ ] Créer `lib/core/network/host_rate_limiter.dart` : `acquire` · `block` · slot **par hôte**, horloge et attente injectées (§ 3.2)
 - [ ] `parseRetryAfter` — les **deux** formats, le plafond, le repli (§ 3.3)
-- [ ] Créer `lib/core/network/http_client.dart` : `HttpClient`, `SourceHttpClient`, `setUrlWithoutDomain` (§ 2.2)
+- [ ] Créer `lib/core/network/http_client.dart` : `HttpClient`, `setUrlWithoutDomain`, `build()`, `userAgent()` (§ 2.2, § 3.1)
+- [ ] Créer `lib/core/network/source_http_client.dart` : `SourceHttpClient` — **un fichier par classe**, parce que la table § 4.2 et l'arbre § 4.1 le placent dans `source_http_client.dart` et qu'un seul fichier ne peut pas satisfaire les deux
 - [ ] `buildDio` — UA honnête, trois timeouts, `validateStatus`, TLS intact, `QueuedInterceptorsWrapper` branché sur `acquire` (§ 3.1)
 - [ ] `_mapDioException` — **les dix bras** de § 3.4, exhaustifs, plus les deux `catch` non-dio
 - [ ] `decodeBody` — plafond, charset de la réponse puis meta puis UTF-8 (§ 3.5)

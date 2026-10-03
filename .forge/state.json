@@ -80,7 +80,7 @@
       "status": "approved",
       "content_hash": "sha256:92d351f1152b",
       "headings": {},
-      "updated_at": "2026-10-03T03:53:36.810Z",
+      "updated_at": "2026-10-03T04:07:55.684Z",
       "derived_from": [
         ".forge/contract.md",
         ".forge/prd.md"
@@ -155,7 +155,7 @@
         "7.4": "Internationalization",
         "7.5": "Availability / resilience"
       },
-      "updated_at": "2026-10-03T03:29:35.374Z",
+      "updated_at": "2026-10-03T04:07:55.840Z",
       "version": "1",
       "amended_from": "sha256:eb7a8e0b4010",
       "amended_at": "2026-10-02T22:20:36.589Z",
@@ -809,7 +809,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:073a73b45326",
+      "content_hash": "sha256:64468ccb27c0",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -845,7 +845,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T03:29:35.527Z",
+      "updated_at": "2026-10-03T04:07:56.027Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1030,7 +1030,7 @@
         "6.5": "Cycles",
         "6.6": "What the risk posture found in this graph"
       },
-      "updated_at": "2026-10-03T03:53:36.858Z",
+      "updated_at": "2026-10-03T04:07:55.751Z",
       "derived_from": [
         ".forge/prd.md"
       ],
@@ -1051,7 +1051,7 @@
       "path": ".forge/design/design-system.md",
       "type": "design-system",
       "status": "approved",
-      "content_hash": "sha256:073a73b45326",
+      "content_hash": "sha256:64468ccb27c0",
       "headings": {
         "0": "Visual direction",
         "1": "Design tokens",
@@ -1087,7 +1087,7 @@
         "4.1": "Base grid",
         "4.2": "Layouts"
       },
-      "updated_at": "2026-10-03T03:29:36.167Z",
+      "updated_at": "2026-10-03T04:01:53.199Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/benchmarks.md"
@@ -1581,7 +1581,7 @@
       "path": ".forge/design/screens/history.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:58fb3993cd8b",
+      "content_hash": "sha256:e933155c63e9",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1596,9 +1596,9 @@
         "11": "Sub-surfaces of this screen",
         "12": "Tokens this screen cites",
         "2.1": "Anti-generic — mandatory",
-        "11.1": "`RetentionSheet` and the clear confirmation"
+        "11.1": "`SettingsChoiceSheet` and the clear confirmation"
       },
-      "updated_at": "2026-10-03T03:29:37.178Z",
+      "updated_at": "2026-10-03T04:07:55.899Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1662,7 +1662,7 @@
       "path": ".forge/design/screens/more.md",
       "type": "screen",
       "status": "approved",
-      "content_hash": "sha256:3e573706f5a9",
+      "content_hash": "sha256:d532fae9cbed",
       "headings": {
         "1": "Role of the screen",
         "2": "Visual direction for this screen",
@@ -1678,7 +1678,7 @@
         "2.1": "Anti-generic — mandatory",
         "2.10": "`MoreRow` — declared here because it exists only for this screen"
       },
-      "updated_at": "2026-10-03T03:29:37.328Z",
+      "updated_at": "2026-10-03T04:07:55.962Z",
       "derived_from": [
         ".forge/prd.md",
         ".forge/design/design-system.md"
@@ -1874,7 +1874,7 @@
       "path": ".forge/architecture.md",
       "type": "http-client",
       "status": "identified",
-      "content_hash": "sha256:ede232f95bdf",
+      "content_hash": "sha256:9ea11827dfa9",
       "updated_at": "2026-10-02T22:35:00.000Z",
       "depends_on": [],
       "depended_on_by": [
@@ -1925,7 +1925,7 @@
       "path": ".forge/architecture.md",
       "type": "0-2",
       "status": "identified",
-      "content_hash": "sha256:297aa2a76b50",
+      "content_hash": "sha256:c2159a7797e8",
       "updated_at": "2026-10-02T17:15:07.874Z",
       "depends_on": [
         "0-1"
@@ -1996,7 +1996,7 @@
       "path": ".forge/architecture.md",
       "type": "2-1",
       "status": "identified",
-      "content_hash": "sha256:c4c90712bf6a",
+      "content_hash": "sha256:6fd263d0c4b1",
       "updated_at": "2026-10-02T17:15:08.083Z",
       "depends_on": [
         "0-1",
@@ -2189,11 +2189,12 @@
       "path": ".forge/architecture.md",
       "type": "2-8",
       "status": "identified",
-      "content_hash": "sha256:0e6cd13446c3",
-      "updated_at": "2026-10-02T17:15:08.534Z",
+      "content_hash": "sha256:94fce9d9a065",
+      "updated_at": "2026-10-03T04:01:25.907Z",
       "depends_on": [
         "theme-type",
-        "2-7"
+        "2-7",
+        "3-7"
       ],
       "depended_on_by": [],
       "impl_wave": 8,
@@ -2410,7 +2411,7 @@
       "path": ".forge/architecture.md",
       "type": "6-1",
       "status": "identified",
-      "content_hash": "sha256:6a6527e16d5f",
+      "content_hash": "sha256:b76fce963de4",
       "updated_at": "2026-10-02T17:15:09.108Z",
       "depends_on": [
         "0-3",
@@ -2531,7 +2532,7 @@
       "path": ".forge/architecture.md",
       "type": "6-5",
       "status": "identified",
-      "content_hash": "sha256:e2ffde50b0b8",
+      "content_hash": "sha256:26411027313d",
       "updated_at": "2026-10-02T17:15:09.347Z",
       "depends_on": [
         "2-6",
@@ -2615,7 +2616,7 @@
       "path": ".forge/architecture.md",
       "type": "6-11",
       "status": "identified",
-      "content_hash": "sha256:3f47d72dc8dd",
+      "content_hash": "sha256:8528e019b324",
       "updated_at": "2026-10-02T21:05:00.000Z",
       "depends_on": [
         "0-3"
@@ -2701,12 +2702,13 @@
       "path": ".forge/architecture.md",
       "type": "3-7",
       "status": "identified",
-      "content_hash": "sha256:81f0a7a37982",
-      "updated_at": "2026-10-02T22:20:00.000Z",
+      "content_hash": "sha256:c798d47d2697",
+      "updated_at": "2026-10-03T04:01:25.959Z",
       "depends_on": [
         "0-5",
         "theme-type",
-        "localisation"
+        "localisation",
+        "6-5"
       ],
       "depended_on_by": [],
       "impl_wave": 2,
@@ -2743,7 +2745,7 @@
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,
-      "dependency_declared": 35,
+      "dependency_declared": 37,
       "finding_raised": 4,
       "fast_track_enter": 1
     }

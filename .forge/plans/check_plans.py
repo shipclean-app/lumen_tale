@@ -319,19 +319,24 @@ def check_cross_plan():
              f'but NO plan declares that path')
 
     # 3. one enum, one member list ------------------------------------------
-    # Strip comments before reading members: an enum body interleaved with
-    # `///` doc lines yields a different "member list" on every mention, and a
-    # check that reports a difference on every mention is a check nobody runs.
+    # Compare member lists ONLY where the spelling is a bare list of
+    # identifiers. An enum that carries `static … fromStorage(...)` is not
+    # textually comparable to `{ system, day, night }`, and pretending otherwise
+    # reported the foundation's real enum as a second spelling of itself.
+    # Strip comments first: a body interleaved with `///` lines reads as a
+    # different member list on every mention, and a check that reports a
+    # difference on every mention is a check nobody keeps running.
     enums = {}
     ENUM = re.compile(r'enum\s+(\w+)\s*\{([^}]*)\}', re.S)
     COMMENT = re.compile(r'//[^\n]*')
+    BARE = re.compile(r'^[A-Za-z_]\w*$')
     for name, text in plans.items():
         for enum_name, body in ENUM.findall(text):
-            body = COMMENT.sub('', body)
-            members = tuple(sorted(
-                m.strip() for m in body.split(',') if m.strip()))
-            if members:
-                enums.setdefault(enum_name, {}).setdefault(members, set()).add(name)
+            body = COMMENT.sub('', body).split(';')[0]
+            members = [m.strip() for m in body.split(',') if m.strip()]
+            if members and all(BARE.match(m) for m in members):
+                enums.setdefault(enum_name, {}).setdefault(
+                    tuple(sorted(members)), set()).add(name)
     for enum_name, variants in sorted(enums.items()):
         if len(variants) > 1:
             detail = '; '.join(

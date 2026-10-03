@@ -678,3 +678,15 @@
 {"ts":"2026-10-03T03:50:25.015Z","type":"finding_raised","id":"F-004","domain":"workflow.md","severity":"MEDIUM"}
 {"ts":"2026-10-03T03:53:36.813Z","type":"hash","kind":"deliverable","entry":"conventions","content_hash":"sha256:92d351f1152b"}
 {"ts":"2026-10-03T03:53:36.861Z","type":"hash","kind":"deliverable","entry":"architecture","content_hash":"sha256:6216ebdb8c36"}
+{"ts":"2026-10-03T04:01:25.911Z","type":"dependency_declared","node":"2-8","depends_on":["theme-type","2-7","3-7"]}
+{"ts":"2026-10-03T04:01:25.963Z","type":"dependency_declared","node":"3-7","depends_on":["0-5","theme-type","localisation","6-5"]}
+{"ts":"2026-10-03T04:01:39.909Z","type":"hash","kind":"screen","entry":"history","content_hash":"sha256:e933155c63e9"}
+{"ts":"2026-10-03T04:01:39.985Z","type":"hash","kind":"screen","entry":"more","content_hash":"sha256:d532fae9cbed"}
+{"ts":"2026-10-03T04:01:40.045Z","type":"hash","kind":"deliverable","entry":"design-system","content_hash":"sha256:64468ccb27c0"}
+{"ts":"2026-10-03T04:01:53.201Z","type":"hash","kind":"deliverable","entry":"design_system","content_hash":"sha256:64468ccb27c0"}
+{"ts":"2026-10-03T04:07:55.687Z","type":"hash","kind":"deliverable","entry":"conventions","content_hash":"sha256:92d351f1152b"}
+{"ts":"2026-10-03T04:07:55.755Z","type":"hash","kind":"deliverable","entry":"architecture","content_hash":"sha256:6216ebdb8c36"}
+{"ts":"2026-10-03T04:07:55.844Z","type":"hash","kind":"deliverable","entry":"prd","content_hash":"sha256:bb8172373a94"}
+{"ts":"2026-10-03T04:07:55.902Z","type":"hash","kind":"screen","entry":"history","content_hash":"sha256:e933155c63e9"}
+{"ts":"2026-10-03T04:07:55.964Z","type":"hash","kind":"screen","entry":"more","content_hash":"sha256:d532fae9cbed"}
+{"ts":"2026-10-03T04:07:56.029Z","type":"hash","kind":"deliverable","entry":"design-system","content_hash":"sha256:64468ccb27c0"}

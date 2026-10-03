@@ -9,7 +9,6 @@ derived_from:
   - .forge/prd.md
   - .forge/design/design-system.md
 rule_ids:
-  - B1
   - B29
   - B30
   - B34
@@ -17,7 +16,6 @@ rule_ids:
   - B50
 edge_case_ids:
   - E9
-  - E19
 flow: settings-flow
 ---
 
@@ -37,8 +35,8 @@ flow: settings-flow
 | **Type** | full-screen page |
 | **Users** | the reader, when they want to change something rather than read |
 | **User stories served** | US-13, US-17, plus the settings entry point for US-15/US-14 |
-| **Business rules** | B1 B29 B30 B34 B43 B50 |
-| **Edge cases** | E9 E19 |
+| **Business rules** | B29 B30 B34 B43 B50 |
+| **Edge cases** | E9 |
 
 **In one sentence**: this screen lets the reader reach everything that is configuration rather than reading, and be gone again quickly.
 
@@ -51,7 +49,7 @@ flow: settings-flow
 | | |
 |---|---|
 | **Mood** | quiet, warm, unhurried |
-| **Density** | **normal** — a list of 5 destinations needs air to be scannable, not the density of a data list |
+| **Density** | **normal** — a list of 4 destinations needs air to be scannable, not the density of a data list |
 | **Contrast level** | **medium** — `--color-text-primary` on `--color-surface`, 14.48:1 worst day / 12.00:1 night |
 | **Surface** | `--color-surface` on `--color-background` |
 | **Accent used** | `--color-accent` **only** on the active row's leading edge — the same 3dp marker `ChapterListTile` uses for the current chapter, so "where am I" looks the same everywhere in the app |
@@ -68,7 +66,7 @@ flow: settings-flow
 - [x] **No illustration.** No logo header, no icon per row. Mihon has both (`MoreScreen.kt:32`, `LogoHeader.kt`); a logo at the top of an overflow list is decoration that costs a screenful.
 - [x] **Not one family at one weight** — sans throughout, but three type scales.
 
-**Assumed, non-neutral choice**: **this list shows only what the reader can act on, and names the consequence of every entry.** Each row carries a one-line subtitle that says what the destination *is*, not what it is called — *Downloads — what is on the phone and what is not*, *Sources — the sites this app can read*. Mihon's `MoreScreen` rows are label-only, which forces a tap to find out. It also means the screen can be **absent features honestly**: there is no *Backup*, no *Export*, no *Sync*, no *Account*, and the absence is explained by `coverage.md` § B29/B30 rather than looking like something was forgotten.
+**Assumed, non-neutral choice**: **this list shows only what the reader can act on, and names the consequence of every entry.** Each row carries a one-line subtitle that says what the destination *is*, not what it is called — *Downloads — what is on the phone and what is not*, *Reading history — what you opened and what it kept*. Mihon's `MoreScreen` rows are label-only, which forces a tap to find out. It also means the screen can be **absent features honestly**: there is no *Backup*, no *Export*, no *Sync*, no *Account*, no *Sources* and no *Stats*, and the absence is explained by `coverage.md` § B29/B30 — and, for the last two, by § 5's withdrawal — rather than looking like something was forgotten.
 
 ---
 
@@ -79,14 +77,18 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 └── ScrollView
     ├── SectionLabel                       --text-overline, "Library"
     │   └── MoreRow  Downloads             subtitle + live queue state
-    │   └── MoreRow  Stats
     │   └── MoreRow  History retention     → settings
-    ├── SectionLabel                       --text-overline, "Sources"
-    │   └── MoreRow  Sources               → sources
     └── SectionLabel                       --text-overline, "Application"
         └── MoreRow  Settings              → settings
         └── MoreRow  About                 → settings-about
 ```
+
+> **The `Sources` and `Stats` rows are drawn nowhere above, because they no longer
+> exist.** They were removed on 2026-10-02 with slices `6-9` and `6-8`, and this
+> anatomy was not cascaded: for two gate runs the drawing, the row count and the
+> empty state all still showed a destination with no route and no slice behind it.
+> **Four rows in two labelled sections** is the list this screen ships; the
+> arguments for the removal are in § 5.
 
 | # | Component | Role | Source |
 |---|---|---|---|
@@ -101,10 +103,10 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 |---|---|---|
 | `title` | yes | Destination name, `--text-h4` |
 | `subtitle` | yes | One line saying what the destination **does**, `--text-body-sm`, `--color-text-secondary`, max 1 line |
-| `value` | no | Live state, right-aligned — e.g. *3 queued*, *2 sources*, *1 year*. `--text-body-sm`, `--color-text-secondary` |
+| `value` | no | Live state, right-aligned — e.g. *3 queued*. `--text-body-sm`, `--color-text-secondary` |
 | `trailing` | no | Chevron, `--color-text-disabled` |
 
-**No icon.** Five unlabelled pictograms in a column is a memory test, not a navigation aid.
+**No icon.** Four unlabelled pictograms in a column is a memory test, not a navigation aid.
 
 ---
 
@@ -112,11 +114,11 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 
 | State | Trigger | Rendering | Reader feedback |
 |---|---|---|---|
-| **Loading** | Nothing to load — the row list is static | **No loading state at all.** Deliberately: a spinner on a list of five strings is a spinner that exists to be looked at | — |
-| **Filled** | The normal case | Five rows in three labelled sections | — |
+| **Loading** | Nothing to load — the row list is static | **No loading state at all.** Deliberately: a spinner on a list of four strings is a spinner that exists to be looked at | — |
+| **Filled** | The normal case | Four rows in two labelled sections — *Downloads · History retention* under **Library**, *Settings · About* under **Application** | — |
 | **Empty — never visited** | n/a | **Not applicable.** The list is never empty — there is always somewhere to go | — |
-| **Empty — no data** | n/a | **Not applicable**, for the same reason. `Sources` still lists its sources; `Downloads` shows an empty queue *inside* `downloads` | — |
-| **Load error** | n/a | **Not applicable.** This screen reads no remote state. The two `value` slots that could fail — queue state and source count — are local reads, and if one is unreadable the row shows **no `value`**, not an error. A settings list that can fail is a settings list that can be wrong | — |
+| **Empty — no data** | n/a | **Not applicable**, for the same reason. `Downloads` shows an empty queue *inside* `downloads`, and `History retention` leads to a screen that renders its own states. **There is no `Sources` row left to have an empty state** — it was one of the two rows removed on 2026-10-02 (§ 5), and this sentence is what that removal leaves behind | — |
+| **Load error** | n/a | **Not applicable.** This screen reads no remote state. The one `value` slot that can fail — the queue state — is a local read, and if it is unreadable the row shows **no `value`**, not an error. A settings list that can fail is a settings list that can be wrong | — |
 | **Submit error** | n/a | **No submission here** | — |
 | **Succès** | n/a | **No success state** | — |
 | **Hors-ligne / permissions** | No connection | **Identical to Filled.** Nothing on this screen needs a network, and B7 already guarantees stored chapters read offline — so an offline banner here would be announcing a capability the reader does not need reminding of | — |
@@ -181,10 +183,8 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 |---|---|---|---|---|
 | `entries` | `List<MoreEntry>` | static, code | yes | None — a compile-time list |
 | `downloads.pendingCount` | `int` | local queue | no | Unreadable → `value` omitted, row still tappable |
-| `sources.enabledCount` | `int` | local | no | Unreadable → `value` omitted |
-| `history.retention` | `Duration` | `shared_preferences` | yes | None — defaults to one year (**B47**) |
 
-- **Chargement**: nothing loads. The list is static; only two `value` slots are dynamic and both are local reads.
+- **Chargement**: nothing loads. The list is static; the **one** `value` slot is dynamic and it is a local read. `sources.enabledCount` and `history.retention` were read here only by the `Sources` row and by a `value` line the retention row does not have; both rows of that kind were removed on 2026-10-02 (§ 5), so neither field is read on this screen any more.
 - **Cache / hors-ligne**: **the whole screen works with no network**, because it reads nothing remote.
 - **Données sensibles**: nothing on this screen is sensitive. It is the one place the app states **B29** (nothing leaves the device) and **B30** (nothing can be shared out) by *omission* — there is no Analytics, no Crash Reporting, no Export and no Account entry, and `coverage.md` records each absence with its reason.
 
@@ -194,14 +194,12 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 
 | ID | Origine | Manifestation on this screen |
 |---|---|---|
-| B1 | PRD | The Sources row's `value` shows how many sources exist; the destination lists them |
 | B29 | PRD | **No telemetry, analytics or crash-reporting entry exists.** The absence is the implementation |
 | B30 | PRD | **No backup, export, share or sync entry exists** — see `coverage.md`, which records this as an exclusion with a reason rather than an omission |
 | B34 | PRD | The About destination states phones-only and APK delivery |
 | B43 | PRD | The About row leads to a screen showing the installed version |
 | B50 | PRD | **No search entry exists anywhere on this screen.** Search is a per-source capability on the Browse screens, never a global one |
-| E9 | PRD | Locale change while on this screen — section labels and row subtitles re-localise; `value` strings do too (**B28**) |
-| E19 | PRD | A source disabled elsewhere → the Sources `value` count updates on return |
+| E9 | PRD | Locale change while on this screen — section labels and row subtitles re-localise; the `value` string does too (**B28**) |
 
 ---
 
@@ -213,6 +211,7 @@ AppScaffold (titleBar = "More", bottomNav visible, this is rank 5)
 - [x] Anti-generic section checked **and justified** — the assumed choice is *consequence-first rows with no icons, so absent features can be honest*
 - [x] No design value left "to be defined"
 - [x] Every B/E/C ID on this screen appears in § 9
+- [x] **The § 3 anatomy, the § 4 row count and the § 9 attributions agree with each other, and with the withdrawal in § 5.** They did not, for two gate runs after the removal: the anatomy still drew `Sources` and `Stats`, § 4 still counted five rows in three sections, and B1 and E19 were still attributed to a row that no longer existed. **A withdrawal has to be cascaded into the drawing, the counts and the traceability table, and `design-system.md` § 3.5's route table is not that cascade** — it removes the route, not the row that pushes it
 - [x] `forge-guard placeholders` reports nothing here
 - [x] Consistent with `design-system.md`: no shadow, no card, `MoreRow` declared here because it exists only for this screen
 - [x] **Tokens cited exist**, values below

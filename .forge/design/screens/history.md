@@ -187,7 +187,7 @@ AppScaffold (titleBar, bottomNav)
 - [x] **Contrast 14.48:1** (day) / **12.00:1** (night) for novel titles — `--color-text-primary` `#1A1714` / `#E8E4DD`, measured.
 - [x] **Contrast 6.22:1** / **6.01:1** for chapter titles and relative times — `--color-text-secondary` `#5A524A` / `#A8A29A`. The chapter string is B10's verbatim site text, and setting it in a body token is what keeps an irregular title like *Omake* or an untitled chapter legible.
 - [x] **Contrast 6.07:1** / **8.86:1** for the focus ring, non-text per WCAG 1.4.11 at 3:1.
-- [x] **No state by colour alone**: day-group headers are labels, not colours; the "keep everything" case is distinguished by the **absence of a sentence** rather than by a tint; the cleared state is distinguished by its wording, not by a red field.
+- [x] **No state by colour alone**: day-group headers are labels, not colours; the retention case is distinguished by **the window's own name in words** — *Kept for one year* in the notice, *Entries older than one year are dropped* at the end — rather than by a tint on a sheet; the cleared state is distinguished by its wording, not by a red field.
 - [x] **Keyboard navigation complete** over the title, both notice actions and every row; focus visible at 2dp, never removed; day-group headers are reachable and announced as headers, so the list can be traversed by date rather than row by row.
 - [x] **Semantics per row**, one node, and **it says "opened"**: *"The Ascension of the Ninth Son, Chapter 214, The Weight of Quiet Water, opened 3 days ago"*. It does **not** announce a percentage, a progress value or the word *unread* — B46 enforced in the accessibility layer, which is where it would otherwise leak, since a screen reader user cannot see the absence of a progress bar and would reasonably assume one exists.
 - [x] **Both destinations reachable**: the row's primary action opens the chapter, and "Open the novel" is a named secondary semantic action on the same node.
@@ -207,7 +207,7 @@ AppScaffold (titleBar, bottomNav)
 | `entry.chapterTitle` | `String` | site, stored and shown **verbatim** (B10) | yes | Empty at the source → the row shows the novel title and *Untitled*, never an index |
 | `entry.novelTitle` | `String` | site, stored verbatim | yes | — |
 | `entry.openedAt` | `DateTime` | local, written when the chapter opens | yes | The single field this screen is ordered by (B17), grouped by, and aged against (B47) |
-| `retentionWindow` | `enum(3 months, 1 year, 3 years, keep everything)` | `shared_preferences`, **default `1 year`** | yes | A write failure keeps the previous window and shows a field-level error |
+| `retentionWindow` | `enum(1w \| 1m \| 3m \| 1y \| 2y)` — **the same five as `settings.md` § 8** | `shared_preferences`, **default `1 year`** | yes | A write failure keeps the previous window and shows a field-level error |
 | `agedOutCount` | `int` | local, computed at read time | no | Reported in the aged-out empty state, never silently applied while the reader is looking at rows |
 | `readingPosition` | `(chapterId, offset)` per chapter | local, **read-only from this screen**, **never trimmed by any retention rule** (B46) | no | Referenced only so the row can resume at it; never written here, never aged, never cleared |
 
@@ -259,17 +259,21 @@ AppScaffold (titleBar, bottomNav)
 
 ## 11. Sub-surfaces of this screen
 
-### 11.1 `RetentionSheet` and the clear confirmation
+### 11.1 `SettingsChoiceSheet` and the clear confirmation
 
-**`RetentionSheet`** — a `ModalBottomSheet` on `--color-surface-raised`, `--shadow-sheet`, `--radius-lg`, with four radio rows and a sentence above them that changes with the selection: *Entries older than three months will be dropped, oldest first. Your reading positions are never affected.*
+**`SettingsChoiceSheet`** — a `ModalBottomSheet` on `--color-surface-raised`, `--shadow-sheet`, `--radius-lg`, with **five** radio rows and a sentence above them that **names the selected window**: *Entries older than three months will be dropped, oldest first. Your reading positions are never affected.* — the example shown is the `3 months` row, and the sentence is rewritten in place as the selection moves.
 
 | Option | Effect |
 |---|---|
-| Three months | Drops entries older than three months, oldest first |
-| **One year** | **The default.** Conservative enough to bound a pathological table and never felt in normal use |
-| Two years | Drops entries older than two years |
+| 1 week | Drops entries older than one week, oldest first. The shortest window the design offers |
+| 1 month | Drops entries older than one month |
+| 3 months | Drops entries older than three months |
+| **1 year** | **The default.** Conservative enough to bound a pathological table and never felt in normal use |
+| 2 years | Drops entries older than two years |
 
 **Five options, and the reason there are no more: there is no \*\*Keep everything\*\*.** An earlier draft of this screen offered it as a sixth, and that was the rule **B47** exists to prevent — *\"the history list is bounded by time, not by count\"* becomes false the moment the reader can remove the bound. `design-system.md` § 2.12 forbids it independently (*\"No 'forever' option on any bounded list\"*), because an unbounded value next to bounded ones teaches the reader the bounds are negotiable. **The five windows are the same five `settings.md` offers** — `1 week · 1 month · 3 months · 1 year · 2 years`, one year the default — because two lists of the same values in two places is two truths about how long history lasts.
+
+**One component, two call sites — and naming it is the whole point.** The sheet is **`design-system.md` § 2.12's `SettingsChoiceSheet`**, not a screen-local widget: it opens from `settings.md`'s *Keep history for* row **and** from this screen's bound notice, and **both render their rows from one `enum`** — `HistoryRetention`, declared once in `6-5` § 2.2, which is what makes "the same five windows" a fact rather than a promise. A second sheet, named differently and carrying its own copy of the list, is the defect this paragraph exists to prevent: it would be two truths about how long history lasts, and no gate and no dependency edge would connect them.
 
 **The clear confirmation** is an `AlertDialog` on `--color-surface-raised` with `--shadow-dialog`, and its body is B46 in one sentence: **Your 96 entries will be removed. Your library, your downloads and every remembered reading position will be kept.** Cancel is the default action; the destructive button reads **Clear history** in full, never *OK*, never *Delete*. The promise is repeated after the fact in the cleared state and in the SnackBar, because a reader who has just emptied a list is exactly the reader who will wonder what else went with it.
 
@@ -285,7 +289,7 @@ Every value below is the one `design-system.md` declares, so `design-check token
 |---|---|---|---|---|
 | `--color-background` | `#F5F2ED` | `#121315` | — | Page field behind the full-bleed rows |
 | `--color-surface` | `#FBF9F6` | `#1A1C1F` | — | Row strips, skeleton lines |
-| `--color-surface-raised` | `#FEFCF9` | `#232629` | — | Bound notice, `RetentionSheet`, the clear dialog, the snackbar |
+| `--color-surface-raised` | `#FEFCF9` | `#232629` | — | Bound notice, `SettingsChoiceSheet`, the clear dialog, the snackbar |
 | `--color-surface-sunken` | `#EBE7E0` | `#0C0D0F` | — | Skeleton row lines, and a row in its `pressed` state (`design-system.md` § 2.1) |
 | `--color-text-primary` | `#1A1714` | `#E8E4DD` | **14.48:1** / **12.00:1** | Screen title, novel titles in rows, the notice's first sentence |
 | `--color-text-secondary` | `#5A524A` | `#A8A29A` | **6.22:1** / **6.01:1** | **Chapter titles (B10, verbatim)**, relative times, the notice's second sentence, the terminal line |
@@ -293,7 +297,7 @@ Every value below is the one `design-system.md` declares, so `design-check token
 | `--color-accent` | `#8A4B12` | `#E3A857` | **5.50:1** / **7.25:1** | **The focus ring only** — the accent carries "you have not opened this", and every row here has been opened (B13) |
 | `--color-error` | `#8A3228` | `#EE8B76` | **6.64:1** / **6.22:1** | The store-failure `ErrorState` icon — the only error this screen can have |
 | `--color-border` | `#D9D3C9` | `#2E3237` | exempt | Rules between rows and above day-group gaps |
-| `--color-border-field` | `#8F8778` | `#6B6560` | **3.18:1** / **3.24:1** | The unselected radio control in `RetentionSheet` |
+| `--color-border-field` | `#8F8778` | `#6B6560` | **3.18:1** / **3.24:1** | The unselected radio control in `SettingsChoiceSheet` |
 | `--color-border-focus` | `#8A4B12` | `#E3A857` | **6.07:1** / **8.86:1** | 2dp focus ring on every focusable element |
 
 Two tokens the other three screens cite are **deliberately not cited here**: `--color-text-disabled`, because this screen has no disabled control — every action on it is either available or absent; and `--color-border-strong`, because that token marks a **selected** row, and this screen has no selection at all. § 2.1 explains why: a per-row select is the control this screen refuses.
