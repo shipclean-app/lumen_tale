@@ -376,7 +376,26 @@ class AppDatabase extends _$AppDatabase {
 
   /// In-memory instance for tests. Named so a test cannot accidentally open
   /// the reader's real library.
-  AppDatabase.forTesting(super.executor);
+  ///
+  /// ⚠️ **The PRAGMA is applied here, not left to the caller.**
+  ///
+  /// `foreign_keys` is per-connection and is not part of the file format, so a
+  /// database opened without it has **no FK enforcement at all** — every
+  /// `references(...)` becomes decorative and `RESTRICT` stops restricting.
+  /// The production path gets it from `setup: _setup`; a test database built from a
+  /// bare executor did not, and the first version of this constructor did not either.
+  ///
+  /// That was a trap, not a bug anyone noticed: `app_database_test.dart` papered over
+  /// it by passing `setup: (e) => e.execute('PRAGMA foreign_keys = ON')` itself and
+  /// carrying a comment explaining why. **Every other test file inherited the trap.**
+  /// A cascade test written against `forTesting(NativeDatabase.memory())` therefore
+  /// observed a schema with no constraints — and the cascade simply did not happen,
+  /// which looks like a broken `onDelete` rather than a broken test harness.
+  ///
+  /// It is applied here so the safe thing is the default and a caller who wants a
+  /// pragma-free database has to say so on purpose.
+  AppDatabase.forTesting(QueryExecutor executor)
+    : super(_SetupExecutor(executor, kEnableForeignKeys));
 
   @override
   int get schemaVersion => 1;
@@ -433,4 +452,72 @@ LazyDatabase _openLazy() => LazyDatabase(() async {
 /// `await` here does not compile and is not wanted.
 void _setup(Database db) {
   db.execute('PRAGMA foreign_keys = ON');
+}
+
+/// The SQL that applies [`kEnableForeignKeys`], kept beside the code that must not
+/// drop it.
+const String kEnableForeignKeys = 'PRAGMA foreign_keys = ON';
+
+/// Runs one SQL statement on every connection its delegate opens, then delegates.
+///
+/// Wrapping rather than rebuilding: a caller holds whatever executor it built, and
+/// rebuilding it here would mean either losing the file it points at or reading a
+/// private field. `ensureOpen` is the only point at which a connection is guaranteed
+/// open, so it is the only point at which a **per-connection** pragma can be applied —
+/// and `PRAGMA foreign_keys` is exactly that.
+///
+/// ⚠️ This class is **internal drift API** (`package:drift` does not export it), so
+/// there is no public wrapper to reuse. It is the smallest correct implementation, and
+/// every method delegates unchanged; only `ensureOpen` adds anything. Its whole
+/// purpose is that a caller cannot forget the pragma.
+final class _SetupExecutor extends QueryExecutor {
+  _SetupExecutor(this._delegate, this._pragma);
+
+  final QueryExecutor _delegate;
+  final String _pragma;
+
+  @override
+  SqlDialect get dialect => _delegate.dialect;
+
+  @override
+  Future<bool> ensureOpen(QueryExecutorUser user) async {
+    final bool opened = await _delegate.ensureOpen(user);
+    if (opened) await _delegate.runCustom(_pragma);
+    return opened;
+  }
+
+  @override
+  Future<List<Map<String, Object?>>> runSelect(
+    String statement,
+    List<Object?> args,
+  ) => _delegate.runSelect(statement, args);
+
+  @override
+  Future<int> runInsert(String statement, List<Object?> args) =>
+      _delegate.runInsert(statement, args);
+
+  @override
+  Future<int> runUpdate(String statement, List<Object?> args) =>
+      _delegate.runUpdate(statement, args);
+
+  @override
+  Future<int> runDelete(String statement, List<Object?> args) =>
+      _delegate.runDelete(statement, args);
+
+  @override
+  Future<void> runCustom(String statement, [List<Object?>? args]) =>
+      _delegate.runCustom(statement, args);
+
+  @override
+  Future<void> runBatched(BatchedStatements statements) =>
+      _delegate.runBatched(statements);
+
+  @override
+  TransactionExecutor beginTransaction() => _delegate.beginTransaction();
+
+  @override
+  QueryExecutor beginExclusive() => _delegate.beginExclusive();
+
+  @override
+  Future<void> close() => _delegate.close();
 }

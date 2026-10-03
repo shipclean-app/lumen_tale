@@ -1714,3 +1714,72 @@ format clean · `analyze --fatal-infos` **zero** · host **329 passed + 9 skippe
   **unpaginated** with `data-chapters` as the witness, and **no** browse-side empty
   signal (`empty-signal.json`).
 - **`2-6`**, **`6-3`**, **`0-5`** — the rest of Wave 1.
+
+### `2-6` — reading position, and a database trap that made FK enforcement optional
+
+`lib/domain/library/reading_position.dart`, `position_restore.dart`,
+`reading_position_store.dart` (interface), and
+`lib/data/library/drift_reading_position_store.dart` (drift). 41 rows.
+
+**⚠️ A real defect in `AppDatabase.forTesting`, found by writing a cascade test.**
+
+The cascade test failed — deleting a novel did **not** remove its reading positions.
+The cause is not `2-6`: `AppDatabase.forTesting(super.executor)` passed the executor
+straight through, and `PRAGMA foreign_keys` is applied by `setup: _setup` on the
+**production** path only. A test database therefore had **no FK enforcement at all** —
+every `references(...)` decorative, `RESTRICT` not restricting, `CASCADE` not cascading.
+
+`app_database_test.dart` had been papering over this by passing the pragma itself and
+carrying a comment explaining why. **Every other test file inherited the trap.** A
+cascade or RESTRICT test written against `forTesting(NativeDatabase.memory())` observes
+a schema with no constraints — and the constraint simply does not fire, which reads as a
+broken `onDelete` rather than a broken harness. That is the exact failure mode already
+recorded for this file in the database comments, reproduced in the test layer.
+
+Fixed at the source: `forTesting` now wraps the executor in `_SetupExecutor`, which runs
+the pragma in `ensureOpen` — the only point where a connection is guaranteed open, and
+the only point where a **per-connection** pragma can be applied. Safe is the default;
+asking for a pragma-free database is now a deliberate act. The wrapper implements
+internal drift API (not exported), so it is documented as such.
+
+**⚠️ The plan's § 3.2 clamp branch in the ratio case is UNREACHABLE by a shrink.**
+
+`raw <= storedHeight` ⇒ fraction ≤ 1 ⇒ fraction × extent ≤ extent. My test asserted a
+clamp on `900/1000 × 300` and measured **270**. The arithmetic was right; the assertion
+was wrong, and the plan's reasoning is wrong. A shrink is safe by construction. Only an
+**inconsistent row** (offset larger than the height it was measured against) clamps
+there — which *is* reachable, because `maxScrollExtent` can change between the frame
+that measured it and the frame that writes the position. Both rows are now asserted, and
+the distinction is written down: **a shrink never clamps; only an inconsistent row
+does.** Conflating the two would have made the clamp untestable and therefore unverified.
+
+**Three more things found by writing the tests:**
+- `ReadingPosition` needs value equality or nothing can be asserted on it — the same
+  defect as the six causes in `failure-discriminator`.
+- `updatedAt` is written by the **store**, not passed in. The caller has a position in a
+  chapter, not a clock; a repository that accepted a timestamp would let a feature
+  invent one, and `updatedAt` is B17's ordering key.
+- `mostRecentAmong` needed a **deterministic tiebreak** on `chapterId`. Two writes in
+  the same millisecond are possible on a fast scroll settle, and without the tiebreak
+  the "most recent" answer is whatever SQLite returned — non-reproducible and untestable.
+
+Also fixed: a test helper re-inserted the novel per chapter, so four tests died on a
+UNIQUE constraint that says nothing about reading positions.
+
+**Proven RED by sabotage:** removing the FK pragma → the cascade test fails; disabling the
+ratio branch → **6** rows fail (same-extent, shrunk, grown, shrink-no-clamp,
+inconsistent-clamp, monotonicity); making `wasClamped` always false → the clamp row fails.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **370 passed + 9 skipped** ·
+`check_plans` **38 clean**.
+
+### NEXT SESSION SHOULD
+
+- **`6-3`**, the local counting model — B48's *derived* unread count over
+  `idx_chapters_novel_read`, with no `unreadCount` column anywhere.
+- **`0-5`** — the route table, the last Wave 1 node.
+- **`2-1`**, now with five measured facts: `.fiction-list-item`, `?page=N` 1-based and
+  set-confirmed, chapter list **unpaginated** with `data-chapters` as the witness, no
+  browse-side empty signal, and `chapter-inner chapter-content`.
