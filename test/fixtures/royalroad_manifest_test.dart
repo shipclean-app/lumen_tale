@@ -62,7 +62,17 @@ void main() {
           // directions. A first draft excluded it from one side only, and the row
           // failed on `manifest.json` being "undeclared" — which it is not, it is
           // the thing doing the declaring.
-          .where((File f) => f.path.split('/').last != 'manifest.json')
+          // Same reasoning for `empty-signal.json`: it is a MEASUREMENT `0-2` wrote
+          // about these fixtures, not a fixture. It is read by
+          // `test/domain/sources/empty_signal_test.dart`, which re-derives it from
+          // the files below — so it is covered, just not by this manifest. Excluding
+          // it here is correct; excluding it because it is "another kind of file"
+          // in general is not, so the exclusion is by exact name.
+          .where(
+            (File f) =>
+                f.path.split('/').last != 'manifest.json' &&
+                f.path.split('/').last != 'empty-signal.json',
+          )
           .map(
             (File f) => f.path
                 .substring(manifest.dir.path.length + 1)

@@ -15,6 +15,7 @@ final class FixtureManifest {
     required this.baseUrl,
     required this.dir,
     required this.entries,
+    this.pagination = const <PaginationRecord>[],
     this.capturedBy = '0-1',
   });
 
@@ -22,6 +23,9 @@ final class FixtureManifest {
   final String baseUrl;
   final Directory dir;
   final List<FixtureEntry> entries;
+
+  /// What the capture learned about pagination, one record per list kind. `0-3`.
+  final List<PaginationRecord> pagination;
 
   /// Which slice captured these fixtures — always `0-1`.
   ///
@@ -59,10 +63,32 @@ final class FixtureManifest {
     if (rawEntries is! List<Object?>) {
       throw FixtureManifestException('$site: manifest has no entries array');
     }
+    // ⚠️ `pagination[]` is loaded, not skipped.
+    //
+    // A top-level key the loader ignores is a key nobody reads: it would sit in the
+    // JSON looking measured while nothing in the test suite could fail if it were
+    // wrong. The first version of this loader ignored it for exactly that long.
+    final Object? rawPagination = decoded['pagination'];
+    final List<PaginationRecord> pagination = <PaginationRecord>[];
+    if (rawPagination != null) {
+      if (rawPagination is! List<Object?>) {
+        throw FixtureManifestException('$site: pagination is not an array');
+      }
+      for (final Object? row in rawPagination) {
+        if (row is! Map<String, dynamic>) {
+          throw FixtureManifestException(
+            '$site: a pagination row is not an object',
+          );
+        }
+        pagination.add(PaginationRecord.fromJson(row, site));
+      }
+    }
+
     return FixtureManifest(
       site: site,
       baseUrl: decoded['baseUrl'] as String? ?? '',
       dir: dir,
+      pagination: pagination,
       entries: rawEntries
           .map((Object? e) {
             if (e is! Map<String, dynamic>) {
@@ -73,6 +99,20 @@ final class FixtureManifest {
             return FixtureEntry.fromJson(e, dir);
           })
           .toList(growable: false),
+    );
+  }
+
+  /// The single [pageKind] pagination record. Throws when absent.
+  ///
+  /// `0-3` § 10: a **missing** entry for a page kind is a silence, and a silence on
+  /// B9 is not an absence of pagination — it is an absence of evidence, which is a
+  /// different and much more expensive thing.
+  PaginationRecord requirePagination(String pageKind) {
+    for (final PaginationRecord r in pagination) {
+      if (r.pageKind == pageKind) return r;
+    }
+    throw FixtureManifestException(
+      '$site: no pagination record for pageKind "$pageKind"',
     );
   }
 
@@ -88,6 +128,115 @@ final class FixtureManifest {
   /// Every entry whose [FixtureEntry.kind] is [kind].
   List<FixtureEntry> ofKind(String kind) =>
       entries.where((FixtureEntry e) => e.kind == kind).toList(growable: false);
+}
+
+/// One list kind's pagination, as recorded at capture time by `0-3`.
+///
+/// [isConfirmed] is the load-bearing field and it is **not** a matter of taste: an
+/// unconfirmed parameter is decoration, and `2-1` must treat it as decoration rather
+/// than follow it and read page 1 forever.
+final class PaginationRecord {
+  const PaginationRecord({
+    required this.site,
+    required this.pageKind,
+    required this.parameterName,
+    required this.exampleHref,
+    required this.oneBased,
+    required this.isConfirmed,
+    required this.confirmationBasis,
+    required this.notes,
+  });
+
+  factory PaginationRecord.fromJson(Map<String, dynamic> json, String site) {
+    for (final String field in requiredFields) {
+      if (!json.containsKey(field)) {
+        throw FixtureManifestException(
+          '$site: pagination "$pageKindFieldName(json)" is missing "$field"',
+        );
+      }
+    }
+    final String pageKind = json['pageKind'] as String;
+    final Object? parameter = json['discoveredParameter'];
+
+    // `exampleHref` sits beside the name, on the parameter, because it is evidence
+    // FOR the parameter: a name with no href is a guess and a href with no name is
+    // an observation. Keeping them apart would let the manifest record one without
+    // the other, which is the shape of an unbacked claim.
+    final Object? exampleHref = json['exampleHref'];
+
+    // ⚠️ An unconfirmed record may declare a parameter — that is the hypothesis it
+    // failed to confirm. But it may NOT claim confirmation with no parameter, and it
+    // may NOT claim confirmation with no basis. Both are the same mistake: asserting
+    // a fact and supplying nothing to check it against.
+    final bool isConfirmed = json['isConfirmed'] as bool;
+    if (parameter is Map<String, dynamic> &&
+        !parameter.containsKey('exampleHref')) {
+      final Object? sibling = exampleHref;
+      if (sibling is String) parameter['exampleHref'] = sibling;
+    }
+    if (isConfirmed) {
+      if (parameter is! Map<String, dynamic>) {
+        throw FixtureManifestException(
+          '$site: pagination "$pageKind" is confirmed with no discoveredParameter',
+        );
+      }
+      final Object? basis = json['confirmationBasis'];
+      if (basis is! String || basis.trim().isEmpty) {
+        throw FixtureManifestException(
+          '$site: pagination "$pageKind" is confirmed with no confirmationBasis',
+        );
+      }
+    }
+
+    return PaginationRecord(
+      site: site,
+      pageKind: pageKind,
+      parameterName: parameter is Map<String, dynamic>
+          ? parameter['name'] as String?
+          : null,
+      exampleHref: exampleHref is String
+          ? exampleHref
+          : (parameter is Map<String, dynamic>
+                ? parameter['exampleHref'] as String?
+                : null),
+      oneBased: parameter is Map<String, dynamic>
+          ? parameter['oneBased'] as bool? ?? false
+          : false,
+      isConfirmed: isConfirmed,
+      confirmationBasis: json['confirmationBasis'] as String?,
+      notes: (json['notes'] as String? ?? '').trim(),
+    );
+  }
+
+  static String pageKindFieldName(Map<String, dynamic> json) =>
+      json['pageKind'] as String? ?? '(unnamed)';
+
+  final String site;
+  final String pageKind;
+
+  /// `page`, `reviews`, … read off a real href. `null` when the list is not paged.
+  final String? parameterName;
+  final String? exampleHref;
+  final bool oneBased;
+  final bool isConfirmed;
+  final String? confirmationBasis;
+  final String notes;
+
+  /// `true` for a list the capture proved is **not** paginated.
+  bool get isKnownUnpaged => parameterName == null && !isConfirmed;
+
+  /// Every field a pagination row must carry.
+  static const List<String> requiredFields = <String>[
+    'pageKind',
+    'discoveredParameter',
+    'isConfirmed',
+    'notes',
+  ];
+
+  @override
+  String toString() =>
+      'pagination[$pageKind] $parameterName '
+      'confirmed=$isConfirmed';
 }
 
 /// One captured or manufactured fixture, as declared by the manifest.

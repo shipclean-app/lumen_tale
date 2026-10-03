@@ -83,19 +83,19 @@ legal question (**Q-004**). Closing the table would make the knowledge no easier
 |---|---:|
 | Test rows specified across 38 plans | **1653** |
 | § 11 `Emplacement` targets that exist on disk | **8 of 55** |
-| Test cases actually written | **293** |
-| Of those, host (`test/`), on the Dart VM | **287** |
+| Test cases actually written | **313** |
+| Of those, host (`test/`), on the Dart VM | **307** |
 | Of those, **on-device** (`integration_test/`), run on a real phone | **6** |
-| Of the host 287, covering the database schema | **27** |
-| Of the host 287, covering the app bootstrap | **5** |
-| Of the host 287, covering the network foundation | **51** |
-| Of the host 287, covering localisation | **27** |
-| Of the host 287, covering the theme foundation | **71** |
-| Of the host 287, **the failure discriminator** | **44** |
-| Of the host 287, covering the build/delivery foundation | **13** |
-| Of the host 287, **fixture-manifest suites** | **43** |
-| Of the host 287, **manifest-builder refusals** | **15** |
-| Of the host 287, **skipped** — FanMTL unreachable | **9** |
+| Of the host 307, covering the database schema | **27** |
+| Of the host 307, covering the app bootstrap | **5** |
+| Of the host 307, covering the network foundation | **51** |
+| Of the host 307, covering localisation | **27** |
+| Of the host 307, covering the theme foundation | **71** |
+| Of the host 307, **the failure discriminator** | **44** |
+| Of the host 307, covering the build/delivery foundation | **13** |
+| Of the host 307, **fixture-manifest suites** | **63** |
+| Of the host 307, **manifest-builder refusals** | **15** |
+| Of the host 307, **skipped** — FanMTL unreachable | **9** |
 
 **Eight of the 55 declared locations exist, and all six Wave-0 nodes have at least one
 test file on disk** — `local-store` (2), `http-client` (2), `localisation` (3),

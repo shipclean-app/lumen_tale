@@ -86,17 +86,23 @@ Until both remaining sites are measured, v1 can claim **genre browsing for all t
 
 - **Permission**: permitted for a user-installed reader. Its `robots.txt` (`User-agent: *`) disallows only `/fiction/chapter/*/vote`, `/fictions/review/`, `/forums/report/*`, `/report/*` — voting, reviews and reports. **Fiction listings and chapter content are not disallowed.** The AI-training crawlers (GPTBot, CCBot, Google-Extended, ClaudeBot, Bytespider, …) are disallowed in separate blocks; that is a training-crawler rule, not a reader rule, and does not apply to a client the user installed.
 - **Status**: **in v1** (ADR-013), second source, an adapter over the platform contract.
-- **Scope**: English web novels. Verified live: catalogue at `/fictions/best-rated`, `/fictions/latest-updates`; fiction page at `/fiction/<id>/<slug>`; chapter at `/fiction/<id>/<slug>/chapter/<chapterId>/<slug>`. Pagination and filter parameters to be discovered during implementation.
+- **Scope**: English web novels. Verified live: catalogue at `/fictions/best-rated`, `/fictions/latest-updates`; fiction page at `/fiction/<id>/<slug>`; chapter at `/fiction/<id>/<slug>/chapter/<chapterId>/<slug>`. **Pagination was "to be discovered during implementation" as of 2026-10-02 and HAS NOW BEEN MEASURED** — see *Royal Road — the URLs moved, measured 2026-10-03* below, which supersedes this line. Catalogue pagination is `?page=N`, **1-based**; the fiction page's pager is `?reviews=N`, and the **chapter table is not paginated at all**.
 - **Cloudflare: present, not challenging.** Measured 2026-10-02 on the home page, the best-rated catalogue, and a real chapter page (`/fiction/21220/mother-of-learning/chapter/301778/1-good-morning-brother`): **200 with no `cf-mitigated` header and no Turnstile markup, under both an honest and a browser-like User-Agent.** No bypass needed.
 - **Last verified**: 2026-10-02
 - **Quirks**: two, both measured live on 2026-10-02 while writing the `6-1` plan, and **both are load-bearing** rather than incidental:
 
   | Finding | Where | Why it matters more than a quirk |
   |---|---|---|
-  | **`table#chapters` carries `data-chapters="109"`** | the fiction page's chapter table | **This makes B9 mechanically checkable instead of asserted.** B9 requires the chapter list to be the site's complete order; the site publishes its own count, so "40 rows parsed but the attribute says 109" is a detectable truncation rather than something a reviewer has to notice. This is the only source so far that offers its own completeness witness — FanMTL does not |
-  | **A `200` with zero rows carries the site's own empty signal** | `div.fiction-list#result > div.text-center > h3`, text `There is nothing here :(` | **This is what makes B22's third state available for Royal Road.** B22 requires *could not read* and *no results* to be different screens, and a site that volunteers an empty-result marker is the only way to tell them apart without guessing. FanMTL's equivalent is unmeasured — that is `0-2`'s whole job |
+  | **`table#chapters` carries `data-chapters`** | the fiction page's chapter table | **This makes B9 mechanically checkable instead of asserted.** B9 requires the chapter list to be the site's complete order; the site publishes its own count, so "40 rows parsed but the attribute says 716" is a detectable truncation rather than something a reviewer has to notice. This is the only source so far that offers its own completeness witness — FanMTL does not. **Re-measured 2026-10-03: `data-chapters="716"`, exactly 716 rows, 716 distinct chapter hrefs.** The `109` above was from a smaller fiction on 2026-10-02; the *mechanism* is confirmed and the number was always per-fiction |
+  | ~~**A `200` with zero rows carries the site's own empty signal**~~ | — | **⚠️ RETRACTED 2026-10-03 by measurement.** The selector `div.fiction-list#result > div.text-center > h3` with text `There is nothing here :(` matches **nothing** on the live site, and a zero-row catalogue carries no marker of any kind. The claim was recorded from documentation, never from a capture. See *Royal Road — the URLs moved* below, and `test/fixtures/sources/royalroad/empty-signal.json` for what the site does publish |
 
-  **Promotion**: both belong in `18-external-contracts.md` because they are per-site facts that will change without notice, and a selector is not the place to record why a selector exists. The **cross-site rule** they add: *a source must record whether the site publishes its own empty-result signal, and must not infer one from an empty parse.* That rule is what `0-2` is measuring for FanMTL and what `6-11` will measure for search reachability.
+  **Promotion**: `18-external-contracts.md` because they are per-site facts that will
+  change without notice, and a selector is not the place to record why a selector
+  exists. The **cross-site rule** they add: *a source must record whether the site
+  publishes its own empty-result signal, and must not infer one from an empty parse.*
+  That rule is what `0-2` measured for Royal Road
+  (`test/fixtures/sources/royalroad/empty-signal.json`) and what `6-11` will measure for
+  search reachability.
 - **Pending promotion**: the two rules above, once `2-1`/`6-1` land and `0-2`/`6-11` report.
 
 ### Novel Fire — https://novelfire.net
@@ -218,3 +224,51 @@ than something a reviewer has to notice.
 Google-Extended, Applebot-Extended, Amazonbot, Bytespider, meta-externalagent, …) are
 `Disallow: /` wholesale; we are among none of them and impersonate none of them, per
 `17-security.md` rule 5 and ADR-014.
+
+## Royal Road — pagination, measured 2026-10-03 (`0-3`)
+
+Supersedes *"Pagination and filter parameters to be discovered during implementation"*.
+Nine fixtures frozen; `test/fixtures/royalroad_pagination_test.dart` re-derives every
+number below from them on each run, so a re-capture that changes one fails the suite
+instead of quietly invalidating this section.
+
+| List | Paged? | Parameter | Marker class | Window |
+|---|---|---|---|---|
+| `/fictions/<sort>` | **yes** | **`?page=N`, 1-based** (`page=1` is the *first* page) | `<li class="page-active">` — **not** `active` | 5 numbered + `Next ›` + `Last ›` |
+| `/fiction/<id>/<slug>` reviews tab | **yes** | `?reviews=N`, 1-based | same | 5 + `Next` + `Last` (55 pages) |
+| **`/fiction/<id>/<slug>` chapter table** | **NO** | — | — | **716 rows, all of them, `data-chapters="716"`** |
+
+**The chapter list is whole on one page.** This is the single most useful thing `0-3`
+found: completeness is not a suspicion, it is **arithmetic**. A parse yielding 400 of
+716 chapters is detectably incomplete, and no pagination logic is needed to know.
+
+**⚠️ Three things a probe written from the prose gets wrong, all measured:**
+
+| Written as | Actually | Consequence of trusting the prose |
+|---|---|---|
+| catalogue rows are `tr.fiction-list-item` | `div.fiction-list-item.row`, **20/page**, and the page has **no `<table>` at all** | a probe reports 0 rows, calls the page empty, and hands `0-2` an "absent" verdict for a full catalogue |
+| numbered anchors carry an offset | there is **no offset**; the parameter is `?page=N` | `?page=` is never found, pagination reads as absent, and the source silently reads page 1 forever |
+| the current page is `li.active` | `li.page-active` | every page reads as page 1 |
+
+**`javascript:;` anchors exist on the page — outside `ul.pagination`.** A whole-page
+anchor sweep counts them as pages. Anchors must be scoped to `ul.pagination`; inside
+that container there are none.
+
+**⚠️ `0-3` § 3.2.1's confirmation rule is WRONG for this site, and the deviation is
+recorded rather than hidden.** The rule is `secondPageItemCount > firstPageItemCount`.
+Royal Road serves **20 items on every listing page**, so the rule is false on a site
+whose pagination demonstrably works: page 1 holds 20 novels, page 2 holds 20
+*different* novels (verified by hashing sorted `/fiction/<id>` hrefs). Applying the rule
+literally would record working pagination as unconfirmed, and `2-1` would then treat
+`?page=N` as decoration — a failure that looks like "the source returned everything"
+while dropping 99 % of the catalogue.
+
+**Confirmation is therefore a set comparison, not a count comparison**: two pages holding
+different items confirm pagination. Both counts are still recorded beside it so a
+reader can check the reasoning.
+
+**Promotion**: `0-3`'s finding, verified against fixtures, that *a probe must scope its
+anchors to the pagination container* and *a fixed page size is the normal case, not
+evidence of absence*. The second is cross-site and belongs in the source contract: a
+source that treats "the same number of items" as "there is no page 2" will work on one
+site and fail on every other.

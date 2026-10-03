@@ -44,7 +44,7 @@
         "novelRowsAtLeast": 20,
         "novelRowsExact": 20
       },
-      "notes": "Popular catalogue, page 1. 20 rows under div.fiction-list#result, each a div.fiction-list-item.row. The query for page 2 is `?page=2`, NOT a path segment."
+      "notes": "Popular catalogue, page 1. 20 rows under div.fiction-list#result, each a div.fiction-list-item.row. The query for page 2 is `?page=2`, NOT a path segment. MEASURED 2026-10-03: 20 div.fiction-list-item per page, 20 DISTINCT /fiction/<id> hrefs, and the two pages share none. tr.fiction-list-item matches ZERO and the page has no <table> at all. Pagination is ?page=N, 1-based, inside ul.pagination, marked by li.page-active."
     },
     {
       "key": "catalogue-active-popular-page1",
@@ -60,7 +60,7 @@
         "novelRowsAtLeast": 20,
         "novelRowsExact": 20
       },
-      "notes": "Popular catalogue, page 2. Verified to be a DISTINCT set of 20 fictions from page 1 by hashing the sorted /fiction/<id> hrefs of each — pagination is real, so B9's completeness requirement is testable rather than assumed."
+      "notes": "Popular catalogue, page 2. Verified to be a DISTINCT set of 20 fictions from page 1 by hashing the sorted /fiction/<id> hrefs of each — pagination is real, so B9's completeness requirement is testable rather than assumed. MEASURED 2026-10-03: 20 div.fiction-list-item per page, 20 DISTINCT /fiction/<id> hrefs, and the two pages share none. tr.fiction-list-item matches ZERO and the page has no <table> at all. Pagination is ?page=N, 1-based, inside ul.pagination, marked by li.page-active."
     },
     {
       "key": "novel-detail-runesmith",
@@ -73,7 +73,7 @@
       "sha256": "da38f7b2d5cf636a659cf7d770e3967ebc2ed62a65ef87a389a69b5024cb9cd5",
       "kind": "novel-detail",
       "expected": {},
-      "notes": "Novel detail page. Carries table#chapters with data-chapters=\"716\" and 716 tr.chapter-row elements — the site's own count is a completeness WITNESS for B9, so '40 rows parsed but the attribute says 716' is a detectable truncation."
+      "notes": "Novel detail page. Carries table#chapters with data-chapters=\"716\" and 716 tr.chapter-row elements — the site's own count is a completeness WITNESS for B9, so '40 rows parsed but the attribute says 716' is a detectable truncation. MEASURED 2026-10-03: 716 tr.chapter-row, 716 DISTINCT /fiction/<id>/<slug>/chapter/<n>/<slug> hrefs, data-chapters=\"716\" -- all three agree. The table is NOT paginated. The pager on this page is the REVIEWS tab (?reviews=N), which is not the chapter list."
     },
     {
       "key": "chapter-glossary",
@@ -134,6 +134,41 @@
         "textCharsAtLeast": 100
       },
       "notes": "MANUFACTURED, not captured -- the only artefact 0-1 may fabricate (E4, SC-6). Byte-for-byte copy of chapter-skills-titles.html with ONE literal substitution: 'chapter-content' -> 'chapter-content-v2', applied to the whole file. Its source is a CHAPTER page, not the detail page: the detail page carries no body container at all (measured: zero occurrences of chapter-content in 1000263 bytes), so renaming there would have edited nothing and produced a fixture identical to its source. The <script> is NOT removed, no line count changed, no trailing newline added."
+    }
+  ],
+  "pagination": [
+    {
+      "pageKind": "catalogue",
+      "discoveredParameter": {
+        "name": "page",
+        "valueOnSecondPage": "2",
+        "firstPageValue": "1",
+        "oneBased": true
+      },
+      "exampleHref": "/fictions/active-popular?page=2",
+      "isConfirmed": true,
+      "confirmationBasis": "two frozen pages list 20 DISTINCT /fiction/<id> hrefs each; the counts are equal by design, so confirmation is a set comparison",
+      "notes": "1-based. Marker class is li.page-active, NOT li.active. Anchors must be scoped to ul.pagination: javascript:; anchors exist elsewhere on the page."
+    },
+    {
+      "pageKind": "fictionChapterList",
+      "discoveredParameter": null,
+      "isConfirmed": false,
+      "confirmationBasis": null,
+      "notes": "NOT PAGINATED. All 716 chapters are on the fiction page, and the site declares data-chapters=\"716\". Completeness is arithmetic, not suspicion. This entry exists so the absence is recorded rather than silent -- 0-3 requires an entry for this pageKind whether or not it is confirmed."
+    },
+    {
+      "pageKind": "fictionReviews",
+      "discoveredParameter": {
+        "name": "reviews",
+        "valueOnSecondPage": "2",
+        "firstPageValue": "1",
+        "oneBased": true
+      },
+      "exampleHref": "/fiction/33844/the-runesmith?reviews=2",
+      "isConfirmed": false,
+      "confirmationBasis": null,
+      "notes": "Present but NOT CONFIRMED: only one reviews page was captured, and a parameter read off an href is a hypothesis. Recorded because a source seeing a pager on a fiction page must know it is the reviews tab and not the chapter list."
     }
   ]
 }

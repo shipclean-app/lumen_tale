@@ -1646,3 +1646,71 @@ verdict → guard fails; drift foundInFixtures → guard fails.
 
 `0-2` is now `built`.
 
+
+### `0-3` — Royal Road pagination, and three corrections that were wrong in the prose
+
+`test/fixtures/royalroad_pagination_probe.dart` reads the frozen fixtures. The capture
+itself was done under `0-1`, which could reach Royal Road; `0-3` never got a FanMTL to
+measure. The plan's `Emplacement` was `royalroad_fixtures_test.dart`, written here as
+`royalroad_pagination_test.dart` because everything in it is about pagination and chapter
+completeness.
+
+**Three claims in the plan and in `18-external-contracts.md` are contradicted by the
+bytes**, and each is asserted rather than noted:
+
+| Written | Actually | Consequence of trusting the prose |
+|---|---|---|
+| catalogue rows are `tr.fiction-list-item` | `div.fiction-list-item.row`, 20/page, and the page has **no `<table>` at all** | a probe reports 0 rows, calls the page empty, hands `0-2` an "absent" verdict for a full catalogue |
+| numbered anchors expose an offset | there is **no offset**; `?page=N`, 1-based | `?page=` never found → pagination reads absent → the source reads page 1 forever |
+| the current page is `li.active` | `li.page-active` | every page reads as page 1 |
+
+**⚠️ `0-3` § 3.2.1's confirmation rule is WRONG for this site, and the deviation is
+recorded in the rules file rather than hidden.** The rule is
+`secondPageItemCount > firstPageItemCount`. Royal Road serves **20 items on every listing
+page**, so the rule is false on a site whose pagination demonstrably works — page 1
+holds 20 novels, page 2 holds 20 *different* novels, verified by hashing sorted
+`/fiction/<id>` hrefs. Applying the rule literally would record working pagination as
+unconfirmed, and `2-1` would treat `?page=N` as decoration: a failure that looks like
+"the source returned everything" while dropping 99 % of the catalogue. Confirmation is
+therefore a **set comparison**, and both counts are still recorded so a reader can check
+the reasoning. A test asserts `isConfirmed == false` for the count rule **and** that the
+manifest's basis names the distinct-href check.
+
+**The most useful finding is a negative one: the chapter table is NOT paginated.** All
+716 chapters are on the fiction page, `data-chapters="716"` matches 716 `tr.chapter-row`,
+and 716 distinct chapter hrefs agree. Completeness is **arithmetic**, not suspicion. The
+fiction page's pager is `?reviews=N` — the **reviews tab** — and recording that
+distinction is what stops `2-1` hunting for chapter pages that do not exist.
+
+**Two defects fixed while measuring:**
+- `li.page-active` was being read as `active`, so every page measured as page 1.
+- `javascript:;` anchors exist on the page outside `ul.pagination`. Counting all anchors
+  reports them as pages. Anchors are now scoped to the pagination container, where there
+  are none — and a test asserts the page *does* contain them, so the scoping is real.
+
+**The manifest's `pagination[]` was being loaded by nothing.** `FixtureManifest.load`
+ignored unknown top-level keys, so the section could sit in the JSON looking measured
+while no test could fail if it were wrong. It is now parsed into `PaginationRecord`, and
+the loader **refuses** a record that claims `isConfirmed: true` with no parameter or no
+`confirmationBasis` — the same rule as a hand-typed `bytes`. Verified by sabotage:
+forcing the loader to ignore `pagination[]` fails 4 tests; marking the catalogue
+unconfirmed fails 1.
+
+`18-external-contracts.md` § Royal Road: the "to be discovered during implementation"
+line is replaced with the measured values, and the **`There is nothing here :(` empty-signal
+claim is RETRACTED** — its selector matches nothing on the live site and a zero-row
+catalogue carries no marker at all.
+
+### Verified
+
+format clean · `analyze --fatal-infos` **zero** · host **329 passed + 9 skipped** ·
+`check_plans` **38 clean**. Sabotage: the plan's selector → 2 failures; `page-active` →
+`active` → 2 failures; loader ignoring `pagination[]` → 4 failures.
+
+### NEXT SESSION SHOULD
+
+- **`2-1`, the Source contract**, now with four measured facts it cannot get wrong:
+  `.fiction-list-item` (not `tr.…`), `?page=N` 1-based set-confirmed, chapter list
+  **unpaginated** with `data-chapters` as the witness, and **no** browse-side empty
+  signal (`empty-signal.json`).
+- **`2-6`**, **`6-3`**, **`0-5`** — the rest of Wave 1.
