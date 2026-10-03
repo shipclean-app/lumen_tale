@@ -1617,3 +1617,32 @@ format clean · `analyze --fatal-infos` **zero** · host **287 passed + 9 skippe
   discriminator. `0-2` is what measures that, and it is blocked on FanMTL, so `2-1`
   must be written for the two-state reality the capture shows.
 - **`0-2`, `0-3`, `2-6`, `6-3`, `0-5`** — the rest of Wave 1.
+
+### `0-2` — measuring FanMTL/Royal Road empty-result signal
+
+`lib/domain/sources/empty_signal.dart` probes fixture bodies for an explicit "nothing
+here" string. Only text nodes are collected, with `<script>`, `<style>`, `<noscript>`,
+`<title>`, `<template>`, `<svg>`, `<head>` skipped. A string only in a script or
+comment is `hiddenOnly`, not `carries`; the verdict is `ambiguous` in that case.
+
+A small but necessary correction: a literal can be visible to a reader but not a
+substring of the raw serialised HTML (e.g. two `<h1>` tags splitting a phrase), so
+`isPresent` checks `rawHits OR visibleHits`, and the verifier uses that. The
+synthetic tests in `test/domain/sources/empty_signal_test.dart` each build their own
+probe (closed literal set), and the group asserting "bodyless" HTML accommodates HTML5
+tree-building that synthesises a body.
+
+For Royal Road, `failure-not-found.html` carries the two strings in visible text and
+no catalogue/novel/chapter page does; `signalOnFailurePageOnly`, `statesAvailable=3`
+but `appliesTo = [search, novelDetails, chapterContent]`, `doesNotApplyTo =
+[genreBrowse, catalogueBrowse]`. This resolves `roadmap.md` § 7.2 item 2 for the site
+we could reach.
+
+The file `test/fixtures/sources/royalroad/empty-signal.json` is **re-derived**, not
+invented: `test/domain/sources/empty_signal_test.dart` loads it and compares it to the
+verdict recomputed from the fixtures on every run. It fails if `foundInFixtures`,
+`absentFromFixtures`, `statesAvailable` or `verdict` drift. Tested by sabotage: drift
+verdict → guard fails; drift foundInFixtures → guard fails.
+
+`0-2` is now `built`.
+

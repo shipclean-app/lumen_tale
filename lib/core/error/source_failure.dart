@@ -60,8 +60,7 @@ final class NoConnection extends SourceFailure {
   bool get isRetriable => true;
 
   @override
-  bool operator ==(Object other) =>
-      other is NoConnection && other.host == host;
+  bool operator ==(Object other) => other is NoConnection && other.host == host;
 
   @override
   int get hashCode => Object.hash(NoConnection, host);

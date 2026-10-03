@@ -1,0 +1,53 @@
+{
+  "site": "royalroad",
+  "measuredBy": "0-2",
+  "measuredAt": "2026-10-03T00:00:00Z",
+  "verdict": "signalOnFailurePageOnly",
+  "statesAvailable": 3,
+  "appliesTo": [
+    "search",
+    "novelDetails",
+    "chapterContent"
+  ],
+  "doesNotApplyTo": [
+    "genreBrowse",
+    "catalogueBrowse"
+  ],
+  "signals": [
+    {
+      "literal": "We can not find the fiction you're looking for.",
+      "foundInFixtures": [
+        "failure-not-found"
+      ],
+      "absentFromFixtures": [
+        "home",
+        "catalogue-active-popular-page0",
+        "catalogue-active-popular-page1",
+        "novel-detail-runesmith",
+        "chapter-glossary",
+        "chapter-skills-titles",
+        "manufactured/broken-layout"
+      ],
+      "visibleText": true,
+      "insideScriptOrComment": false
+    },
+    {
+      "literal": "404 Page Not Found",
+      "foundInFixtures": [
+        "failure-not-found"
+      ],
+      "absentFromFixtures": [
+        "home",
+        "catalogue-active-popular-page0",
+        "catalogue-active-popular-page1",
+        "novel-detail-runesmith",
+        "chapter-glossary",
+        "chapter-skills-titles",
+        "manufactured/broken-layout"
+      ],
+      "visibleText": true,
+      "insideScriptOrComment": false
+    }
+  ],
+  "notes": "The site publishes one explicit empty-result string, and it lives only on its 404 page: \"We can not find the fiction you're looking for.\" It therefore discriminates for search, novel-details and chapter-content lookups, and for NOTHING else. A catalogue or genre listing that genuinely holds zero rows is an ordinary, well-formed page on this site, so browsing has TWO states, not three: zero rows is a suspected break (E8), never \"no results\". The UI must say it cannot distinguish rather than render a third state it did not measure. Measured against the 9 frozen fixtures of 2026-10-03; re-derived by test/domain/sources/empty_signal_test.dart on every run."
+}
