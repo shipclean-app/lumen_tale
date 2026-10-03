@@ -65,7 +65,7 @@
       "completed_at": "2026-10-03T04:18:06.497Z"
     },
     "6_validation": {
-      "status": "not_started"
+      "status": "in_progress"
     },
     "7_implementation": {
       "status": "not_started"
@@ -1100,6 +1100,21 @@
         "B44",
         "C13"
       ]
+    },
+    "test_plan": {
+      "path": ".forge/test-plan.md",
+      "type": "test_plan",
+      "status": "draft",
+      "content_hash": "sha256:21e029abf7a4",
+      "headings": {
+        "1": "The inventory",
+        "2": "Coverage of the rule corpus",
+        "3": "What is written, as opposed to planned",
+        "4": "The split that Q-008 draws",
+        "5": "The whole E2E suite, all 11 rows",
+        "6": "What Phase 6 does next"
+      },
+      "updated_at": "2026-10-03T04:28:00.858Z"
     }
   },
   "index": {
@@ -2736,12 +2751,12 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 212,
+      "register": 213,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 132,
       "gate_approved": 4,
-      "phase_status": 8,
+      "phase_status": 9,
       "amend": 5,
       "phase2_complete": 1,
       "nav_prioritized": 1,

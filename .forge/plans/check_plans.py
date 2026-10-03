@@ -352,6 +352,130 @@ def _re_escape(s):
     return re.escape(s)
 
 
+def check_test_plan():
+    """Recompute the numbers in `.forge/test-plan.md` and compare.
+
+    The register states that its counts are derived, not typed. That claim is
+    worth nothing until something checks it, and this project has spent a
+    session learning what an unchecked claim is worth. So: recompute § 1's six
+    row counts and § 2's two coverage ratios from the plans' own § 11 tables,
+    then require the file to agree.
+    """
+    plan_doc = ROOT / '.forge/test-plan.md'
+    if not plan_doc.exists():
+        fail(ROOT / '.forge/state.json',
+             'phase 6 expects a `test_plan` deliverable and `.forge/test-plan.md` '
+             'does not exist — run with --test-plan-regen to create it')
+        return
+
+    plans = {}
+    for f in sorted(PLANS.glob('*.md')):
+        if f.name == 'README.md':
+            continue
+        plans[f.stem] = f.read_text(encoding='utf-8')
+
+    SUB = re.compile(r'^###\s+11\.(\d+)\s+(.*)$', re.M)
+    SEP = re.compile(r'^\|[\s\-:|]*\|$')
+    rows: dict[str, int] = {}
+    plans_per: dict[str, int] = {}
+    ids: set[str] = set()
+    locs, e2e = [], []
+
+    for name, text in plans.items():
+        m = re.search(r'^##\s+11\..*?(?=^##\s+12\.|\Z)', text, re.M | re.S)
+        if not m:
+            continue
+        body = m.group(0)
+        marks = [(x.start(), x.group(1), x.group(2).strip()) for x in SUB.finditer(body)]
+        for i, (pos, num, title) in enumerate(marks):
+            seg = body[pos:marks[i + 1][0] if i + 1 < len(marks) else len(body)]
+            n = 0
+            for line in seg.split('\n'):
+                if not line.startswith('|') or SEP.match(line):
+                    continue
+                cells = [c.strip() for c in line.strip().strip('|').split('|')]
+                # An empty FIRST cell is legal: it nests a sub-case under the
+                # row above. Skipping it is how E17 read as untested.
+                if not cells or cells[0] in ('Cible', 'Target'):
+                    continue
+                if all(not c for c in cells):
+                    continue
+                n += 1
+                ids |= set(re.findall(r'\b(?:B\d{1,2}|E\d{1,2})\b', ' '.join(cells)))
+                if 'E2E' in title:
+                    e2e.append((name, ' '.join(cells)[:88]))
+            key = f'{num}|{title}'
+            rows[key] = rows.get(key, 0) + n
+            plans_per[key] = plans_per.get(key, 0) + 1
+            loc = re.search(r'Emplacement\s*:\s*`([^`]+)`', seg)
+            if loc:
+                locs.append((name, num, loc.group(1)))
+
+    prd = (ROOT / '.forge/prd.md').read_text(encoding='utf-8')
+    live_b = {m.group(1) for m in re.finditer(
+        r'^\| (B\d+) \|', prd[prd.index('## 4. Business rules'):prd.index('## 5. Constraints')], re.M)}
+    live_e = {m.group(1) for m in re.finditer(
+        r'^\| (E\d+) \|', prd[prd.index('## 6. Edge cases'):prd.index('## 7. Non-functional')], re.M)}
+
+    text = plan_doc.read_text(encoding='utf-8')
+    total = sum(rows.values())
+
+    for key, n in sorted(rows.items()):
+        num, title = key.split('|', 1)
+        # The register's row: "| § 11.N title | **n** | p | ..."
+        pat = rf'^\| § 11\.{re.escape(num)} {re.escape(title)} \| \*\*(\d+)\*\* \| (\d+) \|'
+        m = re.search(pat, text, re.M)
+        if not m:
+            fail(plan_doc, f'§ 1 has no row for § 11.{num} {title} — the inventory is '
+                           f'incomplete, so a reader cannot tell what is covered')
+        elif int(m.group(1)) != n or int(m.group(2)) != plans_per[key]:
+            fail(plan_doc, f'§ 1 says § 11.{num} {title} = {m.group(1)} rows in '
+                           f'{m.group(2)} plans; the plans say {n} in {plans_per[key]}')
+
+    m = re.search(r'^\| \*\*Total\*\* \| \*\*(\d+)\*\* \| \*\*(\d+)/(\d+)\*\*', text, re.M)
+    if not m:
+        fail(plan_doc, '§ 1 has no Total row')
+    elif int(m.group(1)) != total:
+        fail(plan_doc, f'§ 1 states {m.group(1)} test rows; the plans contain {total}')
+    elif int(m.group(2)) != len(plans) or int(m.group(3)) != len(plans):
+        fail(plan_doc, f'§ 1 says {m.group(2)}/{m.group(3)} plans have a § 11; '
+                       f'{len(plans)} do')
+
+    for label, live, have in (('business rules', live_b, len(live_b & ids)),
+                              ('edge cases', live_e, len(live_e & ids))):
+        m = re.search(rf'^\| {label} [^|]* \| (\d+) \| \*\*(\d+)\*\*', text, re.M | re.I)
+        if not m:
+            fail(plan_doc, f'§ 2 has no {label} row')
+        elif int(m.group(1)) != len(live) or int(m.group(2)) != have:
+            fail(plan_doc, f'§ 2 says {label}: {m.group(1)} live, {m.group(2)} tested; '
+                           f'the truth is {len(live)} live, {have} tested')
+
+    # E21's absence from § 11 is a recorded fact, not a silent hole. If it ever
+    # gains a § 11 row the note above the table becomes wrong, so fail loudly.
+    if 'E21' not in ids:
+        note = 'the wrong section' in text and 'Q-004' in text
+        if not note:
+            fail(plan_doc, 'E21 has no § 11 row and § 2 no longer explains why — '
+                           'either add the row or say where its check lives')
+
+    present = sum(1 for _, _, l in locs if (ROOT / l).exists())
+    m = re.search(r'exist on disk \| \*\*(\d+) of (\d+)\*\*', text)
+    if not m:
+        fail(plan_doc, '§ 3 has no `Emplacement` on-disk row')
+    elif (int(m.group(1)), int(m.group(2))) != (present, len(locs)):
+        fail(plan_doc, f'§ 3 says {m.group(1)} of {m.group(2)} test locations exist; '
+                       f'{present} of {len(locs)} do')
+
+    m = re.search(r'^\| (\d+) E2E rows \|', text, re.M)
+    if not m:
+        fail(plan_doc, '§ 4 has no E2E row-count row')
+    elif int(m.group(1)) != len(e2e):
+        fail(plan_doc, f'§ 4 says {m.group(1)} E2E rows; the plans contain {len(e2e)}')
+    if len(re.findall(r'^- \*\*[\w-]+\*\* — ', text, re.M)) != len(e2e):
+        fail(plan_doc, f'§ 5 lists {len(re.findall(r"^- \\*\\*[\\w-]+\\*\\* — ", text, re.M))} '
+                       f'E2E entries; the plans contain {len(e2e)}')
+
+
 def check_counts():
     """The numbers architecture.md states about itself must equal the state it
     describes. This session wrote '30 scheduled slices' in a document that
@@ -418,6 +542,7 @@ def main():
     check_corpus()
     check_counts()
     check_cross_plan()
+    check_test_plan()
     state = json.loads((ROOT / '.forge/state.json').read_text())
     wanted = {k: (v.get('rule_ids', []), v.get('edge_case_ids', []), False)
               for k, v in state['slices'].items()}

@@ -438,6 +438,55 @@ forge-guard fast-track --scope=plans --autonomy=full → pass
 
 The six `check_plans.py` warnings are all finding **F-003** — `coverage-check.js slice` reads `state.slices` only, so a foundation's `rule_ids` are never mechanically checked. `check_plans.py` covers them; the Forge script cannot, and it is read-only.
 
+### PHASE 6 OPENS — the `test_plan` register, and the ratio nobody had written down
+
+Phase 6's gate named a deliverable, `test_plan`, and it did not exist. Rather than let the
+guard pass by being right about something else, it was built: **`.forge/test-plan.md`**, a
+derived index of the test suites the 38 plans already specify.
+
+**What the derivation found — and none of it was on the record before:**
+
+| | |
+|---|---:|
+| Test rows specified across 38 plans | **1653** |
+| Business rules with at least one test row | **48 / 48** |
+| Edge cases with at least one test row | **21 / 22** |
+| § 11 `Emplacement` targets that exist on disk | **1 of 55** |
+| Test cases actually written | **32** |
+| E2E rows, and how many have run | **11, and 0** |
+
+**Every live business rule is defended by a test row. That is a real result and it was
+never stated.** The gap is the other direction: **one row in fifty exists**, so a § 11 is a
+promise the owning slice makes, not a description of the tree. `test-plan.md` § 3 exists so
+that difference is written down rather than discovered at slice 5.
+
+**E21 is the single uncovered edge case, and it is uncovered for a reason worth keeping.**
+Its check is real — `2-1.md`'s § 10 criterion, *« `buildSourceRegistry()` renvoie une liste de
+longueur **1**, et aucune classe Novel Fire »* — but it lives in § 10, not a § 11 table.
+**The one rule whose verification is outside § 11 is the one gated on the unresolved legal
+question (Q-004).** Moving the row would complete the table and make the knowledge no easier
+to find, so it is stated rather than fixed.
+
+**Q-008's split, now quantified: 1383 rows can run here, 270 cannot** — 11 E2E needing a
+phone, 259 manual verifications needing a human. ADR-011 covers the *build*; only
+*observation* needs a device. And the sentence that must travel with this corpus:
+**no on-device claim was verified here and none could have been** — § 7.1's frame budgets,
+SC-5 and `gate:upgrade-safety` are specifications, not results.
+
+**`check_plans.py` gained `check_test_plan()`, and it was proven red four ways before being
+trusted** — the register's whole claim is that its numbers are derived, and *a derived claim
+nobody checks is exactly the kind this session has been removing*. The four proofs: the total
+(`9999`), the coverage ratio (`21 live` for edge cases), a deleted § 1 row, and the deletion
+of the E21 note.
+
+**And the extractor itself was wrong twice before it was right.** It first compared
+`lib/core/x.dart` to `core/x.dart`; then it reported **0 rows across all 38 plans** — a
+silently empty result, which is the failure mode this project has hit seven times, caught only
+because 1653 is obviously not 0. Then it skipped rows whose **first cell is empty**, a legal
+shape that nests a sub-case under the row above — which is how **E17 read as untested** when
+it is covered at `2-1.md:1178`. *A count of zero is a finding to verify, not a result to
+report.*
+
 ### PHASE 5 APPROVED BY THE OWNER — 2026-10-03
 
 **"i approve phase."** Phase 5 is `approved`, all 38 plans are `planned`, and `current_phase`
