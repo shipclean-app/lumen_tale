@@ -743,3 +743,7 @@
 {"ts":"2026-10-03T06:16:42.729Z","type":"register","deliverable":"0-2","path":".forge/plans/0-2.md","kind":"slice"}
 {"ts":"2026-10-03T06:19:14.947Z","type":"status_change","kind":"deliverable","key":"test_plan","from":"draft","to":"approved","mirrored":{"mirrored":true,"changed":true,"path":".forge/test-plan.md","from":"draft","to":"approved"}}
 {"ts":"2026-10-03T06:19:14.996Z","type":"phase_status","phase":"6_validation","from":"in_progress","to":"approved"}
+{"ts":"2026-10-03T06:20:06.850Z","type":"phase_status","phase":"7_implementation","from":"not_started","to":"in_progress"}
+{"ts":"2026-10-03T06:20:06.906Z","type":"stale_detected","slice":"0-1","reasons":["plan_edited"],"drifted":[]}
+{"ts":"2026-10-03T06:20:33.934Z","type":"finding_raised","id":"F-007","domain":"workflow.md","severity":"majeur"}
+{"ts":"2026-10-03T06:20:49.768Z","type":"register","deliverable":"test_plan","path":".forge/test-plan.md","kind":"deliverable"}

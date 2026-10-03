@@ -889,3 +889,45 @@ missing** — so "autonomously" meant writing most of the deliverable, not appro
   `.opencode/rules/` or `.forge/plans/`.
 - **Do not add a CI job that needs hardware this project does not have**, and do not let
   the E2E rows into CI while 0 of 32 slices exist.
+
+### Phase 6 gate — passed, and Phase 7 opened on two blockers
+
+The owner approved `test_plan` and closed Phase 6. `test_plan` draft → **approved**,
+phase 6 → **approved**, `current_phase` → **7_implementation**, `gates_pending` **0**,
+`open_divergences` **0**, front matter mirror synced by `set-status` rather than by hand.
+
+**Phase 7 opens on Wave 0** — `0-1`, `apk-pipeline`, `http-client`, `local-store`,
+`localisation`, `theme-type`. Six nodes, no dependencies between them, and the wave count
+is computed by `dependency-check` rather than asserted.
+
+**Two blockers found in the first minute of Phase 7, both recorded rather than worked around:**
+
+- **`0-1` is `stale`** — `check-stale` returns `{"stale": true, "reasons": ["plan_edited"]}`.
+  Its plan changed after approval, so by Phase 7 step 1 it is blocked pending a re-approval
+  gate. It is the only node of the six whose staleness could even be evaluated.
+- **`check-stale` cannot check a foundation at all.** All six return
+  `{"error": "unknown_slice"}` — it resolves only `state['slices']`, never
+  `state['foundations']`. **This is F-003's root cause in a second script** (F-003 named
+  `coverage-check.js` only), and it means the mandatory Phase 7 gate is **unrunnable for
+  5 of the 6 Wave-0 nodes** — every foundation in the project. Recorded as **F-007**.
+
+The second one matters more than it looks: SKILL.md Phase 7 step 1 makes `check-stale` the
+gate before implementing a node, and a gate that errors for most of the graph is a gate
+nobody can run. Either the lookup is fixed, or the five foundations get implemented with
+no staleness check at all — and *that* is the failure this project has already written down
+several times.
+
+### NEXT SESSION SHOULD
+
+- **Decide F-007 before implementing any foundation.** One-line fix in `check-stale`
+  (fall back to `state['foundations']`), or amend SKILL.md Phase 7 step 1 to name a command
+  that works. Implementing five nodes with the documented gate silently erroring is worse
+  than not starting.
+- **Re-gate `0-1`**, whose plan was edited after approval.
+- **Promote F-001…F-007.** Seven findings with domains and no promotion have changed
+  nothing, which is the exact condition the rule names.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not read `unknown_slice` as "nothing to check".** It means the checker did not look,
+  which is the same shape as `flutter test -d` reporting green on a laptop.

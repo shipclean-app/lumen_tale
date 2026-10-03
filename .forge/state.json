@@ -38,7 +38,7 @@
       "escape_reason": null
     }
   },
-  "current_phase": "6",
+  "current_phase": "7",
   "phases": {
     "0_bootstrap": {
       "status": "approved",
@@ -69,7 +69,7 @@
       "completed_at": "2026-10-03T06:19:14.992Z"
     },
     "7_implementation": {
-      "status": "not_started"
+      "status": "in_progress"
     },
     "8_final_validation": {
       "status": "not_started"
@@ -1126,7 +1126,7 @@
         "11.2": "Variables and commands",
         "11.3": "Two tool defects Phase 6 had to fix to make any of this checkable"
       },
-      "updated_at": "2026-10-03T06:19:14.941Z",
+      "updated_at": "2026-10-03T06:20:49.766Z",
       "derived_from": [
         ".forge/plans/*.md section 11"
       ]
@@ -1950,7 +1950,11 @@
         "E22"
       ],
       "plan_path": ".forge/plans/0-1.md",
-      "plan_hash": "sha256:92796904c7c7"
+      "plan_hash": "sha256:86ddd33efa7a",
+      "stale": true,
+      "stale_reasons": [
+        "plan_edited"
+      ]
     },
     "0-2": {
       "path": ".forge/plans/0-2.md",
@@ -2805,18 +2809,18 @@
     "counts": {
       "init": 1,
       "guard_failure": 2,
-      "register": 217,
+      "register": 218,
       "client_point": 4,
       "client_answer": 4,
       "status_change": 133,
       "gate_approved": 4,
-      "phase_status": 10,
+      "phase_status": 11,
       "amend": 5,
       "phase2_complete": 1,
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 6,
+      "finding_raised": 7,
       "fast_track_enter": 1
     }
   },
@@ -2946,6 +2950,19 @@
       "correction": "Extend referenceIndex to cover .opencode/rules/*.md and .forge/plans/*.md, or classify a target that exists on disk outside .forge as 'external target, not indexed' rather than 'unknown'. Until then section_references cannot pass, and a check that can never pass is a check nobody reads.",
       "artifact": null,
       "raised_at": "2026-10-03T06:14:00.451Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-007",
+      "domain": "workflow.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "state.js check-stale resolves only state['slices'], so all 6 foundations return {error: unknown_slice}. This is F-003's root cause in a second script (F-003 recorded coverage-check.js; check-stale was not mentioned). Consequence measured 2026-10-03 at the start of Phase 7: SKILL.md Phase 7 step 1 makes 'state.js check-stale <anchor> <slice>' the mandatory gate before implementing a node, and that gate is UNRUNNABLE for 5 of the 6 Wave-0 nodes -- every foundation. Phase 7 cannot follow its own documented procedure for apk-pipeline, http-client, local-store, localisation and theme-type.",
+      "correction": "Make check-stale fall back to state['foundations'] the way coverage-check.js must (F-003), so one lookup covers both node kinds. Until then either implement foundations with no staleness check at all -- which is exactly the 'gate nobody can run is a gate nobody reads' shape -- or amend SKILL.md Phase 7 step 1 to name a command that works for foundations.",
+      "artifact": null,
+      "raised_at": "2026-10-03T06:20:33.931Z",
       "promoted_to": null,
       "resolved_at": null
     }
