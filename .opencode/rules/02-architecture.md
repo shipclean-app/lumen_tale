@@ -49,7 +49,8 @@ One concern, one directory, one rule file. Resolve a placement question here fir
 |---|---|---|
 | Theme assembly, tokens, `ThemeExtension`s | `app/theme/` | `14-design-tokens.md` |
 | Shared snackbar / dialog / async-state components | `core/ui/` | `09-widgets-ui.md` |
-| Typed exception hierarchy + logger | `core/utils/` | `13-error-handling.md` |
+| Typed exception hierarchy | **`core/error/`** | `13-error-handling.md`. **Moved 2026-10-02 from `core/utils/errors/`**: `core/` is a leaf layer, so an exception that `domain/` must catch cannot live under `core/utils/`, which is internal to `core`. `architecture.md` § 1.2 is the authority for paths |
+| Logger | `core/utils/logger.dart` | `13-error-handling.md` rule 6. **Stayed put, and the distinction is the point** (ADR-028): a logger is a general utility, so `core/utils/` is its home. It was nearly moved with the exceptions because `02-architecture.md` listed the two on one row — **two things sharing a table row share a fate, and they should not have shared a row.** |
 | DB entity ↔ domain model mapping | `data/mappers/` | `02-architecture.md` §Repository pattern |
 
 ## Dependency rules (enforced)

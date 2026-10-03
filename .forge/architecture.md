@@ -62,7 +62,10 @@ lib/
 │   ├── storage/                  chapter files, atomic write, paths
 │   ├── error/                    AppException hierarchy
 │   ├── ui/                       shared widgets: NovelRow, ChapterListTile, EmptyState…
-│   └── utils/                    markdown converter, chapter recognition
+│   └── utils/                    general utilities: markdown converter, chapter
+│                                  recognition, i18n helpers, the logger. **NOT the
+│                                  exception hierarchy** — `core/` is a leaf
+│                                  layer and `domain/` must catch those (ADR-028)
 ├── domain/                       PURE DART — no Flutter import at all
 │   ├── sources/                  Source contract, models, repository interfaces
 │   ├── library/                  library, history, position models + interfaces

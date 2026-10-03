@@ -165,6 +165,15 @@ Questions the project **cannot yet answer** stay questions, and each carries **t
 - **The apparent conflict with ADR-009 was not one, and the reason is worth keeping.** ADR-009 chose a **pixel offset** over a fraction so a future paged mode could resume without converting every stored position. `contentHeight` stores a **height**, not a fraction — the pixel remains the stored value, and the quotient is **recomputed at read time and never persisted**. So ADR-009 is untouched, `2-4`'s original reasoning is *sound*, and only its conclusion was stale. A plan arguing against a change that turns out not to conflict with the rule it cites is still wrong — it asserts a price the project is not paying.
 - **Consequences**: `2-4`'s § 3.6 is rewritten to say what ADR-009 protects and what `contentHeight` adds, rather than to refuse a preservation it now performs. `2-6` carries both restore branches: ratio when the height is known, **clamp and disclose** when it is `null`. The general form: *when two documents disagree, check whether they actually conflict before rewriting either* — one of the two claims here was simply describing a world that had moved.
 
+### ADR-028: `core/error/` holds the exception hierarchy; `core/utils/` keeps the logger
+
+- **Date**: 2026-10-02
+- **Status**: Active
+- **Context**: `13-error-handling.md` put the `AppException` hierarchy in **`core/utils/errors/`**. `architecture.md` § 1.2 and § 5.2 put it in **`core/error/`**. Two approved documents, one class, two paths — and **six live import paths across three plans** followed the wrong one. `core/` is declared a **leaf layer with no internal dependencies**, which is the deciding fact: `domain/` and `data/` must *catch* these exceptions, and a type under `core/utils/` is an internal of `core` that would have to leak upward to be caught at all.
+- **Decision**: **`lib/core/error/`** for the hierarchy. The logger, which `13-error-handling.md` rule 6 also names and which `02-architecture.md` had listed **on the same table row**, **stays at `core/utils/logger.dart`** — a logger is a general utility, not an exception.
+- **The part worth recording is the near-miss.** I first moved the logger too, on the reasoning that the two had been moved together before. They had not: they merely *shared a row*. **Two things on one table row share a fate whether or not they deserve to**, and the row was the only thing suggesting they belonged together. `02-architecture.md` now carries them as two rows with two reasons.
+- **Consequences**: `core/utils/` is honestly described in § 1.2 as a general-utility home — markdown converter, chapter recognition, i18n helpers, the logger — and **explicitly not** the exception hierarchy. All six live import paths corrected. The general form, now hit three times in this project across three different documents: *fixing a path does not fix the paths that pointed at it*, which is why `http-client`'s acceptance criterion now greps for the old string and states where.
+
 ### ADR-026: `crypto` is added, because `Source.id` is an MD5 and nothing could compute one
 
 - **Date**: 2026-10-02

@@ -42,6 +42,6 @@ Keep the hierarchy **small**. Add a subclass only when a caller needs to `on X c
 3. **Catch at the boundary only**: the UI catches once (via `AsyncValue.error` or a `try/catch` in a callback), maps to a localized user message, and shows it. Never propagate stacktraces or `e.toString()` to the UI (see rule 5).
 4. **Never swallow**: no silent `catch (_) {}` (`empty_catches`). If a failure is intentionally ignored, log it (`core/utils/logger`) and comment why.
 5. **User-facing mapping**: one place maps exceptions → localized messages, in `core/ui/`. Generic messages per exception category, plus a specific message for the cases a user can act on. Display via the app's snackbar wrapper (`core/ui/`), never ad-hoc `ScaffoldMessenger` calls from a feature.
-6. **Log with `logger`** (`core/utils/logger`), no `print()`. Log the `AppException` class + message + cause.
+6. **Log with `logger`** (`core/utils/logger.dart`), no `print()`. Log the `AppException` class + message + cause.
 7. **Cancellation**: `CancelledException` for user-cancelled downloads/updates — the caller distinguishes "cancelled" from "failed" and does not surface an error.
 8. **Streams**: repositories emitting `Stream<T>` deliver errors on the stream and let the UI map them; do not catch-and-emit-nothing.

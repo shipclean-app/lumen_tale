@@ -97,7 +97,7 @@ abstract class ParsedHttpSource extends HttpSource {
 7. **`memo`**: `Map<String, dynamic>` for source-internal metadata that must not be shown to users. Keep it small.
 8. **Status mapping**: use the shared `NovelStatus` enum (Unknown, Ongoing, Completed, Licensed, PublishingFinished, Cancelled, OnHiatus) and map site-specific statuses into it.
 9. **Chapter numbering**: parse numbers with `ChapterRecognition` (regex `[0-9]+(\.[0-9]+)?(\.?[a-z]+)?`; extra/omake/special → 0.99/0.98/0.97). Fall back to `-1` when not parseable.
-10. **Errors**: throw typed exceptions (`SourceException` subclasses) from `core/utils`, never bare `Exception`. See `13-error-handling.md`.
+10. **Errors**: throw typed exceptions (`SourceException` subclasses) from `core/error`, never bare `Exception`. See `13-error-handling.md`.
 11. **Chapter content**: `fetchChapterContent` returns **raw chapter HTML**. Conversion to Markdown is *not* the source's job — it happens in the shared pipeline (`04-html-to-markdown.md`). A source selects the article node and declares what to strip; it does not emit Markdown.
 12. **Adding a source**: create `sources/implementations/<name>_source.dart` + register it in `source_registry.dart`. Use `/scaffold-source` to bootstrap from a template. Ship parsing unit tests with fixture HTML, and record the site's permission in `18-external-contracts.md` before writing the scraper.
 

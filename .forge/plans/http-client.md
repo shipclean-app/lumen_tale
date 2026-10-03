@@ -40,7 +40,7 @@ conventions_ref: .forge/conventions.md
 ## 1. Résumé de la slice
 
 `http-client` construit **le seul moyen par lequel cette application parle à un
-site**. Elle produit cinq fichiers Dart purs dans `lib/core/network/`, sans un
+site**. Elle produit **six** fichiers Dart purs dans `lib/core/network/` — `fetch_result`, `http_response`, `http_client`, `source_endpoint`, `host_rate_limiter`, `http_policy` — sans un
 seul import de `package:flutter`, et **aucun widget**.
 
 `architecture.md` § 2.3 dit pourquoi la fondation existe : `core/network/` a été
@@ -817,7 +817,7 @@ aucune dépendance à `domain/`               02-architecture.md : `core` n'impo
 ### 4.1 Arbre de composants
 
 ```
-Aucun composant d'interface. Cette fondation produit cinq fichiers Dart purs et
+Aucun composant d'interface. Cette fondation produit **six** fichiers Dart purs et
 leurs tests. Le premier écran à les consommer est `3-1`
 (`/browse/:sourceId/unavailable`, dont la ligne de preuve est le `status` et
 l'`host` de ces types).
