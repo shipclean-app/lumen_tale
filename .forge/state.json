@@ -4506,9 +4506,9 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 16,
+      "finding_raised": 17,
       "fast_track_enter": 1,
-      "finding_promoted": 12,
+      "finding_promoted": 13,
       "script_failure": 3,
       "user_correction": 1
     }
@@ -4630,8 +4630,8 @@
       "correction": "Exclude .dart_tool/ from the version-pin scan, or keep only keys that resolve to real packages in pubspec.lock. Until it is fixed, version_pins_agree must be read as noise -- which is precisely how a genuine version conflict would be waved through.",
       "artifact": null,
       "raised_at": "2026-10-03T05:53:56.262Z",
-      "promoted_to": "testing.md",
-      "resolved_at": "2026-10-03T19:39:12.821Z",
+      "promoted_to": "data-and-state.md",
+      "resolved_at": "2026-10-04T09:15:26.259Z",
       "retired_at": "2026-10-03T19:39:12.821Z"
     },
     {
@@ -4767,6 +4767,19 @@
       "correction": "Le plus haut numero deja utilise (Math.max), plus une garde qui refuse un ID deja present meme si la liste vient d'ailleurs. Prouve : le meme etat, qui aurait produit F-014, produit F-016 en sautant F-011 brule. Le doublon ecrit dans state.json a ete renomme F-015.",
       "artifact": null,
       "raised_at": "2026-10-04T08:08:53.165Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-017",
+      "domain": "data-and-state.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "MESURE 2026-10-04: en corrigeant F-005, la couverture de version_pins_agree s'est revelee ETROITE. Aucun des trois motifs ne lisait la forme que porte reellement le tableau des dependances d'AGENTS.md (`dio` 5.11.1, separee par des points median). Consequence : le fichier qui liste les versions resolues du projet etait HORS du controle cense verifier qu'elles s'accordent, et le controle pouvait etre vert pendant que ce tableau mentait.",
+      "correction": "Ajout d'un motif PROSE EN LIGNE, filtre par readRealPackages (liste du lockfile quand il existe, filet de cles de structure sinon — jamais l'inverse, ce qui a casse le selftest). Suffixe de version explicite et non '.*' : une classe 'tout sauf l'espace' produisait '0.10.10.' et制造的 un faux positif sur workmanager. Prouve : conflit reel en table markdown -> exit 1 ; conflit reel dans la prose d'AGENTS.md -> exit 1 ; prose non-paquet ('La version 3.9.9 de Flutter') -> exit 0 ; restaure -> exit 0. selftest 231 passe, 1 echec preexistant (pglite absent).",
+      "artifact": null,
+      "raised_at": "2026-10-04T09:15:26.331Z",
       "promoted_to": null,
       "resolved_at": null
     }
