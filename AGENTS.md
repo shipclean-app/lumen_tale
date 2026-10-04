@@ -82,12 +82,34 @@ Detail: `03-source-system.md`. Conversion: `04-html-to-markdown.md`.
 | `dart run drift_dev identify-databases` | List the drift databases in the project and their schema version |
 | `flutter build apk` | Android build — **verified 2026-10-03** (Q-003 closed). Needs `ANDROID_HOME=/home/tleguede/Android/Sdk` and a **JDK ≤ 21**; the SDK's bundled Java 25 cannot run Gradle 8.14 |
 | `flutter test -d <id>` | **Does not run on the device** for files under `test/` — the flag is silently ignored. Only `flutter test integration_test/ -d <id>` deploys, and it refuses an unknown device. See `test-plan.md` § 4.2 |
+| `tool/dod.sh [slice]` | **The Definition of Done, as one command with one verdict.** Runs format, analyze, test, the plan corpus, and both Forge guards — and prints a single `DoD: PASS` / `FAIL` / `INCOMPLETE` line. Use this instead of running the gates by hand. See below. |
 
 Flutter lives at `/home/codespace/flutter/bin`. Generated files (`*.g.dart`, `*.freezed.dart`, `*.drift.dart`, `lib/l10n/generated/`) are committed and excluded from analysis.
 
+### ⚠️ Every helper script goes in `tool/` — always
+
+**The moment you write a script to make your own work easier, to route around a limitation, or to replace one that does not behave — it is a file in `tool/`, committed, not a scratch file in `/tmp` and not an inline heredoc.**
+
+`tool/` already holds `build_manifest.py`, the four `append_*_strings.py` fixtures builders, and `tool/dod.sh`. That is the one place.
+
+**Why it is a rule and not a preference.** Three things have already been written as throwaway
+one-liners during this project's sessions, and every one of them was work that survived: the
+ARB fixture builders, and the drift schema dump command in the table above. A helper that
+lives in a shell history is a helper nobody can improve, and the two that mattered most —
+the fixture builders and `dod.sh` — were both written to *route around a limitation* rather
+than to build a feature.
+
+They are kept here deliberately so they can later be **promoted into the Forge skill itself**
+rather than re-invented in the next project. `dod.sh` in particular exists because Forge's
+guards cannot be read off a long output, and that is a property of the skill, not of this
+repository.
+
+⚠️ **The directory is `tool/`, singular** — it is the one that already exists. A second
+`tools/` would split the collection in two and defeat the entire point.
+
 ## Definition of Done
 
-A change is complete when **all** of these hold, in this order. This is the single definition — no rule file restates it.
+**Run `tool/dod.sh`.** It executes items 1–3 plus the plan corpus and both Forge guards, and prints one verdict line. Everything below is what that command checks and why it checks it.
 
 1. `dart format .` — clean, no diff.
 2. `flutter analyze` — **zero issues**, including zero `info`. Weakening a lint to go green is not a fix.
@@ -95,6 +117,33 @@ A change is complete when **all** of these hold, in this order. This is the sing
 4. Generated code is committed: if you changed an annotated class or an ARB file, the regenerated output is in the same commit.
 5. `SESSION_LOG.md` has an entry covering this work, or the commit extends an entry already written for this session.
 6. Committed with a Conventional Commits message (`11-git-workflow.md`).
+
+### ⚠️ Read the VERDICT, not the tail of an output
+
+**Sessions 26, 27 and 28 each recorded "`consistency-check all` **pass**". The exit code
+was `1`.** They had read the last line of a long output — which happened to be
+`phase_journal: pass` — instead of the command's status. The suite was green throughout, so
+nothing looked wrong.
+
+That is why `tool/dod.sh` exists and why it keeps **exit codes**, never tails. It has three
+outcomes, and the third is the one that matters:
+
+| verdict | exit | meaning |
+|---|---|---|
+| `DoD: PASS — n of n gates green` | 0 | every gate ran and every gate passed |
+| `DoD: FAIL — k of n gates red: …` | 1 | named gates are red; the script lists the failing **checks** |
+| `DoD: INCOMPLETE — … could not run: …` | **2** | a gate could not run, so **nothing was cleared** |
+
+⚠️ **`INCOMPLETE` is not a softer `PASS`.** It is what a guard that cannot execute must
+say. The Forge guards live in the skill directory and are not vendored here, so they are
+genuinely absent on a fresh machine — and a script that reported those as green would be
+repeating the exact defect it was written to end. Set `FORGE=<skill dir>` to include them.
+
+### Why this is item 0 and not advice
+
+The failure it prevents is silent, it has already happened three times, and it is
+indistinguishable from success by reading. A rule that must be remembered has no mechanism
+behind it; a command whose verdict is the last line of its output has one.
 
 **Why item 5 is in the list and not in a reminder.** This session made **nine commits with no log entry**, and the log only got written when the owner asked why it was so far behind. The cause was not forgetting the rule — it was treating the log as a closing chore because each commit message felt self-documenting. A commit message carries *what changed*; the log carries *what was rejected, what is blocked, and what the next session must not re-litigate*, and nothing found that was lost cheaply. Findings that went unlogged here included `component-parity` verifying nothing, and SQLite not enforcing the foreign keys that hold B32.
 

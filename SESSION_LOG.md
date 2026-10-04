@@ -4426,3 +4426,106 @@ Close **Q-019** (`navMore` is in both ARB files) and **Q-025** (no `ErrorState` 
 - **Do not write an assertion that reads back the value it is checking.**
 - **Do not hardcode a fixture's identifying value inside the helper** — it makes the value
   untestable by every row above it.
+
+---
+
+### ⚠️ `tool/dod.sh` — THE FIX FOR THE FALSE GREEN, and it is a COMMAND not a rule
+
+Sessions 26, 27 and 28 recorded "`consistency-check all` **pass**". The exit code was `1`.
+They read the **last line** of a long output — which happened to be `phase_journal: pass` —
+instead of the command's status, and the suite was green throughout so nothing looked wrong.
+
+**A rule has no mechanism behind it.** So the verdict became a command whose LAST LINE is
+the answer, which is the one place reading the tail is correct:
+
+| verdict | exit | meaning |
+|---|---|---|
+| `DoD: PASS — n of n gates green` | 0 | every gate ran, every gate passed |
+| `DoD: FAIL — k of n gates red: …` | 1 | named gates red, and the failing **checks** are listed |
+| `DoD: INCOMPLETE — … could not run: …` | **2** | a gate could not run, so **nothing was cleared** |
+
+⚠️ **`INCOMPLETE` EXISTS BECAUSE OF F-005's LESSON.** The Forge guards live in the skill
+directory and are not vendored here, so on a fresh machine they genuinely cannot run. A
+script that reported those as green would be **repeating the exact defect it was written to
+end** — and `skip ≠ pass` is why this is a third outcome rather than a footnote.
+
+Proved on all three paths, because a gate script that has only ever printed `PASS` is a gate
+script nobody has tested:
+
+| path | result |
+|---|---|
+| healthy tree, 6 gates | `PASS — 6 of 6`, exit **0** |
+| `tool/dod.sh 3-2` | `PASS — 7 of 7`, exit **0** — the slice's exit gate is now the seventh |
+| an `unused_local` planted in `chapter_entry.dart` | `FAIL — 1 of 6 gates red: analyze`, exit **1** |
+| `FORGE=/nonexistent` | `INCOMPLETE — 4 of 6 green, 2 could not run`, exit **2** |
+
+`AGENTS.md` § *Definition of Done* now **opens** with the command, and CI's comment explains
+why it is *not* wired into `.github/workflows/ci.yml`: on a runner with no skill directory
+it would exit `2` and turn every build red for a reason that is not a defect. The four gates
+CI already runs are the part that is automatable.
+
+### ⚠️ THE OWNER'S STANDING INSTRUCTION — helper scripts live in `tool/`
+
+**Every script written to make the work easier, to route around a limitation, or to replace
+one that misbehaves is a committed file in `tool/`.** Not `/tmp`, not a heredoc.
+
+`tool/` now holds `build_manifest.py`, four `append_*_strings.py` builders and `dod.sh`. It
+is kept in one place **so the collection can later be promoted into the Forge skill itself**
+instead of being reinvented in the next project — `dod.sh` in particular exists because Forge's
+guards cannot be read off a long output, and that is a property of the *skill*, not of this
+repository. Recorded in `AGENTS.md` so it survives the session that received it.
+
+⚠️ **`tool/`, singular** — it is the directory that already exists. A second `tools/` would
+split the collection in two and defeat the point.
+
+### `3-2`'s ACTION ROW — B11 DONE, AND WHAT B12 STILL WAITS ON
+
+`PinnedActionRow` is **presentation only**: it takes what it renders and emits what was
+tapped, so B11's "count the descendants" row needs no provider, no database and no network.
+Seven keys added to both ARBs and regenerated; **four more were already translated and had no
+caller in `lib/`** — the row they belonged to did not exist.
+
+Three decisions that are rules rather than layout:
+
+- **A running queue is a BAR, not a disabled button.** A disabled button is still an action
+  control, so it would make the count four exactly while a download runs — three rows each
+  passing B11 alone, and one screen where the reader cannot tell which control is live.
+- **Slot 3 is DISABLED at zero, never absent**, and keeps 48dp: a control that vanishes at
+  zero slides *Download* sideways under a thumb that was already moving.
+- ***Continue* is one word on screen and two facts in the semantics.** The label says where
+  the tap goes; the announcement says WHICH chapter and how far into it — the two facts that
+  make resuming a decision rather than a leap.
+
+⚠️ **`_StatusChip`'s label is now REQUIRED.** It began as a `String?` beside an optional
+`semanticLabel`, and `DownloadDone` passed `null` for both — an icon a screen reader announces
+as "icon". A chip whose state cannot be named is a state the reader cannot act on, so the type
+makes the caller supply the words. Two `avoid_redundant_argument_values` infos pointed straight
+at those nulls, and the fix was the **design**, not the lint.
+
+⚠️ **Q-028's option (b) WAS WRONG, and the error is the finding.** Reading the `Novel` back
+from the library by id cannot work: **B12's button appears precisely when the novel is NOT in
+the library**, and there is then no stored row to read. The option was cheap, reversible and
+wrong. The row therefore takes a callback and the screen decides, so the null is visible.
+
+Three sabotages, each naming its rule: a **share** control added → the three-count fails;
+slot 3 **removed** at zero → the reflow rows fail; a running download made a **disabled
+button** → the bar row fails. ⚠️ The first attempt at the third did not compile — it referenced
+a variant that does not exist — and was **re-run until it applied**, because a sabotage that
+fails to build is not a sabotage that passed.
+
+### TWO CORRECTIONS TO MY OWN TESTS, BOTH CAUGHT BY RUNNING THEM
+
+- **`expect(finderA, finderB)` COMPARES FINDER IDENTITY**, not what the two finders find. The
+  "is it the first control" row compared `actionControls().first` with a `find.ancestor(…)`
+  and failed on two objects that were never going to be equal. The claim wanted was a
+  *relationship* — does the first control hold this label — and is now asserted as one.
+- **A lint fixed by DELETING the argument that gave a test its meaning is not a fix.**
+  `unopenedCount: 0` was removed as "redundant" because the helper defaults to 12, which left
+  the button **enabled** — and the row then asserted that a live button does not fire. It
+  failed, correctly. The argument is back, with a comment saying why it must stay.
+
+### STATUS
+
+`tool/dod.sh 3-2` → **DoD: PASS — 7 of 7 gates green**, exit 0.
+**1 083 passed + 9 skipped**, analyze zero, format clean, both Forge guards exit 0.
+Slices: 19 validated · 3 `in_progress` · 10 `planned`.

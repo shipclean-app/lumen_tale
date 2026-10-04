@@ -82,8 +82,16 @@ jobs:
       # Forge's own guards are NOT run here. `$FORGE/scripts/forge-guard.js` lives
       # in the agent skill directory, which is not vendored into this repository,
       # so a workflow invoking it would fail on a missing path rather than on a
-      # real defect. They run locally instead (AGENTS.md, Definition of Done).
-      # `version_pins_agree` is additionally a known false positive — F-005.
+      # real defect. They run locally instead — `tool/dod.sh`, which is the
+      # Definition of Done as one command with one verdict.
+      #
+      # `tool/dod.sh` is NOT wired in here for the same reason: it would exit 2
+      # (`INCOMPLETE`) on a runner with no skill directory, which would make every
+      # build red for a reason that is not a defect. The four gates above are the
+      # part CI can actually run, and they are the part that is automatable.
+      #
+      # `version_pins_agree`'s false positive (F-005) is fixed upstream as of
+      # 2026-10-04, so that caveat is gone.
 
       # ---- Gate 6 — the APK --------------------------------------------------
       - name: Gate 6 — build the release APK
