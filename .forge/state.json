@@ -3361,9 +3361,9 @@
     "3-5": {
       "path": ".forge/plans/3-5.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:89ca0c7ae32c",
-      "updated_at": "2026-10-03T06:27:54.884Z",
+      "updated_at": "2026-10-03T23:45:44.481Z",
       "depends_on": [
         "apk-pipeline",
         "0-5"
@@ -3910,9 +3910,9 @@
     "6-5": {
       "path": ".forge/plans/6-5.md",
       "type": "implementation-plan",
-      "status": "in_progress",
+      "status": "validated",
       "content_hash": "sha256:26411027313d",
-      "updated_at": "2026-10-03T22:09:52.685Z",
+      "updated_at": "2026-10-03T23:45:44.375Z",
       "depends_on": [
         "2-6",
         "0-5"
@@ -4498,7 +4498,7 @@
       "register": 280,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 152,
+      "status_change": 154,
       "gate_approved": 4,
       "phase_status": 11,
       "amend": 10,

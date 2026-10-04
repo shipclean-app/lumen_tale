@@ -727,6 +727,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.'**
   String get aboutDeliveryBody;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// ⚠️ **Identical in the French file.** The `Language` row reports the phone's language, not the app's, and a reader on an English UI with a French phone must see "Français". B28: the app follows the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get settingsLanguageEnglish;
+
+  /// ⚠️ **Identical in the English file**, for the same reason. A value that changes with the ARB would be the app naming the phone's language in the app's language, which is a different claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Français'**
+  String get settingsLanguageFrench;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'READING'**
+  String get settingsGroupReading;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'HISTORY'**
+  String get settingsGroupHistory;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'APP'**
+  String get settingsGroupApp;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Reader appearance'**
+  String get settingsRowAppearanceLabel;
+
+  /// Both halves on one line: `{theme}` and `{size}` are the two values the reader set, and `{pt}` is the resolved point size. ⚠️ **The value line truncates, not the label** — § 4.1 says so, and it is a consequence of French running longer than English, not a defect.
+  ///
+  /// In en, this message translates to:
+  /// **'{theme} · {size} ({pt} pt)'**
+  String settingsRowAppearanceValue(String theme, String size, String pt);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get settingsThemeDay;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Night'**
+  String get settingsThemeNight;
+
+  /// B26's `system` value, named for what it does. NOT 'Automatic': a reader who reads *Automatic* does not learn that the app follows the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the phone'**
+  String get settingsThemeSystem;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get settingsSizeSm;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get settingsSizeMd;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get settingsSizeLg;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Larger'**
+  String get settingsSizeXl;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Largest'**
+  String get settingsSizeXxl;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Reading history'**
+  String get settingsRowHistoryLabel;
+
+  /// `{count}` and `{relative}`. ⚠️ **Never a zero here** — `settingsRowHistoryValueEmpty` is a separate key, because `{count} entries · oldest {relative}` with a zero has no oldest to name.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} entries · oldest {relative}'**
+  String settingsRowHistoryValue(String count, String relative);
+
+  /// The zero. French takes the singular on zero ('0 entrée'), which is a plural-rule difference and not a typo.
+  ///
+  /// In en, this message translates to:
+  /// **'0 entries'**
+  String get settingsRowHistoryValueEmpty;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Keep history for'**
+  String get settingsRowRetentionLabel;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Clear reading history'**
+  String get settingsRowClearHistoryLabel;
+
+  /// ⚠️ **The count is in the TITLE**, not the body. This dialog's one job is to say how much is about to be destroyed, and a title is what a reader reads before they read anything else. `3-7`'s Loading state exists only for the COUNT this sentence waits on.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear {count} entries?'**
+  String settingsDialogClearHistoryTitle(String count);
+
+  /// B46, and the second clause is the whole sentence: reading positions are not in this list. `clearAll()` deletes exactly one table and a row asserts the positions survive.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading positions are not part of this list and will not be touched.'**
+  String get settingsDialogClearHistoryBody;
+
+  /// ⚠️ **`Clear`, not `OK`, and not `Delete`** — it names the object. And § 4 (Empty — no data) forbids the dialog opening at all when the count is zero, so a reader is never asked to confirm destroying nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get settingsDialogClearHistoryConfirm;
+
+  /// The second clause is **mandatory and is the entire success message**, because B46 makes position the thing the reader must believe survived. A generic 'History cleared' leaves the reader fearing they lost their place, which is the app's core promise (B16).
+  ///
+  /// In en, this message translates to:
+  /// **'Reading history cleared. Your reading positions were kept.'**
+  String get settingsSnackHistoryCleared;
+
+  /// **Read-only, and visibly so**: no chevron, no ripple, no pressed state. B28 forbids an in-app language picker — the platform owns this value and a second source of truth for it is a bug waiting to happen.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsRowLanguageLabel;
+
+  /// Tells the reader where the control actually is, because there isn't one here. A read-only row with no explanation reads as a disabled control.
+  ///
+  /// In en, this message translates to:
+  /// **'Follows your phone. Change it in Android\'s language settings.'**
+  String get settingsRowLanguageHint;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'How this app works'**
+  String get settingsRowOnboardingLabel;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Show the two introduction screens again'**
+  String get settingsRowOnboardingValue;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'About Lumen Tale'**
+  String get settingsRowAboutLabel;
+
+  /// The same `{buildName}` · build `{buildNumber}` pair `3-5` shows, from the same `AppRoutes`-level source. Two spellings of the version on two pages would be two truths about which build is installed (C9).
+  ///
+  /// In en, this message translates to:
+  /// **'Version {buildName} · build {buildNumber}'**
+  String settingsRowAboutValue(String buildName, String buildNumber);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here is backed up. If you uninstall Lumen Tale or lose this phone, your library, your downloads and your reading positions are gone, and no copy exists anywhere.'**
+  String get settingsDisclosureE11;
+
+  /// The footer, and it exists because of what it admits: the app cannot detect an uninstall as it happens, so the disclosure has to happen **before** rather than after. A disclosure that says 'you cannot undo this' without saying why is read as an apology.
+  ///
+  /// In en, this message translates to:
+  /// **'The app cannot warn you at the moment you uninstall — the phone does that, outside the app. So it is said here, before, rather than after.'**
+  String get settingsDisclosureE11Footer;
+
+  /// The ghost link into About, and its label is the QUESTION it answers (B31's guarantee). A link labelled 'About' would compete with the row above it.
+  ///
+  /// In en, this message translates to:
+  /// **'What survives an update'**
+  String get settingsDisclosureAboutLink;
+
+  /// A failed write, shown **beside** the control and never by tinting it — a red control reads as 'this setting is now off' rather than 'this setting could not be saved'.
+  ///
+  /// In en, this message translates to:
+  /// **'This setting could not be saved. Nothing was changed.'**
+  String get settingsErrorWrite;
+
+  /// A count that could not be obtained, and **never `0`** (B48). § 4 (Load error, declined) scopes the failure to the one row that owns it: a failed `COUNT` renders this word on its own line and disables the clear row, rather than blanking eight correct rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Count unavailable'**
+  String get settingsErrorCountUnavailable;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get settingsButtonRetry;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get settingsButtonCancel;
 }
 
 class _AppLocalizationsDelegate

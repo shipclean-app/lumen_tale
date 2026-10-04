@@ -72,18 +72,27 @@ String sheetWarning(
 }
 
 class HistoryScreen extends ConsumerStatefulWidget {
-  const HistoryScreen({super.key});
+  const HistoryScreen({super.key, this.openedAt});
+
+  /// The instant this screen's relative times are written against.
+  ///
+  /// ⚠️ **`null` in the app, and a fixed instant in every test** — and that is the whole
+  /// reason the parameter exists. `relativeTimeLabel` deliberately renders **nothing**
+  /// past local midnight, because the day header carries the date; so "3 hours ago" is
+  /// the expected string at 14:00 and the empty string at 02:00. A row that pinned the
+  /// phrase passed in the afternoon and failed at 2am on the same commit, which it did.
+  ///
+  /// Reading the clock per row instead of per screen would be worse than either: the
+  /// list would disagree with itself as it scrolls, and "2 hours ago" would be true for
+  /// the row at the top and false for the one below.
+  final DateTime? openedAt;
 
   @override
   ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
 }
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
-  /// Read once per open, and **disclosed**: the relative times are written against
-  /// this instant, so "2 hours ago" is true when the screen opened and stale by the
-  /// time the reader reads it. Reading `DateTime.now()` per row would make the same
-  /// list disagree with itself as it scrolls.
-  final DateTime _openedAt = DateTime.now();
+  late final DateTime _openedAt = widget.openedAt ?? DateTime.now();
 
   /// Whether the library holds anything, and whether that is **known yet**.
   ///

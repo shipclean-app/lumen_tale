@@ -31,13 +31,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const Size designSize = Size(360, 640);
 
+/// Midday on a fixed day. A row's relative time is only stable when the screen's
+/// `openedAt` is fixed AND the seeded entry is on the SAME local day — which is why the
+/// fixtures below open entries at `now`-minus-an-hour or less.
+/// Midday on a fixed day — and `DateTime` has no `const` constructor, so it is read at
+/// each `pumpHistory` call rather than once. That is safe: a fixed calendar instant is a
+/// fixed value however many times it is constructed.
+DateTime pinnedNoon() => DateTime(2026, 10, 3, 12);
+
 late AppDatabase db;
 late SharedPreferences _prefs;
 
+/// ⚠️ **Every row pins `openedAt`.** The screen's relative times are written against it
+/// and the app's value is `DateTime.now()`, so an unpinned row asserts a string that
+/// depends on the hour the suite happens to run.
 Future<void> pumpHistory(
   WidgetTester tester, {
   Widget? child,
   Locale locale = const Locale('en'),
+  DateTime? openedAt,
 }) async {
   tester.view
     ..physicalSize = designSize
@@ -55,7 +67,9 @@ Future<void> pumpHistory(
         locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: child ?? const Scaffold(body: HistoryScreen()),
+        home:
+            child ??
+            Scaffold(body: HistoryScreen(openedAt: openedAt ?? pinnedNoon())),
       ),
     ),
   );
@@ -136,17 +150,19 @@ void main() {
     ) async {
       await addNovel('n1', title: 'Omake');
       await addChapter('n1', 'c1', name: 'The first word');
-      await openAt(
-        'n1',
-        'c1',
-        DateTime.now().subtract(const Duration(hours: 3)),
-      );
+      await openAt('n1', 'c1', pinnedNoon().subtract(const Duration(hours: 3)));
 
-      await pumpHistory(tester);
+      await pumpHistory(tester, openedAt: pinnedNoon());
 
       expect(find.text('Omake'), findsOneWidget);
       expect(find.text('The first word'), findsOneWidget);
+      // ⚠️ **Both ends are pinned**, and that is the only reason this row can
+      // assert a phrase at all. `openedAt` is midday and the entry is three hours
+      // before it, so the label is `3 hours ago` and the header is `Today` at *any*
+      // hour the suite runs. An unpinned row passed in the afternoon and failed at 2am
+      // on the same commit — which it did, twice.
       expect(find.text('3 hours ago'), findsOneWidget);
+      expect(find.text('Today'), findsOneWidget);
     });
 
     testWidgets('the bound notice is above the list and names the window', (

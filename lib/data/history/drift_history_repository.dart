@@ -129,6 +129,18 @@ final class DriftHistoryRepository implements HistoryRepository {
   }
 
   @override
+  Future<DateTime?> oldestEntryAt() async {
+    // ⚠️ `MIN` returns **NULL** over an empty table, which is the answer the interface
+    // promises — so this query's null is the empty journal and not a failure. That is
+    // why `oldestEntryAt` returns `DateTime?` rather than throwing.
+    final Expression<DateTime> oldest = _db.historyEntries.openedAt.min();
+    final TypedResult row = await (_db.selectOnly(
+      _db.historyEntries,
+    )..addColumns(<Expression<Object>>[oldest])).getSingle();
+    return row.read(oldest);
+  }
+
+  @override
   Future<int> countAll() async {
     // ⚠️ **`SELECT COUNT(*)`, over one table, with no `where`.**
     //

@@ -50,6 +50,17 @@ abstract interface class HistoryRepository {
   /// three months" are two different intentions, and the reader gets both.
   Future<int> clearAll();
 
+  /// The **oldest** entry's instant, or `null` when the journal is empty.
+  ///
+  /// ⚠️ **`null` is not an error and not a zero.** A journal with rows has an oldest
+  /// one; an empty journal has none, and Settings' value line says *0 entries* in that
+  /// case rather than naming an oldest that does not exist.
+  ///
+  /// `MIN(opened_at)` over **one** table, for the same reason `clearAll` is one
+  /// statement: a second join here would be a second place that knows what the journal
+  /// is.
+  Future<DateTime?> oldestEntryAt();
+
   /// **How many rows [clearAll] would remove.**
   ///
   /// ⚠️ **This is the *total*, not the aged-out count**, and getting it wrong is a lie

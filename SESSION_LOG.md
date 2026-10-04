@@ -2900,3 +2900,131 @@ exercised the providers; and an `isReadable` that treated half a version as whol
 - **Do not key the screen registry by anything but an `AppRoutes` path.** A relative
   `'about'` registers under a key nothing looks up, and the screen reports itself
   registered while rendering a placeholder.
+
+---
+
+## 2026-10-04 — Session 18: `3-7` Settings, and the two strings § 4.1 wants that must not exist
+
+### STARTED FROM
+
+`3-5` complete at `2685e7e`. `3-7` was the last unblocked Wave-2 leaf: seven rows, three
+group labels, one disclosure block.
+
+### DECIDED
+
+- **`Check now` is NOT built, and the `LIBRARY` group goes with it.** `settings.md` § 4
+  (Filled) names eight rows; this screen has seven. `Check now` is **B36's update check**
+  (ADR-021), no `8-*` slice has built an update subsystem, no source reports a "last
+  checked" instant, and there is nothing to count. A button that opens no check is the
+  fake-control defect § 11 spends a table refusing — so the row goes, and **with it the
+  group**, because § 3 is explicit that "an empty section label is worse than no section
+  label". Finding **F-012**.
+- **`retention.1w` … `retention.2y` are NOT declared.** § 4.1 lists them, unstruck, so
+  § 4.1 wants them — and they are a **second spelling of the same five windows** `6-5`
+  already owns as `historyWindowOneWeek` … `historyWindowTwoYears`, one of which spells
+  "1 week" where `6-5` spells "one week". § 2.12 exists to stop exactly this: *"two
+  lists of the same values in two places is two truths about how long history lasts, and
+  nothing in a dependency graph or a design token would notice."* One set of strings has
+  to lose and `settings.md`'s twin is the one that loses, because `§ 2.12` names **`6-5`**
+  as the owner. Finding **F-013**.
+- **`settingsLanguageEnglish` and `settingsLanguageFrench` are IDENTICAL in both files,
+  and that is deliberate.** The row reports what the **phone** is set to, so an English
+  UI with a French phone must read *Français*. A value that changed with the ARB would
+  be the app naming the phone's language in the app's language, which is a different
+  claim — and which a translator would helpfully localize into something wrong.
+- **`Locale.languageName` does not exist, and `MaterialLocalizations` has no such
+  getter** — checked in the installed SDK, not from memory. So the language name is a
+  `switch` over the language code with an ARB pair behind it, and a `Map<Locale, …>`
+  (the tempting version) is a **second source of truth** that would be free to disagree
+  with the ARB.
+- **The history count is `COUNT(*)` over the WHOLE table, not the window.** The row says
+  *"{count} entries"* and the danger row below it deletes the whole journal, so the count
+  has to be the set `clearAll` touches. A count inside the window would report 0 for a
+  reader with a full history and the dialog would ask consent to deleting 1,200 entries
+  while saying *nothing will be removed*.
+- **The danger row is disabled when the count is zero AND when it could not be obtained.**
+  § 4 (Empty — no data) applies the same rendering to both, and says why: a dialog
+  asking the reader to confirm destroying zero entries is theatre, and a dialog that
+  cannot state how much is about to be destroyed cannot state the one thing it exists to
+  state. `onTap: null` when disabled — not a handler that declines.
+- **The count is in the dialog's TITLE.** A title is what a reader reads before anything
+  else, and stating how much is that dialog's one job.
+- **`Cancel` is the first action**, for the same reason as `6-5`: on a hardware keyboard
+  `Enter` takes the first.
+- **The `Language` row is read-only by ABSENCE**, § 4 (Read-only): no chevron, no ripple,
+  no greying. A greyed row reads as a control the app has not finished, which is exactly
+  the affordance that makes a broken source look empty.
+- **`HistorySummary.oldestLabel` is a localized STRING, not a `DateTime`.** The row's
+  sentence needs a phrase, and the alternative hands the phrase to the row — so the first
+  second screen wanting it produces two. The cost is `_summaryLocale`, module-level
+  mutable state, and the file says so: a provider cannot read a `BuildContext`, and the
+  honest alternative is a `Provider.family` that rebuilds a whole summary because one
+  *word* changed.
+- **`appearanceLabel` and `pointSizeOf` are their own file.** The row joins three facts
+  and the third — the point size a step *is* — belongs to `settings-reader.md`'s ladder,
+  not to this screen. A screen repeating the table would be a second place that knows
+  what "Medium" means.
+
+### The time-dependence that bit twice, and the seam that fixed it
+
+A widget row asserting `3 hours ago` **passes at 14:00 and fails at 02:00 on the same
+commit**, because `6-5`'s `relativeTimeLabel` deliberately renders **nothing** once the
+entry belongs to an earlier local day — the day header carries the date. It failed twice:
+once in `6-5`'s own screen test, then again in `3-7`'s.
+
+The fix is not a weaker assertion. `HistoryScreen` gained an `openedAt` constructor
+parameter — `null` in the app, a pinned instant in every test — so both ends of the
+sentence are fixed and the row can assert the phrase at any hour. The phrases were always
+pinnable; they are pinned where `now` is an *argument*, in
+`history_time_labels_test.dart`. **A row that pins a time-dependent string is not a
+weaker row, it is a row that fails on a schedule.**
+
+### FILES TOUCHED
+
+`lib/features/settings/**` (new, 5), `lib/app/theme/app_version.dart` (unchanged),
+`lib/domain/history/history_repository.dart` (`oldestEntryAt`),
+`lib/data/history/drift_history_repository.dart`, both ARB files (+26 keys each),
+`tool/append_settings_strings.py` (new), `lib/main.dart` (registers the route),
+`test/features/settings/settings_screen_test.dart` (new, 25).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **726 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass`.
+
+**Sabotage, six, all caught:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| a failed count renders as a dash instead of `Count unavailable` | **2 rows** |
+| the danger row is enabled with no count | **2 rows** |
+| the read-only row gains a chevron | *it carries NO chevron and NO ripple* |
+| the language value follows the ARB instead of the phone | **2 rows** |
+| the dialog title's count is hard-coded | *its TITLE states the count* |
+| `Cancel` moves behind the destructive action | *Cancel is the first action* |
+
+Two sabotages exposed real test gaps, both fixed by writing the row rather than by
+weakening the claim: the chevron was guarded by a per-row `findsNothing` and a positive
+`findsWidgets`, and **neither could see an extra chevron** — `find.descendant(of: an
+InkWell, …)` returned nothing even with the chevron present. It is a **count** now, and
+the count names the five rows it expects. And the dialog's copy was asserted through a
+**stubbed** `SettingsNavigation`, which is right for wording rows and wrong for the
+number; three rows now drive the real provider.
+
+### NEXT SESSION SHOULD
+
+- **`2-1`'s source**, against Royal Road: `div.fiction-list-item.row`, `?page=N` 1-based,
+  the unpaginated chapter table, `chapter-inner chapter-content`. This is the last
+  unblocked Wave-2 item and it is the product's whole premise.
+- **`3-6` (Settings → Reader)**, the appearance screen `3-7`'s first row points at. It is
+  currently a placeholder, and the row prints values it owns correctly.
+- **`8-*` for the update check**, which is what unblocks `Check now` and the `LIBRARY`
+  group (F-012).
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not re-declare `retention.1w`.** `6-5` owns the five names; § 2.12 names it as the
+  owner and a twin is the defect the section exists to prevent (F-013).
+- **Do not localize `settingsLanguageEnglish` / `settingsLanguageFrench`.** They are
+  identical in both files on purpose: the row reports the *phone's* language.
+- **Do not pin a time-dependent string in a widget row.** Pin `openedAt`.

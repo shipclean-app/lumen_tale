@@ -189,6 +189,11 @@ void main() {
             'E11, and not an empty-result state: "Nothing here is backed up '
             'anywhere" names STORAGE, not a list. settings-about.md § 4.1, and '
             'the sentence `3-5` exists to show.',
+        'settingsDisclosureE11':
+            'The SAME E11 disclosure as `aboutDataE11`, on the second of the two '
+            'pages it appears on. One exemption per key rather than one per '
+            'phrase, so adding a third "nothing here" sentence forces this map '
+            'to say why — which is the point of an exemption list.',
       };
 
       final offenders = <String>[];

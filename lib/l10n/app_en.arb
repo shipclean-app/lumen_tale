@@ -105,6 +105,44 @@
   "aboutPrivacyNever7": "A device identifier",
   "aboutPrivacyVerify": "Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.",
   "aboutDeliveryBody": "This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.",
+  "settingsTitle": "Settings",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageFrench": "Français",
+  "settingsGroupReading": "READING",
+  "settingsGroupHistory": "HISTORY",
+  "settingsGroupApp": "APP",
+  "settingsRowAppearanceLabel": "Reader appearance",
+  "settingsRowAppearanceValue": "{theme} · {size} ({pt} pt)",
+  "settingsThemeDay": "Day",
+  "settingsThemeNight": "Night",
+  "settingsThemeSystem": "Follow the phone",
+  "settingsSizeSm": "Small",
+  "settingsSizeMd": "Medium",
+  "settingsSizeLg": "Large",
+  "settingsSizeXl": "Larger",
+  "settingsSizeXxl": "Largest",
+  "settingsRowHistoryLabel": "Reading history",
+  "settingsRowHistoryValue": "{count} entries · oldest {relative}",
+  "settingsRowHistoryValueEmpty": "0 entries",
+  "settingsRowRetentionLabel": "Keep history for",
+  "settingsRowClearHistoryLabel": "Clear reading history",
+  "settingsDialogClearHistoryTitle": "Clear {count} entries?",
+  "settingsDialogClearHistoryBody": "Reading positions are not part of this list and will not be touched.",
+  "settingsDialogClearHistoryConfirm": "Clear",
+  "settingsSnackHistoryCleared": "Reading history cleared. Your reading positions were kept.",
+  "settingsRowLanguageLabel": "Language",
+  "settingsRowLanguageHint": "Follows your phone. Change it in Android's language settings.",
+  "settingsRowOnboardingLabel": "How this app works",
+  "settingsRowOnboardingValue": "Show the two introduction screens again",
+  "settingsRowAboutLabel": "About Lumen Tale",
+  "settingsRowAboutValue": "Version {buildName} · build {buildNumber}",
+  "settingsDisclosureE11": "Nothing here is backed up. If you uninstall Lumen Tale or lose this phone, your library, your downloads and your reading positions are gone, and no copy exists anywhere.",
+  "settingsDisclosureE11Footer": "The app cannot warn you at the moment you uninstall — the phone does that, outside the app. So it is said here, before, rather than after.",
+  "settingsDisclosureAboutLink": "What survives an update",
+  "settingsErrorWrite": "This setting could not be saved. Nothing was changed.",
+  "settingsErrorCountUnavailable": "Count unavailable",
+  "settingsButtonRetry": "Try again",
+  "settingsButtonCancel": "Cancel",
   "@chapterCount": {
     "description": "Number of chapters available for a novel.",
     "placeholders": {
@@ -441,5 +479,159 @@
   },
   "@aboutDeliveryBody": {
     "description": "B34 + C3 + C9: the app IS the file. 'There is no app store' is not a limitation to apologise for — it is why there is no account and no server holding anything."
+  },
+  "@settingsGroupReading": {
+    "description": ""
+  },
+  "@settingsGroupHistory": {
+    "description": ""
+  },
+  "@settingsGroupApp": {
+    "description": ""
+  },
+  "@settingsRowAppearanceLabel": {
+    "description": ""
+  },
+  "@settingsRowAppearanceValue": {
+    "description": "Both halves on one line: `{theme}` and `{size}` are the two values the reader set, and `{pt}` is the resolved point size. ⚠️ **The value line truncates, not the label** — § 4.1 says so, and it is a consequence of French running longer than English, not a defect.",
+    "placeholders": {
+      "theme": {
+        "type": "String",
+        "example": "Day"
+      },
+      "size": {
+        "type": "String",
+        "example": "Medium"
+      },
+      "pt": {
+        "type": "String",
+        "example": "18"
+      }
+    }
+  },
+  "@settingsThemeDay": {
+    "description": ""
+  },
+  "@settingsThemeNight": {
+    "description": ""
+  },
+  "@settingsThemeSystem": {
+    "description": "B26's `system` value, named for what it does. NOT 'Automatic': a reader who reads *Automatic* does not learn that the app follows the phone."
+  },
+  "@settingsSizeSm": {
+    "description": ""
+  },
+  "@settingsSizeMd": {
+    "description": ""
+  },
+  "@settingsSizeLg": {
+    "description": ""
+  },
+  "@settingsSizeXl": {
+    "description": ""
+  },
+  "@settingsSizeXxl": {
+    "description": ""
+  },
+  "@settingsRowHistoryLabel": {
+    "description": ""
+  },
+  "@settingsRowHistoryValue": {
+    "description": "`{count}` and `{relative}`. ⚠️ **Never a zero here** — `settingsRowHistoryValueEmpty` is a separate key, because `{count} entries · oldest {relative}` with a zero has no oldest to name.",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "1247"
+      },
+      "relative": {
+        "type": "String",
+        "example": "4 months ago"
+      }
+    }
+  },
+  "@settingsRowHistoryValueEmpty": {
+    "description": "The zero. French takes the singular on zero ('0 entrée'), which is a plural-rule difference and not a typo."
+  },
+  "@settingsRowRetentionLabel": {
+    "description": ""
+  },
+  "@settingsRowClearHistoryLabel": {
+    "description": ""
+  },
+  "@settingsDialogClearHistoryTitle": {
+    "description": "⚠️ **The count is in the TITLE**, not the body. This dialog's one job is to say how much is about to be destroyed, and a title is what a reader reads before they read anything else. `3-7`'s Loading state exists only for the COUNT this sentence waits on.",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "96"
+      }
+    }
+  },
+  "@settingsDialogClearHistoryBody": {
+    "description": "B46, and the second clause is the whole sentence: reading positions are not in this list. `clearAll()` deletes exactly one table and a row asserts the positions survive."
+  },
+  "@settingsDialogClearHistoryConfirm": {
+    "description": "⚠️ **`Clear`, not `OK`, and not `Delete`** — it names the object. And § 4 (Empty — no data) forbids the dialog opening at all when the count is zero, so a reader is never asked to confirm destroying nothing."
+  },
+  "@settingsSnackHistoryCleared": {
+    "description": "The second clause is **mandatory and is the entire success message**, because B46 makes position the thing the reader must believe survived. A generic 'History cleared' leaves the reader fearing they lost their place, which is the app's core promise (B16)."
+  },
+  "@settingsRowLanguageLabel": {
+    "description": "**Read-only, and visibly so**: no chevron, no ripple, no pressed state. B28 forbids an in-app language picker — the platform owns this value and a second source of truth for it is a bug waiting to happen."
+  },
+  "@settingsRowLanguageHint": {
+    "description": "Tells the reader where the control actually is, because there isn't one here. A read-only row with no explanation reads as a disabled control."
+  },
+  "@settingsRowOnboardingLabel": {
+    "description": ""
+  },
+  "@settingsRowOnboardingValue": {
+    "description": ""
+  },
+  "@settingsRowAboutLabel": {
+    "description": ""
+  },
+  "@settingsRowAboutValue": {
+    "description": "The same `{buildName}` · build `{buildNumber}` pair `3-5` shows, from the same `AppRoutes`-level source. Two spellings of the version on two pages would be two truths about which build is installed (C9).",
+    "placeholders": {
+      "buildName": {
+        "type": "String",
+        "example": "0.9.0"
+      },
+      "buildNumber": {
+        "type": "String",
+        "example": "41"
+      }
+    }
+  },
+  "@settingsDisclosureE11": {
+    "description": ""
+  },
+  "@settingsDisclosureE11Footer": {
+    "description": "The footer, and it exists because of what it admits: the app cannot detect an uninstall as it happens, so the disclosure has to happen **before** rather than after. A disclosure that says 'you cannot undo this' without saying why is read as an apology."
+  },
+  "@settingsDisclosureAboutLink": {
+    "description": "The ghost link into About, and its label is the QUESTION it answers (B31's guarantee). A link labelled 'About' would compete with the row above it."
+  },
+  "@settingsErrorWrite": {
+    "description": "A failed write, shown **beside** the control and never by tinting it — a red control reads as 'this setting is now off' rather than 'this setting could not be saved'."
+  },
+  "@settingsErrorCountUnavailable": {
+    "description": "A count that could not be obtained, and **never `0`** (B48). § 4 (Load error, declined) scopes the failure to the one row that owns it: a failed `COUNT` renders this word on its own line and disables the clear row, rather than blanking eight correct rows."
+  },
+  "@settingsButtonRetry": {
+    "description": ""
+  },
+  "@settingsButtonCancel": {
+    "description": ""
+  },
+  "@settingsTitle": {
+    "description": ""
+  },
+  "@settingsLanguageEnglish": {
+    "description": "⚠️ **Identical in the French file.** The `Language` row reports the phone's language, not the app's, and a reader on an English UI with a French phone must see \"Français\". B28: the app follows the phone."
+  },
+  "@settingsLanguageFrench": {
+    "description": "⚠️ **Identical in the English file**, for the same reason. A value that changes with the ARB would be the app naming the phone's language in the app's language, which is a different claim."
   }
 }

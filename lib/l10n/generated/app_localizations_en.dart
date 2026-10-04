@@ -395,4 +395,133 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutDeliveryBody =>
       'This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsLanguageFrench => 'Français';
+
+  @override
+  String get settingsGroupReading => 'READING';
+
+  @override
+  String get settingsGroupHistory => 'HISTORY';
+
+  @override
+  String get settingsGroupApp => 'APP';
+
+  @override
+  String get settingsRowAppearanceLabel => 'Reader appearance';
+
+  @override
+  String settingsRowAppearanceValue(String theme, String size, String pt) {
+    return '$theme · $size ($pt pt)';
+  }
+
+  @override
+  String get settingsThemeDay => 'Day';
+
+  @override
+  String get settingsThemeNight => 'Night';
+
+  @override
+  String get settingsThemeSystem => 'Follow the phone';
+
+  @override
+  String get settingsSizeSm => 'Small';
+
+  @override
+  String get settingsSizeMd => 'Medium';
+
+  @override
+  String get settingsSizeLg => 'Large';
+
+  @override
+  String get settingsSizeXl => 'Larger';
+
+  @override
+  String get settingsSizeXxl => 'Largest';
+
+  @override
+  String get settingsRowHistoryLabel => 'Reading history';
+
+  @override
+  String settingsRowHistoryValue(String count, String relative) {
+    return '$count entries · oldest $relative';
+  }
+
+  @override
+  String get settingsRowHistoryValueEmpty => '0 entries';
+
+  @override
+  String get settingsRowRetentionLabel => 'Keep history for';
+
+  @override
+  String get settingsRowClearHistoryLabel => 'Clear reading history';
+
+  @override
+  String settingsDialogClearHistoryTitle(String count) {
+    return 'Clear $count entries?';
+  }
+
+  @override
+  String get settingsDialogClearHistoryBody =>
+      'Reading positions are not part of this list and will not be touched.';
+
+  @override
+  String get settingsDialogClearHistoryConfirm => 'Clear';
+
+  @override
+  String get settingsSnackHistoryCleared =>
+      'Reading history cleared. Your reading positions were kept.';
+
+  @override
+  String get settingsRowLanguageLabel => 'Language';
+
+  @override
+  String get settingsRowLanguageHint =>
+      'Follows your phone. Change it in Android\'s language settings.';
+
+  @override
+  String get settingsRowOnboardingLabel => 'How this app works';
+
+  @override
+  String get settingsRowOnboardingValue =>
+      'Show the two introduction screens again';
+
+  @override
+  String get settingsRowAboutLabel => 'About Lumen Tale';
+
+  @override
+  String settingsRowAboutValue(String buildName, String buildNumber) {
+    return 'Version $buildName · build $buildNumber';
+  }
+
+  @override
+  String get settingsDisclosureE11 =>
+      'Nothing here is backed up. If you uninstall Lumen Tale or lose this phone, your library, your downloads and your reading positions are gone, and no copy exists anywhere.';
+
+  @override
+  String get settingsDisclosureE11Footer =>
+      'The app cannot warn you at the moment you uninstall — the phone does that, outside the app. So it is said here, before, rather than after.';
+
+  @override
+  String get settingsDisclosureAboutLink => 'What survives an update';
+
+  @override
+  String get settingsErrorWrite =>
+      'This setting could not be saved. Nothing was changed.';
+
+  @override
+  String get settingsErrorCountUnavailable => 'Count unavailable';
+
+  @override
+  String get settingsButtonRetry => 'Try again';
+
+  @override
+  String get settingsButtonCancel => 'Cancel';
 }

@@ -127,6 +127,12 @@ class HistoryEntryRow extends StatelessWidget {
                 ExcludeSemantics(
                   child: Text(
                     relativeLabel,
+                    // ⚠️ **A key, because this slot is sometimes EMPTY.** Past local
+                    // midnight the row renders nothing here and the day header carries
+                    // the date (`6-5`'s three-buckets rule), so a test that wanted to
+                    // prove the slot had rendered had nothing to find. The key is the
+                    // only handle on "the slot is there" versus "the label was blank".
+                    key: const Key('historyEntryRow.trailing'),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: colors.textSecondary,
                     ),

@@ -12,6 +12,7 @@ import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
+import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,6 +60,10 @@ Future<void> main() async {
   registerScreen(
     AppRoutes.settingsAbout,
     (BuildContext context, GoRouterState state) => const AboutScreen(),
+  );
+  registerScreen(
+    AppRoutes.settings,
+    (BuildContext context, GoRouterState state) => const SettingsScreen(),
   );
 
   runApp(
