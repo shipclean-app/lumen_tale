@@ -866,5 +866,97 @@
   },
   "@libraryActionCancel": {
     "description": ""
+  },
+  "browseTitle": "Parcourir",
+  "@browseTitle": {
+    "description": ""
+  },
+  "browseSourceUnavailableTitle": "{source} n'a pas pu être lu",
+  "@browseSourceUnavailableTitle": {
+    "description": ""
+  },
+  "browseSourceUnavailableBody": "La page s'est chargée, mais la partie qui liste les romans n'y était pas. Votre bibliothèque n'est pas touchée et rien n'a été téléchargé.",
+  "@browseSourceUnavailableBody": {
+    "description": "⚠️ **Two sentences a reader needs and cannot guess.** `Nothing is wrong with your library` comes first because the failure looks like a bug in the app, and `nothing was downloaded` because the fear is that a check ate their downloads. This is SC-6's only surface."
+  },
+  "browseEmptyTagTitle": "Rien avec le tag {tag}",
+  "@browseEmptyTagTitle": {
+    "description": "⚠️ **The tag is echoed back**, because a reader who has forgotten what they tapped needs to be told — and an empty-state sentence that does not name the tag could belong to any screen."
+  },
+  "browseEmptyTagBody": "{source} ne publie aucun roman sous ce tag. Essayez un autre tag.",
+  "@browseEmptyTagBody": {
+    "description": ""
+  },
+  "browseSiteSaidNothingTitle": "Le site dit n'avoir rien",
+  "@browseSiteSaidNothingTitle": {
+    "description": ""
+  },
+  "browseSiteSaidNothingBody": "La recherche de \"{query}\" sur {source} n'a rien donné.",
+  "@browseSiteSaidNothingBody": {
+    "description": "⚠️ **The query is quoted AND the site is named.** The site's own marker is the reason this state exists at all, and a reader needs to see what they asked for before they decide the site is at fault."
+  },
+  "browseNoConnectionTitle": "Pas de connexion",
+  "@browseNoConnectionTitle": {
+    "description": ""
+  },
+  "browseNoConnectionBody": "{source} n'a pas pu être joint. Votre bibliothèque n'est pas touchée.",
+  "@browseNoConnectionBody": {
+    "description": "⚠️ **`Your library is unaffected`**, and it is not reassurance for its own sake: SC-6 exists because a site that cannot be read looks like a broken app, and the reader's first fear is their library."
+  },
+  "browseActionRetry": "Réessayer",
+  "@browseActionRetry": {
+    "description": ""
+  },
+  "browseActionOpenLibrary": "Ouvrir la bibliothèque",
+  "@browseActionOpenLibrary": {
+    "description": ""
+  },
+  "browseActionBrowseAnother": "Parcourir un autre tag",
+  "@browseActionBrowseAnother": {
+    "description": ""
+  },
+  "browseFailureLayoutChanged": "La mise en page du site a changé",
+  "@browseFailureLayoutChanged": {
+    "description": ""
+  },
+  "browseFailureRateLimited": "Le site nous a demandé de ralentir",
+  "@browseFailureRateLimited": {
+    "description": "⚠️ **The site's own rate limit is named, not \"error\".** `17-security.md` rule 6 honours `Retry-After` rather than guessing, and a reader who is told the site asked us to slow down waits; one told \"error\" presses retry and makes it worse."
+  },
+  "browseFailureNoConnection": "Pas de connexion",
+  "@browseFailureNoConnection": {
+    "description": ""
+  },
+  "browseFailureUnavailable": "Le site est indisponible",
+  "@browseFailureUnavailable": {
+    "description": ""
+  },
+  "browseFailureParse": "La page n'a pas pu être lue",
+  "@browseFailureParse": {
+    "description": ""
+  },
+  "browseFailureItemRemoved": "Ce roman n'est plus sur le site",
+  "@browseFailureItemRemoved": {
+    "description": ""
+  },
+  "browseTileKept": "Dans votre bibliothèque",
+  "@browseTileKept": {
+    "description": ""
+  },
+  "browseTileAdd": "Ajouter",
+  "@browseTileAdd": {
+    "description": ""
+  },
+  "browseTileOpen": "Ouvrir",
+  "@browseTileOpen": {
+    "description": ""
+  },
+  "browseFooterLoadingMore": "Chargement…",
+  "@browseFooterLoadingMore": {
+    "description": ""
+  },
+  "browseFooterEnd": "Voilà tout ce que ce tag publie",
+  "@browseFooterEnd": {
+    "description": ""
   }
 }

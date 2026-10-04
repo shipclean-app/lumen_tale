@@ -1230,6 +1230,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get libraryActionCancel;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get browseTitle;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{source} could not be read'**
+  String browseSourceUnavailableTitle(Object source);
+
+  /// ⚠️ **Two sentences a reader needs and cannot guess.** `Nothing is wrong with your library` comes first because the failure looks like a bug in the app, and `nothing was downloaded` because the fear is that a check ate their downloads. This is SC-6's only surface.
+  ///
+  /// In en, this message translates to:
+  /// **'The page loaded, but the part that lists novels was not on it. Nothing is wrong with your library, and nothing was downloaded.'**
+  String get browseSourceUnavailableBody;
+
+  /// ⚠️ **The tag is echoed back**, because a reader who has forgotten what they tapped needs to be told — and an empty-state sentence that does not name the tag could belong to any screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing tagged {tag}'**
+  String browseEmptyTagTitle(Object tag);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{source} publishes no novel under that tag. Try another tag.'**
+  String browseEmptyTagBody(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The site says it has nothing'**
+  String get browseSiteSaidNothingTitle;
+
+  /// ⚠️ **The query is quoted AND the site is named.** The site's own marker is the reason this state exists at all, and a reader needs to see what they asked for before they decide the site is at fault.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching {source} for \"{query}\" returned nothing.'**
+  String browseSiteSaidNothingBody(Object query, Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No connection'**
+  String get browseNoConnectionTitle;
+
+  /// ⚠️ **`Your library is unaffected`**, and it is not reassurance for its own sake: SC-6 exists because a site that cannot be read looks like a broken app, and the reader's first fear is their library.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} could not be reached. Your library is unaffected.'**
+  String browseNoConnectionBody(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get browseActionRetry;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Open library'**
+  String get browseActionOpenLibrary;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Browse another tag'**
+  String get browseActionBrowseAnother;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The site\'s layout changed'**
+  String get browseFailureLayoutChanged;
+
+  /// ⚠️ **The site's own rate limit is named, not "error".** `17-security.md` rule 6 honours `Retry-After` rather than guessing, and a reader who is told the site asked us to slow down waits; one told "error" presses retry and makes it worse.
+  ///
+  /// In en, this message translates to:
+  /// **'The site asked us to slow down'**
+  String get browseFailureRateLimited;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No connection'**
+  String get browseFailureNoConnection;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The site is unavailable'**
+  String get browseFailureUnavailable;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The page could not be read'**
+  String get browseFailureParse;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'That novel is no longer on the site'**
+  String get browseFailureItemRemoved;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'In your library'**
+  String get browseTileKept;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get browseTileAdd;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get browseTileOpen;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Loading more…'**
+  String get browseFooterLoadingMore;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'That is everything this tag publishes'**
+  String get browseFooterEnd;
 }
 
 class _AppLocalizationsDelegate

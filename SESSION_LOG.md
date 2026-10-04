@@ -3793,3 +3793,105 @@ both ARB files + regenerated l10n (21 keys),
 - **Do not quote a plural without the numeral.** "Its downloaded chapters" is a sentence about
   nothing, in a dialog whose purpose is a figure.
 - **Do not key a removable list by index.**
+
+---
+
+## 2026-10-04 — Session 26: `3-1` Browse, and `6-1` verified rather than re-written
+
+### STARTED FROM
+
+`2-5` validated at `44df68c`. Seventeen slices of phase 7 remained. This session closes two.
+
+### `6-1` — VERIFIED, NOT REWRITTEN, and one real gap closed
+
+`6-1`'s plan says it "writes `RoyalRoadSource`", which `2-1` already did and validated with 26
+fixture rows. Re-writing it would duplicate validated code, so the slice's **own acceptance list**
+was checked item by item instead:
+
+- B22's four items — covered by `2-1`'s rows (broken layout → `SourceLayoutChanged`, the site's
+  own marker → `BrowseEmpty`, no `BrowseSucceeded(novels: [])` path, the discriminant is the
+  site's text).
+- B1's registry — **one source, and the absence is documented**: FanMTL is F-012 (403 under an
+  honest UA; ADR-014 rejects impersonation), Novel Fire is UNMEASURED. Shipping either would put
+  a tab that reports every read as broken — SC-6 at the scale of a whole site.
+- E1/B9's `data-chapters` witness — covered.
+- **B3 — the identity rules were NOT covered.** `2-1`'s suite asserts pages parse; nothing
+  asserted *which id* the source hands out, and that id is the filename, the route, the library
+  key and the reading-position key of every novel this app will ever show. A change that altered
+  it silently would orphan every stored chapter.
+
+So `test/sources/royal_road_source_identity_test.dart` (7 rows) was written. It recomputes the
+digest **by hand** rather than calling `SourceId.of`, because calling the function to check what
+the function produced asserts only that it is idempotent.
+
+⚠️ **The row caught its own author**: it asserted `md5('Royal Road/en/1')` while its own comment
+said the name is lower-cased. The rule is right; the expectation was written from memory instead
+of from the rule.
+
+⚠️ `consistency-check` **refused** the validation before that file existed —
+`slice_marked_done_has_tests`: *"un statut « fait » sans cas de test est une affirmation, pas un
+fait"*. The guard was right and the gap was real.
+
+### `3-1` — DECIDED
+
+- **The mapping `BrowseOutcome → view state` is a total function the compiler enforces**, and it
+  lives in its own file rather than in the screen's `switch`. A new `CatalogueViewState` is a
+  compile error in the dispatcher; `CatalogueFilled` routed to it **throws** rather than drawing
+  nothing.
+- **An empty page 2 is a LAYOUT CHANGE, not an empty tag.** "No results" is never said of page 2
+  of a tag that had thirty on page 1 — that would erase half the list in front of a reader who is
+  scrolling.
+- **`requestedPage` is a PARAMETER and not read from the outcome.** `NovelsPage` carries `novels`
+  and `hasNextPage`; the site publishes a list, not a page number, so the index lives in the
+  request and nowhere else. Reading it from the response would mean inventing it.
+- **A success carrying ZERO pages maps to broken, not empty.** Unreachable from a well-behaved
+  source — `OutcomeDiscriminator` classifies zero items as broken for the catalogue stage — but if
+  a source ever hands one over, "we could not read a page" is the honest reading and "this tag has
+  no novels" is a claim the app has no evidence for.
+- **Every failure state leads with what is NOT wrong.** *Your library is fine, nothing was
+  downloaded* · *Your library is unaffected*. A reader whose catalogue failed assumes the **app**
+  is broken, then assumes the failure ate their downloads. Both are wrong and neither is
+  self-correcting.
+- **Retry is offered only where a second attempt is honest.** A layout change will answer 200 with
+  the same markup tomorrow, and a retry button there teaches a reader that the app does not know
+  what it is doing.
+- **An empty tag gets an inbox icon and no retry.** A warning triangle on "this tag is empty"
+  teaches a reader that an empty tag is a fault, and the next one gets dismissed unread.
+- **`hasMore` is the site's signal and is never invented.** A caller that did not pass it gets
+  "no more" — the conservative direction, because an invented "load more" offers a page that is
+  not there.
+- **One `HttpClient` per source, never a shared one.** `Dio`'s `baseUrl` is per instance, so a
+  shared client sends one site's paths to whichever host was configured last — which fails as a
+  404 on a site that is working perfectly. SC-6 with extra steps.
+- **A source that cannot be built does not take the others down** (B23), and its id resolves to
+  nothing, which the repository reports as a typed `BrowseFailed` rather than as "this site has
+  no novels".
+- **The User-Agent carries `buildName`, not `buildNumber`.** The number changes on every CI run
+  and would make each build look like a different client to a site's rate limiter.
+
+### SABOTAGE, FIVE, ALL CAUGHT
+
+| Sabotage | Rows that caught it |
+|---|---|
+| an empty page 2 is treated as an empty tag | *an empty page 2 is a LAYOUT CHANGE* |
+| a typed failure becomes an empty tag | **3 rows** |
+| `mapAsyncError` returns `CatalogueEmptyTag` | *an AsyncError is NO CONNECTION* |
+| a layout change offers Retry | *a LAYOUT CHANGE offers NO retry* |
+| `hasMore` is invented | *the site said there is not* |
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **949 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass`.
+
+### NEXT SESSION SHOULD — carry straight on, no stop
+
+`3-6` (source unavailable — SC-6's only surface) · `6-2` (search mode) · `3-2` (novel details) ·
+`3-3` (chapter download/delete) · `5-1` `5-2` `5-3` (the queue) · `3-4` (onboarding) · `2-8`
+(reader settings) · `6-4` `6-6` `6-10` (check, badge, foreground job) · `0-1` `0-4` (fixtures and
+the classification table) · `6-7` (i18n taxonomy content).
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not map a failure to an empty list.** That is SC-6 and three rows now say so.
+- **Do not invent `hasMore`** when the site did not say there is more.

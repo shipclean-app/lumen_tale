@@ -712,4 +712,84 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get libraryActionCancel => 'Annuler';
+
+  @override
+  String get browseTitle => 'Parcourir';
+
+  @override
+  String browseSourceUnavailableTitle(Object source) {
+    return '$source n\'a pas pu être lu';
+  }
+
+  @override
+  String get browseSourceUnavailableBody =>
+      'La page s\'est chargée, mais la partie qui liste les romans n\'y était pas. Votre bibliothèque n\'est pas touchée et rien n\'a été téléchargé.';
+
+  @override
+  String browseEmptyTagTitle(Object tag) {
+    return 'Rien avec le tag $tag';
+  }
+
+  @override
+  String browseEmptyTagBody(Object source) {
+    return '$source ne publie aucun roman sous ce tag. Essayez un autre tag.';
+  }
+
+  @override
+  String get browseSiteSaidNothingTitle => 'Le site dit n\'avoir rien';
+
+  @override
+  String browseSiteSaidNothingBody(Object query, Object source) {
+    return 'La recherche de \"$query\" sur $source n\'a rien donné.';
+  }
+
+  @override
+  String get browseNoConnectionTitle => 'Pas de connexion';
+
+  @override
+  String browseNoConnectionBody(Object source) {
+    return '$source n\'a pas pu être joint. Votre bibliothèque n\'est pas touchée.';
+  }
+
+  @override
+  String get browseActionRetry => 'Réessayer';
+
+  @override
+  String get browseActionOpenLibrary => 'Ouvrir la bibliothèque';
+
+  @override
+  String get browseActionBrowseAnother => 'Parcourir un autre tag';
+
+  @override
+  String get browseFailureLayoutChanged => 'La mise en page du site a changé';
+
+  @override
+  String get browseFailureRateLimited => 'Le site nous a demandé de ralentir';
+
+  @override
+  String get browseFailureNoConnection => 'Pas de connexion';
+
+  @override
+  String get browseFailureUnavailable => 'Le site est indisponible';
+
+  @override
+  String get browseFailureParse => 'La page n\'a pas pu être lue';
+
+  @override
+  String get browseFailureItemRemoved => 'Ce roman n\'est plus sur le site';
+
+  @override
+  String get browseTileKept => 'Dans votre bibliothèque';
+
+  @override
+  String get browseTileAdd => 'Ajouter';
+
+  @override
+  String get browseTileOpen => 'Ouvrir';
+
+  @override
+  String get browseFooterLoadingMore => 'Chargement…';
+
+  @override
+  String get browseFooterEnd => 'Voilà tout ce que ce tag publie';
 }

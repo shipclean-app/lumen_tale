@@ -6,16 +6,19 @@ import 'package:lumen_tale/app/router/app_routes.dart';
 import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/app/theme/app_theme_preferences.dart';
+import 'package:lumen_tale/app/theme/app_version.dart';
 import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
+import 'package:lumen_tale/features/browse/catalogue_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/features/library/library_screen.dart';
 import 'package:lumen_tale/features/reader/reader_screen.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
+import 'package:lumen_tale/sources/implementations/source_registry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Bootstrap for Lumen Tale.
@@ -51,6 +54,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// `app/` still imports no `features/` **package** — these are function bodies reached
 /// through the registry, and `test/app/shell/app_shell_test.dart` greps the import lines.
 void registerScreens() {
+  registerScreen(
+    AppRoutes.sourceGenre,
+    (BuildContext context, GoRouterState state) => CatalogueScreen(
+      sourceId: state.pathParameters['sourceId']!,
+      tag: state.pathParameters['genre']!,
+    ),
+  );
   registerScreen(
     AppRoutes.library,
     (BuildContext context, GoRouterState state) => const LibraryScreen(),
@@ -130,10 +140,34 @@ Future<void> main() async {
           ref.onDispose(db.close);
           return db;
         }),
+        // ⚠️ **The sources, and their clients, built ONCE at the bootstrap.**
+        //
+        // `buildBrowseRepository` builds one `HttpClient` per registered source — never one
+        // shared client, because `Dio`'s `baseUrl` is per instance and a shared one would send
+        // one site's paths to another host. `05-state-management.md` rule 8: the repository is a
+        // provider because it is the thing every browse screen programs against.
+        //
+        // The version goes into the User-Agent, and `readBuildVersion()` is a function rather
+        // than a `final` precisely so this call site is where the read happens.
+        browseRepositoryProvider.overrideWithValue(
+          buildBrowseRepository(appVersion: _appVersion()),
+        ),
       ],
       child: const LumenTaleApp(),
     ),
   );
+}
+
+/// The version string that goes into the User-Agent.
+///
+/// ⚠️ **`buildName` and NOT `buildNumber`, deliberately.** The number changes on every CI run
+/// and would make each build look like a different client to a site; the name changes when a
+/// release does, which is what a server-side rate limit wants to see. An empty name is passed
+/// through — `userAgent` renders `unknown` — rather than a placeholder that would look like a
+/// real version to a site's logs.
+String _appVersion() {
+  final BuildVersion version = readBuildVersion();
+  return version.buildName.isEmpty ? version.buildNumber : version.buildName;
 }
 
 /// Root widget.

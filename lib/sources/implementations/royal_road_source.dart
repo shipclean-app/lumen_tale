@@ -73,8 +73,13 @@ final class RoyalRoadSource extends ParsedHttpSource with HttpFetching {
   String get lang => 'en';
 
   /// No trailing slash. `HttpFetching.endpoint` asserts it.
+  /// ⚠️ **A named constant, not a getter's body.** The composition root builds a
+  /// `SourceEndpoint` per registered source, and an endpoint declared inside a getter would
+  /// make "which host is this" readable only by calling the class.
+  static const String kBaseUrl = 'https://www.royalroad.com';
+
   @override
-  String get baseUrl => 'https://www.royalroad.com';
+  String get baseUrl => kBaseUrl;
 
   /// Bump when URLs break, so a stored novel keeps resolving.
   ///

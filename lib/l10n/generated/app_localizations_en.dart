@@ -707,4 +707,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get libraryActionCancel => 'Cancel';
+
+  @override
+  String get browseTitle => 'Browse';
+
+  @override
+  String browseSourceUnavailableTitle(Object source) {
+    return '$source could not be read';
+  }
+
+  @override
+  String get browseSourceUnavailableBody =>
+      'The page loaded, but the part that lists novels was not on it. Nothing is wrong with your library, and nothing was downloaded.';
+
+  @override
+  String browseEmptyTagTitle(Object tag) {
+    return 'Nothing tagged $tag';
+  }
+
+  @override
+  String browseEmptyTagBody(Object source) {
+    return '$source publishes no novel under that tag. Try another tag.';
+  }
+
+  @override
+  String get browseSiteSaidNothingTitle => 'The site says it has nothing';
+
+  @override
+  String browseSiteSaidNothingBody(Object query, Object source) {
+    return 'Searching $source for \"$query\" returned nothing.';
+  }
+
+  @override
+  String get browseNoConnectionTitle => 'No connection';
+
+  @override
+  String browseNoConnectionBody(Object source) {
+    return '$source could not be reached. Your library is unaffected.';
+  }
+
+  @override
+  String get browseActionRetry => 'Retry';
+
+  @override
+  String get browseActionOpenLibrary => 'Open library';
+
+  @override
+  String get browseActionBrowseAnother => 'Browse another tag';
+
+  @override
+  String get browseFailureLayoutChanged => 'The site\'s layout changed';
+
+  @override
+  String get browseFailureRateLimited => 'The site asked us to slow down';
+
+  @override
+  String get browseFailureNoConnection => 'No connection';
+
+  @override
+  String get browseFailureUnavailable => 'The site is unavailable';
+
+  @override
+  String get browseFailureParse => 'The page could not be read';
+
+  @override
+  String get browseFailureItemRemoved => 'That novel is no longer on the site';
+
+  @override
+  String get browseTileKept => 'In your library';
+
+  @override
+  String get browseTileAdd => 'Add';
+
+  @override
+  String get browseTileOpen => 'Open';
+
+  @override
+  String get browseFooterLoadingMore => 'Loading more…';
+
+  @override
+  String get browseFooterEnd => 'That is everything this tag publishes';
 }

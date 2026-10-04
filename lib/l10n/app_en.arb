@@ -866,5 +866,97 @@
   },
   "@libraryActionCancel": {
     "description": ""
+  },
+  "browseTitle": "Browse",
+  "@browseTitle": {
+    "description": ""
+  },
+  "browseSourceUnavailableTitle": "{source} could not be read",
+  "@browseSourceUnavailableTitle": {
+    "description": ""
+  },
+  "browseSourceUnavailableBody": "The page loaded, but the part that lists novels was not on it. Nothing is wrong with your library, and nothing was downloaded.",
+  "@browseSourceUnavailableBody": {
+    "description": "⚠️ **Two sentences a reader needs and cannot guess.** `Nothing is wrong with your library` comes first because the failure looks like a bug in the app, and `nothing was downloaded` because the fear is that a check ate their downloads. This is SC-6's only surface."
+  },
+  "browseEmptyTagTitle": "Nothing tagged {tag}",
+  "@browseEmptyTagTitle": {
+    "description": "⚠️ **The tag is echoed back**, because a reader who has forgotten what they tapped needs to be told — and an empty-state sentence that does not name the tag could belong to any screen."
+  },
+  "browseEmptyTagBody": "{source} publishes no novel under that tag. Try another tag.",
+  "@browseEmptyTagBody": {
+    "description": ""
+  },
+  "browseSiteSaidNothingTitle": "The site says it has nothing",
+  "@browseSiteSaidNothingTitle": {
+    "description": ""
+  },
+  "browseSiteSaidNothingBody": "Searching {source} for \"{query}\" returned nothing.",
+  "@browseSiteSaidNothingBody": {
+    "description": "⚠️ **The query is quoted AND the site is named.** The site's own marker is the reason this state exists at all, and a reader needs to see what they asked for before they decide the site is at fault."
+  },
+  "browseNoConnectionTitle": "No connection",
+  "@browseNoConnectionTitle": {
+    "description": ""
+  },
+  "browseNoConnectionBody": "{source} could not be reached. Your library is unaffected.",
+  "@browseNoConnectionBody": {
+    "description": "⚠️ **`Your library is unaffected`**, and it is not reassurance for its own sake: SC-6 exists because a site that cannot be read looks like a broken app, and the reader's first fear is their library."
+  },
+  "browseActionRetry": "Retry",
+  "@browseActionRetry": {
+    "description": ""
+  },
+  "browseActionOpenLibrary": "Open library",
+  "@browseActionOpenLibrary": {
+    "description": ""
+  },
+  "browseActionBrowseAnother": "Browse another tag",
+  "@browseActionBrowseAnother": {
+    "description": ""
+  },
+  "browseFailureLayoutChanged": "The site's layout changed",
+  "@browseFailureLayoutChanged": {
+    "description": ""
+  },
+  "browseFailureRateLimited": "The site asked us to slow down",
+  "@browseFailureRateLimited": {
+    "description": "⚠️ **The site's own rate limit is named, not \"error\".** `17-security.md` rule 6 honours `Retry-After` rather than guessing, and a reader who is told the site asked us to slow down waits; one told \"error\" presses retry and makes it worse."
+  },
+  "browseFailureNoConnection": "No connection",
+  "@browseFailureNoConnection": {
+    "description": ""
+  },
+  "browseFailureUnavailable": "The site is unavailable",
+  "@browseFailureUnavailable": {
+    "description": ""
+  },
+  "browseFailureParse": "The page could not be read",
+  "@browseFailureParse": {
+    "description": ""
+  },
+  "browseFailureItemRemoved": "That novel is no longer on the site",
+  "@browseFailureItemRemoved": {
+    "description": ""
+  },
+  "browseTileKept": "In your library",
+  "@browseTileKept": {
+    "description": ""
+  },
+  "browseTileAdd": "Add",
+  "@browseTileAdd": {
+    "description": ""
+  },
+  "browseTileOpen": "Open",
+  "@browseTileOpen": {
+    "description": ""
+  },
+  "browseFooterLoadingMore": "Loading more…",
+  "@browseFooterLoadingMore": {
+    "description": ""
+  },
+  "browseFooterEnd": "That is everything this tag publishes",
+  "@browseFooterEnd": {
+    "description": ""
   }
 }
