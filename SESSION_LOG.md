@@ -3145,3 +3145,107 @@ and the site may order it by something other than the number in the URL.*
 - **Do not register FanMTL or Novel Fire.** F-012 stands; Novel Fire is UNMEASURED.
 - **Do not add a `downloaded` flag or an `author` fallback.** Both would be a second
   source of truth against a measurement that already exists.
+
+---
+
+## 2026-10-04 — Session 20: `2-2` — HTML to Markdown, and the paragraph the site asked for
+
+### STARTED FROM
+
+`2-1` at `e886ce8`. `2-2` is the product's central transformation and everything
+downstream needs it.
+
+### DECIDED
+
+- **No `html2md`, no FFI bridge — the walk is written here** (ADR-003). Every published
+  `html2md` declares `sdk: >=2.12.0 <3.0.0`, so Dart 2 alone, and a Rust toolchain for this
+  step is a bad trade in a mobile reader. There is therefore **no base converter to wrap**,
+  which is why `04-html-to-markdown.md` specifies an algorithm and not an adapter.
+- **`<br><br>` is a paragraph, and the break is DEFERRED.** FanMTL emits zero `<p>`, so a
+  converter asking "is this a `<p>`" sees none and emits the whole chapter as one
+  paragraph — which *looks* right and fails structurally. `_pendingBreak` is 0/1/2 and is a
+  **promise**, paid by `_emitText`, because § 3.2's table says a `<br>` followed by a `<br>`
+  emits *nothing*: emitting the hard break eagerly and then upgrading it to a paragraph
+  produced `Two  \n\nThree` — two visual separations where the site asked for one.
+- **`paragraphCount` counts paragraphs as a reader SEES them, not tags in the source.**
+  `<p>One</p>Two` is two paragraphs and one `<p>`; the site closed a block, so the text
+  after it opens another. Without `_blockClosed` the output showed three paragraphs while
+  the count said two — and the count is what E22's threshold reads.
+- **The first run of text opens a paragraph.** A chapter that begins straight into prose
+  with neither `<p>` nor `<br>` still has paragraphs. Every block marker — heading, inline
+  emphasis, list item, `hr` — sets `_documentStarted`, because that marker's own text
+  belongs to the *marker*, not to a first paragraph. Skipping that produced `###\n\nTitle`
+  and `*\n\na`.
+- **The walk is iterative over a stack that holds CLOSERS as well as nodes.** A recursive
+  `_children` per container recurses once per *nesting level*; a step that closes a
+  container costs one list slot instead of one call frame. E1 asks that a 10 000-entry
+  list stay readable, and a row asserts it.
+- **Removals are a UNION, never a replacement.** `kDefaultRemovals` first, then the
+  source's own — so a source cannot re-introduce a `<script>` by omitting it, because
+  omitting is not an operation `ConversionRequest` offers.
+- **`parent is! dom.Element` in `_unwrap`, and it is load-bearing.** `querySelectorAll` is
+  a live view, so an earlier rule may have removed an *ancestor*; inserting into the
+  Document would re-parent a node **outside** the article and silently move prose out of
+  the chapter. `package:html` has no `parentElement`, so this narrowing does the job.
+- **A hard break is EXACTLY two trailing spaces.** Calling a space-writer first produced
+  four, which a renderer reads as a hard break plus two spaces of content.
+- **Images are dropped by default, and the default IS the rule** (rule 3). A non-zero
+  `imagesKept` means a source asked; an unresolvable `src` is dropped and **not counted**,
+  because an `![](…)` the reader also sees broken is worse than no image.
+- **An irregular table becomes paragraphs separated by an EM DASH, not a pipe.** Rule 8:
+  the shape is lost, the text never is. A pipe inside prose reads as a table row to every
+  renderer, and this fallback is prose. Over 200 rows the fallback is unconditional.
+- **Escaping is "only where it changes the sense".** A character is escaped only when
+  adjacent to a non-space, because a chapter *about* Markdown must stay readable — a
+  blanket escape turns "he said * * *" into punctuation the reader reads past.
+
+### THE ROW THAT SAYS THE UNCOMFORTABLE THING OUT LOUD
+
+`0-1`'s manufactured broken-layout fixture is a **catalogue** page: 109 `<p>` elements and
+34 000 characters. Handed to the converter whole, it converts to a long, confident,
+entirely wrong chapter — and the row asserts exactly that (`belowThreshold is false`).
+
+So **the threshold cannot be what protects the product here**, and no converter can: given
+a page full of prose it will faithfully convert the prose. What protects the reader is
+`2-1`'s selector returning nothing, which the sibling row asserts. A converter that
+"detected" the broken page would be guessing, and a guess that turns a long catalogue page
+into a short chapter is the mirror image of SC-6.
+
+### FILES TOUCHED
+
+`lib/core/pipeline/html_to_markdown.dart` (new),
+`lib/core/pipeline/removal_rule.dart` (new),
+`lib/core/pipeline/converted_chapter.dart` (new),
+`test/core/pipeline/html_to_markdown_test.dart` (new, 38),
+`test/core/pipeline/real_fixture_conversion_test.dart` (new, 9).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **799 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass`.
+
+**Sabotage, seven, all caught:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| a paragraph only counts when the node is a `<p>` — the FanMTL defect | **2 rows** |
+| the hard break is emitted eagerly instead of deferred | **2 rows** |
+| the bullet marker ignores `frame.ordered` | *an unordered list, nested* |
+| a source's removals **replace** the defaults | *script and style go with their subtree* |
+| `javascript:` is rendered | *`javascript:` is NEVER rendered* |
+| escaping becomes a blanket escape | *a lone asterisk between spaces stays readable* |
+| an irregular table drops cells instead of keeping the text | **2 rows** |
+
+### NEXT SESSION SHOULD
+
+- **`2-3`** — the atomic disk write and `downloadedAt`. `2-2` returns a `String`; `2-3` is
+  what puts it on disk, and its two-write order **is** B6 rather than an implementation
+  detail (ADR-022).
+- **`2-4`** — the reader, which is the product's proof.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not count tags instead of paragraphs.** `<p>One</p>Two` is two paragraphs.
+- **Do not emit a hard break eagerly.** The `<br><br>` upgrade produces a double break.
+- **Do not try to detect a broken layout in the converter.** The selector does that, and a
+  guess turns a catalogue page into a short chapter.
