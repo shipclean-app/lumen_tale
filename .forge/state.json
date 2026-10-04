@@ -2571,9 +2571,9 @@
     "2-2": {
       "path": ".forge/plans/2-2.md",
       "type": "implementation-plan",
-      "status": "planned",
+      "status": "validated",
       "content_hash": "sha256:72ccd77d4d5c",
-      "updated_at": "2026-10-03T19:46:39.015Z",
+      "updated_at": "2026-10-04T02:23:19.911Z",
       "depends_on": [
         "2-1",
         "0-4"
@@ -4498,7 +4498,7 @@
       "register": 280,
       "client_point": 4,
       "client_answer": 4,
-      "status_change": 156,
+      "status_change": 157,
       "gate_approved": 4,
       "phase_status": 11,
       "amend": 10,
