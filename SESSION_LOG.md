@@ -4596,3 +4596,59 @@ Slices: 19 validated · 3 `in_progress` · 10 `planned`. `3-2` still `in_progres
 remaining gaps are the screen-level wiring of the row into `NovelDetailsScreen` and B12's
 tap, and **`OfferToAdd` is now reachable for the first time**, which is what makes them
 buildable rather than theoretical.
+
+---
+
+### `3-2` VALIDATED — and Q-028 is closed
+
+`openNovelDetails(context, novelId:, novel:)` now carries the `Novel` as go_router `extra`,
+and **the route still carries only the id**. That asymmetry is the answer: a deep link and a
+restored stack must work, so `extra` is a shortcut for a caller that already holds the novel,
+never the only way in.
+
+⚠️ **It works because `Novel` is in `domain/sources/models/`**, which `app/` may import.
+`libraryStreamProvider` is in `features/library/` and could not be named in `app_router.dart`
+at all — that asymmetry is F-018, and it is precisely why the answer needed `domain` and not
+the repository. The boundary violation cost the *shape* of the solution, not just a line.
+
+⚠️ **A novel that is neither stored nor carried gets NO add button.** The screen will not
+synthesise a title nobody published (B10), and `OfferReadFromStart` is not the honest answer
+either — so the membership switch has a third arm that says "reading, not adding". A row that
+lied here would be the fourth lying control in this project.
+
+### THE ROW IS PINNED, AND ALWAYS RENDERED
+
+`PinnedActionRow` sits **below** the list, outside the scrolling area, so it is present in
+every chapter-list state. A row that appeared only once the list had loaded would be a row a
+reader on a slow connection cannot reach — and the load is exactly when they would reach for
+it.
+
+**Membership is read from `libraryStreamProvider`** — `2-5`'s `keepAlive` registry, the one
+list that says what the reader keeps. The obvious wrong answer is to ask this screen's own
+chapter repository, which would report a novel *removed* with its downloads still on disk as
+kept, forever. That row is in the file.
+
+### ⚠️ A HARNESS ARTEFACT THAT LOOKED LIKE A DEFECT
+
+The first version of this test overrode `appDatabaseProvider`, which opened a **real**
+database. Drift's stream-query store leaves a timer on dispose, and a widget test with a
+pending timer fails — reported as if the screen were at fault. Replaced with a fake chapter
+repository, so the file contains no SQL and no platform at all. It is about the action row;
+the chapter list has its own suite.
+
+⚠️ **A test that fails for a reason the code did not cause is still a test that fails**, and
+the discipline is to find out which before changing anything about the product.
+
+### SABOTAGE, THREE ATTEMPTED, THREE CAUGHT
+
+| sabotage | row that failed |
+|---|---|
+| `inLibrary` hardcoded true (the chapter-rows answer) | *membership reads the LIBRARY, not the chapter rows* |
+| `OfferToAdd` offered with **no** novel | *NO novel anywhere → NO add, and NO invented novel* |
+| a direct `removeFromLibrary` instead of `addFromCatalogue` | *the tap reaches addFromCatalogue, NOT a direct write* |
+
+### STATUS
+
+`tool/dod.sh 3-2` → **DoD: PASS — 7 of 7 gates green**, exit 0. **1 103 passed + 9 skipped.**
+`3-2` → **`validated`**; `check-stale` clean.
+Slices: **20 validated** · 2 `in_progress` (`0-1`, `6-7`) · **10 `planned`**.

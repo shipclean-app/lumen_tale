@@ -20,8 +20,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
 import 'package:lumen_tale/domain/library/chapter_entry.dart';
+import 'package:lumen_tale/domain/library/library_entry.dart';
+import 'package:lumen_tale/domain/sources/models/novel.dart';
+import 'package:lumen_tale/features/library/library_screen.dart'
+    show addWithSimilarTitleCheck, libraryStreamProvider;
 import 'package:lumen_tale/features/novel_details/chapter_list_view_state.dart';
 import 'package:lumen_tale/features/novel_details/providers/novel_details_providers.dart';
+import 'package:lumen_tale/features/novel_details/widgets/pinned_action_row.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 
 /// `/novel/:novelId` — one novel, and the nine states its chapter list can be in.
@@ -29,12 +34,19 @@ class NovelDetailsScreen extends ConsumerStatefulWidget {
   const NovelDetailsScreen({
     required this.novelId,
     required this.sourceName,
+    this.novel,
     this.currentChapterId,
     super.key,
   });
 
   final String novelId;
   final String sourceName;
+
+  /// ⚠️ **THE NOVEL THE CALLER ALREADY HAD, or `null`.** B12's add needs a `Novel`, and a
+  /// novel that is not in the library has no stored row to read one back from — so the
+  /// catalogue hands over the one it rendered. A deep link has none, and the screen then
+  /// reads storage instead. See `Q-028`.
+  final Novel? novel;
 
   /// `null` → no `current` tile and no *Go to the current chapter* button at all.
   final String? currentChapterId;
@@ -110,13 +122,88 @@ class _NovelDetailsScreenState extends ConsumerState<NovelDetailsScreen> {
 
     return AppScaffold(
       titleBar: AppBar(title: Text(copy.novelDetailsTitle)),
-      content: ChapterListBody(
-        state: state,
-        sourceName: widget.sourceName,
-        isLoading: _loading,
-        onLoad: _loadFromSite,
+      content: Column(
+        children: <Widget>[
+          // ⚠️ **THE ROW IS ABOVE THE LIST, PINNED.** § 3.5 calls it the *pinned* action row,
+          // and "pinned" is the whole point: the actions a novel can be given must not scroll
+          // away under a thumb that is already on its way to a chapter.
+          Expanded(
+            child: ChapterListBody(
+              state: state,
+              sourceName: widget.sourceName,
+              isLoading: _loading,
+              onLoad: _loadFromSite,
+            ),
+          ),
+          _actionRow(context, ref, state),
+        ],
       ),
     );
+  }
+
+  /// Slot 1's answer, and the two taps the row can emit.
+  ///
+  /// ⚠️ **MEMBERSHIP IS READ FROM THE APP'S OWN SPINE, not from this screen's database.**
+  /// `libraryStreamProvider` is `2-5`'s `keepAlive` registry — the one list that says what
+  /// the reader keeps. Asking this screen's own chapter repository would answer a different
+  /// question ("are there chapter rows") and a novel can have rows and still not be kept.
+  Widget _actionRow(
+    BuildContext context,
+    WidgetRef ref,
+    ChapterListViewState state,
+  ) {
+    final AppLocalizations copy = AppLocalizations.of(context);
+    final List<LibraryEntry> library =
+        ref.watch(libraryStreamProvider).value ?? const <LibraryEntry>[];
+    final bool inLibrary = library.any(
+      (LibraryEntry entry) => entry.id == widget.novelId,
+    );
+
+    // ⚠️ **THE NOVEL, FROM WHITHEVER ONE EXISTS.** The caller's copy first — it is the only
+    // one that exists when the novel is NOT stored, which is exactly when B12's button shows.
+    // Otherwise the stored row, which is what a deep link has.
+    final Novel? novel =
+        widget.novel ?? ref.watch(storedNovelProvider(widget.novelId)).value;
+
+    return PinnedActionRow(
+      membership: _membershipFor(
+        inLibrary: inLibrary,
+        novel: novel,
+        copy: copy,
+      ),
+      download: const DownloadIdle(),
+      unopenedCount: state is ChapterListFilled ? state.unopenedCount : 0,
+      onAdd: () => _addToLibrary(context, ref, novel),
+      onReadFromStart: () {},
+      onContinue: () {},
+      onDownload: () {},
+      onMarkAllRead: () {},
+    );
+  }
+
+  /// ⚠️ **A SWITCH ON THREE FACTS, because the offer depends on all of them** — and B12's
+  /// precondition is the interesting one: without a `Novel` there is nothing to add, so the
+  /// row says the reader is reading and stops there.
+  MembershipSlot _membershipFor({
+    required bool inLibrary,
+    required Novel? novel,
+    required AppLocalizations copy,
+  }) {
+    if (!inLibrary) {
+      return novel == null ? const OfferReadFromStart() : const OfferToAdd();
+    }
+    return const OfferReadFromStart();
+  }
+
+  /// B12's one write, delegated to `2-5` so B40's question fires before anything is stored.
+  Future<void> _addToLibrary(
+    BuildContext context,
+    WidgetRef ref,
+    Novel? novel,
+  ) async {
+    final Novel? target = novel;
+    if (target == null) return;
+    await addWithSimilarTitleCheck(context, ref, target);
   }
 }
 

@@ -46,6 +46,7 @@ import 'package:lumen_tale/app/router/app_routes.dart';
 import 'package:lumen_tale/app/router/placeholder_screen.dart';
 import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/shell/app_shell.dart';
+import 'package:lumen_tale/domain/sources/models/novel.dart';
 
 /// The root navigator's key.
 ///
@@ -112,8 +113,29 @@ Future<Object?> openOnboarding(BuildContext context) {
 Future<Object?> openNovelDetails(
   BuildContext context, {
   required String novelId,
+
+  /// The novel, when the caller already holds one. **Optional, and it is the answer to
+  /// `Q-028`.**
+  ///
+  /// ⚠️ **THE ROUTE STILL CARRIES ONLY THE ID.** That is what makes a deep link and a
+  /// restored stack work, and neither of those has a `Novel` to hand over. So `extra` is a
+  /// *shortcut for a caller that has one*, never the only way to open the screen.
+  ///
+  /// ⚠️ **WHY THIS IS ALLOWED WHERE A `LibraryEntry` WOULD NOT BE.** `Novel` is in
+  /// `domain/sources/models/`, and `architecture.md` lets `app/` import `domain` — so `app/`
+  /// can name this type without crossing into a feature. `libraryScreenProvider` lives in
+  /// `features/library/` and could not be named here at all; that asymmetry is F-018, and it
+  /// is why this solution needed `domain` and not the repository.
+  ///
+  /// ⚠️ **WHAT THE SCREEN DOES WITH A MISSING ONE IS NOT NOTHING.** B12's button appears
+  /// exactly when the novel is NOT stored, and a deep link to an unstored novel has no
+  /// `Novel` — so the screen renders slot 1 as an offer it cannot keep. That is the honest
+  /// state, and it is recorded rather than papered over with a placeholder novel.
+  Novel? novel,
 }) {
-  return GoRouter.of(context).push(AppRoutes.novelDetailsFor(novelId));
+  return GoRouter.of(
+    context,
+  ).push(AppRoutes.novelDetailsFor(novelId), extra: novel);
 }
 
 /// Switches to the **Browse** branch, replacing its page list.

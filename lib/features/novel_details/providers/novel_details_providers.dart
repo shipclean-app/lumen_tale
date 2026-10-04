@@ -34,8 +34,11 @@ import 'package:lumen_tale/data/library/drift_chapter_list_repository.dart';
 import 'package:lumen_tale/domain/library/chapter_entry.dart';
 import 'package:lumen_tale/domain/library/chapter_list_repository.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
+import 'package:lumen_tale/domain/sources/models/novel.dart';
 import 'package:lumen_tale/features/history/history_providers.dart'
     show appDatabaseProvider;
+import 'package:lumen_tale/features/library/library_screen.dart'
+    show libraryRepositoryProvider;
 
 /// Overridden in the composition root, because it is the database.
 final chapterListRepositoryProvider = Provider<ChapterListRepository>(
@@ -66,6 +69,19 @@ final chapterListLoaderProvider =
       return (String novelId) =>
           ref.read(chapterListRepositoryProvider).fetchChapterListOnce(novelId);
     });
+
+/// The stored novel, for a screen reached without one. **`autoDispose`** — same reason as
+/// the list: one novel's row, released at the pop.
+///
+/// ⚠️ **`null` IS A NORMAL ANSWER, and it is the answer B12's button appears in.** A novel
+/// that is not kept has no stored row, which is why the catalogue hands its `Novel` over
+/// through navigation instead. See `Q-028`.
+final storedNovelProvider = FutureProvider.autoDispose.family<Novel?, String>((
+  Ref ref,
+  String novelId,
+) {
+  return ref.watch(libraryRepositoryProvider).readNovel(novelId);
+});
 
 /// What the site last said about this novel's chapter list.
 ///

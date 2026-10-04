@@ -11,6 +11,7 @@ import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
+import 'package:lumen_tale/domain/sources/models/novel.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/browse/catalogue_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
@@ -71,6 +72,10 @@ void registerScreens() {
     // source can pass it here — as a value, never as something parsed out of the path.
     (BuildContext context, GoRouterState state) => NovelDetailsScreen(
       novelId: state.pathParameters['novelId']!,
+      // ⚠️ **THE CATALOGUE'S NOVEL, WHEN IT BROUGHT ONE** — see `openNovelDetails`. A deep
+      // link has no `extra`, and that is not a failure: the screen reads the stored row
+      // instead, and a novel that is neither stored nor carried is a state it can describe.
+      novel: state.extra is Novel ? state.extra! as Novel : null,
       sourceName: '',
       currentChapterId: state.uri.queryParameters['chapter'],
     ),
