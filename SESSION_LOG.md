@@ -3249,3 +3249,98 @@ into a short chapter is the mirror image of SC-6.
 - **Do not emit a hard break eagerly.** The `<br><br>` upgrade produces a double break.
 - **Do not try to detect a broken layout in the converter.** The selector does that, and a
   guess turns a catalogue page into a short chapter.
+
+---
+
+## 2026-10-04 — Session 21: `2-3` — the atomic chapter write, and the order that IS B6
+
+### STARTED FROM
+
+`2-2` at `8daccfa`. `2-3` is what makes `2-4`'s offline reading possible: there is
+nothing to read without a file.
+
+### DECIDED
+
+- **`ChapterStore` lives in `features/downloads/domain/`, and `ChapterMarker` is TWO
+  CLOSURES rather than a database.** ADR-022's rule is about the *order* of two writes,
+  so the test has to observe that order — and a test that needs an executor to check a
+  call sequence has already lost the thing it was built to prove. The row does not assert
+  "the file exists and the mark was set"; it asserts that **the file was already complete
+  at the moment the marker was called.**
+- **The file is written first and the mark second, and that direction is what makes B6
+  expressible.** A crash between the two leaves a file **without** a mark, so the chapter
+  offers itself for download again. The reverse leaves a mark without a file and the
+  reader opens a chapter that is not there — and that state is **unreachable**, which is
+  what lets B6 be stated at all.
+- **The temporary file is in the SAME directory.** `rename()` is atomic only within one
+  filesystem; a temporary elsewhere turns the rename into a copy, and a copy is not atomic,
+  so a kill mid-copy leaves a half-written chapter the mark says is complete.
+- **The filename is built from `ordinal` and never from `number`.** `number` is `-1` when
+  unparseable and restarts per volume, so a filename from it collides across volumes: two
+  chapters, one file, one silently replaced. § 3.3 records that this reordering "was
+  already deleted once".
+- **`mkdir` is recursive.** A `novelId` is an MD5 today and could nest after a change; a
+  single-level `mkdir` fails on the first id containing a separator, and a row asserts it.
+- **`ChapterStoreException` is NOT an `AppException`.** That hierarchy is for failures the
+  UI maps to a message *by cause* (B22), and "the filesystem said no" is a cause the reader
+  has no sentence for — `errorStorageFull` is `5-3`'s to classify, and it classifies this.
+- **`ChapterStoreFailure` has three cases, and `temporaryFileMissing` is the interesting
+  one.** "A write that reports success and produces no file" is B6's *misleading success*,
+  and it gets its own case so the caller cannot go on to mark the chapter downloaded.
+- **`deleteOne` never deletes the `chapters` row**, and the interface makes that
+  impossible rather than the code merely doing it: `ChapterMarker` exposes `markDownloaded`
+  and `clearDownloaded` and nothing else. B9 requires the list to stay complete whatever its
+  length — a deleted row would lose a 10 000-chapter novel's list because one file went.
+
+### THREE SABOTAGES THAT DID NOT FAIL, and what each one actually is
+
+Recording these because "the tests caught it" is the claim, and in three cases the truth is
+more useful than the claim:
+
+- **No misleading-success check.** Removing `temp.existsSync()` changes nothing, because
+  `writeAsString` either throws or creates the file. The branch guards a **platform that
+  reports success without producing a file**, and this host is not that platform. There is
+  no row that can cover it without a fake filesystem, and the honest statement is that it
+  is a defence against an untestable platform behaviour — not a tested branch.
+- **The temporary in another directory.** The rename still succeeds, because in this
+  container both the support directory and the OS temp directory are under `/tmp` — one
+  filesystem. **The atomicity property is a property of the filesystem, not of this code**,
+  and no test here can distinguish the two. The row that *is* checkable is the one that
+  asserts the same-directory path, and it exists.
+- **The `deleteOne` sabotage only edited a comment.** That is my mistake in writing the
+  sabotage, not a gap in the tests — and it is worth naming, because it means the fourth
+  sabotage proved nothing at all.
+
+### FILES TOUCHED
+
+`lib/features/downloads/domain/chapter_store.dart` (new),
+`lib/features/downloads/data/file_chapter_store.dart` (new),
+`test/features/downloads/file_chapter_store_test.dart` (new, 16).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **815 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass`.
+
+**Sabotage, four attempted — one caught, three recorded above:**
+
+| Sabotage | Result |
+|---|---|
+| the mark is written **before** the file (ADR-022 reversed) | **2 rows fail** |
+| the misleading-success check is removed | not observable on this host |
+| the temporary lives in another directory | not observable — one filesystem here |
+| `deleteOne` deletes the `chapters` row | the sabotage only edited a comment |
+
+### NEXT SESSION SHOULD
+
+- **`2-4`** — the reader. Three local facts decide the state (mark, file, connectivity), and
+  the offline proof is the product's claim.
+- **Wire `ChapterMarker` to drift** when the first reader or queue needs it; the interface
+  exists so that wiring is one closure each way.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not swap the two writes.** The order is the rule, not a preference.
+- **Do not put the temporary in another directory.** It is the difference between a rename
+  and a copy, and a test here cannot see it.
+- **Do not delete a `chapters` row.** B9 needs the list, whatever its length.
