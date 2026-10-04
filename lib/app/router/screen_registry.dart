@@ -66,6 +66,44 @@ ScreenBuilder screenBuilderFor(String path) {
           PlaceholderScreen(screenKey: path);
 }
 
-/// Clears the registry. **Tests only** — the app registers once, at the bootstrap.
+/// Routes that live **outside** the shell: `/reader/…` and `/onboarding`.
+///
+/// ## Why a SECOND table rather than an exception in the first
+///
+/// `app/` may not import `features/`, and the reader is a feature. The same reasoning that
+/// produced [registerScreen] applies unchanged — so the reader uses the same mechanism
+/// rather than a special case inside `app_router.dart` that would be the one place in the
+/// app where a feature *is* named.
+///
+/// A separate map, not a flag on the same entry: a shell destination and a standalone route
+/// differ in what the router does around them (branches, tabs, transitions), and encoding
+/// that as a boolean on a builder would put the difference where it is easiest to forget.
+final Map<String, ScreenBuilder> _standaloneRoutes = <String, ScreenBuilder>{};
+
+/// Registers the screen that fills the standalone route at [path].
+void registerStandaloneRoute(String path, ScreenBuilder builder) {
+  _standaloneRoutes[path] = builder;
+}
+
+/// The whole standalone table, unmodifiable.
+Map<String, ScreenBuilder> get registeredStandaloneRoutes =>
+    Map<String, ScreenBuilder>.unmodifiable(_standaloneRoutes);
+
+/// The builder for the standalone route at [path], or a placeholder naming the path.
+///
+/// ⚠️ **A placeholder here costs a blank screen on the reader's most important route.**
+/// `/reader/…` is reached by `push` from four places, so an unregistered reader is a dead
+/// end rather than a visible placeholder — which is why `test/app/router/` asserts this
+/// table contains `/reader` as well as the shell's own entries.
+ScreenBuilder standaloneRouteBuilderFor(String path) {
+  return _standaloneRoutes[path] ??
+      (BuildContext context, GoRouterState state) =>
+          PlaceholderScreen(screenKey: path);
+}
+
+/// Clears both tables. **Tests only** — the app registers once, at the bootstrap.
 @visibleForTesting
-void clearRegisteredScreens() => _screens.clear();
+void clearRegisteredScreens() {
+  _screens.clear();
+  _standaloneRoutes.clear();
+}

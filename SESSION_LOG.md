@@ -3344,3 +3344,141 @@ more useful than the claim:
 - **Do not put the temporary in another directory.** It is the difference between a rename
   and a copy, and a test here cannot see it.
 - **Do not delete a `chapters` row.** B9 needs the list, whatever its length.
+
+---
+
+## 2026-10-04 — Session 22: `2-4` — the reader, and the guarantee that is a type
+
+### STARTED FROM
+
+`2-3` at `ef91360`. `2-4` is the product's proof: a stored chapter, opened, with no network.
+
+### DECIDED
+
+- **`ChapterDocument` is a sealed class with nine cases, and only ONE of them is an error.**
+  Everything else is a state of the world with its own sentence. `ChapterRowGone` gets a
+  render and a way back rather than an `ErrorState`, because an `ErrorState` reports *this
+  app* as broken for a link the reader followed.
+- **"Not stored, online" and "not stored, offline" are two TYPES, not one with a flag.**
+  B24 asks for the one sentence naming both facts, and a `bool offline` would render
+  identically at every call site that forgot to check it. A row asserts the two are different
+  `runtimeType`s.
+- **`downloadedAt` is the ONLY discriminator for "not stored"**, and the row asserts the disk
+  is **not touched** when the mark is null — even when a readable file is sitting there. That
+  file-without-mark is exactly what ADR-022 says a crash leaves, and treating it as readable
+  would reopen the defect the mark was introduced to remove. A sabotage that probes the disk
+  first fails that row.
+- **`utf8.decode` is STRICT.** `allowMalformed: true` would put a `U+FFFD` in the prose that
+  the reader cannot tell from a real character, making a truncated file *look* readable — B6
+  broken by a flag that reads as robustness.
+- **`number == -1` becomes `null`, and `0` stays `0`.** B10: an extra, an omake and an
+  author's note carry zero. A sabotage that maps `< 0` to `0` fails the row.
+- **The ARB placeholder for the number is a `String`, not a number.** `chapters.number` is a
+  `RealColumn`, so `12` arrives as `12.0` and an ICU `{number}` bound to a `double` renders
+  **"Chapter 12.0"** — a decimal place the site never printed. Found by a row that asserted
+  `Chapter 12` and got `Chapter 12.0`. The formatting lives in Dart
+  (`formatChapterNumber`), where a whole value can drop its fraction.
+- **An unparseable number shows an EM DASH, not an absent line.** Omitting the line would say
+  "this chapter has no number", which is a different claim from "the site could not tell me
+  this chapter's number" (rule 9).
+- **`looksLikeMarkdown` is a GUARD, deliberately coarse, with its blind spot stated.** It asks
+  "does this look like HTML" over the first 512 characters — not "does this parse as
+  Markdown", because a parser on every read is the work `2-2` already did once at write time.
+  A chapter about HTML showing a tag in a code block past the probe length passes; that is the
+  chosen failure, because a refused chapter is visible and the opposite is silent.
+- **The ceiling is checked on the directory entry, before reading.** A decoder handed a file
+  the size of a video exhausts the heap, and the failure arrives half way through a chapter.
+- **`readChapter` takes `chapterId` and `hasConnection`, and NOTHING ELSE.** `2-3` names a
+  file after the row's ordinal, so passing `ordinal` in would let a caller open chapter A's
+  file under chapter B's ordinal: wrong prose, correct-looking data, no error. The two are
+  derived from the row, and the URL therefore carries no ordinal — a row asserts
+  `AppRoutes.reader` has no `ordinal` and no `?o`.
+- **The position is written from `notification.metrics`, not from a `ScrollController`.** The
+  first version held a controller and read `controller.position` — and **silently wrote
+  nothing**, because the controller was never attached to the list it was reading about. Two
+  defects in one line: a `hasClients` guard was *hiding* the mistake, and nothing in the type
+  said which scrollable was meant. `ScrollNotification.metrics` is the scroller that produced
+  the notification, so there is no second thing to keep in step.
+- **The settle filter is `ScrollEndNotification` and an idle `UserScrollNotification`.** A row
+  holds a gesture open across 600 ms — three debounce periods — and asserts nothing was
+  written. A sabotage that writes on every notification fails it.
+- **B13's "once" is a `OnceGate`, not a `bool` on the `State`.** See the sabotage table: the
+  `bool` version could not be tested at all, because no rebuild of `ReaderScreen.build` can be
+  provoked without also replacing the `ConsumerState` that holds the flag. The gate has no
+  widget, no container and no lifecycle; a row drives it directly. Its flag flips **before**
+  the action, so a throwing mark is still spent.
+- **`/reader` registers in a STANDALONE table, and `registerScreens()` is a function.** The
+  reader is outside the shell (no tab bar, no transition), and it is reached by `push` from
+  four places — so an unregistered reader is a route that opens nothing, and nothing in a
+  smoke test says so. Extracting the registrations out of `main()` is what makes that
+  assertable.
+
+### THE TWO SABOTAGES THAT DID NOT FAIL, AND WHAT EACH ONE WAS
+
+- **Removing the once-guard on `markOpened` passed every screen row.** No rebuild of
+  `ReaderScreen.build` is reachable from a test without replacing the state that holds the
+  flag. That is why the gate is now its own class with its own rows; the second attempt at the
+  same sabotage (flipping the flag *after* the action) is caught by *a row that did not
+  exist*.
+- **Swapping the corrupt-I/O button's callback for a download passed, twice.** The label and
+  the action were two expressions of one rule — `reason == unreadableIo ? Retry : Download`
+  written separately — so changing one left a button reading **Retry** that performed a
+  download. `_corruptPrompt` now derives title, label and callback from **one** `switch`
+  returning one triple, which makes the disagreement unrepresentable, and a row asserts the
+  **action** (a retry re-reads; a download does not) rather than the word.
+
+### FILES TOUCHED
+
+`lib/domain/reader/chapter_document.dart` (new),
+`lib/domain/reader/chapter_reader_repository.dart` (new),
+`lib/data/reader/chapter_row.dart` (new),
+`lib/data/reader/local_chapter_reader_repository.dart` (new),
+`lib/features/reader/reader_providers.dart`,
+`lib/features/reader/mark_opened_once.dart` (new),
+`lib/features/reader/reader_screen.dart` (new),
+`lib/features/reader/widgets/chapter_prose.dart` (new),
+`lib/features/reader/widgets/reader_states.dart` (new),
+`lib/app/router/screen_registry.dart`, `lib/app/router/app_router.dart`, `lib/main.dart`,
+both ARB files + regenerated l10n;
+`test/data/reader/local_chapter_reader_repository_test.dart` (new, 22),
+`test/domain/reader/local_only_contract_test.dart` (new, 6),
+`test/features/reader/reader_screen_test.dart` (new, 23),
+`test/app/router/app_router_test.dart` (+3).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **869 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+**Sabotage, seven, all caught:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| the position is written on every notification, not at a settle | *a finger still down writes NOTHING* |
+| `markOpened` has no once-guard | **2 rows** (via `OnceGate`) |
+| the once-flag flips AFTER the action, so a throw re-arms it | *a THROWING action is still spent* |
+| utf8 decoded lossily | *invalid utf-8 is truncatedUtf8* |
+| `number == -1` collapses to `0` | *`-1` becomes null, and NEVER 0* |
+| the disk is probed BEFORE the mark is read | *not stored, disk untouched* |
+| the HTML guard is a no-op | **3 rows** |
+| a corrupt I/O failure downloads instead of retrying | *the I/O action RE-READS* |
+
+### NEXT SESSION SHOULD
+
+- **`2-7`** — the measurement column, the continuous scroll between chapters, and the
+  no-clipping guarantee. `2-4` supplies the content and the states; `2-7` supplies the gesture
+  and the measurement, and it is where `contentHeight` starts being used.
+- **Wire `ChapterMarker` and `markOpened` to drift.** `ChapterMarker` is two closures and
+  `markOpened` is one; both exist to be closed by whoever holds the executor.
+- **`2-8`** — reader display settings; `3-7`'s first row currently points at a placeholder.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not read the position from a controller that is not the scroller being scrolled.** It
+  failed silently, and a `hasClients` guard turned a bug into nothing at all.
+- **Do not let the reader fetch.** The guarantee is structural: no `dio`, no `HttpClient`, no
+  `SourceManager` in `lib/domain/reader`, and a row greps for all three and counts zero
+  requests in both connectivity configurations.
+- **Do not collapse "not downloaded" and "offline" into one state.** Each alone leaves the
+  reader unsure whether the button works.
+- **Do not express one rule twice** — the word and the action of a button are one `switch`.

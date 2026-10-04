@@ -524,4 +524,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsButtonCancel => 'Cancel';
+
+  @override
+  String get readerOfflineBanner => 'You are reading your downloads';
+
+  @override
+  String get readerNotStoredTitle => 'This chapter is not downloaded';
+
+  @override
+  String get readerNotStoredBody =>
+      'Only chapters already on this phone can be read here.';
+
+  @override
+  String get readerOfflineAbsentTitle =>
+      'This chapter is not downloaded and there is no connection';
+
+  @override
+  String get readerOfflineAbsentBody =>
+      'Both are needed: the chapter has to be downloaded once, and downloading needs a connection.';
+
+  @override
+  String get readerFileMissingTitle =>
+      'This chapter had been downloaded, but its text is no longer on this phone';
+
+  @override
+  String get readerFileMissingBody =>
+      'The download succeeded. The file is what is missing.';
+
+  @override
+  String get readerFileEmptyTitle =>
+      'This chapter\'s recording was interrupted';
+
+  @override
+  String get readerFileEmptyBody =>
+      'Nothing was saved, so there is nothing to read.';
+
+  @override
+  String get readerFileCorruptNotMarkdown =>
+      'This chapter\'s saved copy is not readable';
+
+  @override
+  String get readerFileCorruptTruncated =>
+      'This chapter\'s saved copy ends mid-sentence';
+
+  @override
+  String get readerFileCorruptUnreadableIo =>
+      'This chapter\'s file could not be opened';
+
+  @override
+  String get readerRowGoneTitle =>
+      'This chapter no longer exists in your library';
+
+  @override
+  String get readerRowGoneBody =>
+      'The link may have been saved before the chapter was removed.';
+
+  @override
+  String get readerLoadFailedTitle => 'This chapter could not be opened';
+
+  @override
+  String get readerLoadFailedBody =>
+      'The app does not know whether the file is intact.';
+
+  @override
+  String get readerActionDownloadChapter => 'Download this chapter';
+
+  @override
+  String get readerActionDownloadAgain => 'Download again';
+
+  @override
+  String get readerActionOpenDownloads => 'Open downloads';
+
+  @override
+  String get readerActionBack => 'Back';
+
+  @override
+  String get readerActionRetry => 'Retry';
+
+  @override
+  String get readerDownloadNeedsConnection => 'Downloading needs a connection';
+
+  @override
+  String readerChapterNumber(String number) {
+    return 'Chapter $number';
+  }
+
+  @override
+  String get readerChapterNumberUnreadable => 'Chapter';
 }

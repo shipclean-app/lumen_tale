@@ -528,4 +528,92 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsButtonCancel => 'Annuler';
+
+  @override
+  String get readerOfflineBanner => 'Vous lisez vos téléchargements';
+
+  @override
+  String get readerNotStoredTitle => 'Ce chapitre n\'est pas téléchargé';
+
+  @override
+  String get readerNotStoredBody =>
+      'Seuls les chapitres déjà présents sur ce téléphone peuvent être lus ici.';
+
+  @override
+  String get readerOfflineAbsentTitle =>
+      'Ce chapitre n\'est pas téléchargé et il n\'y a pas de connexion';
+
+  @override
+  String get readerOfflineAbsentBody =>
+      'Il faut les deux : le chapitre doit avoir été téléchargé une fois, et un téléchargement demande une connexion.';
+
+  @override
+  String get readerFileMissingTitle =>
+      'Ce chapitre avait été téléchargé, mais son texte n\'est plus sur ce téléphone';
+
+  @override
+  String get readerFileMissingBody =>
+      'Le téléchargement a réussi. C\'est le fichier qui manque.';
+
+  @override
+  String get readerFileEmptyTitle =>
+      'L\'enregistrement de ce chapitre s\'est interrompu';
+
+  @override
+  String get readerFileEmptyBody =>
+      'Rien n\'a été enregistré, donc il n\'y a rien à lire.';
+
+  @override
+  String get readerFileCorruptNotMarkdown =>
+      'La copie enregistrée de ce chapitre est illisible';
+
+  @override
+  String get readerFileCorruptTruncated =>
+      'La copie enregistrée de ce chapitre s\'arrête au milieu d\'une phrase';
+
+  @override
+  String get readerFileCorruptUnreadableIo =>
+      'Le fichier de ce chapitre n\'a pas pu être ouvert';
+
+  @override
+  String get readerRowGoneTitle =>
+      'Ce chapitre n\'existe plus dans votre bibliothèque';
+
+  @override
+  String get readerRowGoneBody =>
+      'Le lien a peut-être été enregistré avant le retrait du chapitre.';
+
+  @override
+  String get readerLoadFailedTitle => 'Ce chapitre n\'a pas pu être ouvert';
+
+  @override
+  String get readerLoadFailedBody =>
+      'L\'application ne sait pas si le fichier est intact.';
+
+  @override
+  String get readerActionDownloadChapter => 'Télécharger ce chapitre';
+
+  @override
+  String get readerActionDownloadAgain => 'Télécharger à nouveau';
+
+  @override
+  String get readerActionOpenDownloads => 'Ouvrir les téléchargements';
+
+  @override
+  String get readerActionBack => 'Revenir';
+
+  @override
+  String get readerActionRetry => 'Réessayer';
+
+  @override
+  String get readerDownloadNeedsConnection =>
+      'Télécharger nécessite une connexion';
+
+  @override
+  String readerChapterNumber(String number) {
+    return 'Chapitre $number';
+  }
+
+  @override
+  String get readerChapterNumberUnreadable => 'Chapitre';
 }

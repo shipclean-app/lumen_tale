@@ -160,15 +160,20 @@ GoRouter _build() {
       // transition.
       GoRoute(
         path: AppRoutes.reader,
+        // ⚠️ **A builder from the standalone registry, and never a named feature screen.**
+        // `app/` may not import `features/`; the composition root registers and this table
+        // resolves. `NoTransitionPage` is kept for the reason in the comment above.
         pageBuilder: (BuildContext context, GoRouterState state) =>
-            const NoTransitionPage<void>(
-              child: PlaceholderScreen(screenKey: AppRoutes.reader),
+            NoTransitionPage<void>(
+              child: standaloneRouteBuilderFor(AppRoutes.reader)(
+                context,
+                state,
+              ),
             ),
       ),
       GoRoute(
         path: AppRoutes.onboarding,
-        builder: (BuildContext context, GoRouterState state) =>
-            const PlaceholderScreen(screenKey: AppRoutes.onboarding),
+        builder: standaloneRouteBuilderFor(AppRoutes.onboarding),
       ),
     ],
 

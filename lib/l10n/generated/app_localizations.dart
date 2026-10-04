@@ -955,6 +955,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get settingsButtonCancel;
+
+  /// ⚠️ **One ephemeral line, on the FIRST offline display of a session only.** § 3.5 forbids a banner, a gradient and any 'OFFLINE MODE' — this is a sentence that appears once and does not persist, because a persistent badge would be the third thing competing with the prose for the reader's attention.
+  ///
+  /// In en, this message translates to:
+  /// **'You are reading your downloads'**
+  String get readerOfflineBanner;
+
+  /// ⚠️ **Empty-data, NOT an empty screen.** US-05: the reader must be able to SEE that 'not downloaded' differs from 'empty' and from 'failed'.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter is not downloaded'**
+  String get readerNotStoredTitle;
+
+  /// The constraint this screen enforces: the reader never fetches. § 3.1's 'ChapterNotStored' branch emits an intent and 3-3 executes it.
+  ///
+  /// In en, this message translates to:
+  /// **'Only chapters already on this phone can be read here.'**
+  String get readerNotStoredBody;
+
+  /// ⚠️ **BOTH facts in one sentence, and each is on its own insufficient.** 'Not downloaded' leaves the reader wondering whether the button will work; 'offline' leaves them wondering whether the chapter is theirs. B24 asks for the sentence that names both.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter is not downloaded and there is no connection'**
+  String get readerOfflineAbsentTitle;
+
+  /// No description provided for @readerOfflineAbsentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Both are needed: the chapter has to be downloaded once, and downloading needs a connection.'**
+  String get readerOfflineAbsentBody;
+
+  /// No description provided for @readerFileMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter had been downloaded, but its text is no longer on this phone'**
+  String get readerFileMissingTitle;
+
+  /// ⚠️ **Says the DOWNLOAD SUCCEEDED and the FILE is missing.** `architecture.md` § 8 names this divergence. The other phrasing — 'this chapter is unavailable' — would tell the reader the download failed, which is false, and a reader who re-downloads on that sentence is doing the right thing for the wrong reason.
+  ///
+  /// In en, this message translates to:
+  /// **'The download succeeded. The file is what is missing.'**
+  String get readerFileMissingBody;
+
+  /// ⚠️ **Distinct from 'corrupt'.** Zero bytes is the signature of an INTERRUPTED write, so the sentence is about the recording and the action is a re-download.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter\'s recording was interrupted'**
+  String get readerFileEmptyTitle;
+
+  /// No description provided for @readerFileEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was saved, so there is nothing to read.'**
+  String get readerFileEmptyBody;
+
+  /// B18 / E18 — the file is there and holds no readable prose. The only action is to download it again.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter\'s saved copy is not readable'**
+  String get readerFileCorruptNotMarkdown;
+
+  /// A truncation mid-character: the final file was still renamed although the write was cut short.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter\'s saved copy ends mid-sentence'**
+  String get readerFileCorruptTruncated;
+
+  /// ⚠️ **The action here is RETRY, not re-download.** The copy may be intact and the filesystem merely refused; offering a re-download would suggest the file is at fault when it may not be.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter\'s file could not be opened'**
+  String get readerFileCorruptUnreadableIo;
+
+  /// ⚠️ **Not a failure.** A stale identifier is a state of the world — a deep link followed earlier, or a navigation stack restored. It gets its own render and a way back, never an ErrorState, because an ErrorState would report THIS APP as broken for a link the reader followed.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter no longer exists in your library'**
+  String get readerRowGoneTitle;
+
+  /// No description provided for @readerRowGoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The link may have been saved before the chapter was removed.'**
+  String get readerRowGoneBody;
+
+  /// ⚠️ **'Could not be opened', not 'is corrupt'.** This is the absence of a conclusion: the app could not find out which of the other states it is. Saying 'corrupt' would be a guess, and the guess would pick the wrong action.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter could not be opened'**
+  String get readerLoadFailedTitle;
+
+  /// No description provided for @readerLoadFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The app does not know whether the file is intact.'**
+  String get readerLoadFailedBody;
+
+  /// No description provided for @readerActionDownloadChapter.
+  ///
+  /// In en, this message translates to:
+  /// **'Download this chapter'**
+  String get readerActionDownloadChapter;
+
+  /// No description provided for @readerActionDownloadAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Download again'**
+  String get readerActionDownloadAgain;
+
+  /// No description provided for @readerActionOpenDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Open downloads'**
+  String get readerActionOpenDownloads;
+
+  /// No description provided for @readerActionBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get readerActionBack;
+
+  /// No description provided for @readerActionRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get readerActionRetry;
+
+  /// Shown UNDER the disabled primary action (§ 3.5), never as a replacement for it. A disabled button with no reason is a button the reader assumes is broken.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading needs a connection'**
+  String get readerDownloadNeedsConnection;
+
+  /// ⚠️ **The placeholder is a `String`, not a number, and that is load-bearing.** `chapters.number` is a `RealColumn` (a `double`), and an ICU `{number}` bound to a double renders "Chapter 12.0" — which asserts a decimal place the site never printed. The formatting lives in Dart (`formatChapterNumber`), where a whole value drops its fraction and a fractional one keeps it. Rule 9 is about *displaying* the site's number, and 12.0 is not what the site wrote.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {number}'**
+  String readerChapterNumber(String number);
+
+  /// The word used when the site's number could not be parsed. Not a number and not an ellipsis: the reader is told the chapter has no number rather than shown a `0`.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter'**
+  String get readerChapterNumberUnreadable;
 }
 
 class _AppLocalizationsDelegate

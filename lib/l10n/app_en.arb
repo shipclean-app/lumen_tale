@@ -633,5 +633,76 @@
   },
   "@settingsLanguageFrench": {
     "description": "⚠️ **Identical in the English file**, for the same reason. A value that changes with the ARB would be the app naming the phone's language in the app's language, which is a different claim."
+  },
+  "readerOfflineBanner": "You are reading your downloads",
+  "@readerOfflineBanner": {
+    "description": "⚠️ **One ephemeral line, on the FIRST offline display of a session only.** § 3.5 forbids a banner, a gradient and any 'OFFLINE MODE' — this is a sentence that appears once and does not persist, because a persistent badge would be the third thing competing with the prose for the reader's attention."
+  },
+  "readerNotStoredTitle": "This chapter is not downloaded",
+  "@readerNotStoredTitle": {
+    "description": "⚠️ **Empty-data, NOT an empty screen.** US-05: the reader must be able to SEE that 'not downloaded' differs from 'empty' and from 'failed'."
+  },
+  "readerNotStoredBody": "Only chapters already on this phone can be read here.",
+  "@readerNotStoredBody": {
+    "description": "The constraint this screen enforces: the reader never fetches. § 3.1's 'ChapterNotStored' branch emits an intent and 3-3 executes it."
+  },
+  "readerOfflineAbsentTitle": "This chapter is not downloaded and there is no connection",
+  "@readerOfflineAbsentTitle": {
+    "description": "⚠️ **BOTH facts in one sentence, and each is on its own insufficient.** 'Not downloaded' leaves the reader wondering whether the button will work; 'offline' leaves them wondering whether the chapter is theirs. B24 asks for the sentence that names both."
+  },
+  "readerOfflineAbsentBody": "Both are needed: the chapter has to be downloaded once, and downloading needs a connection.",
+  "readerFileMissingTitle": "This chapter had been downloaded, but its text is no longer on this phone",
+  "readerFileMissingBody": "The download succeeded. The file is what is missing.",
+  "@readerFileMissingBody": {
+    "description": "⚠️ **Says the DOWNLOAD SUCCEEDED and the FILE is missing.** `architecture.md` § 8 names this divergence. The other phrasing — 'this chapter is unavailable' — would tell the reader the download failed, which is false, and a reader who re-downloads on that sentence is doing the right thing for the wrong reason."
+  },
+  "readerFileEmptyTitle": "This chapter's recording was interrupted",
+  "@readerFileEmptyTitle": {
+    "description": "⚠️ **Distinct from 'corrupt'.** Zero bytes is the signature of an INTERRUPTED write, so the sentence is about the recording and the action is a re-download."
+  },
+  "readerFileEmptyBody": "Nothing was saved, so there is nothing to read.",
+  "readerFileCorruptNotMarkdown": "This chapter's saved copy is not readable",
+  "@readerFileCorruptNotMarkdown": {
+    "description": "B18 / E18 — the file is there and holds no readable prose. The only action is to download it again."
+  },
+  "readerFileCorruptTruncated": "This chapter's saved copy ends mid-sentence",
+  "@readerFileCorruptTruncated": {
+    "description": "A truncation mid-character: the final file was still renamed although the write was cut short."
+  },
+  "readerFileCorruptUnreadableIo": "This chapter's file could not be opened",
+  "@readerFileCorruptUnreadableIo": {
+    "description": "⚠️ **The action here is RETRY, not re-download.** The copy may be intact and the filesystem merely refused; offering a re-download would suggest the file is at fault when it may not be."
+  },
+  "readerRowGoneTitle": "This chapter no longer exists in your library",
+  "@readerRowGoneTitle": {
+    "description": "⚠️ **Not a failure.** A stale identifier is a state of the world — a deep link followed earlier, or a navigation stack restored. It gets its own render and a way back, never an ErrorState, because an ErrorState would report THIS APP as broken for a link the reader followed."
+  },
+  "readerRowGoneBody": "The link may have been saved before the chapter was removed.",
+  "readerLoadFailedTitle": "This chapter could not be opened",
+  "@readerLoadFailedTitle": {
+    "description": "⚠️ **'Could not be opened', not 'is corrupt'.** This is the absence of a conclusion: the app could not find out which of the other states it is. Saying 'corrupt' would be a guess, and the guess would pick the wrong action."
+  },
+  "readerLoadFailedBody": "The app does not know whether the file is intact.",
+  "readerActionDownloadChapter": "Download this chapter",
+  "readerActionDownloadAgain": "Download again",
+  "readerActionOpenDownloads": "Open downloads",
+  "readerActionBack": "Back",
+  "readerActionRetry": "Retry",
+  "readerDownloadNeedsConnection": "Downloading needs a connection",
+  "@readerDownloadNeedsConnection": {
+    "description": "Shown UNDER the disabled primary action (§ 3.5), never as a replacement for it. A disabled button with no reason is a button the reader assumes is broken."
+  },
+  "readerChapterNumber": "Chapter {number}",
+  "@readerChapterNumber": {
+    "description": "⚠️ **The placeholder is a `String`, not a number, and that is load-bearing.** `chapters.number` is a `RealColumn` (a `double`), and an ICU `{number}` bound to a double renders \"Chapter 12.0\" — which asserts a decimal place the site never printed. The formatting lives in Dart (`formatChapterNumber`), where a whole value drops its fraction and a fractional one keeps it. Rule 9 is about *displaying* the site's number, and 12.0 is not what the site wrote.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "readerChapterNumberUnreadable": "Chapter",
+  "@readerChapterNumberUnreadable": {
+    "description": "The word used when the site's number could not be parsed. Not a number and not an ellipsis: the reader is told the chapter has no number rather than shown a `0`."
   }
 }

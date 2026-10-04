@@ -16,9 +16,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart' show GoRouterState;
 import 'package:lumen_tale/app/router/app_nav_destinations.dart';
 import 'package:lumen_tale/app/router/app_router.dart';
 import 'package:lumen_tale/app/router/app_routes.dart';
+import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 import 'package:lumen_tale/main.dart';
 
@@ -352,6 +354,49 @@ void main() {
         ], supported),
         const Locale('fr'),
       );
+    });
+  });
+
+  group('the standalone registry — routes outside the shell', () {
+    test('⚠️ /reader IS registered, and a placeholder there is a dead end', () {
+      // ⚠️ **The reader is reached by `push` from four places** — the library row, the
+      // novel's details, the reader's own chapter sheet and history. An unregistered reader
+      // is therefore not a visible placeholder but a route that opens nothing, and nothing
+      // in a smoke test would say so: every other screen in the app is reached by `go` from
+      // a tab, and `go` to a missing route rebuilds the shell.
+      clearRegisteredScreens();
+      registerScreens();
+
+      expect(registeredStandaloneRoutes, contains(AppRoutes.reader));
+      expect(registeredScreens, contains(AppRoutes.history));
+    });
+
+    test('⚠️ the reader path carries BOTH ids and no ordinal', () {
+      // ⚠️ **`ordinal` is deliberately absent.** `2-3` names a stored file after the row's
+      // ordinal, and the repository reads that from the row — so a URL carrying an ordinal
+      // would be a second copy of a fact with a second chance to be wrong, and a wrong one
+      // opens a *different chapter's* prose with no error anywhere.
+      expect(AppRoutes.reader, '/reader/:novelId/:chapterId');
+      expect(AppRoutes.reader, isNot(contains('ordinal')));
+      expect(AppRoutes.reader, isNot(contains('?o')));
+      expect(AppRoutes.readerFor('n1', 'c1'), '/reader/n1/c1');
+    });
+
+    test('registration replaces rather than duplicating', () {
+      // ⚠️ Two answers to one route, and the second is the one nobody reviewed.
+      registerStandaloneRoute(
+        '/x',
+        (BuildContext _, GoRouterState _) => const SizedBox.shrink(),
+      );
+      registerStandaloneRoute(
+        '/x',
+        (BuildContext _, GoRouterState _) => const SizedBox.shrink(),
+      );
+      expect(
+        registeredStandaloneRoutes.keys.where((String k) => k == '/x'),
+        hasLength(1),
+      );
+      clearRegisteredScreens();
     });
   });
 }

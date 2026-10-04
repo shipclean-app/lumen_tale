@@ -12,6 +12,7 @@ import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
+import 'package:lumen_tale/features/reader/reader_screen.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,20 +40,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// - `MissingPluginException` is **not** caught. An app that cannot persist a
 ///   setting must not pretend it can; swallowing this would give the reader a
 ///   switch that silently does nothing.
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  // ⚠️ **Registration, and only registration.**
-  //
-  // `architecture.md` § 3.1a forbids `app/` importing a feature, while saying a screen
-  // *is* a route. The registry is the way out, and **this file is the composition
-  // root** — the one place whose job is to know about every layer at once. It already
-  // overrides three providers drawn from three layers; the screens join that list.
-  //
-  // A destination with no entry renders a placeholder rather than throwing, so a slice
-  // that lands without registering is visible in one second of running the app.
+/// Registers every screen the router can build, by **path**.
+///
+/// ⚠️ **Extracted from `main()` so it is testable**, and the extraction is the reason the
+/// composition root is worth having as a function rather than as code inside `runApp`'s
+/// neighbourhood: a registration that can only happen by running the app cannot be asserted,
+/// and an unassertable registration is how `/reader` ends up a route that opens nothing.
+///
+/// `app/` still imports no `features/` **package** — these are function bodies reached
+/// through the registry, and `test/app/shell/app_shell_test.dart` greps the import lines.
+void registerScreens() {
   registerScreen(
     AppRoutes.history,
     (BuildContext context, GoRouterState state) => const HistoryScreen(),
@@ -65,6 +62,40 @@ Future<void> main() async {
     AppRoutes.settings,
     (BuildContext context, GoRouterState state) => const SettingsScreen(),
   );
+  // ⚠️ **The reader registers as a STANDALONE route, not a screen.**
+  //
+  // `/reader/:novelId/:chapterId` is outside the shell — no tab bar, no transition — so it
+  // is resolved through `standaloneRouteBuilderFor` and reaches `app/` by no other name
+  // than its path. The same rule as every other registration above, applied to the one
+  // route that is not a shell destination.
+  registerStandaloneRoute(
+    AppRoutes.reader,
+    (BuildContext context, GoRouterState state) =>
+        ReaderScreen(chapterId: state.pathParameters['chapterId']!),
+  );
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  // ⚠️ **Registration, and only registration.**
+  //
+  // `architecture.md` § 3.1a forbids `app/` importing a feature, while saying a screen
+  // *is* a route. The registry is the way out, and **this file is the composition root** —
+  // the one place whose job is to know about every layer at once. It already overrides
+  // three providers drawn from three layers; the screens join that list.
+  //
+  // A destination with no entry renders a placeholder rather than throwing, so a slice that
+  // lands without registering is visible in one second of running the app — except for the
+  // reader, which is reached by `push` from four places, and which `registerScreens` is
+  // extracted so a row can assert it.
+  registerScreens();
+
+  // ⚠️ **Registration, and only registration.** See `registerScreens` above for why it is
+  // a function rather than code in here.
+  registerScreens();
 
   runApp(
     ProviderScope(
