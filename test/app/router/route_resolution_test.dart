@@ -212,6 +212,34 @@ void main() {
       );
     });
 
+    test('⚠️ /onboarding is STANDALONE and REGISTERED — `3-4`, E11', () {
+      // ⚠️ **THE ROW THAT WOULD HAVE CAUGHT A FIRST-RUN READER ON A PLACEHOLDER.**
+      //
+      // `/onboarding` is the target of the cold-start **redirect**, and the redirect fires
+      // *before* any screen is built — so an unregistered route here is not "a gap someone
+      // will notice", it is a first-run reader landing on a page that says `/onboarding`.
+      //
+      // Nothing else in this file could see it: `standaloneRouteBuilderFor` synthesises a
+      // builder for an absent path (see the rows above), so the placeholder row passes, and
+      // the registration row above would too if it only consulted `registeredScreens` —
+      // which is a *different* table for a *different* reason.
+      expect(
+        registeredStandaloneRoutes,
+        contains(AppRoutes.onboarding),
+        reason:
+            'the cold-start redirect targets /onboarding; without a standalone '
+            'registration it renders a PlaceholderScreen on the one screen E11 makes '
+            'mandatory before an uninstall',
+      );
+      expect(
+        registeredScreens,
+        isNot(contains(AppRoutes.onboarding)),
+        reason:
+            'onboarding is outside the shell; registering it as a shell screen as well would '
+            'give it two routes and only one of them is the real destination',
+      );
+    });
+
     test('⚠️ the reader is STANDALONE, and resolves through its own table', () {
       expect(
         registeredStandaloneRoutes,

@@ -17,7 +17,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:lumen_tale/app/theme/reader_scale.dart';
 import 'package:lumen_tale/domain/reader/chapter_document.dart';
+import 'package:lumen_tale/features/reader/domain/reader_typography.dart';
 import 'package:lumen_tale/features/reader/reader_layout.dart';
 import 'package:lumen_tale/features/reader/virtualised_chapter_prose.dart';
 
@@ -30,6 +32,17 @@ final class FixedAdvance implements AdvanceMeasurer {
   @override
   double averageAdvanceOf(String sample, double fontSize) => advance;
 }
+
+/// The prose at the design's default step, for the rows that are about the COLUMN and not
+/// about the type.
+///
+/// ⚠️ **Added by `2-8`, which made the prose a required parameter.** B27 makes the chosen
+/// step an input to the Markdown sheet — otherwise the sheet cannot re-render the chapter on
+/// the frame the reader taps — and a parameter with a default would let a caller silently
+/// render a chapter at `md` while the reader is at `xxl`. These rows' assertions are
+/// unchanged: they are about virtualisation and the measure, not about typography.
+ReaderProse proseAt(ReaderTextScale step) =>
+    ReaderProse(step: step, style: resolveProse(step, TextScaler.noScaling));
 
 ReaderLayout layoutWith(double advance) {
   return ReaderLayout(
@@ -182,6 +195,7 @@ void main() {
               500,
               'A short chapter.\n\nA second paragraph.',
             ),
+            prose: proseAt(ReaderTextScale.md),
             layout: layoutWith(9),
           ),
         ),
@@ -201,6 +215,7 @@ void main() {
         _host(
           ChapterProseColumn(
             document: chapterWith(markdown.length, markdown),
+            prose: proseAt(ReaderTextScale.md),
             layout: layoutWith(9),
           ),
         ),
@@ -226,6 +241,7 @@ void main() {
         _host(
           ChapterProseColumn(
             document: chapterWith(markdown.length, markdown),
+            prose: proseAt(ReaderTextScale.md),
             layout: layoutWith(9),
           ),
         ),

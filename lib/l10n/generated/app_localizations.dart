@@ -956,6 +956,60 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get settingsButtonCancel;
 
+  /// B7. The app's own name, as a `--text-overline` kicker. Identical in both languages — a product name is not translated, and translating it would make step 1 say something false about which app this is.
+  ///
+  /// In en, this message translates to:
+  /// **'LUMEN TALE'**
+  String get onboardingStep1Kicker;
+
+  /// B7, and the ONLY `--text-h1` in the app (31/38 at 700). The one thing a reader cannot guess: offline reading is announced nowhere in this product, on purpose. `onboarding.md` § 2: "A first-run screen that renders its promise in body text has already decided it is not the point of the app."
+  ///
+  /// In en, this message translates to:
+  /// **'It reads with no signal.'**
+  String get onboardingStep1Headline;
+
+  /// B7 in full, plus B4 and B29 in one clause: "there is no account, no server, and nothing is sent anywhere". A reader who was lent this file is looking for a sign-in wall, and finding none is worth saying out loud. TWO SENTENCES IN BOTH LANGUAGES, and the count is asserted — this is not a place a compressed translation is acceptable.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a novel here once and it opens with the connection switched off — on a train, on a plane, with no data used. Nothing is uploaded: there is no account, no server, and nothing is sent anywhere.'**
+  String get onboardingStep1Body;
+
+  /// E11. Uppercase, `--text-overline`. Distinct from step 1's kicker on purpose: `onboarding.md` § 7 requires step position to be legible with no colour at all, so the two kickers must not be the same word.
+  ///
+  /// In en, this message translates to:
+  /// **'BEFORE YOU START'**
+  String get onboardingStep2Kicker;
+
+  /// E11. `--text-h2` 25/32 at 700 — one step below the promise, because the hierarchy is part of the argument: the screen's biggest words belong to what it is selling, and what it owes the reader is a warning.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no backup.'**
+  String get onboardingStep2Headline;
+
+  /// The step dots' only accessible name. `14-design-tokens.md` forbids colour carrying state alone, and a pair of unlabelled circles is colour carrying it alone.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String onboardingStepPosition(int current, int total);
+
+  /// Step 1 ONLY. `onboarding.md` § 2.1 decision 2: step 2 is the disclosure, and skipping a disclosure while showing it is a contradiction.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get onboardingButtonSkip;
+
+  /// Step 1's primary action. NOT "Get started" — § 2.1 decision 3: a button reading "Get started" in front of a second step teaches the reader that the button lied.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingButtonNext;
+
+  /// Step 2's only control. No Skip, no close button, no dismiss affordance of any kind.
+  ///
+  /// In en, this message translates to:
+  /// **'Start reading'**
+  String get onboardingButtonStart;
+
   /// ⚠️ **One ephemeral line, on the FIRST offline display of a session only.** § 3.5 forbids a banner, a gradient and any 'OFFLINE MODE' — this is a sentence that appears once and does not persist, because a persistent badge would be the third thing competing with the prose for the reader's attention.
   ///
   /// In en, this message translates to:
@@ -1774,6 +1828,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back'**
   String get chapterListActionBack;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'TEXT SIZE'**
+  String get settingsGroupSize;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'THEME'**
+  String get settingsGroupTheme;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'NOT IN THIS VERSION'**
+  String get settingsGroupDeferred;
+
+  /// ⚠️ **Under the specimen only, and `null` when the stand-in is shown.** B44: the seed is site content displayed as published, so naming the book it came from is the only way the reader knows they are looking at their own download and not at marketing copy.
+  ///
+  /// In en, this message translates to:
+  /// **'From \"{novel}\" · {chapter}'**
+  String settingsSpecimenCredit(String novel, String chapter);
+
+  /// B28's honest empty. It is `--text-caption`, it is ONE line, and it names the sample as a sample — a specimen that pretends to be content would be the misrepresentation § 2.1 exists to prevent.
+  ///
+  /// In en, this message translates to:
+  /// **'You have not downloaded anything yet — this is what the reader will look like.'**
+  String get settingsSpecimenEmptyNote;
+
+  /// ⚠️ **`--color-warning`, never `--color-error`.** Nothing failed that the reader asked for: the setting saved, only the seed is unreadable. An error here reads as *the setting did not save*, which is false.
+  ///
+  /// In en, this message translates to:
+  /// **'A chapter saved on this phone could not be read. Showing a sample instead.'**
+  String get settingsSpecimenSeedFailed;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No reading modes — reading is one continuous scroll.'**
+  String get settingsDeferredModes;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No swipe or tap page-turn.'**
+  String get settingsDeferredSwipe;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No orientation or rotation lock.'**
+  String get settingsDeferredOrientation;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No colour filters — sepia, greyscale, inverted.'**
+  String get settingsDeferredFilters;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No text justification. Justified prose at this measure creates rivers, and rivers are worse than a ragged edge.'**
+  String get settingsDeferredJustification;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No paragraph spacing control — the 1.72 line-height already sets the rhythm.'**
+  String get settingsDeferredParagraphSpacing;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No line-height control. It is held at 1.72 at every size on purpose, so the rhythm does not change when the size does.'**
+  String get settingsDeferredLineHeight;
+
+  /// ⚠️ **The eighth, and the prose says seven.** `settings-reader.md` § 3 counts `DeferredItem × 7` while § 4.1 and § 11 both list eight absences. The copy table wins, and dropping this one would forget the font picker — the absence a reader who has used another reader is most likely to look for.
+  ///
+  /// In en, this message translates to:
+  /// **'No font picker — the reader uses a serif, decided once. A reading face you can choose is a v2 candidate, not a v1 control.'**
+  String get settingsDeferredFonts;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Text size'**
+  String get readerSizeSheetTitle;
+
+  /// ⚠️ **The EYE's figure.** `settings-reader.md` § 6: it is the one thing the reader can check against the phone's own font slider, so it must never truncate and never be a bare number.
+  ///
+  /// In en, this message translates to:
+  /// **'{px}pt'**
+  String readerSizeStepPoints(String px);
+
+  /// ⚠️ **The SPOKEN figure, and deliberately not the same string.** § 5's announcement is *"Large, 20 pixels, not selected"*; `20pt` read aloud is an abbreviation a screen reader has to guess at. One number, two renderings, two keys — a translation cannot merge them.
+  ///
+  /// In en, this message translates to:
+  /// **'{px} pixels'**
+  String readerSizePixelsSpoken(String px);
+
+  /// One focusable node per step, announcing `{name}`, `{pixels}` and whether it is selected. ⚠️ **A single ICU sentence rather than three concatenated strings**: the order and the punctuation are the translator's, and `name, pixels, state` does not survive a language that does not use commas.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, {pixels}, {state}'**
+  String readerSizeStepSemantics(String name, String pixels, String state);
+
+  /// The positive half of `readerSizeStepSemantics`. Never signalled by colour alone — `14-design-tokens.md` §Accessibility.
+  ///
+  /// In en, this message translates to:
+  /// **'selected'**
+  String get readerSizeStepSelected;
+
+  /// ⚠️ **Its own key, never the empty string.** "Not selected" is a claim, and a label that goes silent on the four unselected steps is indistinguishable from one that failed to render.
+  ///
+  /// In en, this message translates to:
+  /// **'not selected'**
+  String get readerSizeStepNotSelected;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Text size: {name}'**
+  String readerSizeButtonTooltip(String name);
+
+  /// ⚠️ **Names the CURRENT value, not the next one.** The button cycles, so a label naming the result ("Switch to night") would be true for one press and false for the next two — and the reader mid-chapter cannot see which.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme: {name}'**
+  String readerThemeButtonTooltip(String name);
 }
 
 class _AppLocalizationsDelegate

@@ -73,6 +73,24 @@ abstract final class AppRoutes {
   static const String reader = '$_readerRoot/:novelId/:chapterId';
   static const String onboarding = '/onboarding';
 
+  /// ⚠️ **THE QUERY PARAMETER THAT MEANS "OPEN ON STEP 2".** It is the **location** form of
+  /// [onboarding], not a second route: one path, two locations, so `design-system.md` § 3.5's
+  /// table stays at fifteen rows and a deep link to `/onboarding` still matches.
+  ///
+  /// The value is derived from the route constant, never spelled twice — § 9's rule is that
+  /// `AppRoutes` is the only file that knows a path, and a hand-written
+  /// `'/onboarding?step=disclosure'` here would be a second spelling that a rename of
+  /// [onboarding] would silently orphan.
+  static const String onboardingStepQuery = 'step';
+
+  /// The value of [onboardingStepQuery] that opens on the disclosure.
+  static const String disclosureStepValue = 'disclosure';
+
+  // ⚠️ **A FUNCTION, LIKE EVERY OTHER LOCATION BUILDER BELOW** — `settingsReaderPath()`,
+  // `downloadsPath()` — so nothing calls `GoRouter.push` with an interpolated literal.
+  static String onboardingDisclosurePath() =>
+      '$onboarding?$onboardingStepQuery=$disclosureStepValue';
+
   // ── locations, for `go()` ───────────────────────────────────────────────
   //
   // ⚠️ Ids are **not** URL-encoded, and that is a property rather than an

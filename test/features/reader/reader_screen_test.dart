@@ -13,6 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:lumen_tale/app/theme/app_theme.dart';
+import 'package:lumen_tale/app/theme/app_theme_preferences.dart';
+import 'package:lumen_tale/app/theme/reader_scale.dart';
+import 'package:lumen_tale/app/theme/theme_override.dart';
+import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/domain/library/reading_position.dart';
 import 'package:lumen_tale/domain/library/reading_position_store.dart';
 import 'package:lumen_tale/domain/reader/chapter_document.dart';
@@ -125,6 +130,12 @@ Future<(FakeRepository, ValueNotifier<double>)> pumpReader(
       overrides: [
         chapterReaderRepositoryProvider.overrideWithValue(repository),
         hasConnectionProvider.overrideWith((Ref ref) => online.value),
+        // ⚠️ **Added by `2-8`, and it is not optional.** The screen now watches
+        // `readerTextScaleProvider` to build the prose, and that notifier reads
+        // `appThemePreferencesProvider` — which throws until the composition root overrides
+        // it. A harness that omits it gets a bootstrap error rather than a screen, and the
+        // failure reads as a reader bug.
+        appThemePreferencesProvider.overrideWithValue(FakePreferences()),
       ],
       child: ValueListenableBuilder<double>(
         valueListenable: scale,
@@ -136,15 +147,43 @@ Future<(FakeRepository, ValueNotifier<double>)> pumpReader(
   return (repository, scale);
 }
 
+/// The two display settings, held in memory. **`2-8`'s requirement, not `2-4`'s.**
+final class FakePreferences implements AppThemePreferences {
+  ReaderTextScale scale = ReaderTextScale.md;
+  ThemeOverride theme = ThemeOverride.system;
+
+  @override
+  ReaderTextScale readReaderScale() => scale;
+
+  @override
+  ThemeOverride readThemeOverride() => theme;
+
+  @override
+  Future<void> writeReaderScale(ReaderTextScale value) async => scale = value;
+
+  @override
+  Future<void> writeThemeOverride(ThemeOverride value) async => theme = value;
+}
+
 class _App extends StatelessWidget {
   const _App();
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      // ⚠️ **`theme: AppTheme.day()`, added by `2-8`.** The revealed chrome is the first
+      // part of the reader that reads a design token (`LumenColors.of(context)` on
+      // `--color-surface-raised`), and `ThemeExtension.of` returns `null` outside a theme
+      // that registers it. `theme_providers_test.dart` calls that failure loud on purpose, so
+      // the fix belongs in this harness rather than in the widget.
+      //
+      // ⚠️ **NOT a `const` tree**, because `AppTheme.day()` is a factory rather than a
+      // const constructor.
+      theme: AppTheme.day(),
+      darkTheme: AppTheme.night(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: ReaderScreen(chapterId: 'c1'),
+      home: const ReaderScreen(chapterId: 'c1'),
     );
   }
 }
@@ -590,6 +629,11 @@ void main() {
               chapterReaderRepositoryProvider.overrideWithValue(
                 FakeRepository(text),
               ),
+              // ⚠️ **`2-8` needs this override too**, for the same reason the main harness
+              // has it: the prose now reads the reader's stored step, and that provider reads
+              // the preferences the bootstrap overrides. A MediaQuery-only re-pump without
+              // it fails on the provider rather than on the thing under test.
+              appThemePreferencesProvider.overrideWithValue(FakePreferences()),
             ],
             child: const _App(),
           ),
@@ -616,6 +660,11 @@ void main() {
               chapterReaderRepositoryProvider.overrideWithValue(
                 FakeRepository(text),
               ),
+              // ⚠️ **`2-8` needs this override too**, for the same reason the main harness
+              // has it: the prose now reads the reader's stored step, and that provider reads
+              // the preferences the bootstrap overrides. A MediaQuery-only re-pump without
+              // it fails on the provider rather than on the thing under test.
+              appThemePreferencesProvider.overrideWithValue(FakePreferences()),
             ],
             child: const _App(),
           ),

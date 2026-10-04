@@ -3,14 +3,21 @@
 // ## Why this is its own file and not a method on the screen
 //
 // The row joins **three** facts — the theme, the size *step*, and the point size that
-// step *resolves to* — and the third is `settings-reader.md`'s, not this screen's.
+// step *resolves to* — and none of the three is this screen's to decide.
 //
-// `ReaderTextScale` carries a pair (prose, UI) per step, and the number a reader would
-// call "my text size" is neither. It is the step's own figure, so the mapping lives
-// beside the enum: a screen that repeated the table would be a **second place that
-// knows what "Medium" means**, and the two would be free to disagree about the reader's
-// text size — which is the one value on the page a reader is most likely to trust.
+// ## ⚠️ The mapping now lives in `app/theme/reader_display_copy.dart`, and it used to live here
+//
+// `settings-reader.md` § 2.1 calls this screen and the reader's `sizeButton` **two doors
+// to one value**, and the two files each carried their own `switch` over `ThemeOverride`
+// and `ReaderTextScale`. Two switches over one enum are two truths about what "Medium"
+// means, and `2-8`'s size sheet needed a third copy that could not be written here —
+// `02-architecture.md` forbids importing another feature, so the reader's copy would have
+// had to be a duplicate by force of the architecture rather than by accident.
+//
+// The words therefore moved to the layer both features may import, and this file keeps
+// only the composition that is genuinely Settings' own: `theme · size (N pt)`.
 
+import 'package:lumen_tale/app/theme/reader_display_copy.dart';
 import 'package:lumen_tale/app/theme/reader_scale.dart';
 import 'package:lumen_tale/app/theme/theme_override.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
@@ -19,45 +26,17 @@ import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 ///
 /// ⚠️ **All three parts are localized, and none of them is a Dart `name`.**
 /// `ThemeOverride.day` in a French sentence is a string the app learned from its own
-/// code, and `Medium` is a word with an article.
+/// code, and `Medium` is a word with an article. Both names come from
+/// `ReaderDisplayCopy`, so this row and the reader's `sizeButton` read the same words out
+/// of the same switch.
 String appearanceLabel(
   AppLocalizations l10n,
   ThemeOverride theme,
   ReaderTextScale scale,
 ) {
-  final String themeName = switch (theme) {
-    ThemeOverride.system => l10n.settingsThemeSystem,
-    ThemeOverride.day => l10n.settingsThemeDay,
-    ThemeOverride.night => l10n.settingsThemeNight,
-  };
-  final String sizeName = switch (scale) {
-    ReaderTextScale.sm => l10n.settingsSizeSm,
-    ReaderTextScale.md => l10n.settingsSizeMd,
-    ReaderTextScale.lg => l10n.settingsSizeLg,
-    ReaderTextScale.xl => l10n.settingsSizeXl,
-    ReaderTextScale.xxl => l10n.settingsSizeXxl,
-  };
   return l10n.settingsRowAppearanceValue(
-    themeName,
-    sizeName,
+    l10n.themeLabel(theme),
+    l10n.readerSizeLabel(scale),
     pointSizeOf(scale).toString(),
   );
 }
-
-/// The point size a step *is*, for the value line.
-///
-/// ⚠️ **The step's own figure, not the prose scale and not the UI scale.** A row
-/// reading *"Medium (27 pt)"* while the reader sees 18 pt in the chapter would report a
-/// text size the reader can disprove on the next screen — and the row's whole purpose
-/// is to be checked against something.
-///
-/// The mapping is `step: 16 / 18 / 20 / 22 / 24`, declared here because
-/// `settings-reader.md`'s ladder is the ladder's owner and this is the one place that
-/// has to *print* it. A row asserts each step's figure.
-int pointSizeOf(ReaderTextScale scale) => switch (scale) {
-  ReaderTextScale.sm => 16,
-  ReaderTextScale.md => 18,
-  ReaderTextScale.lg => 20,
-  ReaderTextScale.xl => 22,
-  ReaderTextScale.xxl => 24,
-};

@@ -143,6 +143,15 @@
   "settingsErrorCountUnavailable": "Nombre indisponible",
   "settingsButtonRetry": "Réessayer",
   "settingsButtonCancel": "Annuler",
+  "onboardingStep1Kicker": "LUMEN TALE",
+  "onboardingStep1Headline": "Il lit sans réseau.",
+  "onboardingStep1Body": "Gardez un roman ici une fois et il s'ouvre, connexion coupée — dans un train, dans un avion, sans DATA consommée. Rien n'est envoyé : il n'y a pas de compte, pas de serveur, et rien ne part.",
+  "onboardingStep2Kicker": "AVANT DE COMMENCER",
+  "onboardingStep2Headline": "Il n'y a aucune sauvegarde.",
+  "onboardingStepPosition": "Étape {current} sur {total}",
+  "onboardingButtonSkip": "Passer",
+  "onboardingButtonNext": "Suivant",
+  "onboardingButtonStart": "Commencer à lire",
   "@chapterCount": {
     "description": "Nombre de chapitres disponibles pour un roman.",
     "placeholders": {
@@ -624,6 +633,43 @@
   },
   "@settingsButtonCancel": {
     "description": ""
+  },
+  "@onboardingStep1Kicker": {
+    "description": "B7. ⚠️ **IDENTIQUE DANS LE FICHIER ANGLAIS** — un nom de produit ne se traduit pas, et le traduire ferait dire à l'étape 1 quelque chose de faux sur l'application qu'il vient d'ouvrir."
+  },
+  "@onboardingStep1Headline": {
+    "description": "B7, et le SEUL `--text-h1` de l'application (31/38 à 700). La seule chose qu'un lecteur ne peut pas deviner : la lecture hors ligne n'est annoncée nulle part dans ce produit, par choix. `onboarding.md` § 2."
+  },
+  "@onboardingStep1Body": {
+    "description": "B7 en entier, plus B4 et B29 dans une seule clause : « il n'y a pas de compte, pas de serveur, et rien ne part ». Un lecteur à qui on a prêté le fichier cherche une porte de connexion. **DEUX PHRASES DANS LES DEUX LANGUES**, et le compte est vérifié par un test : c'est le seul texte du produit où une traduction compressée serait une divulgation plus faible."
+  },
+  "@onboardingStep2Kicker": {
+    "description": "E11. Majuscules, `--text-overline`. Délibérément différent du kicker de l'étape 1 : § 7 exige que la position de l'étape soit lisible sans aucune couleur, donc les deux kickers ne peuvent pas être le même mot."
+  },
+  "@onboardingStep2Headline": {
+    "description": "E11. `--text-h2` 25/32 à 700 — un cran sous la promesse, car la hiérarchie fait partie de l'argument : les plus grands mots de l'écran appartiennent à ce qu'il vend, et ce qu'il doit au lecteur est un avertissement."
+  },
+  "@onboardingStepPosition": {
+    "description": "Le seul nom accessible des points d'étape. `14-design-tokens.md` interdit qu'une couleur porte seule un état, et une paire de cercles sans nom en est exactement un cas.",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@onboardingButtonSkip": {
+    "description": "ÉTAPE 1 UNIQUEMENT. `onboarding.md` § 2.1, décision 2 : l'étape 2 EST la divulgation, et permettre de sauter une divulgation pendant qu'on la montre est une contradiction."
+  },
+  "@onboardingButtonNext": {
+    "description": "L'action principale de l'étape 1. PAS « Commencer » : § 2.1, décision 3 — un bouton qui lit « Commencer » devant une étape suivante apprend au lecteur que le bouton mentait."
+  },
+  "@onboardingButtonStart": {
+    "description": "Le SEUL contrôle de l'étape 2. Pas de « Passer », pas de croix, aucune affordance de fermeture."
   },
   "@settingsTitle": {
     "description": ""
@@ -1187,8 +1233,12 @@
   "@chapterListContinueSemantics": {
     "description": "B12/B10 — ce qu'annonce un lecteur d'écran. Le libellé visible est le seul mot « Continuer », qui dit à un lecteur voyant où mène le tap et rien à un lecteur aveugle ; ceci nomme le chapitre et la position dans celui-ci.",
     "placeholders": {
-      "chapter": { "type": "String" },
-      "percent": { "type": "int" }
+      "chapter": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
     }
   },
   "chapterListNothingUnopened": "Rien de non ouvert",
@@ -1203,7 +1253,9 @@
   "@chapterListMarkAllReadConfirm": {
     "description": "B13 — la confirmation de l'emplacement 3. Elle NOMME LE COMPTE dans le titre, parce qu'un titre est ce que le lecteur lit en premier et « êtes-vous sûr ? » ne dit pas ce qui va changer.",
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "chapterListMarkAllRead": "Tout marquer comme lu",
@@ -1233,5 +1285,141 @@
   "chapterListActionBack": "Retour",
   "@chapterListActionBack": {
     "description": ""
+  },
+  "settingsGroupSize": "TAILLE DU TEXTE",
+  "@settingsGroupSize": {
+    "description": ""
+  },
+  "settingsGroupTheme": "THÈME",
+  "@settingsGroupTheme": {
+    "description": ""
+  },
+  "settingsGroupDeferred": "PAS DANS CETTE VERSION",
+  "@settingsGroupDeferred": {
+    "description": ""
+  },
+  "settingsSpecimenCredit": "Extrait de « {novel} » · {chapter}",
+  "@settingsSpecimenCredit": {
+    "description": "⚠️ **Under the specimen only, and `null` when the stand-in is shown.** B44: the seed is site content displayed as published, so naming the book it came from is the only way the reader knows they are looking at their own download and not at marketing copy.",
+    "placeholders": {
+      "novel": {
+        "type": "String",
+        "example": "The Runesmith's Apprentice"
+      },
+      "chapter": {
+        "type": "String",
+        "example": "Chapter 12"
+      }
+    }
+  },
+  "settingsSpecimenEmptyNote": "Vous n'avez encore rien téléchargé : c'est ainsi que le lecteur se comportera.",
+  "@settingsSpecimenEmptyNote": {
+    "description": "B28's honest empty. It is `--text-caption`, it is ONE line, and it names the sample as a sample — a specimen that pretends to be content would be the misrepresentation § 2.1 exists to prevent."
+  },
+  "settingsSpecimenSeedFailed": "Un chapitre enregistré sur ce téléphone n'a pas pu être lu. Un exemple est affiché à la place.",
+  "@settingsSpecimenSeedFailed": {
+    "description": "⚠️ **`--color-warning`, never `--color-error`.** Nothing failed that the reader asked for: the setting saved, only the seed is unreadable. An error here reads as *the setting did not save*, which is false."
+  },
+  "settingsDeferredModes": "Pas de mode de lecture : la lecture est un défilement continu unique.",
+  "@settingsDeferredModes": {
+    "description": ""
+  },
+  "settingsDeferredSwipe": "Pas de changement de page par balayage ou toucher.",
+  "@settingsDeferredSwipe": {
+    "description": ""
+  },
+  "settingsDeferredOrientation": "Pas de verrouillage d'orientation.",
+  "@settingsDeferredOrientation": {
+    "description": ""
+  },
+  "settingsDeferredFilters": "Pas de filtres de couleur : sépia, niveaux de gris, inversé.",
+  "@settingsDeferredFilters": {
+    "description": ""
+  },
+  "settingsDeferredJustification": "Pas de justification du texte. Un texte justifié à cette longueur de ligne crée des rivières, bien pires qu'une bordure irrégulière.",
+  "@settingsDeferredJustification": {
+    "description": ""
+  },
+  "settingsDeferredParagraphSpacing": "Pas de réglage de l'espacement des paragraphes : l'interligne de 1,72 fixe déjà le rythme.",
+  "@settingsDeferredParagraphSpacing": {
+    "description": ""
+  },
+  "settingsDeferredLineHeight": "Pas de réglage d'interligne. Il est maintenu à 1,72 à toutes les tailles, volontairement, pour que le rythme ne change pas avec la taille.",
+  "@settingsDeferredLineHeight": {
+    "description": ""
+  },
+  "settingsDeferredFonts": "Pas de choix de police : le lecteur utilise un serif, décidé une fois. Une face de lecture au choix est une candidate pour la v2, pas un contrôle de la v1.",
+  "@settingsDeferredFonts": {
+    "description": "⚠️ **The eighth, and the prose says seven.** `settings-reader.md` § 3 counts `DeferredItem × 7` while § 4.1 and § 11 both list eight absences. The copy table wins, and dropping this one would forget the font picker — the absence a reader who has used another reader is most likely to look for."
+  },
+  "readerSizeSheetTitle": "Taille du texte",
+  "@readerSizeSheetTitle": {
+    "description": ""
+  },
+  "readerSizeStepPoints": "{px} pt",
+  "@readerSizeStepPoints": {
+    "description": "⚠️ **The EYE's figure.** `settings-reader.md` § 6: it is the one thing the reader can check against the phone's own font slider, so it must never truncate and never be a bare number.",
+    "placeholders": {
+      "px": {
+        "type": "String",
+        "example": "20"
+      }
+    }
+  },
+  "readerSizePixelsSpoken": "{px} pixels",
+  "@readerSizePixelsSpoken": {
+    "description": "⚠️ **The SPOKEN figure, and deliberately not the same string.** § 5's announcement is *\"Large, 20 pixels, not selected\"*; `20pt` read aloud is an abbreviation a screen reader has to guess at. One number, two renderings, two keys — a translation cannot merge them.",
+    "placeholders": {
+      "px": {
+        "type": "String",
+        "example": "20"
+      }
+    }
+  },
+  "readerSizeStepSemantics": "{name}, {pixels}, {state}",
+  "@readerSizeStepSemantics": {
+    "description": "One focusable node per step, announcing `{name}`, `{pixels}` and whether it is selected. ⚠️ **A single ICU sentence rather than three concatenated strings**: the order and the punctuation are the translator's, and `name, pixels, state` does not survive a language that does not use commas.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Large"
+      },
+      "pixels": {
+        "type": "String",
+        "example": "20 pixels"
+      },
+      "state": {
+        "type": "String",
+        "example": "not selected"
+      }
+    }
+  },
+  "readerSizeStepSelected": "sélectionné",
+  "@readerSizeStepSelected": {
+    "description": "The positive half of `readerSizeStepSemantics`. Never signalled by colour alone — `14-design-tokens.md` §Accessibility."
+  },
+  "readerSizeStepNotSelected": "non sélectionné",
+  "@readerSizeStepNotSelected": {
+    "description": "⚠️ **Its own key, never the empty string.** \"Not selected\" is a claim, and a label that goes silent on the four unselected steps is indistinguishable from one that failed to render."
+  },
+  "readerSizeButtonTooltip": "Taille du texte : {name}",
+  "@readerSizeButtonTooltip": {
+    "description": "",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Large"
+      }
+    }
+  },
+  "readerThemeButtonTooltip": "Thème : {name}",
+  "@readerThemeButtonTooltip": {
+    "description": "⚠️ **Names the CURRENT value, not the next one.** The button cycles, so a label naming the result (\"Switch to night\") would be true for one press and false for the next two — and the reader mid-chapter cannot see which.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Follow the phone"
+      }
+    }
   }
 }

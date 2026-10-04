@@ -43,6 +43,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:lumen_tale/app/router/app_nav_destinations.dart';
 import 'package:lumen_tale/app/router/app_routes.dart';
+import 'package:lumen_tale/app/router/first_run_gate.dart';
 import 'package:lumen_tale/app/router/placeholder_screen.dart';
 import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/shell/app_shell.dart';
@@ -93,15 +94,26 @@ Future<Object?> openReader(
 
 /// Opens onboarding, **on top of** the shell, for the same reason.
 ///
-/// `settings.md` § 5 opens it at **step 2** — the step-1 promise has already been
-/// read — which is why there is **no startup redirect to it**. E11 requires the
-/// "nothing here is backed up" disclosure to be made *before* an uninstall, and the
-/// only moment the shell could decide that alone is first run. This slice does not
-/// decide it: the trigger belongs to whichever slice writes `3-4`, and inventing a
-/// preferences flag here for "do not miss anything" would be the false promise E11
-/// forbids. `0-5` § 7 question 6 records that gap rather than papering over it.
+/// ## ⚠️ **AND IT OPENS ON STEP 2** — `AppRoutes.onboardingDisclosure`, not the bare path.
+///
+/// `settings.md` § 5: `SettingsRow → /onboarding` *"opening on step 2 (the disclosure),
+/// because the promise on step 1 has already been read"*. `onboarding.md` § 4 says the same
+/// thing and explains why the re-entry is deliberately **better** than the first-run path:
+/// the disclosure is the part a re-reader may have skipped, and it is the part with
+/// consequences.
+///
+/// ⚠️ **THE DIFFERENCE IS A QUERY PARAMETER, NOT A SECOND ROUTE.** One path, two locations:
+/// a second route would be a second entry in the route table for one screen, and a deep link
+/// to `/onboarding` would have to pick one of them. A parameter keeps the route single and
+/// makes the re-entry **shareable and restorable** — a restored stack comes back on step 2
+/// for the same reason it came back on step 2 when it was pushed.
+///
+/// ⚠️ **THE PREVIOUS DOC COMMENT ON THIS FUNCTION WAS WRONG AND SAID SO.** It stated *"there
+/// is **no startup redirect to it**"* and *"This slice does not decide it"* — which was true
+/// of `0-5`, whose § 7 question 6 recorded the gap, and false once `3-4` landed. The redirect
+/// is at the top of this file now; this sentence is the other half of that change.
 Future<Object?> openOnboarding(BuildContext context) {
-  return GoRouter.of(context).push(AppRoutes.onboarding);
+  return GoRouter.of(context).push(AppRoutes.onboardingDisclosurePath());
 }
 
 /// Opens a novel's details, **on top of** the branch the reader is already on.
@@ -153,6 +165,23 @@ GoRouter _build() {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: initialLocation,
+    // ⚠️ **`redirect`, AND IT IS `3-4`'s, NOT `0-5`'s.**
+    //
+    // `0-5` deliberately left this out: *"the trigger belongs to whichever slice writes the
+    // screen, and a preferences flag invented here for 'do not miss anything' would be the
+    // false promise E11 forbids."* `3-4` is that slice, and it supplies a real flag.
+    //
+    // E11 needs the "nothing here is backed up" disclosure made **before** an uninstall, and
+    // the only moment the app can put a screen in front of the reader on its own is cold
+    // start. That is also why it is a `redirect` and not a `main()` branch: go_router awaits
+    // an async `redirect` before it builds the first page (`builder.dart` documents that it
+    // renders an empty box until one resolves), so a flag that cannot be read is handled as a
+    // **state** — the disclosure is shown — rather than as an exception during launch.
+    //
+    // **`test/app/shell/app_shell_test.dart` asserts the opposite of what it used to**: the
+    // row that forbade `redirect:` existed to record that the trigger was undecided, and it
+    // now asserts the trigger exists, is wired to a gate, and is installed exactly once.
+    redirect: _redirectStartup,
     routes: <RouteBase>[
       // ── the shell: five branches, ADR-018's order ─────────────────────
       StatefulShellRoute.indexedStack(
@@ -195,6 +224,11 @@ GoRouter _build() {
       ),
       GoRoute(
         path: AppRoutes.onboarding,
+        // ⚠️ **`standaloneRouteBuilderFor`, and `3-4` is registered — see `main.dart`'s
+        // `registerScreens`.** Before that registration this row rendered a
+        // `PlaceholderScreen` for the screen E11 depends on being shown: a first run would
+        // have landed on a page naming `/onboarding`, which is the exact defect
+        // `test/app/router/route_resolution_test.dart` exists to catch.
         builder: standaloneRouteBuilderFor(AppRoutes.onboarding),
       ),
     ],
@@ -205,6 +239,33 @@ GoRouter _build() {
     errorBuilder: (BuildContext context, GoRouterState state) =>
         const PlaceholderScreen(screenKey: 'unknown-route'),
   );
+}
+
+/// `GoRouter.redirect` → [StartupGate.resolve], and **only** that.
+///
+/// ## ⚠️ A `null` GATE IS A NO-OP, AND THAT IS THE SAFE DIRECTION
+///
+/// No installation means "the composition root has not run", which in production is a
+/// bootstrap defect and in a test is a deliberate choice. Either way the answer must not be
+/// "show onboarding": that would let a wiring mistake decide a first run. `main()`'s single
+/// call is asserted by count in `test/app/shell/app_shell_test.dart`.
+///
+/// ## ⚠️ THE RETURN TYPE IS `Future<String?>`, AND IT IS **NOT** WRAPPED IN A `try`
+///
+/// go_router catches a throwing `redirect` and turns it into an **error page**
+/// (`configuration.dart`, `applyTopLegacyRedirect`'s `catchError`), so swallowing here
+/// would hide a real defect behind "the onboarding screen appeared". [StartupGate] handles
+/// the one failure that must be handled — an unreadable flag — and answers it with a
+/// location.
+Future<String?> _redirectStartup(
+  BuildContext context,
+  GoRouterState state,
+) async {
+  final StartupGate? gate = installedStartupGate;
+  if (gate == null) {
+    return null;
+  }
+  return gate.resolve(state.matchedLocation);
 }
 
 /// One branch: a tab root, plus the routes that hang below it.

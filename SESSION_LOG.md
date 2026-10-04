@@ -4817,3 +4817,96 @@ slice marked otherwise is the exact defect this session spent its length correct
 
 `tool/dod.sh` → **DoD: PASS — 7 of 7 gates green**. **1 113 passed + 9 skipped**, analyze
 zero. Slices: 20 validated · 2 `in_progress` · 10 `planned`.
+
+---
+
+## 2026-10-04 — Session 30: three slices in parallel, and what the parallel work exposed
+
+### STARTED FROM
+
+`3-3`'s domain contract committed (`8636b48`), **1 113 passed**, `DoD: PASS 7/7`.
+
+### THREE SLICES LAUNCHED IN PARALLEL, AND THE CRITICAL PATH TAKEN DIRECTLY
+
+`2-8` (reader display settings), `3-4` (onboarding) and `6-4` (the update check) went to
+parallel agents against their own plans. `3-3`'s repository — the two prohibitions — was mine,
+because it is the critical path and because the two prohibitions are the slice's stated core.
+
+⚠️ **PARALLEL WORK EXPOSES CROSS-SLICE DEFECTS THAT SEQUENTIAL WORK HIDES.** Three defects
+surfaced within minutes of three agents touching the tree at once, and **none of them was in
+the agent's own slice**:
+
+| defect | whose | why sequential work missed it |
+|---|---|---|
+| the first-run gate captured `/reader` | `3-4` | the reader is a STANDALONE route; only a test that opens a chapter while the gate is armed sees it |
+| the gate's `async redirect` broke the reader's first frame | `3-4` | `0-5` wrote "no redirect exists" and was right until `3-4` supplied one |
+| FR translated a **placeholder name** (`{roman}`, `{chapitre}`) | `3-4` | B28's row exists and fired immediately — this one WAS caught, by the l10n suite |
+
+⚠️ **THE PLACEHOLDER ONE IS Q-026 EXACTLY.** `settingsSpecimenCredit` read
+`{novel, chapter}` in EN and `{roman, chapitre}` in FR. `Q-026` recorded, measured on the
+installed SDK, that **renaming a placeholder in a translation ADDS a required parameter
+rather than renaming one** — so the French file silently asked for two arguments the English
+one does not. The `arb_completeness_test.dart` row caught it; that is the row doing the job it
+was written for.
+
+### ⚠️ `testWidgets` AND REAL FILES: A ROW THAT HANGS INSTEAD OF FAILING
+
+`3-3`'s repository rows touch the **real filesystem** — `ChapterStore` writes files — and
+every one of them **hung** rather than failed. `testWidgets` runs its body inside a
+fake-async zone, where real `dart:io` futures never complete.
+
+⚠️ **A HANG IS WORSE THAN A FAILURE HERE**, because a failure names itself and a hang takes
+the whole suite with it: five rows "did not complete", which reads like five defects and is
+one. These are data rows, so they are `test()`, not `testWidgets()`. **A row that does real
+I/O must not be a widget test**, and nothing in `10-testing.md` says so.
+
+⚠️ **AND I WROTE THE PROBE THAT CAUSED IT.** `freeBytes()` wrote up to 64 MiB on every
+`enqueue`, and the ceiling is now 8 MiB **and cached**, and the whole thing is injectable —
+because a measurement that costs real I/O has to be bounded tightly, and one that does not
+change between calls has to be cached rather than repeated.
+
+### `3-3`'s REPOSITORY — BOTH PROHIBITIONS, AND THE ORDER THAT IS B33
+
+`DriftChapterActionRepository`: `enqueue`, `deleteStoredCopy`, `cancelIfNotStarted`,
+`freeBytes`, `measuredChapterBytes`. **15 rows.**
+
+- ⚠️ **NEVER WRITES `chapters`** — the row asserts the whole `ChapterRow` is unchanged, not
+  one column. `2-3` owns `downloadedAt` and writes it *after* the atomic rename.
+- ⚠️ **DELETE REMOVES THE FILE AND KEEPS THE ROW** — B9, and the row is the parent
+  `history_entries` and `reading_positions` hang from. A row counts the table before and after.
+- ⚠️ **`freedBytes` IS MEASURED BEFORE THE UNLINK** — reading it afterwards returns zero, and a
+  confirmation reporting zero freed teaches a reader that deletions do nothing.
+- ⚠️ **A FAILED DELETE LEAVES THE MARK** — the file survived, so the copy is still there;
+  clearing the mark would be the reverse lie of B6's.
+- ⚠️ **`requiredBytes` IS A REAL FILE'S SIZE OR `null`** — an implementation returning `0`
+  would refuse every first download of every novel.
+- ⚠️ **`state` IS THE ENUM AND THE CONVERTER WRITES ITS NAME** — a raw query reads `'queued'`,
+  never the ordinal `0`. Writing the ordinal would shift every future state silently.
+
+### ⚠️ ⚠️ THREE TESTS ARE STILL RED, AND I DID NOT PAPER OVER THEM
+
+`test/app/shell` (reader opens with no transition, one `pump`) and two `test/widget_test.dart`
+bootstrap rows. **All three fail because the first-run gate's `redirect` is still `async` when
+the gate is installed WITHOUT awaiting** — the shell tests install it synchronously, so
+`_answer` is never seeded and `resolve` falls through to the awaiting store.
+
+The fix is written (seed at bootstrap, keep `resolve` synchronous, exempt `/reader`) and it is
+**in the tree**, but the shell tests install the gate through a synchronous path that does not
+seed it, so the fix is not yet effective for them. ⚠️ **I stopped here rather than editing the
+three tests**, because they encode `0-5`'s "a chapter opens in one frame" property and a gate
+may not tax it — weakening them would hide the very thing they were written to protect.
+`DoD: FAIL — 1 of 7 gates red: test` is the honest state and it stays until this is closed.
+
+### STATUS
+
+`flutter analyze` **zero issues** · format clean · `check_boundaries` **no undeclared
+crossings** · forge-guard and consistency-check **exit 0** · **1 289 passed + 9 skipped, 3
+failed**. Slices: 20 validated · 2 `in_progress` · 10 `planned` — `2-8`, `3-4` and `6-4` have
+landed their work but are **not** marked validated, because `DoD` is not green.
+
+### NEXT SESSION SHOULD — carry straight on, no stop
+
+Close the gate seeding so `resolve` is synchronous for **every** installation path · then
+validate `2-8`, `3-4`, `6-4` · `6-6` and `6-10` · `5-1` `5-2` `5-3` · `0-1` `0-4` `6-7`.
+⚠️ **A slice is not validated because its files landed.** It is validated when `DoD` is green
+and its own rows pass — which is the defect this session began by correcting.

@@ -530,6 +530,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsButtonCancel => 'Annuler';
 
   @override
+  String get onboardingStep1Kicker => 'LUMEN TALE';
+
+  @override
+  String get onboardingStep1Headline => 'Il lit sans réseau.';
+
+  @override
+  String get onboardingStep1Body =>
+      'Gardez un roman ici une fois et il s\'ouvre, connexion coupée — dans un train, dans un avion, sans DATA consommée. Rien n\'est envoyé : il n\'y a pas de compte, pas de serveur, et rien ne part.';
+
+  @override
+  String get onboardingStep2Kicker => 'AVANT DE COMMENCER';
+
+  @override
+  String get onboardingStep2Headline => 'Il n\'y a aucune sauvegarde.';
+
+  @override
+  String onboardingStepPosition(int current, int total) {
+    return 'Étape $current sur $total';
+  }
+
+  @override
+  String get onboardingButtonSkip => 'Passer';
+
+  @override
+  String get onboardingButtonNext => 'Suivant';
+
+  @override
+  String get onboardingButtonStart => 'Commencer à lire';
+
+  @override
   String get readerOfflineBanner => 'Vous lisez vos téléchargements';
 
   @override
@@ -1051,4 +1081,92 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chapterListActionBack => 'Retour';
+
+  @override
+  String get settingsGroupSize => 'TAILLE DU TEXTE';
+
+  @override
+  String get settingsGroupTheme => 'THÈME';
+
+  @override
+  String get settingsGroupDeferred => 'PAS DANS CETTE VERSION';
+
+  @override
+  String settingsSpecimenCredit(String novel, String chapter) {
+    return 'Extrait de « $novel » · $chapter';
+  }
+
+  @override
+  String get settingsSpecimenEmptyNote =>
+      'Vous n\'avez encore rien téléchargé : c\'est ainsi que le lecteur se comportera.';
+
+  @override
+  String get settingsSpecimenSeedFailed =>
+      'Un chapitre enregistré sur ce téléphone n\'a pas pu être lu. Un exemple est affiché à la place.';
+
+  @override
+  String get settingsDeferredModes =>
+      'Pas de mode de lecture : la lecture est un défilement continu unique.';
+
+  @override
+  String get settingsDeferredSwipe =>
+      'Pas de changement de page par balayage ou toucher.';
+
+  @override
+  String get settingsDeferredOrientation =>
+      'Pas de verrouillage d\'orientation.';
+
+  @override
+  String get settingsDeferredFilters =>
+      'Pas de filtres de couleur : sépia, niveaux de gris, inversé.';
+
+  @override
+  String get settingsDeferredJustification =>
+      'Pas de justification du texte. Un texte justifié à cette longueur de ligne crée des rivières, bien pires qu\'une bordure irrégulière.';
+
+  @override
+  String get settingsDeferredParagraphSpacing =>
+      'Pas de réglage de l\'espacement des paragraphes : l\'interligne de 1,72 fixe déjà le rythme.';
+
+  @override
+  String get settingsDeferredLineHeight =>
+      'Pas de réglage d\'interligne. Il est maintenu à 1,72 à toutes les tailles, volontairement, pour que le rythme ne change pas avec la taille.';
+
+  @override
+  String get settingsDeferredFonts =>
+      'Pas de choix de police : le lecteur utilise un serif, décidé une fois. Une face de lecture au choix est une candidate pour la v2, pas un contrôle de la v1.';
+
+  @override
+  String get readerSizeSheetTitle => 'Taille du texte';
+
+  @override
+  String readerSizeStepPoints(String px) {
+    return '$px pt';
+  }
+
+  @override
+  String readerSizePixelsSpoken(String px) {
+    return '$px pixels';
+  }
+
+  @override
+  String readerSizeStepSemantics(String name, String pixels, String state) {
+    return '$name, $pixels, $state';
+  }
+
+  @override
+  String get readerSizeStepSelected => 'sélectionné';
+
+  @override
+  String get readerSizeStepNotSelected => 'non sélectionné';
+
+  @override
+  String readerSizeButtonTooltip(String name) {
+    return 'Taille du texte : $name';
+  }
+
+  @override
+  String readerThemeButtonTooltip(String name) {
+    return 'Thème : $name';
+  }
 }

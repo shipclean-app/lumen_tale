@@ -19,6 +19,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:lumen_tale/domain/reader/chapter_document.dart';
+import 'package:lumen_tale/features/reader/domain/reader_typography.dart';
 import 'package:lumen_tale/features/reader/reader_layout.dart';
 import 'package:lumen_tale/features/reader/virtualised_chapter_prose.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
@@ -42,13 +43,23 @@ String formatChapterNumber(double number) {
 
 /// The reader's title line and its prose.
 ///
-/// ⚠️ **`number` and the em dash are decided here, once.** B10: `-1` is unparseable and `0`
-/// is a real chapter number, so the two cannot share a format string. Formatting `-1` as a
-/// number is how an omake becomes "Chapter 0" forever.
+/// ⚠️ **`prose` is a parameter, not a provider read.** `2-8` § 4.1: the column *"receives the
+/// style, it does not compute it"*. Two widgets each watching the scale provider could each
+/// resolve it, and the title's `Text` and the body's `MarkdownBody` would then be free to
+/// disagree about the same chapter's type — and the pair a reader notices is the heading and
+/// the paragraph under it.
 class ChapterProse extends StatelessWidget {
-  const ChapterProse({required this.document, required this.layout, super.key});
+  const ChapterProse({
+    required this.document,
+    required this.prose,
+    required this.layout,
+    super.key,
+  });
 
   final ChapterText document;
+
+  /// The reader's chosen step, already resolved against the phone's own text scale.
+  final ReaderProse prose;
 
   /// The measured width cap, from `2-7`. A parameter rather than a provider read, so the
   /// prose can be rendered in a test with a **known** advance.
@@ -57,14 +68,13 @@ class ChapterProse extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations copy = AppLocalizations.of(context);
-    // ⚠️ **`textScalerOf(context)` read here, in `build`.** E14 asks the prose to resize on
-    // the next frame, and the read *is* the mechanism — no listener, no state, nothing to
-    // forget to update.
+    // ⚠️ **`textScalerOf(context)` is read here for the TITLE's line length only** — E14
+    // asks the prose to resize on the next frame, and the read *is* the mechanism: no
+    // listener, no state, nothing to forget to update. ⚠️ **It is never multiplied.** The
+    // body's size comes from [ReaderProse], which hands the platform scaler to
+    // `resolveProse` exactly once.
     final TextScaler scaler = MediaQuery.textScalerOf(context);
 
-    // ⚠️ **The body is `2-7`'s, not a second `MarkdownBody` here.** Two call sites each
-    // building their own `MarkdownStyleSheet` would be free to disagree, and the pair a reader
-    // notices is the short chapter and the long one — "it looks different once it gets big".
     return ListView.builder(
       // ⚠️ **The key is the reading zone, and it is public on purpose.** `2-4` § 3.5: a tap
       // anywhere in the prose reveals the chrome, and a row needs a stable handle on "the
@@ -85,7 +95,11 @@ class ChapterProse extends StatelessWidget {
         // when the chapter is large and is one widget when it is not, and it carries the
         // measured width cap. Putting it inside the title's list rather than beside it keeps
         // one scrollable — two scrollables in a reader is a gesture that fights itself.
-        return ChapterProseColumn(document: document, layout: layout);
+        return ChapterProseColumn(
+          document: document,
+          prose: prose,
+          layout: layout,
+        );
       },
     );
   }

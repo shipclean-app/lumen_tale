@@ -29,10 +29,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:lumen_tale/app/router/app_routes.dart';
+import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/domain/reader/chapter_document.dart';
+import 'package:lumen_tale/features/reader/domain/reader_typography.dart';
 import 'package:lumen_tale/features/reader/mark_opened_once.dart';
 import 'package:lumen_tale/features/reader/reader_providers.dart';
 import 'package:lumen_tale/features/reader/widgets/chapter_prose.dart';
+import 'package:lumen_tale/features/reader/widgets/reader_controls.dart';
 import 'package:lumen_tale/features/reader/widgets/reader_states.dart';
 
 /// The reader, for one chapter.
@@ -139,6 +142,17 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     _markOpenedOnce();
 
     final bool offline = !ref.watch(hasConnectionProvider);
+
+    // ⚠️ **THE PROSE IS DERIVED HERE, and nowhere else.** `2-8` § 5: the `TextStyle` is a
+    // pure derivation of three inputs, recomputed by Flutter on each build, and storing it
+    // would be a second source of truth that diverges the moment the phone's font size
+    // changes — which is E14. Two `ReaderProse.fromContext` calls on this screen would be two
+    // objects free to disagree about the same chapter's type.
+    final ReaderProse prose = ReaderProse.fromContext(
+      context,
+      ref.watch(readerTextScaleProvider),
+    );
+
     return GestureDetector(
       // ⚠️ **A tap on the reading zone toggles the chrome and does NOTHING else.** No
       // `onTap` here may fetch, save or mark: this is the tap that most tempts an
@@ -147,7 +161,14 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       behavior: HitTestBehavior.opaque,
       child: Column(
         children: <Widget>[
-          if (_chromeVisible) const _ReaderChrome(),
+          // ⚠️ **ALWAYS IN THE TREE, revealed by an animation rather than inserted.**
+          // Building the chrome conditionally is what `2-4` did, and it cannot fade —
+          // there is no previous frame to fade *from*. `ReaderControls` owns the reveal
+          // because § 2.6 gives it three states and `hidden` is one of them.
+          ReaderControls(
+            visible: _chromeVisible,
+            onBack: () => Navigator.of(context).maybePop(),
+          ),
           if (offline) const ReaderOfflineNote(visible: true),
           Expanded(
             child: NotificationListener<ScrollNotification>(
@@ -159,7 +180,12 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
               },
               child: ChapterProse(
                 document: text,
-                layout: ref.watch(readerLayoutProvider),
+                prose: prose,
+                // ⚠️ **The measure comes from the SAME prose**, so the cap is computed on the
+                // RESOLVED size — the step times the phone's scale. A cap computed on the
+                // step's nominal size would let the column reach ~95 characters at 200%,
+                // which is the whole defect E14 describes.
+                layout: prose.measureLayout(),
               ),
             ),
           ),
@@ -180,33 +206,4 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     goBack: () => Navigator.of(context).maybePop(),
     retry: () => ref.invalidate(readerDocumentProvider),
   );
-}
-
-/// The revealed chrome: a raised strip above the prose, and nothing else.
-///
-/// ⚠️ **Deliberately minimal in `2-4`.** Font size, page mode and the chapter sheet are
-/// `2-8` and `2-7`; a control here that does not work yet would be worse than a control that
-/// has not been written.
-class _ReaderChrome extends StatelessWidget {
-  const _ReaderChrome();
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      color: theme.colorScheme.surfaceContainerHigh,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          IconButton(
-            onPressed: () => Navigator.of(context).maybePop(),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          ),
-        ],
-      ),
-    );
-  }
 }

@@ -418,17 +418,84 @@ void main() {
       );
     });
 
-    test('there is no redirect to onboarding — E11', () {
-      // E11 asks for the "nothing here is backed up" disclosure to be made BEFORE an
-      // uninstall, and the only moment the shell could trigger it alone is first run.
-      // This slice does not decide that: the trigger belongs to whichever slice writes
-      // the screen, and a preferences flag invented here for "do not miss anything"
-      // would be the false promise E11 forbids. `0-5` § 7 question 6 records the gap.
+    // ⚠️ **THIS ROW WAS THE INVERSE OF WHAT IT SAYS NOW, AND THE INVERSION IS THE POINT.**
+    //
+    // `0-5` wrote: *"there is **no redirect to onboarding** — E11"*, and it was correct
+    // then. Its own comment said why: *"the trigger belongs to whichever slice writes the
+    // screen, and a preferences flag invented here for 'do not miss anything' would be
+    // the false promise E11 forbids. `0-5` § 7 question 6 records the gap."*
+    //
+    // `3-4` is that slice, and it supplies a **real** flag — `OnboardingSeenStore`, one
+    // boolean — plus the screen. So the prohibition is replaced by three obligations that
+    // are strictly stronger than "there is none", and the reason is that **absence was
+    // never the safety property**: an absent redirect means the disclosure is *never*
+    // forced, which is the failure E11 exists to prevent. What has to be absent is a
+    // redirect **away from** `/onboarding`, and a redirect that is not installed.
+    test(
+      '⚠️ the cold-start redirect EXISTS, and it resolves through the gate — E11',
+      () {
+        // E11 needs the disclosure made before an uninstall, and the only moment the app can
+        // put a screen in front of the reader alone is first run — so this is a `redirect`
+        // and not a `main()` branch. go_router awaits an async `redirect` before building the
+        // first page (`builder.dart` documents the empty box it renders meanwhile), which is
+        // what turns an unreadable flag into a **state** instead of a launch exception.
+        expect(
+          grepCode(routerFiles, RegExp(r'^\s*redirect\s*:')),
+          hasLength(1),
+          reason:
+              'the route table must carry exactly one top-level redirect — `3-4`\'s cold-start '
+              'decision. Zero means the disclosure is never forced, which is the failure E11 '
+              'names; two means two answers to one question and the second is unreviewed.',
+        );
+
+        // And it must reach the gate rather than deciding anything itself: the flag reader
+        // cannot come from a provider (the router is a top-level `final`), so the decision
+        // lives in `first_run_gate.dart` and this file only forwards to it.
+        expect(
+          sourceOf(routerFiles),
+          contains('redirect: _redirectStartup'),
+          reason:
+              'the redirect must delegate to the named handler, so the latch and the '
+              'fail-open branch cannot be bypassed by an inline callback',
+        );
+        expect(
+          sourceOf(routerFiles),
+          contains('gate.resolve(state.matchedLocation)'),
+          reason:
+              'the handler must forward the matched location to the gate — a gate that could '
+              'not see where it was would redirect `/onboarding` at itself',
+        );
+      },
+    );
+
+    test('⚠️ no redirect may exist on any individual GoRoute', () {
+      // A **route-level** redirect is evaluated after the top-level one and would re-enter
+      // it (`configuration.dart` recurses through `redirect()`), so a per-route redirect on
+      // `/library` or `/onboarding` would be a second cold-start decision on every
+      // navigation that touched it — including the reader opening a chapter.
       assertNoCodeMatch(
         routerFiles,
-        RegExp(r'\bredirect\s*:'),
-        'no redirect may exist in the route table — the first-run trigger is undecided',
-        witness: 'redirect: (_, __) => AppRoutes.onboarding,',
+        // Anchored on an INDENTED `redirect`, which is what a `GoRoute(redirect: …)` looks
+        // like; the top-level one is at two spaces and starts the `GoRouter(` call.
+        RegExp(r'^\s{6,}redirect\s*:'),
+        'only the top-level redirect may exist — a per-route one re-runs on every navigation',
+        witness: '        redirect: (_, __) => null,',
+      );
+    });
+
+    test('⚠️ the redirect target is registered — see `route_resolution_test.dart`', () {
+      // ⚠️ **A POINTER, NOT A ROW.** The redirect fires **before** any screen is built, so an
+      // unregistered `/onboarding` would send a first-run reader to a `PlaceholderScreen`.
+      // The row that proves the registration lives in
+      // `test/app/router/route_resolution_test.dart`, which already runs `registerScreens()`
+      // in `setUpAll` and owns "the half of registration nobody asserted" — duplicating it
+      // here would mean two files that both clear the registry to assert one fact.
+      expect(
+        sourceOf(routerFiles),
+        contains('AppRoutes.onboarding'),
+        reason:
+            'the redirect resolves its target through the constant, never a literal — a '
+            'spelled path here would be a second spelling nothing keeps in step',
       );
     });
 

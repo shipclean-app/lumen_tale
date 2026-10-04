@@ -29,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import 'package:lumen_tale/domain/reader/chapter_document.dart';
+import 'package:lumen_tale/features/reader/domain/reader_typography.dart';
 import 'package:lumen_tale/features/reader/reader_layout.dart';
 
 /// ⚠️ **Above this many BYTES, the prose is built block by block.**
@@ -45,14 +46,24 @@ const int kVirtualiseAboveByteLength = 8192;
 const double readerMinColumnWidthDp = kMinColumnWidthDp;
 
 /// The chapter's prose, in whichever of the two modes its size calls for.
+///
+/// ⚠️ **`prose` is REQUIRED, and it is what makes B27 visible here.** The column receives the
+/// style and never computes it (`2-8` § 4.1: *"reçoit le style, ne le calcule pas"*): a
+/// default would let this widget render a chapter at `md` while the reader is at `xxl`, and
+/// the two would be free to disagree about the same text.
 class ChapterProseColumn extends StatelessWidget {
   const ChapterProseColumn({
     required this.document,
+    required this.prose,
     required this.layout,
     super.key,
   });
 
   final ChapterText document;
+
+  /// The reader's chosen step, resolved. `2-8`'s value, handed in rather than read.
+  final ReaderProse prose;
+
   final ReaderLayout layout;
 
   bool get _virtualise => document.byteLength > kVirtualiseAboveByteLength;
@@ -64,8 +75,8 @@ class ChapterProseColumn extends StatelessWidget {
       layout: layout,
       screenWidth: screenWidth,
       child: _virtualise
-          ? _BlockList(document: document)
-          : _SingleBody(document: document),
+          ? _BlockList(document: document, prose: prose)
+          : _SingleBody(document: document, prose: prose),
     );
   }
 }
@@ -75,16 +86,17 @@ class ChapterProseColumn extends StatelessWidget {
 /// ⚠️ **No `shrinkWrap` and no height.** The body measures itself; a height set here is what
 /// E14 forbids and what `2-4` deliberately left out.
 class _SingleBody extends StatelessWidget {
-  const _SingleBody({required this.document});
+  const _SingleBody({required this.document, required this.prose});
 
   final ChapterText document;
+  final ReaderProse prose;
 
   @override
   Widget build(BuildContext context) {
     return MarkdownBody(
       data: document.markdown,
       selectable: true,
-      styleSheet: readerStyleSheet(Theme.of(context)),
+      styleSheet: readerStyleSheet(Theme.of(context), prose),
     );
   }
 }
@@ -96,9 +108,10 @@ class _SingleBody extends StatelessWidget {
 /// were not separated by a blank line — a definition list, a run of headers — arrives as one
 /// block, which is correct. Nothing is dropped: `blocks.join('\n\n') == markdown` is asserted.
 class _BlockList extends StatelessWidget {
-  const _BlockList({required this.document});
+  const _BlockList({required this.document, required this.prose});
 
   final ChapterText document;
+  final ReaderProse prose;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +130,11 @@ class _BlockList extends StatelessWidget {
         child: MarkdownBody(
           data: blocks[index],
           selectable: true,
-          styleSheet: readerStyleSheet(Theme.of(context)),
+          // ⚠️ **The SAME sheet function as the short path, with the SAME prose.** Two call
+          // sites building their own sheet would be free to disagree, and the pair a reader
+          // notices is the short chapter and the long one — "it looks different once it gets
+          // big".
+          styleSheet: readerStyleSheet(Theme.of(context), prose),
         ),
       ),
     );
@@ -135,22 +152,42 @@ List<String> splitIntoBlocks(String markdown) {
 
 /// The reader's Markdown styling, in one place.
 ///
-/// ⚠️ **A function, not a `const`.** `MarkdownStyleSheet.fromTheme` needs a `ThemeData`, so
-/// two call sites that each built their own sheet would be free to disagree — and one of them
-/// would be the long path and the other the short path, which is exactly the pair a reader
-/// notices as "the chapter looks different once it gets big".
-MarkdownStyleSheet readerStyleSheet(ThemeData theme) {
+/// ## ⚠️ It takes the reader's PROSE, and that is the change `2-8` made
+///
+/// Before, it took a `ThemeData` and set `p: bodyLarge.copyWith(height: 1.5)` — a
+/// hard-coded leading that contradicted ADR-017's held 1.72, and a size that came from the
+/// theme rather than from the step the reader chose. B27 makes the step an input: the sheet
+/// the reader taps must re-render the chapter **on the same frame**, and the only thing
+/// that can do that is the Markdown sheet.
+///
+/// ⚠️ **The function stays a function.** `MarkdownStyleSheet.fromTheme` needs a
+/// `ThemeData`, so two call sites each building their own sheet would be free to disagree —
+/// and one of them is the long path and the other the short, which is exactly the pair a
+/// reader notices as *"the chapter looks different once it gets big"*.
+MarkdownStyleSheet readerStyleSheet(ThemeData theme, ReaderProse prose) {
   return MarkdownStyleSheet.fromTheme(theme).copyWith(
-    p: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+    // ⚠️ **`prose.style`, verbatim, and never `copyWith(height: …)`.** The leading it
+    // carries is this step's own ratio, RECOMPUTED by `resolveProse` from the clamped size —
+    // copying `step.lineHeight` (44px) onto a recomputed 40px gives 1.10 and overlapping
+    // lines, which is precisely what E14 forbids. Nothing here multiplies the phone's
+    // scaler: Flutter already applies it through `DefaultTextStyle`, and doing it twice
+    // makes the reader twice the size of the rest of the app.
+    p: prose.style,
+    // ⚠️ **The headings are UNCHANGED from `2-7`.** The reader's step governs the body, and
+    // a site that publishes six `#` headings in one chapter should not have them dwarf the
+    // prose — but that is a decision `2-7` made about headings, and changing it here would be
+    // a visual change this slice has no rule for.
     h1: theme.textTheme.headlineSmall,
     h2: theme.textTheme.titleLarge,
     h3: theme.textTheme.titleMedium,
+    // ⚠️ **The prose's SIZE and leading, the theme's COLOUR.** A quotation is the reader's
+    // own prose at their own step, set in the secondary colour so it reads as set apart from
+    // the narration rather than as a second narration.
+    blockquote: prose.style.copyWith(color: theme.colorScheme.onSurfaceVariant),
     code: theme.textTheme.bodyMedium?.copyWith(
       fontFamily: 'monospace',
       fontFamilyFallback: const <String>['Roboto Mono', 'Menlo', 'Courier'],
-    ),
-    blockquote: theme.textTheme.bodyLarge?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
+      color: prose.style.color,
     ),
     blockquoteDecoration: BoxDecoration(
       color: theme.colorScheme.surfaceContainerHighest,

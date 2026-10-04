@@ -526,6 +526,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsButtonCancel => 'Cancel';
 
   @override
+  String get onboardingStep1Kicker => 'LUMEN TALE';
+
+  @override
+  String get onboardingStep1Headline => 'It reads with no signal.';
+
+  @override
+  String get onboardingStep1Body =>
+      'Keep a novel here once and it opens with the connection switched off — on a train, on a plane, with no data used. Nothing is uploaded: there is no account, no server, and nothing is sent anywhere.';
+
+  @override
+  String get onboardingStep2Kicker => 'BEFORE YOU START';
+
+  @override
+  String get onboardingStep2Headline => 'There is no backup.';
+
+  @override
+  String onboardingStepPosition(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get onboardingButtonSkip => 'Skip';
+
+  @override
+  String get onboardingButtonNext => 'Next';
+
+  @override
+  String get onboardingButtonStart => 'Start reading';
+
+  @override
   String get readerOfflineBanner => 'You are reading your downloads';
 
   @override
@@ -1044,4 +1074,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chapterListActionBack => 'Back';
+
+  @override
+  String get settingsGroupSize => 'TEXT SIZE';
+
+  @override
+  String get settingsGroupTheme => 'THEME';
+
+  @override
+  String get settingsGroupDeferred => 'NOT IN THIS VERSION';
+
+  @override
+  String settingsSpecimenCredit(String novel, String chapter) {
+    return 'From \"$novel\" · $chapter';
+  }
+
+  @override
+  String get settingsSpecimenEmptyNote =>
+      'You have not downloaded anything yet — this is what the reader will look like.';
+
+  @override
+  String get settingsSpecimenSeedFailed =>
+      'A chapter saved on this phone could not be read. Showing a sample instead.';
+
+  @override
+  String get settingsDeferredModes =>
+      'No reading modes — reading is one continuous scroll.';
+
+  @override
+  String get settingsDeferredSwipe => 'No swipe or tap page-turn.';
+
+  @override
+  String get settingsDeferredOrientation => 'No orientation or rotation lock.';
+
+  @override
+  String get settingsDeferredFilters =>
+      'No colour filters — sepia, greyscale, inverted.';
+
+  @override
+  String get settingsDeferredJustification =>
+      'No text justification. Justified prose at this measure creates rivers, and rivers are worse than a ragged edge.';
+
+  @override
+  String get settingsDeferredParagraphSpacing =>
+      'No paragraph spacing control — the 1.72 line-height already sets the rhythm.';
+
+  @override
+  String get settingsDeferredLineHeight =>
+      'No line-height control. It is held at 1.72 at every size on purpose, so the rhythm does not change when the size does.';
+
+  @override
+  String get settingsDeferredFonts =>
+      'No font picker — the reader uses a serif, decided once. A reading face you can choose is a v2 candidate, not a v1 control.';
+
+  @override
+  String get readerSizeSheetTitle => 'Text size';
+
+  @override
+  String readerSizeStepPoints(String px) {
+    return '${px}pt';
+  }
+
+  @override
+  String readerSizePixelsSpoken(String px) {
+    return '$px pixels';
+  }
+
+  @override
+  String readerSizeStepSemantics(String name, String pixels, String state) {
+    return '$name, $pixels, $state';
+  }
+
+  @override
+  String get readerSizeStepSelected => 'selected';
+
+  @override
+  String get readerSizeStepNotSelected => 'not selected';
+
+  @override
+  String readerSizeButtonTooltip(String name) {
+    return 'Text size: $name';
+  }
+
+  @override
+  String readerThemeButtonTooltip(String name) {
+    return 'Theme: $name';
+  }
 }

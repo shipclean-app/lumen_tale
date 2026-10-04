@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart' show GoRouterState;
 import 'package:lumen_tale/app/router/app_router.dart';
 import 'package:lumen_tale/app/router/app_routes.dart';
+import 'package:lumen_tale/app/router/first_run_gate.dart';
 import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/app/theme/app_theme_preferences.dart';
@@ -10,6 +11,7 @@ import 'package:lumen_tale/app/theme/app_version.dart';
 import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/core/database/app_database_provider.dart';
+import 'package:lumen_tale/core/storage/onboarding_seen.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
@@ -18,6 +20,8 @@ import 'package:lumen_tale/features/browse/catalogue_screen.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/features/library/library_screen.dart';
 import 'package:lumen_tale/features/novel_details/novel_details_screen.dart';
+import 'package:lumen_tale/features/onboarding/domain/onboarding_state.dart';
+import 'package:lumen_tale/features/onboarding/screens/onboarding_screen.dart';
 import 'package:lumen_tale/features/reader/reader_screen.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/features/source_unavailable/failure_cause.dart';
@@ -143,6 +147,33 @@ void registerScreens() {
     (BuildContext context, GoRouterState state) =>
         ReaderScreen(chapterId: state.pathParameters['chapterId']!),
   );
+  // ⚠️ **`3-4`'s screen, AND THE SECOND STANDALONE REGISTRATION.**
+  //
+  // `/onboarding` is outside the shell — `design-system.md` § 3.5 puts a first-run flow in
+  // overflow's rationale table with **no label at all**, so there is no tab bar to be inside
+  // of. Registering it here is what stops the route from rendering a `PlaceholderScreen` on
+  // the one screen E11 makes mandatory; before this line a first run landed on a page naming
+  // `/onboarding`, which is the exact failure `test/app/router/route_resolution_test.dart`
+  // was written for and could not see.
+  registerStandaloneRoute(
+    AppRoutes.onboarding,
+    // ⚠️ **THE ENTRY STEP IS READ FROM THE QUERY, AND THE CONSTANTS COME FROM
+    // `AppRoutes`.** The cold-start redirect pushes the bare path (step 1, § 3.1) and
+    // `openOnboarding` pushes `?step=disclosure`, so the *route* decides which step opens —
+    // there is no second table of "who entered from where" that could disagree with the URL
+    // a restored stack comes back with.
+    //
+    // Anything that is not the disclosure value opens on step 1. A malformed parameter is a
+    // cold start, not a re-read: showing the promise again to a reader who has already read
+    // it is the recoverable direction, and it is the same reasoning as `readFailsOpen`.
+    (BuildContext context, GoRouterState state) => OnboardingScreen(
+      initialStep:
+          state.uri.queryParameters[AppRoutes.onboardingStepQuery] ==
+              AppRoutes.disclosureStepValue
+          ? OnboardingStep.disclosure
+          : OnboardingStep.promise,
+    ),
+  );
 }
 
 Future<void> main() async {
@@ -169,6 +200,23 @@ Future<void> main() async {
   // and meaningless in review, and it still reads as two registrations to anyone who
   // later makes `registerScreen` do something order-dependent.
   registerScreens();
+
+  // ⚠️ **THE COLD-START GATE, INSTALLED ONCE, BEFORE `runApp`.** E11 needs the "nothing here
+  // is backed up" disclosure made *before* an uninstall, and the only moment the app can put
+  // a screen in front of the reader on its own is first run — so the decision lives in the
+  // router's `redirect` (`first_run_gate.dart`) rather than here, and what this line supplies
+  // is the flag reader the redirect cannot obtain for itself.
+  //
+  // `appRouter` is a top-level `final` and cannot read a Riverpod container (its header gives
+  // the reason), and `prefs` is resolved above, so the store is constructed here and handed
+  // over. **`main()` is the composition root**, which is why this is the right place and why
+  // `test/app/shell/app_shell_test.dart` counts the call: a missing installation is invisible
+  // at runtime — the app simply never shows onboarding.
+  await installStartupGate(
+    OnboardingStartupGate(
+      SharedPreferencesOnboardingSeenStore(prefs).readFailsOpen,
+    ),
+  );
 
   runApp(
     ProviderScope(
@@ -238,11 +286,23 @@ String _appVersion() {
 }
 
 /// Root widget.
-class LumenTaleApp extends StatelessWidget {
+///
+/// ## ⚠️ It is a `ConsumerWidget` because B26 is applied HERE and only here
+///
+/// `2-8` § 3.2: *"one single call in the application, in the root widget"*. The reason is not
+/// tidiness: a `Brightness` decided locally on the reader would be a **second** answer to
+/// "which night is it?", and the two would diverge the first time the reader used the
+/// `themeButton` from the chrome and then opened Settings, which is exactly the sequence
+/// `settings-reader.md` § 2.1 calls two doors to one value.
+///
+/// `ThemeOverride.resolve` is the **only** translation from an override to a `ThemeMode` in
+/// the project — the enum says so at its own declaration, and this line is where that claim
+/// is kept.
+class LumenTaleApp extends ConsumerWidget {
   const LumenTaleApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       // `go_router` holds the one instance. **Not a provider**: navigation state
       // is the router's, and `05-state-management.md` forbids a provider
@@ -260,10 +320,17 @@ class LumenTaleApp extends StatelessWidget {
       localeListResolutionCallback: _resolveLocale,
       theme: AppTheme.day(),
       darkTheme: AppTheme.night(),
-      // `themeMode` is deliberately absent, so it is `ThemeMode.system` and the
-      // phone's setting is honoured (E13). `themeOverride` — B26's explicit
-      // permission for an in-app override — is applied by `2-8`, which reads the
-      // provider this bootstrap overrides.
+      // ⚠️ **ADR-016: two palettes, designed separately.** `day` and `night` are not one
+      // value computed from the other — a single error red measures 7.32:1 on paper and
+      // 2.27:1 on ink — so this is a choice between two finished designs, not a brightness.
+      //
+      // ⚠️ **`MediaQuery.platformBrightnessOf` ABOVE the `MaterialApp`, and that is the
+      // phone's answer rather than the app's.** Read inside, it would follow the theme this
+      // very line sets, which is a loop: `system` would resolve through the value it is
+      // deciding. Above, the `MediaQuery` comes from the view, so it moves when the OS moves.
+      themeMode: ref
+          .watch(themeOverrideProvider)
+          .resolve(MediaQuery.platformBrightnessOf(context)),
     );
   }
 }

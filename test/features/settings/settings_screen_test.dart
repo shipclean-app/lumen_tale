@@ -17,6 +17,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/app/theme/app_version.dart';
+// ⚠️ **`2-8` moved `pointSizeOf` here.** It used to live in `appearance_label.dart`, and the
+// reader's `sizeButton` needed the same figure — which that file cannot hand across a
+// feature boundary. The mapping now has one home both sides import, and this import is the
+// only change to this file.
+import 'package:lumen_tale/app/theme/reader_display_copy.dart';
 import 'package:lumen_tale/app/theme/reader_scale.dart';
 import 'package:lumen_tale/app/theme/theme_override.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
