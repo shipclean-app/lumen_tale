@@ -1,157 +1,252 @@
 {
   "@@locale": "en",
-  "appTitle": "Lumen Tale",
-  "navLibrary": "Library",
-  "navBrowse": "Browse",
-  "navUpdates": "Updates",
-  "navHistory": "History",
-  "navMore": "More",
-  "navDownloads": "Downloads",
-  "navSettings": "Settings",
-  "commonRetry": "Retry",
-  "commonCancel": "Cancel",
-  "commonBack": "Back",
-  "commonErrorTitle": "Something went wrong",
-  "commonErrorBody": "The operation could not be completed.",
-  "libraryEmptyTitle": "Your library is empty",
-  "libraryEmptyBody": "Add a novel from Browse to start reading.",
-  "browseEmptyBody": "No source is available yet.",
-  "chapterCount": "{count, plural, =0{No chapters} =1{1 chapter} other{{count} chapters}}",
-  "coverSemanticsLabel": "Cover of {title}",
-  "errorNoConnection": "No connection. Your downloaded chapters stay readable.",
-  "errorRateLimited": "The site asked us to slow down. Try again shortly.",
-  "errorRateLimitedIn": "The site asked us to slow down. Try again in {seconds} seconds.",
-  "errorSourceLayoutChanged": "This site has changed its layout. The app can no longer read it.",
-  "errorSourceUnavailable": "This site is not responding. Try again later.",
-  "errorItemRemovedAtSource": "This novel is no longer on the site. The rest of your library is untouched.",
-  "errorStorageFull": "Storage is full. Free some space, then try again.",
-  "errorParseFailed": "A file for this novel could not be read. Please report it to whoever maintains this app.",
-  "errorSiteUnreadable": "This site could not be read. Your other sources work normally.",
-  "errorSettingsLoad": "Your settings could not be loaded.",
-  "errorSettingsWrite": "This setting could not be saved. It will keep its previous value.",
-  "errorHistoryClear": "History could not be cleared.",
-  "errorCountUnavailable": "That count could not be computed.",
-  "warningNotifications": "Notifications are turned off in your phone's settings.",
-  "checkCancelled": "Check cancelled.",
-  "browseEmpty": "This site has nothing to show here.",
-  "browseSucceeded": "Read successfully.",
-  "downloadQueued": "Queued for download",
-  "downloadDownloading": "Downloading",
-  "downloadDone": "Downloaded",
-  "downloadFailed": "Download interrupted. You can try it again.",
-  "actionFreeSpace": "Free space",
-  "actionReportBug": "Report the problem",
-  "historyTitle": "History",
-  "historyUntitledChapter": "Untitled",
-  "historyUntitledNovel": "Untitled",
-  "historyLoadingTitle": "Loading history",
-  "historyEmptyTitle": "Nothing read yet",
-  "historyEmptyBody": "The chapters you open appear here, newest first.",
-  "historyEmptyActionBrowse": "Browse a source",
-  "historyEmptyActionLibrary": "Open your library",
-  "historyClearedTitle": "History cleared",
-  "historyClearedBody": "Your library, your downloads and every remembered position were kept.",
-  "historyAgedOutTitle": "Everything older than one year was dropped",
-  "historyAgedOutBody": "Your reading positions were kept.",
-  "historyLoadErrorTitle": "Your history could not be read",
-  "historyLoadErrorBody": "Your library, your downloaded chapters and every remembered reading position are unaffected.",
-  "historyNoticeTitle": "History is bounded by time",
-  "historyNoticeBody": "Clearing it never moves a remembered reading position.",
-  "historyRetentionLabel": "Keep history for",
-  "historyRetentionChange": "Change",
-  "historyClearAction": "Clear history",
-  "historyClearDialogTitle": "Clear history?",
-  "historyClearDialogBody": "{count, plural, =0{No entries will be removed.} =1{One entry will be removed.} other{{count} entries will be removed.}} Your library, your downloads and every remembered reading position will be kept.",
-  "historyClearDialogConfirm": "Clear history",
-  "historyTerminalLine": "This is the oldest entry kept. Entries older than {window} are dropped, oldest first.",
-  "historySheetTitle": "Keep history for",
-  "historySheetWarning": "Entries older than {window} will be dropped, oldest first. Your reading positions are never affected.",
-  "historySheetWarningNone": "No entries will be dropped. Your reading positions are never affected.",
-  "historySnackCleared": "History cleared. Your reading positions were kept.",
-  "historySnackNotCleared": "History was not cleared.",
-  "historySnackWindowChanged": "History is now kept for {window}.",
-  "historyWindowOneWeek": "one week",
-  "historyWindowOneMonth": "one month",
-  "historyWindowThreeMonths": "three months",
-  "historyWindowOneYear": "one year",
-  "historyWindowTwoYears": "two years",
-  "historyDayToday": "Today",
-  "historyDayYesterday": "Yesterday",
-  "historyDayOn": "{date}",
-  "historyJustNow": "Just now",
-  "historyMinutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
-  "historyHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
-  "aboutVersion": "Version {buildName} · build {buildNumber}",
-  "aboutProvenance": "Android phone · built automatically · no store",
-  "aboutCopyVersion": "Copy version number",
-  "aboutVersionUnreadable": "The installed version number could not be read.",
-  "aboutSnackCopied": "Version number copied.",
-  "aboutGuarantee": "Installing a new version keeps your library, your downloads, your reading positions and your history. Nothing is replaced or re-downloaded.",
-  "aboutDataLabel": "YOUR DATA ON THIS DEVICE",
-  "aboutDataLibrary": "Library",
-  "aboutDataDownloaded": "Downloaded chapters",
-  "aboutDataPositions": "Reading positions",
-  "aboutDataCountUnavailable": "—",
-  "aboutDataE11": "Nothing here is backed up anywhere. If you uninstall Lumen Tale or lose this phone, all three numbers go to zero and no copy exists. Installing a new version over this one does not touch them — that is the only guarantee this app makes about your data.",
-  "aboutPrivacyLabel": "WHAT LEAVES THIS DEVICE",
-  "aboutPrivacySent1": "A chapter's page — but only after you asked for it.",
-  "aboutPrivacySent2": "One request to check whether a newer version exists — only if you tap \"Check for a new version\".",
-  "aboutPrivacyNever1": "Your library",
-  "aboutPrivacyNever2": "Your reading positions",
-  "aboutPrivacyNever3": "Your history",
-  "aboutPrivacyNever4": "Your error logs",
-  "aboutPrivacyNever5": "Crash reports",
-  "aboutPrivacyNever6": "Analytics",
-  "aboutPrivacyNever7": "A device identifier",
-  "aboutPrivacyVerify": "Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.",
-  "aboutDeliveryBody": "This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.",
-  "settingsTitle": "Settings",
-  "settingsLanguageEnglish": "English",
-  "settingsLanguageFrench": "Français",
-  "settingsGroupReading": "READING",
-  "settingsGroupHistory": "HISTORY",
-  "settingsGroupApp": "APP",
-  "settingsRowAppearanceLabel": "Reader appearance",
-  "settingsRowAppearanceValue": "{theme} · {size} ({pt} pt)",
-  "settingsThemeDay": "Day",
-  "settingsThemeNight": "Night",
-  "settingsThemeSystem": "Follow the phone",
-  "settingsSizeSm": "Small",
-  "settingsSizeMd": "Medium",
-  "settingsSizeLg": "Large",
-  "settingsSizeXl": "Larger",
-  "settingsSizeXxl": "Largest",
-  "settingsRowHistoryLabel": "Reading history",
-  "settingsRowHistoryValue": "{count} entries · oldest {relative}",
-  "settingsRowHistoryValueEmpty": "0 entries",
-  "settingsRowRetentionLabel": "Keep history for",
-  "settingsRowClearHistoryLabel": "Clear reading history",
-  "settingsDialogClearHistoryTitle": "Clear {count} entries?",
-  "settingsDialogClearHistoryBody": "Reading positions are not part of this list and will not be touched.",
-  "settingsDialogClearHistoryConfirm": "Clear",
-  "settingsSnackHistoryCleared": "Reading history cleared. Your reading positions were kept.",
-  "settingsRowLanguageLabel": "Language",
-  "settingsRowLanguageHint": "Follows your phone. Change it in Android's language settings.",
-  "settingsRowOnboardingLabel": "How this app works",
-  "settingsRowOnboardingValue": "Show the two introduction screens again",
-  "settingsRowAboutLabel": "About Lumen Tale",
-  "settingsRowAboutValue": "Version {buildName} · build {buildNumber}",
-  "settingsDisclosureE11": "Nothing here is backed up. If you uninstall Lumen Tale or lose this phone, your library, your downloads and your reading positions are gone, and no copy exists anywhere.",
-  "settingsDisclosureE11Footer": "The app cannot warn you at the moment you uninstall — the phone does that, outside the app. So it is said here, before, rather than after.",
-  "settingsDisclosureAboutLink": "What survives an update",
-  "settingsErrorWrite": "This setting could not be saved. Nothing was changed.",
-  "settingsErrorCountUnavailable": "Count unavailable",
-  "settingsButtonRetry": "Try again",
-  "settingsButtonCancel": "Cancel",
-  "onboardingStep1Kicker": "LUMEN TALE",
-  "onboardingStep1Headline": "It reads with no signal.",
-  "onboardingStep1Body": "Keep a novel here once and it opens with the connection switched off — on a train, on a plane, with no data used. Nothing is uploaded: there is no account, no server, and nothing is sent anywhere.",
-  "onboardingStep2Kicker": "BEFORE YOU START",
-  "onboardingStep2Headline": "There is no backup.",
-  "onboardingStepPosition": "Step {current} of {total}",
-  "onboardingButtonSkip": "Skip",
-  "onboardingButtonNext": "Next",
-  "onboardingButtonStart": "Start reading",
+  "@aboutCopyVersion": {
+    "description": "The clipboard button. C9 says the owner must be able to determine which version is installed, and pasting a version into a bug report is how that happens."
+  },
+  "@aboutDataCountUnavailable": {
+    "description": "A count that could not be computed, and NOT a zero. The distinction is the whole reason the three figures are evidence for B31: a zero says 'you have none' and a dash says 'we could not look', and a reader who took the first for the second would re-download a library they still have."
+  },
+  "@aboutDataDownloaded": {
+    "description": ""
+  },
+  "@aboutDataE11": {
+    "description": "E11, in full and unhedged. This app has no backup (ADR-010), so the disclosure belongs on the page that shows what would be lost — and it names the exact operation that does NOT lose it, because a disclosure that only lists risks reads as an apology."
+  },
+  "@aboutDataLabel": {
+    "description": "The recessed block's overline. Read as a heading."
+  },
+  "@aboutDataLibrary": {
+    "description": ""
+  },
+  "@aboutDataPositions": {
+    "description": ""
+  },
+  "@aboutDeliveryBody": {
+    "description": "B34 + C3 + C9: the app IS the file. 'There is no app store' is not a limitation to apologise for — it is why there is no account and no server holding anything."
+  },
+  "@aboutGuarantee": {
+    "description": "B31, and the one sentence § 4bis kept when it removed `UpdateBlock`. It is the only guarantee this app makes about the reader's data, so it is read out loud here rather than discovered after an upgrade."
+  },
+  "@aboutPrivacyLabel": {
+    "description": ""
+  },
+  "@aboutPrivacyNever1": {
+    "description": ""
+  },
+  "@aboutPrivacyNever2": {
+    "description": ""
+  },
+  "@aboutPrivacyNever3": {
+    "description": ""
+  },
+  "@aboutPrivacyNever4": {
+    "description": ""
+  },
+  "@aboutPrivacyNever5": {
+    "description": ""
+  },
+  "@aboutPrivacyNever6": {
+    "description": ""
+  },
+  "@aboutPrivacyNever7": {
+    "description": ""
+  },
+  "@aboutPrivacySent1": {
+    "description": ""
+  },
+  "@aboutPrivacySent2": {
+    "description": "⚠️ **Written for a control § 4bis removed.** The sentence is about a button this screen does not have. It is kept because the block's claim is about the APP's network posture rather than about the button: the app sends nothing on its own account, and if a version check returns the reader must already know that one request is the whole of it. If the check is ever built, this sentence is its first line and it is already true."
+  },
+  "@aboutPrivacyVerify": {
+    "description": "The falsifiable form of the privacy claim. A promise that cannot be tested by the reader is marketing; airplane mode is the test, and it takes thirty seconds."
+  },
+  "@aboutProvenance": {
+    "description": "How this build reached the reader. Three facts in one line, because a reader who installed a file by hand needs to know that is normal."
+  },
+  "@aboutSnackCopied": {
+    "description": ""
+  },
+  "@aboutVersion": {
+    "description": "B43: the reader can determine which version is installed. `buildName` and `buildNumber` arrive from Flutter's build-time Dart defines (`FLUTTER_BUILD_NAME` / `FLUTTER_BUILD_NUMBER`, ADR-011) — the app reads pubspec at build time and never parses a file at runtime.",
+    "placeholders": {
+      "buildName": {
+        "type": "String",
+        "example": "0.9.0"
+      },
+      "buildNumber": {
+        "type": "String",
+        "example": "41"
+      }
+    }
+  },
+  "@aboutVersionUnreadable": {
+    "description": "A real failure mode: the defines are absent in a plain `flutter test` and in an IDE run. **The rest of the screen renders completely** — `Version —` is forbidden, because an em dash looks like a version and C9 requires the version to be determinable."
+  },
+  "@actionFreeSpace": {
+    "description": "The action for errorStorageFull. It works, so it is offered."
+  },
+  "@actionReportBug": {
+    "description": "The action for errorParseFailed and errorSourceLayoutChanged. No Retry button repairs either."
+  },
+  "@appTitle": {
+    "description": ""
+  },
+  "@browseActionBrowseAnother": {
+    "description": ""
+  },
+  "@browseActionOpenLibrary": {
+    "description": ""
+  },
+  "@browseActionRetry": {
+    "description": ""
+  },
+  "@browseEmpty": {
+    "description": "B22: the third state, distinct from failure, and available only where the site supplies its own signal."
+  },
+  "@browseEmptyBody": {
+    "description": ""
+  },
+  "@browseEmptyTagBody": {
+    "description": ""
+  },
+  "@browseEmptyTagTitle": {
+    "description": "⚠️ **The tag is echoed back**, because a reader who has forgotten what they tapped needs to be told — and an empty-state sentence that does not name the tag could belong to any screen."
+  },
+  "@browseFailureItemRemoved": {
+    "description": ""
+  },
+  "@browseFailureLayoutChanged": {
+    "description": ""
+  },
+  "@browseFailureNoConnection": {
+    "description": ""
+  },
+  "@browseFailureParse": {
+    "description": ""
+  },
+  "@browseFailureRateLimited": {
+    "description": "⚠️ **The site's own rate limit is named, not \"error\".** `17-security.md` rule 6 honours `Retry-After` rather than guessing, and a reader who is told the site asked us to slow down waits; one told \"error\" presses retry and makes it worse."
+  },
+  "@browseFailureUnavailable": {
+    "description": ""
+  },
+  "@browseFailureUnknownCause": {
+    "description": "⚠️ **Not \"no connection\".** `CauseUnknown` means the app cannot read its own record; it does not mean the phone is offline, and a reader sent to check a setting that is already correct learns to distrust every error this app shows."
+  },
+  "@browseFooterEnd": {
+    "description": ""
+  },
+  "@browseFooterLoadingMore": {
+    "description": ""
+  },
+  "@browseNoConnectionBody": {
+    "description": "⚠️ **`Your library is unaffected`**, and it is not reassurance for its own sake: SC-6 exists because a site that cannot be read looks like a broken app, and the reader's first fear is their library."
+  },
+  "@browseNoConnectionTitle": {
+    "description": ""
+  },
+  "@browseSearchHint": {
+    "description": "Shown only when the source declares `supportsSearch`; the field is **absent** otherwise, never disabled."
+  },
+  "@browseSiteSaidNothingBody": {
+    "description": "⚠️ **The query is quoted AND the site is named.** The site's own marker is the reason this state exists at all, and a reader needs to see what they asked for before they decide the site is at fault."
+  },
+  "@browseSiteSaidNothingTitle": {
+    "description": ""
+  },
+  "@browseSourceUnavailableBody": {
+    "description": "⚠️ **Two sentences a reader needs and cannot guess.** `Nothing is wrong with your library` comes first because the failure looks like a bug in the app, and `nothing was downloaded` because the fear is that a check ate their downloads. This is SC-6's only surface."
+  },
+  "@browseSourceUnavailableTitle": {
+    "description": ""
+  },
+  "@browseSucceeded": {
+    "description": "Almost never displayed; it exists so the mapping is exhaustive and testable."
+  },
+  "@browseTileAdd": {
+    "description": ""
+  },
+  "@browseTileKept": {
+    "description": ""
+  },
+  "@browseTileOpen": {
+    "description": ""
+  },
+  "@browseTitle": {
+    "description": ""
+  },
+  "@causeActionBack": {
+    "description": ""
+  },
+  "@causeActionBrowseOther": {
+    "description": ""
+  },
+  "@causeActionCopyThis": {
+    "description": ""
+  },
+  "@causeActionOpenLibrary": {
+    "description": ""
+  },
+  "@causeActionTryAgain": {
+    "description": ""
+  },
+  "@causeContentRemovedBody": {
+    "description": ""
+  },
+  "@causeContentRemovedKicker": {
+    "description": ""
+  },
+  "@causeContentRemovedNoRetry": {
+    "description": "⚠️ **The caption that replaces the button.** There is no retry here and a greyed-out one would tell a reader the app is considering an action it will not take. The words say why."
+  },
+  "@causeContentRemovedTitle": {
+    "description": ""
+  },
+  "@causeEvidenceHeading": {
+    "description": ""
+  },
+  "@causeLayoutChangedBody": {
+    "description": "⚠️ **\"A fault in the copy this app HAS of {source} — not in {source}\".** E8's whole point: the reader did not break anything and the site did not break anything. A message that says \"{source} is broken\" transfers the fault to the site, which is the wrong party and the one the reader cannot report to."
+  },
+  "@causeLayoutChangedDictation": {
+    "description": "⚠️ **A sentence the reader can read ALOUD**, which is C12: the reader is often on a phone they cannot type on, and \"the pages of X have changed\" is something a person can act on while \"HTTP 200\" is not."
+  },
+  "@causeLayoutChangedKicker": {
+    "description": ""
+  },
+  "@causeLayoutChangedRetryNote": {
+    "description": "⚠️ **Said BEFORE the button, and it hedges honestly.** A site mid-deployment is a temporary state, and \"sometimes it resolves on its own. Rarely.\" is a sentence that sets the expectation a retry needs to be fair."
+  },
+  "@causeLayoutChangedTitle": {
+    "description": ""
+  },
+  "@causeNoConnectionBody": {
+    "description": ""
+  },
+  "@causeNoConnectionKicker": {
+    "description": ""
+  },
+  "@causeNoConnectionTitle": {
+    "description": ""
+  },
+  "@causeSiteUnavailableBody": {
+    "description": ""
+  },
+  "@causeSiteUnavailableKicker": {
+    "description": ""
+  },
+  "@causeSiteUnavailableTitle": {
+    "description": ""
+  },
+  "@causeUnreadableRecordBody": {
+    "description": "⚠️ **\"It will not guess\", stated as a virtue.** This is the only screen that admits the app does not know, and saying so plainly is what stops a reader assuming the app knows and is being coy."
+  },
+  "@causeUnreadableRecordKicker": {
+    "description": ""
+  },
+  "@causeUnreadableRecordTitle": {
+    "description": ""
+  },
   "@chapterCount": {
     "description": "Number of chapters available for a novel.",
     "placeholders": {
@@ -160,6 +255,316 @@
         "example": "12"
       }
     }
+  },
+  "@chapterCountPlural": {
+    "description": "",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@chapterCountSingular": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@chapterListActionBack": {
+    "description": ""
+  },
+  "@chapterListActionRetry": {
+    "description": ""
+  },
+  "@chapterListAddToLibrary": {
+    "description": "B12 — slot 1 while the novel is NOT in the library. The only path into the library from this screen."
+  },
+  "@chapterListContinue": {
+    "description": "B12 — slot 1 when the novel is in the library and a position exists."
+  },
+  "@chapterListContinueSemantics": {
+    "description": "B12/B10 — what a screen reader announces. The visible label is the word 'Continue' alone, which tells a sighted reader where the tap goes and a blind reader nothing; this names the chapter and how far into it the position is.",
+    "placeholders": {
+      "chapter": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@chapterListDownloadAction": {
+    "description": "B18 — slot 2 in its idle state. Opens the bulk download sheet, which is 5-1's queue behind a surface this slice renders."
+  },
+  "@chapterListDownloadAll": {
+    "description": ""
+  },
+  "@chapterListEmptyAtSourceBody": {
+    "description": "⚠️ **\"The site said so itself.\"** This is the ONLY place in the app where an empty result is a real answer, and the sentence names the site as the source of the claim — otherwise a reader compares it with an unrelated empty tag and concludes the app is broken."
+  },
+  "@chapterListEmptyAtSourceTitle": {
+    "description": ""
+  },
+  "@chapterListHeaderAtSource": {
+    "description": ""
+  },
+  "@chapterListHeaderCount": {
+    "description": ""
+  },
+  "@chapterListJumpToCurrent": {
+    "description": ""
+  },
+  "@chapterListLoadAction": {
+    "description": ""
+  },
+  "@chapterListLoadExplainer": {
+    "description": ""
+  },
+  "@chapterListMarkAllRead": {
+    "description": ""
+  },
+  "@chapterListMarkAllReadConfirm": {
+    "description": "B13 — the confirmation for slot 3. It NAMES THE COUNT in the title, because a title is what a reader reads first and 'are you sure?' does not say what is about to change.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@chapterListMarkedReadFailedBody": {
+    "description": "⚠️ **\"Your progress has NOT been deleted.\"** An invariant a reader cannot see is an invariant they learn to distrust. Saying the app has not touched their progress is what stops them re-adding the novel to 'fix' it."
+  },
+  "@chapterListMarkedReadFailedTitle": {
+    "description": ""
+  },
+  "@chapterListNeverLoadedBody": {
+    "description": "⚠️ **It says what loading DOES before offering it.** B12's whole point is that a list nobody asked for is not an empty list, and a reader who sees an empty area and one button cannot tell whether the button will create something or reveal something. This sentence says: it asks the site, and it stores."
+  },
+  "@chapterListNeverLoadedTitle": {
+    "description": ""
+  },
+  "@chapterListNoConnectionBody": {
+    "description": ""
+  },
+  "@chapterListNoConnectionTitle": {
+    "description": ""
+  },
+  "@chapterListNothingUnopened": {
+    "description": "B13 — slot 3 when every chapter has been opened. DISABLED, never absent: an action row that reflows when a counter reaches zero moves the control under the reader's thumb."
+  },
+  "@chapterListReadFromStart": {
+    "description": "B12 — slot 1 when the novel IS in the library and there is no reading position."
+  },
+  "@chapterListSpaceRefusedBody": {
+    "description": ""
+  },
+  "@chapterListSpaceRefusedTitle": {
+    "description": ""
+  },
+  "@chapterListStoredUnreadableBody": {
+    "description": "⚠️ **\"The app has NOT done that\", stated explicitly.** This is the only state where loading again would be *destructive*, and a screen that offers the button without saying so would quietly replace a copy the reader cannot read with one they can — which loses the unread marks along with it."
+  },
+  "@chapterListStoredUnreadableTitle": {
+    "description": ""
+  },
+  "@chapterListTailMarker": {
+    "description": ""
+  },
+  "@chapterListUnreadableBody": {
+    "description": ""
+  },
+  "@chapterListUnreadableTitle": {
+    "description": ""
+  },
+  "@chapterListUntitled": {
+    "description": "⚠️ **B10: shown when the site published no title at all.** Never an index, never a generated \"Chapter 12\" — a fabricated title is a sentence the app invented and the reader would believe."
+  },
+  "@chapterTileDownloaded": {
+    "description": ""
+  },
+  "@chapterTileNotDownloaded": {
+    "description": ""
+  },
+  "@chapterTileUnread": {
+    "description": ""
+  },
+  "@checkActionSemantics": {
+    "description": "",
+    "placeholders": {
+      "done": {
+        "type": "String",
+        "example": "7"
+      },
+      "total": {
+        "type": "String",
+        "example": "23"
+      }
+    }
+  },
+  "@checkCancelAction": {
+    "description": ""
+  },
+  "@checkCancelled": {
+    "description": "Exists so the mapping is complete; 13-error-handling.md rule 7 means cancelled, not failed."
+  },
+  "@checkCancelledByReader": {
+    "description": ""
+  },
+  "@checkDiscovered": {
+    "description": "",
+    "placeholders": {
+      "total": {
+        "type": "String",
+        "example": "23"
+      },
+      "discovered": {
+        "type": "String",
+        "example": "12"
+      }
+    }
+  },
+  "@checkDiscoveredNothing": {
+    "description": "⚠️ **NOT 'nothing is new'.** The distinction B49 is about: this sentence may only be said when the app actually looked. `libraryTileUnopened`'s `=0` arm says 'No new chapters' for a single novel, and it is allowed there because that row carries the novel's own verification chip beside it.",
+    "placeholders": {
+      "total": {
+        "type": "String",
+        "example": "23"
+      }
+    }
+  },
+  "@checkFinishedAfterCancel": {
+    "description": "⚠️ **Never 'cancelled'.** `StopReason.systemIgnoredCancelledByApp` means the work **finished**: the reader now holds results they did not ask for, and telling them 'cancelled' would make them look for changes that are already saved."
+  },
+  "@checkNeedsConnection": {
+    "description": ""
+  },
+  "@checkNotificationChannelName": {
+    "description": ""
+  },
+  "@checkNotificationPermissionWarning": {
+    "description": "B37 says *visible*, not *blocking* — so a denied permission must NOT stop the check. The line therefore names what the reader loses (the notification) and not the state of a permission they cannot see."
+  },
+  "@checkNotificationSettingsAction": {
+    "description": ""
+  },
+  "@checkNotificationTitle": {
+    "description": ""
+  },
+  "@checkNowAction": {
+    "description": ""
+  },
+  "@checkProgress": {
+    "description": "",
+    "placeholders": {
+      "done": {
+        "type": "String",
+        "example": "7"
+      },
+      "total": {
+        "type": "String",
+        "example": "23"
+      }
+    }
+  },
+  "@checkProgressNothingDownloaded": {
+    "description": "⚠️ **THE SENTENCE `6-10`'s NOTIFICATION AND `6-4`'s STATUS LINE SHARE.** B39's counter and B38's promise in one clause, and one key rather than two: a notification that says 'checking 7 of 23' and a status line that says 'checking 7 of 23 · nothing is downloaded' are two claims about one run.",
+    "placeholders": {
+      "done": {
+        "type": "String",
+        "example": "7"
+      },
+      "total": {
+        "type": "String",
+        "example": "23"
+      }
+    }
+  },
+  "@checkQueuedNotice": {
+    "description": ""
+  },
+  "@checkStoppedAppStandby": {
+    "description": ""
+  },
+  "@checkStoppedBackgroundRestriction": {
+    "description": ""
+  },
+  "@checkStoppedCancelledByApp": {
+    "description": ""
+  },
+  "@checkStoppedDeviceIdle": {
+    "description": "Same French sentence as `checkStoppedAppStandby` **on purpose**: Doze and App Standby are one thing to a reader — the phone put the app to sleep — and two different sentences for one cause is two truths about one phone's state."
+  },
+  "@checkStoppedDeviceState": {
+    "description": ""
+  },
+  "@checkStoppedGpuLimit": {
+    "description": ""
+  },
+  "@checkStoppedPreempt": {
+    "description": ""
+  },
+  "@checkStoppedSystemIgnoredCancel": {
+    "description": ""
+  },
+  "@checkStoppedTimeout": {
+    "description": ""
+  },
+  "@checkStoppedUnknown": {
+    "description": ""
+  },
+  "@checkTerminalComplete": {
+    "description": "",
+    "placeholders": {
+      "total": {
+        "type": "String",
+        "example": "23"
+      }
+    }
+  },
+  "@checkTerminalInterrupted": {
+    "description": "",
+    "placeholders": {
+      "done": {
+        "type": "String",
+        "example": "7"
+      },
+      "total": {
+        "type": "String",
+        "example": "23"
+      }
+    }
+  },
+  "@checkTerminalWithFailures": {
+    "description": "B22 in one line: the failure count is **beside** the success count and never inside it. 'Checked 23 of 23 novels' when four sites could not be read is the exact presentation B22 exists to forbid.",
+    "placeholders": {
+      "checked": {
+        "type": "String",
+        "example": "19"
+      },
+      "total": {
+        "type": "String",
+        "example": "23"
+      },
+      "failed": {
+        "type": "String",
+        "example": "4"
+      }
+    }
+  },
+  "@commonBack": {
+    "description": ""
+  },
+  "@commonCancel": {
+    "description": ""
+  },
+  "@commonErrorBody": {
+    "description": ""
+  },
+  "@commonErrorTitle": {
+    "description": ""
+  },
+  "@commonOk": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@commonRetry": {
+    "description": ""
   },
   "@coverSemanticsLabel": {
     "description": "Accessibility label for a novel cover thumbnail.",
@@ -170,8 +575,98 @@
       }
     }
   },
+  "@deleteStoredBody": {
+    "description": "",
+    "placeholders": {
+      "freedBytes": {},
+      "siblingCount": {}
+    }
+  },
+  "@deleteStoredConfirm": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@deleteStoredFailedSnackbar": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@deleteStoredTitle": {
+    "description": "",
+    "placeholders": {
+      "ordinal": {}
+    }
+  },
+  "@downloadAddedSnackbar": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@downloadAlreadyQueuedSnackbar": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@downloadAlreadyStoredSnackbar": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@downloadDeletedSnackbar": {
+    "description": "",
+    "placeholders": {
+      "freedBytes": {}
+    }
+  },
+  "@downloadDone": {
+    "description": "B6: the word appears only after the atomic rename, so the file is whole."
+  },
+  "@downloadDownloading": {
+    "description": "The in-progress state. The percentage is a number, never an estimate of the time left."
+  },
+  "@downloadFailed": {
+    "description": "Retriable because nothing was written: the write is atomic."
+  },
+  "@downloadNeedsConnectionSnackbar": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@downloadNotDownloadedLabel": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@downloadNotStoredSnackbar": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@downloadQueued": {
+    "description": "One of the four DownloadState values. B37: the queue is visible and cancellable before the first byte."
+  },
+  "@downloadSpaceRefusedAction": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@downloadSpaceRefusedBody": {
+    "description": "",
+    "placeholders": {
+      "freeBytes": {},
+      "requiredBytes": {}
+    }
+  },
+  "@downloadWriteFailedSnackbar": {
+    "description": "",
+    "placeholders": {}
+  },
+  "@errorCountUnavailable": {
+    "description": "B48: an uncertain count says it is uncertain; it is never estimated."
+  },
+  "@errorHistoryClear": {
+    "description": "B46: reading position is not involved, and the sentence must not let the reader think it is."
+  },
+  "@errorItemRemovedAtSource": {
+    "description": "E9. One item vanished; the sentence says so, or the reader thinks data was lost."
+  },
   "@errorNoConnection": {
     "description": "E5. The sentence says what stays usable, not only what failed."
+  },
+  "@errorParseFailed": {
+    "description": "C12. The action is report, because nothing can repair a failed conversion."
   },
   "@errorRateLimited": {
     "description": "C7. A 429 with no usable Retry-After header."
@@ -185,125 +680,32 @@
       }
     }
   },
-  "@errorSourceLayoutChanged": {
-    "description": "E4 / SC-6. Nothing to retry: this is a defect to report."
-  },
-  "@errorSourceUnavailable": {
-    "description": "A non-success status. Retriable later, so Retry is honest."
-  },
-  "@errorItemRemovedAtSource": {
-    "description": "E9. One item vanished; the sentence says so, or the reader thinks data was lost."
-  },
-  "@errorStorageFull": {
-    "description": "C8. The only cause whose sentence contains an action that actually works."
-  },
-  "@errorParseFailed": {
-    "description": "C12. The action is report, because nothing can repair a failed conversion."
-  },
-  "@errorSiteUnreadable": {
-    "description": "B22. 'Your other sources': one site failing is not the app failing."
-  },
   "@errorSettingsLoad": {
     "description": "A startup failure, therefore never a screen state. See the comment on main()."
   },
   "@errorSettingsWrite": {
     "description": "The control snaps back and says why: showing a value it could not store is worse than a visible failure."
   },
-  "@errorHistoryClear": {
-    "description": "B46: reading position is not involved, and the sentence must not let the reader think it is."
+  "@errorSiteUnreadable": {
+    "description": "B22. 'Your other sources': one site failing is not the app failing."
   },
-  "@errorCountUnavailable": {
-    "description": "B48: an uncertain count says it is uncertain; it is never estimated."
+  "@errorSourceLayoutChanged": {
+    "description": "E4 / SC-6. Nothing to retry: this is a defect to report."
   },
-  "@warningNotifications": {
-    "description": "A warning, not an error: the app works, the phone decided."
+  "@errorSourceUnavailable": {
+    "description": "A non-success status. Retriable later, so Retry is honest."
   },
-  "@checkCancelled": {
-    "description": "Exists so the mapping is complete; 13-error-handling.md rule 7 means cancelled, not failed."
-  },
-  "@browseEmpty": {
-    "description": "B22: the third state, distinct from failure, and available only where the site supplies its own signal."
-  },
-  "@browseSucceeded": {
-    "description": "Almost never displayed; it exists so the mapping is exhaustive and testable."
-  },
-  "@downloadQueued": {
-    "description": "One of the four DownloadState values. B37: the queue is visible and cancellable before the first byte."
-  },
-  "@downloadDownloading": {
-    "description": "The in-progress state. The percentage is a number, never an estimate of the time left."
-  },
-  "@downloadDone": {
-    "description": "B6: the word appears only after the atomic rename, so the file is whole."
-  },
-  "@downloadFailed": {
-    "description": "Retriable because nothing was written: the write is atomic."
-  },
-  "@actionFreeSpace": {
-    "description": "The action for errorStorageFull. It works, so it is offered."
-  },
-  "@actionReportBug": {
-    "description": "The action for errorParseFailed and errorSourceLayoutChanged. No Retry button repairs either."
-  },
-  "@historyTitle": {
-    "description": "Screen title"
-  },
-  "@historyUntitledChapter": {
-    "description": "B10 / E2: the site published no title for this chapter. Rendered here, NEVER as an index and never as a generated number - a fabricated title is a sentence the app invented and the reader would believe."
-  },
-  "@historyUntitledNovel": {
-    "description": "A novel whose stored title is empty. The same rule as the chapter: a placeholder, never an index."
-  },
-  "@historyLoadingTitle": {
-    "description": "Accessibility label while the list loads. Eight skeletons, no cover - the `history` variant of NovelRow declares no cover slot, and a loading state that shows one promises an image the filled rows will not have."
-  },
-  "@historyEmptyTitle": {
-    "description": "US-12 distinguishes 'never opened anything' from 'opened things and then cleared them'. This is the FIRST; the second is historyClearedTitle."
-  },
-  "@historyEmptyBody": {
-    "description": "Says what the screen is FOR, in the reader's terms, and states the order it will be in."
-  },
-  "@historyEmptyActionBrowse": {
-    "description": "The empty action depends on a LOCAL FACT: this one when the library is empty, historyEmptyActionLibrary when it is not. A fixed string would point at a library the reader does not have."
-  },
-  "@historyEmptyActionLibrary": {
-    "description": "The other half of the same local fact. Deciding by what is already on the phone is the difference between 'where do I go next' and 'here is a button'."
-  },
-  "@historyClearedTitle": {
-    "description": "Empty - no data (a). history.md § 4 splits this state in two because being cleared BY THE READER and being AGED OUT are different events with different emotional weight."
-  },
-  "@historyClearedBody": {
-    "description": "B46 said out loud, on the screen where the fear lives. Repeated in the clear confirmation, in this state, and in the store-failure sentence - four times, because it is the thing a reader on a device with no backup is actually afraid of."
-  },
-  "@historyAgedOutTitle": {
-    "description": "Empty - no data (b). Distinct from historyClearedTitle because nobody did this on purpose."
+  "@errorStorageFull": {
+    "description": "C8. The only cause whose sentence contains an action that actually works."
   },
   "@historyAgedOutBody": {
     "description": "Both empty-no-data states say WHAT SURVIVED. An empty list after a destructive action that says nothing is the moment a reader goes looking for what else just disappeared."
   },
-  "@historyLoadErrorTitle": {
-    "description": "Load error. The only failure this screen can have is its own local store - nothing on it ever needed a network (C14)."
-  },
-  "@historyLoadErrorBody": {
-    "description": "Unusually specific because the fear here is data loss and this app has no backup (ADR-010). Naming the three survivals by name is what stops the reader assuming the worst."
-  },
-  "@historyNoticeTitle": {
-    "description": "B47 stated on the screen where the fear lives: the list is bounded, and something else is not."
-  },
-  "@historyNoticeBody": {
-    "description": "B46 in one line."
-  },
-  "@historyRetentionLabel": {
-    "description": "A row WITH this label goes somewhere - it opens the sheet. The absence of a chevron would say the value can be changed in place, which it cannot."
-  },
-  "@historyRetentionChange": {
-    "description": "The action that opens SettingsChoiceSheet. 'Change' rather than 'Keep for one year': the value is printed next to it, and a label repeating it would be two places to update on every window change."
+  "@historyAgedOutTitle": {
+    "description": "Empty - no data (b). Distinct from historyClearedTitle because nobody did this on purpose."
   },
   "@historyClearAction": {
     "description": "The only destructive action on the most read-only screen in the app, and it says exactly what it clears. Never 'OK', never 'Delete'."
-  },
-  "@historyClearDialogTitle": {
-    "description": "A question, not a statement. 'Clear history?' lets the reader cancel without reading the body."
   },
   "@historyClearDialogBody": {
     "description": "Clear confirmation",
@@ -317,14 +719,83 @@
   "@historyClearDialogConfirm": {
     "description": "The destructive button, in full. 'OK' on a dialog that empties a reader's log is a button asking them to trust a process they have just been told nothing about."
   },
-  "@historyTerminalLine": {
-    "description": "B47's stated bound, at the END of the list, so a reader who scrolls to the bottom finds the limit rather than having it announced only at the top. There is no unbounded case, so this sentence is never absent: a screen that claimed a bound it was not applying is the exact failure B47 was written to avoid.",
+  "@historyClearDialogTitle": {
+    "description": "A question, not a statement. 'Clear history?' lets the reader cancel without reading the body."
+  },
+  "@historyClearedBody": {
+    "description": "B46 said out loud, on the screen where the fear lives. Repeated in the clear confirmation, in this state, and in the store-failure sentence - four times, because it is the thing a reader on a device with no backup is actually afraid of."
+  },
+  "@historyClearedTitle": {
+    "description": "Empty - no data (a). history.md § 4 splits this state in two because being cleared BY THE READER and being AGED OUT are different events with different emotional weight."
+  },
+  "@historyDayOn": {
+    "description": "Every older day header. `{date}` arrives ALREADY localised from MaterialLocalizations.formatMediumDate - this key is a hole for a platform-formatted date, not a sentence, which is why the value is the same in both files.",
     "placeholders": {
-      "window": {
+      "date": {
         "type": "String",
-        "example": "one year"
+        "example": "3 October"
       }
     }
+  },
+  "@historyDayToday": {
+    "description": "The first day header. NOT concatenated from a month name and a number: 'Today' is a word, it takes an article in some languages and an inflection in others, and a concatenation is wrong in both. E12 requires a language change to re-label the headers, which a concatenated string cannot do."
+  },
+  "@historyDayYesterday": {
+    "description": "The second day header, and a separate key for the same reason as historyDayToday."
+  },
+  "@historyEmptyActionBrowse": {
+    "description": "The empty action depends on a LOCAL FACT: this one when the library is empty, historyEmptyActionLibrary when it is not. A fixed string would point at a library the reader does not have."
+  },
+  "@historyEmptyActionLibrary": {
+    "description": "The other half of the same local fact. Deciding by what is already on the phone is the difference between 'where do I go next' and 'here is a button'."
+  },
+  "@historyEmptyBody": {
+    "description": "Says what the screen is FOR, in the reader's terms, and states the order it will be in."
+  },
+  "@historyEmptyTitle": {
+    "description": "US-12 distinguishes 'never opened anything' from 'opened things and then cleared them'. This is the FIRST; the second is historyClearedTitle."
+  },
+  "@historyHoursAgo": {
+    "description": "Hours, same plural rule. There is deliberately NO days-ago key: past yesterday the DAY GROUP HEADER already carries the date, and repeating it in the row would say the same thing twice on every line.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@historyJustNow": {
+    "description": "The row's trailing time under a minute old. Deliberately the only bucketing below an hour: a reader who opened four chapters in ten minutes sees the same word on all four, and a count that ticks upward every second would make the list move under them."
+  },
+  "@historyLoadErrorBody": {
+    "description": "Unusually specific because the fear here is data loss and this app has no backup (ADR-010). Naming the three survivals by name is what stops the reader assuming the worst."
+  },
+  "@historyLoadErrorTitle": {
+    "description": "Load error. The only failure this screen can have is its own local store - nothing on it ever needed a network (C14)."
+  },
+  "@historyLoadingTitle": {
+    "description": "Accessibility label while the list loads. Eight skeletons, no cover - the `history` variant of NovelRow declares no cover slot, and a loading state that shows one promises an image the filled rows will not have."
+  },
+  "@historyMinutesAgo": {
+    "description": "Minutes, with a French plural rule (`=1` vs `other`) - French has no singular-only form and a reader watching 'Il y a 1 minutes' learns to distrust the rest of the screen.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "@historyNoticeBody": {
+    "description": "B46 in one line."
+  },
+  "@historyNoticeTitle": {
+    "description": "B47 stated on the screen where the fear lives: the list is bounded, and something else is not."
+  },
+  "@historyRetentionChange": {
+    "description": "The action that opens SettingsChoiceSheet. 'Change' rather than 'Keep for one year': the value is printed next to it, and a label repeating it would be two places to update on every window change."
+  },
+  "@historyRetentionLabel": {
+    "description": "A row WITH this label goes somewhere - it opens the sheet. The absence of a chevron would say the value can be changed in place, which it cannot."
   },
   "@historySheetTitle": {
     "description": "design-system.md § 2.12's SettingsChoiceSheet. `3-7` renders its rows from the SAME HistoryRetention enum, which is what makes 'the same five windows' a fact rather than a promise."
@@ -356,50 +827,152 @@
       }
     }
   },
-  "@historyWindowOneWeek": {
-    "description": "The five window names are DATA, not screen copy: HistoryRetention.cutoffFrom is computed from the enum's Duration, and this string is only what a reader reads. Two representations of one window, and a test asserts the enum has exactly these five members."
+  "@historyTerminalLine": {
+    "description": "B47's stated bound, at the END of the list, so a reader who scrolls to the bottom finds the limit rather than having it announced only at the top. There is no unbounded case, so this sentence is never absent: a screen that claimed a bound it was not applying is the exact failure B47 was written to avoid.",
+    "placeholders": {
+      "window": {
+        "type": "String",
+        "example": "one year"
+      }
+    }
+  },
+  "@historyTitle": {
+    "description": "Screen title"
+  },
+  "@historyUntitledChapter": {
+    "description": "B10 / E2: the site published no title for this chapter. Rendered here, NEVER as an index and never as a generated number - a fabricated title is a sentence the app invented and the reader would believe."
+  },
+  "@historyUntitledNovel": {
+    "description": "A novel whose stored title is empty. The same rule as the chapter: a placeholder, never an index."
   },
   "@historyWindowOneMonth": {
     "description": "See historyWindowOneWeek."
   },
-  "@historyWindowThreeMonths": {
-    "description": "See historyWindowOneWeek."
+  "@historyWindowOneWeek": {
+    "description": "The five window names are DATA, not screen copy: HistoryRetention.cutoffFrom is computed from the enum's Duration, and this string is only what a reader reads. Two representations of one window, and a test asserts the enum has exactly these five members."
   },
   "@historyWindowOneYear": {
     "description": "The default window. HistoryRetention.defaultWindow is this member, and a test asserts it rather than trusting the string."
   },
+  "@historyWindowThreeMonths": {
+    "description": "See historyWindowOneWeek."
+  },
   "@historyWindowTwoYears": {
     "description": "The longest window the design offers. There is deliberately no sixth: design-system.md § 2.12 forbids a 'forever' option on any bounded list, because an unbounded value next to bounded ones teaches the reader the bounds are negotiable."
   },
-  "@historyDayToday": {
-    "description": "The first day header. NOT concatenated from a month name and a number: 'Today' is a word, it takes an article in some languages and an inflection in others, and a concatenation is wrong in both. E12 requires a language change to re-label the headers, which a concatenated string cannot do."
+  "@libraryActionCancel": {
+    "description": ""
   },
-  "@historyDayYesterday": {
-    "description": "The second day header, and a separate key for the same reason as historyDayToday."
+  "@libraryAddFailed": {
+    "description": "⚠️ **`It is still listed in Browse`**, because B24's submit-error state says the row is still there and nothing is optimistic. A failure that reads as \"gone\" teaches a reader not to trust the screen."
   },
-  "@historyDayOn": {
-    "description": "Every older day header. `{date}` arrives ALREADY localised from MaterialLocalizations.formatMediumDate - this key is a hole for a platform-formatted date, not a sentence, which is why the value is the same in both files.",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "3 October"
-      }
-    }
+  "@libraryAddFailedRetry": {
+    "description": ""
   },
-  "@historyJustNow": {
-    "description": "The row's trailing time under a minute old. Deliberately the only bucketing below an hour: a reader who opened four chapters in ten minutes sees the same word on all four, and a count that ticks upward every second would make the list move under them."
+  "@libraryContinueOverline": {
+    "description": "An **overline**, 11/16, 600 weight, and it is a LABEL rather than a sentence — the tile under it carries the words."
   },
-  "@historyMinutesAgo": {
-    "description": "Minutes, with a French plural rule (`=1` vs `other`) - French has no singular-only form and a reader watching 'Il y a 1 minutes' learns to distrust the rest of the screen.",
+  "@libraryEmptyBody": {
+    "description": ""
+  },
+  "@libraryEmptyBrowseAction": {
+    "description": ""
+  },
+  "@libraryEmptyTitle": {
+    "description": ""
+  },
+  "@libraryFacetDownloaded": {
+    "description": ""
+  },
+  "@libraryFacetGroup": {
+    "description": ""
+  },
+  "@libraryFacetHasUnopened": {
+    "description": ""
+  },
+  "@libraryFacetNotDownloaded": {
+    "description": ""
+  },
+  "@libraryFacetSite": {
+    "description": ""
+  },
+  "@libraryFilterCount": {
+    "description": "",
     "placeholders": {
       "count": {
         "type": "int",
-        "example": "7"
+        "example": "2"
       }
     }
   },
-  "@historyHoursAgo": {
-    "description": "Hours, same plural rule. There is deliberately NO days-ago key: past yesterday the DAY GROUP HEADER already carries the date, and repeating it in the row would say the same thing twice on every line.",
+  "@libraryLoadErrorBody": {
+    "description": ""
+  },
+  "@libraryLoadErrorTitle": {
+    "description": ""
+  },
+  "@libraryNoDataClearFilters": {
+    "description": ""
+  },
+  "@libraryNoDataTitle": {
+    "description": ""
+  },
+  "@libraryRemoveAction": {
+    "description": ""
+  },
+  "@libraryRemoveBody": {
+    "description": "⚠️ **The number appears INSIDE every plural branch, and that is the bug a row caught.** With the count only in the placeholder selector and never in the branches, the sentence renders \"Its downloaded chapters and your reading history stay\" — no figure at all, in a dialog whose whole purpose is to quote one. B32 is a promise about what survives, and \"nothing\" survives it as well as 148 chapters do."
+  },
+  "@libraryRemoveKept": {
+    "description": "Shown after a removal, and it says **nothing was deleted**. B32 is a promise the reader should be able to see, not a rule they have to trust."
+  },
+  "@libraryRemoveTitle": {
+    "description": ""
+  },
+  "@libraryRemoveUndo": {
+    "description": ""
+  },
+  "@libraryRemoved": {
+    "description": ""
+  },
+  "@libraryRowCouldNotCheck": {
+    "description": ""
+  },
+  "@libraryRowDownloadComplete": {
+    "description": ""
+  },
+  "@libraryRowNeverChecked": {
+    "description": ""
+  },
+  "@libraryRowStopped": {
+    "description": ""
+  },
+  "@libraryRowStoppedConnection": {
+    "description": ""
+  },
+  "@libraryRowStoppedStorage": {
+    "description": ""
+  },
+  "@libraryScopeLine": {
+    "description": "B45 made structural rather than asserted (ADR-024: `author` and `description` are stored and unindexed), and this line is where the reader is told. A limit the app does not state is a limit a reader discovers by searching for a pen name and getting nothing."
+  },
+  "@librarySearchClearAction": {
+    "description": ""
+  },
+  "@librarySearchHint": {
+    "description": ""
+  },
+  "@librarySearchNoMatchTitle": {
+    "description": "B22 and B19: a **local** search has no failure state, so its empty list must not borrow the vocabulary of a failed site query. 'No results' would tell a reader a source had gone unreadable when the library is simply on this phone.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "vow"
+      }
+    }
+  },
+  "@librarySearchResults": {
+    "description": "",
     "placeholders": {
       "count": {
         "type": "int",
@@ -407,8 +980,355 @@
       }
     }
   },
-  "@aboutVersion": {
-    "description": "B43: the reader can determine which version is installed. `buildName` and `buildNumber` arrive from Flutter's build-time Dart defines (`FLUTTER_BUILD_NAME` / `FLUTTER_BUILD_NUMBER`, ADR-011) — the app reads pubspec at build time and never parses a file at runtime.",
+  "@librarySearchSemantics": {
+    "description": ""
+  },
+  "@librarySimilarAddAnyway": {
+    "description": ""
+  },
+  "@librarySimilarBody": {
+    "description": ""
+  },
+  "@librarySimilarExplain": {
+    "description": "⚠️ **Said BEFORE the choice, not after it.** \"Add anyway\" reads like a merge; this line is what makes it a second row."
+  },
+  "@librarySimilarOpenExisting": {
+    "description": ""
+  },
+  "@librarySimilarTitle": {
+    "description": "⚠️ **B40's dialog asks a question the reader can answer, so it names BOTH novels and BOTH sites.** \"Is this the same novel?\" is unanswerable without knowing which site published which."
+  },
+  "@librarySortLastRead": {
+    "description": ""
+  },
+  "@librarySortRecentlyAdded": {
+    "description": ""
+  },
+  "@librarySortSite": {
+    "description": ""
+  },
+  "@librarySortTitle": {
+    "description": ""
+  },
+  "@librarySortTitleAz": {
+    "description": ""
+  },
+  "@librarySortUnopened": {
+    "description": ""
+  },
+  "@libraryTileAuthorMissing": {
+    "description": "⚠️ **A WORD, not a dash.** ADR-024: the author is displayed, never searched, and a site may publish none. An em dash is what a rendering fallback produces; a sentence says the library does not know, which is the actual fact."
+  },
+  "@libraryTileProgress": {
+    "description": "**The mark's count, not the files'** (B48, ADR-022). An interrupted download has no mark, so this figure never counts a chapter the reader cannot open."
+  },
+  "@libraryTileUndownloaded": {
+    "description": ""
+  },
+  "@libraryTileUnopened": {
+    "description": ""
+  },
+  "@libraryTitle": {
+    "description": "⚠️ **Identical in meaning to `navLibrary`, and separate anyway.** The tab label and the screen title are two surfaces, and the design gives the screen a `--text-h1` title bar. Merging them would make one string serve a 13 dp tab and a 31 dp title."
+  },
+  "@libraryUnopenedBadgeSemantics": {
+    "description": "",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "@navBrowse": {
+    "description": ""
+  },
+  "@navDownloads": {
+    "description": ""
+  },
+  "@navHistory": {
+    "description": ""
+  },
+  "@navLibrary": {
+    "description": ""
+  },
+  "@navMore": {
+    "description": ""
+  },
+  "@navSettings": {
+    "description": ""
+  },
+  "@navUpdates": {
+    "description": ""
+  },
+  "@novelDetailsTitle": {
+    "description": ""
+  },
+  "@onboardingButtonNext": {
+    "description": "Step 1's primary action. NOT \"Get started\" — § 2.1 decision 3: a button reading \"Get started\" in front of a second step teaches the reader that the button lied."
+  },
+  "@onboardingButtonSkip": {
+    "description": "Step 1 ONLY. `onboarding.md` § 2.1 decision 2: step 2 is the disclosure, and skipping a disclosure while showing it is a contradiction."
+  },
+  "@onboardingButtonStart": {
+    "description": "Step 2's only control. No Skip, no close button, no dismiss affordance of any kind."
+  },
+  "@onboardingStep1Body": {
+    "description": "B7 in full, plus B4 and B29 in one clause: \"there is no account, no server, and nothing is sent anywhere\". A reader who was lent this file is looking for a sign-in wall, and finding none is worth saying out loud. TWO SENTENCES IN BOTH LANGUAGES, and the count is asserted — this is not a place a compressed translation is acceptable."
+  },
+  "@onboardingStep1Headline": {
+    "description": "B7, and the ONLY `--text-h1` in the app (31/38 at 700). The one thing a reader cannot guess: offline reading is announced nowhere in this product, on purpose. `onboarding.md` § 2: \"A first-run screen that renders its promise in body text has already decided it is not the point of the app.\""
+  },
+  "@onboardingStep1Kicker": {
+    "description": "B7. The app's own name, as a `--text-overline` kicker. Identical in both languages — a product name is not translated, and translating it would make step 1 say something false about which app this is."
+  },
+  "@onboardingStep2Headline": {
+    "description": "E11. `--text-h2` 25/32 at 700 — one step below the promise, because the hierarchy is part of the argument: the screen's biggest words belong to what it is selling, and what it owes the reader is a warning."
+  },
+  "@onboardingStep2Kicker": {
+    "description": "E11. Uppercase, `--text-overline`. Distinct from step 1's kicker on purpose: `onboarding.md` § 7 requires step position to be legible with no colour at all, so the two kickers must not be the same word."
+  },
+  "@onboardingStepPosition": {
+    "description": "The step dots' only accessible name. `14-design-tokens.md` forbids colour carrying state alone, and a pair of unlabelled circles is colour carrying it alone.",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@readerActionBack": {
+    "description": ""
+  },
+  "@readerActionDownloadAgain": {
+    "description": ""
+  },
+  "@readerActionDownloadChapter": {
+    "description": ""
+  },
+  "@readerActionOpenDownloads": {
+    "description": ""
+  },
+  "@readerActionRetry": {
+    "description": ""
+  },
+  "@readerChapterNumber": {
+    "description": "⚠️ **The placeholder is a `String`, not a number, and that is load-bearing.** `chapters.number` is a `RealColumn` (a `double`), and an ICU `{number}` bound to a double renders \"Chapter 12.0\" — which asserts a decimal place the site never printed. The formatting lives in Dart (`formatChapterNumber`), where a whole value drops its fraction and a fractional one keeps it. Rule 9 is about *displaying* the site's number, and 12.0 is not what the site wrote.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "@readerChapterNumberUnreadable": {
+    "description": "The word used when the site's number could not be parsed. Not a number and not an ellipsis: the reader is told the chapter has no number rather than shown a `0`."
+  },
+  "@readerDownloadNeedsConnection": {
+    "description": "Shown UNDER the disabled primary action (§ 3.5), never as a replacement for it. A disabled button with no reason is a button the reader assumes is broken."
+  },
+  "@readerFileCorruptNotMarkdown": {
+    "description": "B18 / E18 — the file is there and holds no readable prose. The only action is to download it again."
+  },
+  "@readerFileCorruptTruncated": {
+    "description": "A truncation mid-character: the final file was still renamed although the write was cut short."
+  },
+  "@readerFileCorruptUnreadableIo": {
+    "description": "⚠️ **The action here is RETRY, not re-download.** The copy may be intact and the filesystem merely refused; offering a re-download would suggest the file is at fault when it may not be."
+  },
+  "@readerFileEmptyBody": {
+    "description": ""
+  },
+  "@readerFileEmptyTitle": {
+    "description": "⚠️ **Distinct from 'corrupt'.** Zero bytes is the signature of an INTERRUPTED write, so the sentence is about the recording and the action is a re-download."
+  },
+  "@readerFileMissingBody": {
+    "description": "⚠️ **Says the DOWNLOAD SUCCEEDED and the FILE is missing.** `architecture.md` § 8 names this divergence. The other phrasing — 'this chapter is unavailable' — would tell the reader the download failed, which is false, and a reader who re-downloads on that sentence is doing the right thing for the wrong reason."
+  },
+  "@readerFileMissingTitle": {
+    "description": ""
+  },
+  "@readerLoadFailedBody": {
+    "description": ""
+  },
+  "@readerLoadFailedTitle": {
+    "description": "⚠️ **'Could not be opened', not 'is corrupt'.** This is the absence of a conclusion: the app could not find out which of the other states it is. Saying 'corrupt' would be a guess, and the guess would pick the wrong action."
+  },
+  "@readerNotStoredBody": {
+    "description": "The constraint this screen enforces: the reader never fetches. § 3.1's 'ChapterNotStored' branch emits an intent and 3-3 executes it."
+  },
+  "@readerNotStoredTitle": {
+    "description": "⚠️ **Empty-data, NOT an empty screen.** US-05: the reader must be able to SEE that 'not downloaded' differs from 'empty' and from 'failed'."
+  },
+  "@readerOfflineAbsentBody": {
+    "description": ""
+  },
+  "@readerOfflineAbsentTitle": {
+    "description": "⚠️ **BOTH facts in one sentence, and each is on its own insufficient.** 'Not downloaded' leaves the reader wondering whether the button will work; 'offline' leaves them wondering whether the chapter is theirs. B24 asks for the sentence that names both."
+  },
+  "@readerOfflineBanner": {
+    "description": "⚠️ **One ephemeral line, on the FIRST offline display of a session only.** § 3.5 forbids a banner, a gradient and any 'OFFLINE MODE' — this is a sentence that appears once and does not persist, because a persistent badge would be the third thing competing with the prose for the reader's attention."
+  },
+  "@readerRowGoneBody": {
+    "description": ""
+  },
+  "@readerRowGoneTitle": {
+    "description": "⚠️ **Not a failure.** A stale identifier is a state of the world — a deep link followed earlier, or a navigation stack restored. It gets its own render and a way back, never an ErrorState, because an ErrorState would report THIS APP as broken for a link the reader followed."
+  },
+  "@readerSizeButtonTooltip": {
+    "description": "",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Large"
+      }
+    }
+  },
+  "@readerSizePixelsSpoken": {
+    "description": "⚠️ **The SPOKEN figure, and deliberately not the same string.** § 5's announcement is *\"Large, 20 pixels, not selected\"*; `20pt` read aloud is an abbreviation a screen reader has to guess at. One number, two renderings, two keys — a translation cannot merge them.",
+    "placeholders": {
+      "px": {
+        "type": "String",
+        "example": "20"
+      }
+    }
+  },
+  "@readerSizeSheetTitle": {
+    "description": ""
+  },
+  "@readerSizeStepNotSelected": {
+    "description": "⚠️ **Its own key, never the empty string.** \"Not selected\" is a claim, and a label that goes silent on the four unselected steps is indistinguishable from one that failed to render."
+  },
+  "@readerSizeStepPoints": {
+    "description": "⚠️ **The EYE's figure.** `settings-reader.md` § 6: it is the one thing the reader can check against the phone's own font slider, so it must never truncate and never be a bare number.",
+    "placeholders": {
+      "px": {
+        "type": "String",
+        "example": "20"
+      }
+    }
+  },
+  "@readerSizeStepSelected": {
+    "description": "The positive half of `readerSizeStepSemantics`. Never signalled by colour alone — `14-design-tokens.md` §Accessibility."
+  },
+  "@readerSizeStepSemantics": {
+    "description": "One focusable node per step, announcing `{name}`, `{pixels}` and whether it is selected. ⚠️ **A single ICU sentence rather than three concatenated strings**: the order and the punctuation are the translator's, and `name, pixels, state` does not survive a language that does not use commas.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Large"
+      },
+      "pixels": {
+        "type": "String",
+        "example": "20 pixels"
+      },
+      "state": {
+        "type": "String",
+        "example": "not selected"
+      }
+    }
+  },
+  "@readerThemeButtonTooltip": {
+    "description": "⚠️ **Names the CURRENT value, not the next one.** The button cycles, so a label naming the result (\"Switch to night\") would be true for one press and false for the next two — and the reader mid-chapter cannot see which.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Follow the phone"
+      }
+    }
+  },
+  "@settingsButtonCancel": {
+    "description": ""
+  },
+  "@settingsButtonRetry": {
+    "description": ""
+  },
+  "@settingsDeferredFilters": {
+    "description": ""
+  },
+  "@settingsDeferredFonts": {
+    "description": "⚠️ **The eighth, and the prose says seven.** `settings-reader.md` § 3 counts `DeferredItem × 7` while § 4.1 and § 11 both list eight absences. The copy table wins, and dropping this one would forget the font picker — the absence a reader who has used another reader is most likely to look for."
+  },
+  "@settingsDeferredJustification": {
+    "description": ""
+  },
+  "@settingsDeferredLineHeight": {
+    "description": ""
+  },
+  "@settingsDeferredModes": {
+    "description": ""
+  },
+  "@settingsDeferredOrientation": {
+    "description": ""
+  },
+  "@settingsDeferredParagraphSpacing": {
+    "description": ""
+  },
+  "@settingsDeferredSwipe": {
+    "description": ""
+  },
+  "@settingsDialogClearHistoryBody": {
+    "description": "B46, and the second clause is the whole sentence: reading positions are not in this list. `clearAll()` deletes exactly one table and a row asserts the positions survive."
+  },
+  "@settingsDialogClearHistoryConfirm": {
+    "description": "⚠️ **`Clear`, not `OK`, and not `Delete`** — it names the object. And § 4 (Empty — no data) forbids the dialog opening at all when the count is zero, so a reader is never asked to confirm destroying nothing."
+  },
+  "@settingsDialogClearHistoryTitle": {
+    "description": "⚠️ **The count is in the TITLE**, not the body. This dialog's one job is to say how much is about to be destroyed, and a title is what a reader reads before they read anything else. `3-7`'s Loading state exists only for the COUNT this sentence waits on.",
+    "placeholders": {
+      "count": {
+        "type": "String",
+        "example": "96"
+      }
+    }
+  },
+  "@settingsDisclosureAboutLink": {
+    "description": "The ghost link into About, and its label is the QUESTION it answers (B31's guarantee). A link labelled 'About' would compete with the row above it."
+  },
+  "@settingsDisclosureE11": {
+    "description": ""
+  },
+  "@settingsDisclosureE11Footer": {
+    "description": "The footer, and it exists because of what it admits: the app cannot detect an uninstall as it happens, so the disclosure has to happen **before** rather than after. A disclosure that says 'you cannot undo this' without saying why is read as an apology."
+  },
+  "@settingsErrorCountUnavailable": {
+    "description": "A count that could not be obtained, and **never `0`** (B48). § 4 (Load error, declined) scopes the failure to the one row that owns it: a failed `COUNT` renders this word on its own line and disables the clear row, rather than blanking eight correct rows."
+  },
+  "@settingsErrorWrite": {
+    "description": "A failed write, shown **beside** the control and never by tinting it — a red control reads as 'this setting is now off' rather than 'this setting could not be saved'."
+  },
+  "@settingsGroupApp": {
+    "description": ""
+  },
+  "@settingsGroupDeferred": {
+    "description": ""
+  },
+  "@settingsGroupHistory": {
+    "description": ""
+  },
+  "@settingsGroupReading": {
+    "description": ""
+  },
+  "@settingsGroupSize": {
+    "description": ""
+  },
+  "@settingsGroupTheme": {
+    "description": ""
+  },
+  "@settingsLanguageEnglish": {
+    "description": "⚠️ **Identical in the French file.** The `Language` row reports the phone's language, not the app's, and a reader on an English UI with a French phone must see \"Français\". B28: the app follows the phone."
+  },
+  "@settingsLanguageFrench": {
+    "description": "⚠️ **Identical in the English file**, for the same reason. A value that changes with the ARB would be the app naming the phone's language in the app's language, which is a different claim."
+  },
+  "@settingsRowAboutLabel": {
+    "description": ""
+  },
+  "@settingsRowAboutValue": {
+    "description": "The same `{buildName}` · build `{buildNumber}` pair `3-5` shows, from the same `AppRoutes`-level source. Two spellings of the version on two pages would be two truths about which build is installed (C9).",
     "placeholders": {
       "buildName": {
         "type": "String",
@@ -419,84 +1339,6 @@
         "example": "41"
       }
     }
-  },
-  "@aboutProvenance": {
-    "description": "How this build reached the reader. Three facts in one line, because a reader who installed a file by hand needs to know that is normal."
-  },
-  "@aboutCopyVersion": {
-    "description": "The clipboard button. C9 says the owner must be able to determine which version is installed, and pasting a version into a bug report is how that happens."
-  },
-  "@aboutVersionUnreadable": {
-    "description": "A real failure mode: the defines are absent in a plain `flutter test` and in an IDE run. **The rest of the screen renders completely** — `Version —` is forbidden, because an em dash looks like a version and C9 requires the version to be determinable."
-  },
-  "@aboutSnackCopied": {
-    "description": ""
-  },
-  "@aboutGuarantee": {
-    "description": "B31, and the one sentence § 4bis kept when it removed `UpdateBlock`. It is the only guarantee this app makes about the reader's data, so it is read out loud here rather than discovered after an upgrade."
-  },
-  "@aboutDataLabel": {
-    "description": "The recessed block's overline. Read as a heading."
-  },
-  "@aboutDataLibrary": {
-    "description": ""
-  },
-  "@aboutDataDownloaded": {
-    "description": ""
-  },
-  "@aboutDataPositions": {
-    "description": ""
-  },
-  "@aboutDataCountUnavailable": {
-    "description": "A count that could not be computed, and NOT a zero. The distinction is the whole reason the three figures are evidence for B31: a zero says 'you have none' and a dash says 'we could not look', and a reader who took the first for the second would re-download a library they still have."
-  },
-  "@aboutDataE11": {
-    "description": "E11, in full and unhedged. This app has no backup (ADR-010), so the disclosure belongs on the page that shows what would be lost — and it names the exact operation that does NOT lose it, because a disclosure that only lists risks reads as an apology."
-  },
-  "@aboutPrivacyLabel": {
-    "description": ""
-  },
-  "@aboutPrivacySent1": {
-    "description": ""
-  },
-  "@aboutPrivacySent2": {
-    "description": "⚠️ **Written for a control § 4bis removed.** The sentence is about a button this screen does not have. It is kept because the block's claim is about the APP's network posture rather than about the button: the app sends nothing on its own account, and if a version check returns the reader must already know that one request is the whole of it. If the check is ever built, this sentence is its first line and it is already true."
-  },
-  "@aboutPrivacyNever1": {
-    "description": ""
-  },
-  "@aboutPrivacyNever2": {
-    "description": ""
-  },
-  "@aboutPrivacyNever3": {
-    "description": ""
-  },
-  "@aboutPrivacyNever4": {
-    "description": ""
-  },
-  "@aboutPrivacyNever5": {
-    "description": ""
-  },
-  "@aboutPrivacyNever6": {
-    "description": ""
-  },
-  "@aboutPrivacyNever7": {
-    "description": ""
-  },
-  "@aboutPrivacyVerify": {
-    "description": "The falsifiable form of the privacy claim. A promise that cannot be tested by the reader is marketing; airplane mode is the test, and it takes thirty seconds."
-  },
-  "@aboutDeliveryBody": {
-    "description": "B34 + C3 + C9: the app IS the file. 'There is no app store' is not a limitation to apologise for — it is why there is no account and no server holding anything."
-  },
-  "@settingsGroupReading": {
-    "description": ""
-  },
-  "@settingsGroupHistory": {
-    "description": ""
-  },
-  "@settingsGroupApp": {
-    "description": ""
   },
   "@settingsRowAppearanceLabel": {
     "description": ""
@@ -518,28 +1360,7 @@
       }
     }
   },
-  "@settingsThemeDay": {
-    "description": ""
-  },
-  "@settingsThemeNight": {
-    "description": ""
-  },
-  "@settingsThemeSystem": {
-    "description": "B26's `system` value, named for what it does. NOT 'Automatic': a reader who reads *Automatic* does not learn that the app follows the phone."
-  },
-  "@settingsSizeSm": {
-    "description": ""
-  },
-  "@settingsSizeMd": {
-    "description": ""
-  },
-  "@settingsSizeLg": {
-    "description": ""
-  },
-  "@settingsSizeXl": {
-    "description": ""
-  },
-  "@settingsSizeXxl": {
+  "@settingsRowClearHistoryLabel": {
     "description": ""
   },
   "@settingsRowHistoryLabel": {
@@ -561,35 +1382,11 @@
   "@settingsRowHistoryValueEmpty": {
     "description": "The zero. French takes the singular on zero ('0 entrée'), which is a plural-rule difference and not a typo."
   },
-  "@settingsRowRetentionLabel": {
-    "description": ""
-  },
-  "@settingsRowClearHistoryLabel": {
-    "description": ""
-  },
-  "@settingsDialogClearHistoryTitle": {
-    "description": "⚠️ **The count is in the TITLE**, not the body. This dialog's one job is to say how much is about to be destroyed, and a title is what a reader reads before they read anything else. `3-7`'s Loading state exists only for the COUNT this sentence waits on.",
-    "placeholders": {
-      "count": {
-        "type": "String",
-        "example": "96"
-      }
-    }
-  },
-  "@settingsDialogClearHistoryBody": {
-    "description": "B46, and the second clause is the whole sentence: reading positions are not in this list. `clearAll()` deletes exactly one table and a row asserts the positions survive."
-  },
-  "@settingsDialogClearHistoryConfirm": {
-    "description": "⚠️ **`Clear`, not `OK`, and not `Delete`** — it names the object. And § 4 (Empty — no data) forbids the dialog opening at all when the count is zero, so a reader is never asked to confirm destroying nothing."
-  },
-  "@settingsSnackHistoryCleared": {
-    "description": "The second clause is **mandatory and is the entire success message**, because B46 makes position the thing the reader must believe survived. A generic 'History cleared' leaves the reader fearing they lost their place, which is the app's core promise (B16)."
+  "@settingsRowLanguageHint": {
+    "description": "Tells the reader where the control actually is, because there isn't one here. A read-only row with no explanation reads as a disabled control."
   },
   "@settingsRowLanguageLabel": {
     "description": "**Read-only, and visibly so**: no chevron, no ripple, no pressed state. B28 forbids an in-app language picker — the platform owns this value and a second source of truth for it is a bug waiting to happen."
-  },
-  "@settingsRowLanguageHint": {
-    "description": "Tells the reader where the control actually is, because there isn't one here. A read-only row with no explanation reads as a disabled control."
   },
   "@settingsRowOnboardingLabel": {
     "description": ""
@@ -597,708 +1394,27 @@
   "@settingsRowOnboardingValue": {
     "description": ""
   },
-  "@settingsRowAboutLabel": {
+  "@settingsRowRetentionLabel": {
     "description": ""
   },
-  "@settingsRowAboutValue": {
-    "description": "The same `{buildName}` · build `{buildNumber}` pair `3-5` shows, from the same `AppRoutes`-level source. Two spellings of the version on two pages would be two truths about which build is installed (C9).",
-    "placeholders": {
-      "buildName": {
-        "type": "String",
-        "example": "0.9.0"
-      },
-      "buildNumber": {
-        "type": "String",
-        "example": "41"
-      }
-    }
-  },
-  "@settingsDisclosureE11": {
-    "description": ""
-  },
-  "@settingsDisclosureE11Footer": {
-    "description": "The footer, and it exists because of what it admits: the app cannot detect an uninstall as it happens, so the disclosure has to happen **before** rather than after. A disclosure that says 'you cannot undo this' without saying why is read as an apology."
-  },
-  "@settingsDisclosureAboutLink": {
-    "description": "The ghost link into About, and its label is the QUESTION it answers (B31's guarantee). A link labelled 'About' would compete with the row above it."
-  },
-  "@settingsErrorWrite": {
-    "description": "A failed write, shown **beside** the control and never by tinting it — a red control reads as 'this setting is now off' rather than 'this setting could not be saved'."
-  },
-  "@settingsErrorCountUnavailable": {
-    "description": "A count that could not be obtained, and **never `0`** (B48). § 4 (Load error, declined) scopes the failure to the one row that owns it: a failed `COUNT` renders this word on its own line and disables the clear row, rather than blanking eight correct rows."
-  },
-  "@settingsButtonRetry": {
-    "description": ""
-  },
-  "@settingsButtonCancel": {
-    "description": ""
-  },
-  "@onboardingStep1Kicker": {
-    "description": "B7. The app's own name, as a `--text-overline` kicker. Identical in both languages — a product name is not translated, and translating it would make step 1 say something false about which app this is."
-  },
-  "@onboardingStep1Headline": {
-    "description": "B7, and the ONLY `--text-h1` in the app (31/38 at 700). The one thing a reader cannot guess: offline reading is announced nowhere in this product, on purpose. `onboarding.md` § 2: \"A first-run screen that renders its promise in body text has already decided it is not the point of the app.\""
-  },
-  "@onboardingStep1Body": {
-    "description": "B7 in full, plus B4 and B29 in one clause: \"there is no account, no server, and nothing is sent anywhere\". A reader who was lent this file is looking for a sign-in wall, and finding none is worth saying out loud. TWO SENTENCES IN BOTH LANGUAGES, and the count is asserted — this is not a place a compressed translation is acceptable."
-  },
-  "@onboardingStep2Kicker": {
-    "description": "E11. Uppercase, `--text-overline`. Distinct from step 1's kicker on purpose: `onboarding.md` § 7 requires step position to be legible with no colour at all, so the two kickers must not be the same word."
-  },
-  "@onboardingStep2Headline": {
-    "description": "E11. `--text-h2` 25/32 at 700 — one step below the promise, because the hierarchy is part of the argument: the screen's biggest words belong to what it is selling, and what it owes the reader is a warning."
-  },
-  "@onboardingStepPosition": {
-    "description": "The step dots' only accessible name. `14-design-tokens.md` forbids colour carrying state alone, and a pair of unlabelled circles is colour carrying it alone.",
-    "placeholders": {
-      "current": {
-        "type": "int",
-        "example": "1"
-      },
-      "total": {
-        "type": "int",
-        "example": "2"
-      }
-    }
-  },
-  "@onboardingButtonSkip": {
-    "description": "Step 1 ONLY. `onboarding.md` § 2.1 decision 2: step 2 is the disclosure, and skipping a disclosure while showing it is a contradiction."
-  },
-  "@onboardingButtonNext": {
-    "description": "Step 1's primary action. NOT \"Get started\" — § 2.1 decision 3: a button reading \"Get started\" in front of a second step teaches the reader that the button lied."
-  },
-  "@onboardingButtonStart": {
-    "description": "Step 2's only control. No Skip, no close button, no dismiss affordance of any kind."
-  },
-  "@settingsTitle": {
-    "description": ""
-  },
-  "@settingsLanguageEnglish": {
-    "description": "⚠️ **Identical in the French file.** The `Language` row reports the phone's language, not the app's, and a reader on an English UI with a French phone must see \"Français\". B28: the app follows the phone."
-  },
-  "@settingsLanguageFrench": {
-    "description": "⚠️ **Identical in the English file**, for the same reason. A value that changes with the ARB would be the app naming the phone's language in the app's language, which is a different claim."
-  },
-  "readerOfflineBanner": "You are reading your downloads",
-  "@readerOfflineBanner": {
-    "description": "⚠️ **One ephemeral line, on the FIRST offline display of a session only.** § 3.5 forbids a banner, a gradient and any 'OFFLINE MODE' — this is a sentence that appears once and does not persist, because a persistent badge would be the third thing competing with the prose for the reader's attention."
-  },
-  "readerNotStoredTitle": "This chapter is not downloaded",
-  "@readerNotStoredTitle": {
-    "description": "⚠️ **Empty-data, NOT an empty screen.** US-05: the reader must be able to SEE that 'not downloaded' differs from 'empty' and from 'failed'."
-  },
-  "readerNotStoredBody": "Only chapters already on this phone can be read here.",
-  "@readerNotStoredBody": {
-    "description": "The constraint this screen enforces: the reader never fetches. § 3.1's 'ChapterNotStored' branch emits an intent and 3-3 executes it."
-  },
-  "readerOfflineAbsentTitle": "This chapter is not downloaded and there is no connection",
-  "@readerOfflineAbsentTitle": {
-    "description": "⚠️ **BOTH facts in one sentence, and each is on its own insufficient.** 'Not downloaded' leaves the reader wondering whether the button will work; 'offline' leaves them wondering whether the chapter is theirs. B24 asks for the sentence that names both."
-  },
-  "readerOfflineAbsentBody": "Both are needed: the chapter has to be downloaded once, and downloading needs a connection.",
-  "readerFileMissingTitle": "This chapter had been downloaded, but its text is no longer on this phone",
-  "readerFileMissingBody": "The download succeeded. The file is what is missing.",
-  "@readerFileMissingBody": {
-    "description": "⚠️ **Says the DOWNLOAD SUCCEEDED and the FILE is missing.** `architecture.md` § 8 names this divergence. The other phrasing — 'this chapter is unavailable' — would tell the reader the download failed, which is false, and a reader who re-downloads on that sentence is doing the right thing for the wrong reason."
-  },
-  "readerFileEmptyTitle": "This chapter's recording was interrupted",
-  "@readerFileEmptyTitle": {
-    "description": "⚠️ **Distinct from 'corrupt'.** Zero bytes is the signature of an INTERRUPTED write, so the sentence is about the recording and the action is a re-download."
-  },
-  "readerFileEmptyBody": "Nothing was saved, so there is nothing to read.",
-  "readerFileCorruptNotMarkdown": "This chapter's saved copy is not readable",
-  "@readerFileCorruptNotMarkdown": {
-    "description": "B18 / E18 — the file is there and holds no readable prose. The only action is to download it again."
-  },
-  "readerFileCorruptTruncated": "This chapter's saved copy ends mid-sentence",
-  "@readerFileCorruptTruncated": {
-    "description": "A truncation mid-character: the final file was still renamed although the write was cut short."
-  },
-  "readerFileCorruptUnreadableIo": "This chapter's file could not be opened",
-  "@readerFileCorruptUnreadableIo": {
-    "description": "⚠️ **The action here is RETRY, not re-download.** The copy may be intact and the filesystem merely refused; offering a re-download would suggest the file is at fault when it may not be."
-  },
-  "readerRowGoneTitle": "This chapter no longer exists in your library",
-  "@readerRowGoneTitle": {
-    "description": "⚠️ **Not a failure.** A stale identifier is a state of the world — a deep link followed earlier, or a navigation stack restored. It gets its own render and a way back, never an ErrorState, because an ErrorState would report THIS APP as broken for a link the reader followed."
-  },
-  "readerRowGoneBody": "The link may have been saved before the chapter was removed.",
-  "readerLoadFailedTitle": "This chapter could not be opened",
-  "@readerLoadFailedTitle": {
-    "description": "⚠️ **'Could not be opened', not 'is corrupt'.** This is the absence of a conclusion: the app could not find out which of the other states it is. Saying 'corrupt' would be a guess, and the guess would pick the wrong action."
-  },
-  "readerLoadFailedBody": "The app does not know whether the file is intact.",
-  "readerActionDownloadChapter": "Download this chapter",
-  "readerActionDownloadAgain": "Download again",
-  "readerActionOpenDownloads": "Open downloads",
-  "readerActionBack": "Back",
-  "readerActionRetry": "Retry",
-  "readerDownloadNeedsConnection": "Downloading needs a connection",
-  "@readerDownloadNeedsConnection": {
-    "description": "Shown UNDER the disabled primary action (§ 3.5), never as a replacement for it. A disabled button with no reason is a button the reader assumes is broken."
-  },
-  "readerChapterNumber": "Chapter {number}",
-  "@readerChapterNumber": {
-    "description": "⚠️ **The placeholder is a `String`, not a number, and that is load-bearing.** `chapters.number` is a `RealColumn` (a `double`), and an ICU `{number}` bound to a double renders \"Chapter 12.0\" — which asserts a decimal place the site never printed. The formatting lives in Dart (`formatChapterNumber`), where a whole value drops its fraction and a fractional one keeps it. Rule 9 is about *displaying* the site's number, and 12.0 is not what the site wrote.",
-    "placeholders": {
-      "number": {
-        "type": "String"
-      }
-    }
-  },
-  "readerChapterNumberUnreadable": "Chapter",
-  "@readerChapterNumberUnreadable": {
-    "description": "The word used when the site's number could not be parsed. Not a number and not an ellipsis: the reader is told the chapter has no number rather than shown a `0`."
-  },
-  "libraryTitle": "Library",
-  "@libraryTitle": {
-    "description": "⚠️ **Identical in meaning to `navLibrary`, and separate anyway.** The tab label and the screen title are two surfaces, and the design gives the screen a `--text-h1` title bar. Merging them would make one string serve a 13 dp tab and a 31 dp title."
-  },
-  "libraryContinueOverline": "CONTINUE READING",
-  "@libraryContinueOverline": {
-    "description": "An **overline**, 11/16, 600 weight, and it is a LABEL rather than a sentence — the tile under it carries the words."
-  },
-  "libraryTileUnopened": "{count, plural, =0{No new chapters} =1{1 new chapter} other{{count} new chapters}}",
-  "libraryTileAuthorMissing": "Author unknown",
-  "@libraryTileAuthorMissing": {
-    "description": "⚠️ **A WORD, not a dash.** ADR-024: the author is displayed, never searched, and a site may publish none. An em dash is what a rendering fallback produces; a sentence says the library does not know, which is the actual fact."
-  },
-  "libraryTileProgress": "{downloaded} of {total} downloaded",
-  "@libraryTileProgress": {
-    "description": "**The mark's count, not the files'** (B48, ADR-022). An interrupted download has no mark, so this figure never counts a chapter the reader cannot open."
-  },
-  "libraryTileUndownloaded": "Not downloaded yet",
-  "libraryRemoveTitle": "Remove from library?",
-  "libraryRemoveBody": "{title} leaves your library. Its {count, plural, =0{no downloaded chapters} =1{1 downloaded chapter} other{{count} downloaded chapters}} and your reading history stay on this phone.",
-  "@libraryRemoveBody": {
-    "description": "⚠️ **The number appears INSIDE every plural branch, and that is the bug a row caught.** With the count only in the placeholder selector and never in the branches, the sentence renders \"Its downloaded chapters and your reading history stay\" — no figure at all, in a dialog whose whole purpose is to quote one. B32 is a promise about what survives, and \"nothing\" survives it as well as 148 chapters do."
-  },
-  "libraryRemoveAction": "Remove",
-  "libraryRemoveKept": "Nothing was deleted. The chapters are still here.",
-  "@libraryRemoveKept": {
-    "description": "Shown after a removal, and it says **nothing was deleted**. B32 is a promise the reader should be able to see, not a rule they have to trust."
-  },
-  "libraryRemoveUndo": "Undo",
-  "libraryRemoved": "{title} was removed",
-  "librarySimilarTitle": "A novel with this title is already in your library",
-  "@librarySimilarTitle": {
-    "description": "⚠️ **B40's dialog asks a question the reader can answer, so it names BOTH novels and BOTH sites.** \"Is this the same novel?\" is unanswerable without knowing which site published which."
-  },
-  "librarySimilarBody": "\"{existing}\" on {source} has the same title as \"{incoming}\" on {incomingSource}.",
-  "librarySimilarOpenExisting": "Open the existing one",
-  "librarySimilarAddAnyway": "Add anyway",
-  "librarySimilarExplain": "Nothing will be merged — they stay two separate novels.",
-  "@librarySimilarExplain": {
-    "description": "⚠️ **Said BEFORE the choice, not after it.** \"Add anyway\" reads like a merge; this line is what makes it a second row."
-  },
-  "libraryLoadErrorTitle": "Your library could not be read",
-  "libraryAddFailed": "The novel could not be added. It is still listed in Browse.",
-  "@libraryAddFailed": {
-    "description": "⚠️ **`It is still listed in Browse`**, because B24's submit-error state says the row is still there and nothing is optimistic. A failure that reads as \"gone\" teaches a reader not to trust the screen."
-  },
-  "libraryAddFailedRetry": "Retry",
-  "libraryActionCancel": "Cancel",
-  "@appTitle": {
-    "description": ""
-  },
-  "@navLibrary": {
-    "description": ""
-  },
-  "@navBrowse": {
-    "description": ""
-  },
-  "@navUpdates": {
-    "description": ""
-  },
-  "@navHistory": {
-    "description": ""
-  },
-  "@navMore": {
-    "description": ""
-  },
-  "@navDownloads": {
-    "description": ""
-  },
-  "@navSettings": {
-    "description": ""
-  },
-  "@commonRetry": {
-    "description": ""
-  },
-  "@commonCancel": {
-    "description": ""
-  },
-  "@commonBack": {
-    "description": ""
-  },
-  "@commonErrorTitle": {
-    "description": ""
-  },
-  "@commonErrorBody": {
-    "description": ""
-  },
-  "@libraryEmptyTitle": {
-    "description": ""
-  },
-  "@libraryEmptyBody": {
-    "description": ""
-  },
-  "@browseEmptyBody": {
-    "description": ""
-  },
-  "@readerOfflineAbsentBody": {
-    "description": ""
-  },
-  "@readerFileMissingTitle": {
-    "description": ""
-  },
-  "@readerFileEmptyBody": {
-    "description": ""
-  },
-  "@readerRowGoneBody": {
-    "description": ""
-  },
-  "@readerLoadFailedBody": {
-    "description": ""
-  },
-  "@readerActionDownloadChapter": {
-    "description": ""
-  },
-  "@readerActionDownloadAgain": {
-    "description": ""
-  },
-  "@readerActionOpenDownloads": {
-    "description": ""
-  },
-  "@readerActionBack": {
-    "description": ""
-  },
-  "@readerActionRetry": {
-    "description": ""
-  },
-  "@libraryTileUnopened": {
-    "description": ""
-  },
-  "@libraryTileUndownloaded": {
-    "description": ""
-  },
-  "@libraryRemoveTitle": {
-    "description": ""
-  },
-  "@libraryRemoveAction": {
-    "description": ""
-  },
-  "@libraryRemoveUndo": {
-    "description": ""
-  },
-  "@libraryRemoved": {
-    "description": ""
-  },
-  "@librarySimilarBody": {
-    "description": ""
-  },
-  "@librarySimilarOpenExisting": {
-    "description": ""
-  },
-  "@librarySimilarAddAnyway": {
-    "description": ""
-  },
-  "@libraryLoadErrorTitle": {
-    "description": ""
-  },
-  "@libraryAddFailedRetry": {
-    "description": ""
-  },
-  "@libraryActionCancel": {
-    "description": ""
-  },
-  "browseTitle": "Browse",
-  "@browseTitle": {
-    "description": ""
-  },
-  "browseSourceUnavailableTitle": "{source} could not be read",
-  "@browseSourceUnavailableTitle": {
-    "description": ""
-  },
-  "browseSourceUnavailableBody": "The page loaded, but the part that lists novels was not on it. Nothing is wrong with your library, and nothing was downloaded.",
-  "@browseSourceUnavailableBody": {
-    "description": "⚠️ **Two sentences a reader needs and cannot guess.** `Nothing is wrong with your library` comes first because the failure looks like a bug in the app, and `nothing was downloaded` because the fear is that a check ate their downloads. This is SC-6's only surface."
-  },
-  "browseEmptyTagTitle": "Nothing tagged {tag}",
-  "@browseEmptyTagTitle": {
-    "description": "⚠️ **The tag is echoed back**, because a reader who has forgotten what they tapped needs to be told — and an empty-state sentence that does not name the tag could belong to any screen."
-  },
-  "browseEmptyTagBody": "{source} publishes no novel under that tag. Try another tag.",
-  "@browseEmptyTagBody": {
-    "description": ""
-  },
-  "browseSiteSaidNothingTitle": "The site says it has nothing",
-  "@browseSiteSaidNothingTitle": {
-    "description": ""
-  },
-  "browseSiteSaidNothingBody": "Searching {source} for \"{query}\" returned nothing.",
-  "@browseSiteSaidNothingBody": {
-    "description": "⚠️ **The query is quoted AND the site is named.** The site's own marker is the reason this state exists at all, and a reader needs to see what they asked for before they decide the site is at fault."
-  },
-  "browseNoConnectionTitle": "No connection",
-  "@browseNoConnectionTitle": {
-    "description": ""
-  },
-  "browseNoConnectionBody": "{source} could not be reached. Your library is unaffected.",
-  "@browseNoConnectionBody": {
-    "description": "⚠️ **`Your library is unaffected`**, and it is not reassurance for its own sake: SC-6 exists because a site that cannot be read looks like a broken app, and the reader's first fear is their library."
-  },
-  "browseActionRetry": "Retry",
-  "@browseActionRetry": {
-    "description": ""
-  },
-  "browseActionOpenLibrary": "Open library",
-  "@browseActionOpenLibrary": {
-    "description": ""
-  },
-  "browseActionBrowseAnother": "Browse another tag",
-  "@browseActionBrowseAnother": {
-    "description": ""
-  },
-  "browseFailureLayoutChanged": "The site's layout changed",
-  "@browseFailureLayoutChanged": {
-    "description": ""
-  },
-  "browseFailureRateLimited": "The site asked us to slow down",
-  "@browseFailureRateLimited": {
-    "description": "⚠️ **The site's own rate limit is named, not \"error\".** `17-security.md` rule 6 honours `Retry-After` rather than guessing, and a reader who is told the site asked us to slow down waits; one told \"error\" presses retry and makes it worse."
-  },
-  "browseFailureNoConnection": "No connection",
-  "@browseFailureNoConnection": {
-    "description": ""
-  },
-  "browseFailureUnavailable": "The site is unavailable",
-  "@browseFailureUnavailable": {
-    "description": ""
-  },
-  "browseFailureParse": "The page could not be read",
-  "@browseFailureParse": {
-    "description": ""
-  },
-  "browseFailureItemRemoved": "That novel is no longer on the site",
-  "@browseFailureItemRemoved": {
-    "description": ""
-  },
-  "browseTileKept": "In your library",
-  "@browseTileKept": {
-    "description": ""
-  },
-  "browseTileAdd": "Add",
-  "@browseTileAdd": {
-    "description": ""
-  },
-  "browseTileOpen": "Open",
-  "@browseTileOpen": {
-    "description": ""
-  },
-  "browseFooterLoadingMore": "Loading more…",
-  "@browseFooterLoadingMore": {
-    "description": ""
-  },
-  "browseFooterEnd": "That is everything this tag publishes",
-  "@browseFooterEnd": {
-    "description": ""
-  },
-  "causeNoConnectionKicker": "NO CONNECTION",
-  "@causeNoConnectionKicker": {
-    "description": ""
-  },
-  "causeLayoutChangedKicker": "THE PAGES OF THIS SITE HAVE CHANGED",
-  "@causeLayoutChangedKicker": {
-    "description": ""
-  },
-  "causeSiteUnavailableKicker": "THE SITE IS NOT ANSWERING",
-  "@causeSiteUnavailableKicker": {
-    "description": ""
-  },
-  "causeContentRemovedKicker": "REMOVED FROM THE SOURCE",
-  "@causeContentRemovedKicker": {
-    "description": ""
-  },
-  "causeUnreadableRecordKicker": "THIS SITE COULD NOT BE READ",
-  "@causeUnreadableRecordKicker": {
-    "description": ""
-  },
-  "causeNoConnectionTitle": "No connection to {host}",
-  "@causeNoConnectionTitle": {
-    "description": ""
-  },
-  "causeNoConnectionBody": "Nothing was lost. Your library and your downloaded chapters are exactly as they were.",
-  "@causeNoConnectionBody": {
-    "description": ""
-  },
-  "causeLayoutChangedTitle": "The pages of this site have changed",
-  "@causeLayoutChangedTitle": {
-    "description": ""
-  },
-  "causeLayoutChangedBody": "This is a fault in the copy this app has of {source} — not in {source}, and nothing is to do with how you use it. {retryNote}",
-  "@causeLayoutChangedBody": {
-    "description": "⚠️ **\"A fault in the copy this app HAS of {source} — not in {source}\".** E8's whole point: the reader did not break anything and the site did not break anything. A message that says \"{source} is broken\" transfers the fault to the site, which is the wrong party and the one the reader cannot report to."
-  },
-  "causeLayoutChangedRetryNote": "Sometimes it resolves on its own. Rarely.",
-  "@causeLayoutChangedRetryNote": {
-    "description": "⚠️ **Said BEFORE the button, and it hedges honestly.** A site mid-deployment is a temporary state, and \"sometimes it resolves on its own. Rarely.\" is a sentence that sets the expectation a retry needs to be fair."
-  },
-  "causeLayoutChangedDictation": "Say: \"the pages of {source} have changed and the app can no longer read them.\"",
-  "@causeLayoutChangedDictation": {
-    "description": "⚠️ **A sentence the reader can read ALOUD**, which is C12: the reader is often on a phone they cannot type on, and \"the pages of X have changed\" is something a person can act on while \"HTTP 200\" is not."
-  },
-  "causeSiteUnavailableTitle": "{source} is not answering",
-  "@causeSiteUnavailableTitle": {
-    "description": ""
-  },
-  "causeSiteUnavailableBody": "The site refused or is down. Nothing about your library was touched.",
-  "@causeSiteUnavailableBody": {
-    "description": ""
-  },
-  "causeContentRemovedTitle": "This is no longer on {source}",
-  "@causeContentRemovedTitle": {
-    "description": ""
-  },
-  "causeContentRemovedBody": "The site says so in its own words. Your saved copy is untouched.",
-  "@causeContentRemovedBody": {
-    "description": ""
-  },
-  "causeContentRemovedNoRetry": "There is nothing to try again here.",
-  "@causeContentRemovedNoRetry": {
-    "description": "⚠️ **The caption that replaces the button.** There is no retry here and a greyed-out one would tell a reader the app is considering an action it will not take. The words say why."
-  },
-  "causeUnreadableRecordTitle": "This app cannot say what happened",
-  "@causeUnreadableRecordTitle": {
-    "description": ""
-  },
-  "causeUnreadableRecordBody": "It kept a record it can no longer read, so it will not guess. The app will not invent a diagnosis.",
-  "@causeUnreadableRecordBody": {
-    "description": "⚠️ **\"It will not guess\", stated as a virtue.** This is the only screen that admits the app does not know, and saying so plainly is what stops a reader assuming the app knows and is being coy."
-  },
-  "causeEvidenceHeading": "What happened",
-  "@causeEvidenceHeading": {
-    "description": ""
-  },
-  "causeActionTryAgain": "Try again",
-  "@causeActionTryAgain": {
-    "description": ""
-  },
-  "causeActionCopyThis": "Copy this",
-  "@causeActionCopyThis": {
-    "description": ""
-  },
-  "causeActionBack": "Back",
-  "@causeActionBack": {
-    "description": ""
-  },
-  "causeActionBrowseOther": "Browse another site",
-  "@causeActionBrowseOther": {
-    "description": ""
-  },
-  "causeActionOpenLibrary": "Open library",
-  "@causeActionOpenLibrary": {
-    "description": ""
-  },
-  "sourceUnavailableStillWorksHeading": "What still works",
-  "@sourceUnavailableStillWorksHeading": {
-    "description": ""
-  },
-  "sourceUnavailableStillWorksBody": "Your {library} novels and {downloaded} downloaded chapters are on this phone and are readable now, with or without {source}.",
-  "@sourceUnavailableStillWorksBody": {
-    "description": "⚠️ **The whole reason this screen exists.** SC-6's damage is not the failure — it is a reader concluding their library is gone. The three figures are LOCAL counts (B14, B48), so they are true without a network and they are the sentence that ends the fear."
-  },
-  "sourceUnavailableStillWorksEmpty": "Nothing is stored yet — and nothing was lost by this failure.",
-  "@sourceUnavailableStillWorksEmpty": {
-    "description": "⚠️ **A count of zero says \"nothing was lost\" rather than nothing.** The empty case and the failure case read alike otherwise, and a reader who has just seen a failure cannot tell \"empty\" from \"gone\"."
-  },
-  "sourceUnavailableRetryIn": "Try again in {seconds}s",
-  "@sourceUnavailableRetryIn": {
-    "description": ""
-  },
-  "sourceUnavailableWaitingForSite": "The site asked us to wait {seconds}s.",
-  "@sourceUnavailableWaitingForSite": {
-    "description": ""
-  },
-  "browseFailureUnknownCause": "The app cannot read its own record of this failure",
-  "@browseFailureUnknownCause": {
-    "description": "⚠️ **Not \"no connection\".** `CauseUnknown` means the app cannot read its own record; it does not mean the phone is offline, and a reader sent to check a setting that is already correct learns to distrust every error this app shows."
-  },
-  "browseSearchHint": "Search this site",
-  "@browseSearchHint": {
-    "description": "Shown only when the source declares `supportsSearch`; the field is **absent** otherwise, never disabled."
-  },
-  "novelDetailsTitle": "Novel",
-  "@novelDetailsTitle": {
-    "description": ""
-  },
-  "chapterListHeaderCount": "{count} chapters",
-  "@chapterListHeaderCount": {
-    "description": ""
-  },
-  "chapterListHeaderAtSource": "{count} chapters on {source}",
-  "@chapterListHeaderAtSource": {
-    "description": ""
-  },
-  "chapterListLoadAction": "Load the chapter list",
-  "@chapterListLoadAction": {
-    "description": ""
-  },
-  "chapterListLoadExplainer": "This app has never fetched the chapters of this novel. Nothing has been stored, and nothing was lost.",
-  "@chapterListLoadExplainer": {
-    "description": ""
-  },
-  "chapterListNeverLoadedTitle": "The chapters were never loaded",
-  "@chapterListNeverLoadedTitle": {
-    "description": ""
-  },
-  "chapterListNeverLoadedBody": "This novel is in your library, but its chapter list has not been fetched yet. Loading it asks {source} for the list and stores it on this phone.",
-  "@chapterListNeverLoadedBody": {
-    "description": "⚠️ **It says what loading DOES before offering it.** B12's whole point is that a list nobody asked for is not an empty list, and a reader who sees an empty area and one button cannot tell whether the button will create something or reveal something. This sentence says: it asks the site, and it stores."
-  },
-  "chapterListNoConnectionTitle": "No connection",
-  "@chapterListNoConnectionTitle": {
-    "description": ""
-  },
-  "chapterListNoConnectionBody": "The chapter list has never been fetched, and {source} cannot be reached right now. Nothing about your library is affected.",
-  "@chapterListNoConnectionBody": {
-    "description": ""
-  },
-  "chapterListEmptyAtSourceTitle": "{source} publishes no chapters",
-  "@chapterListEmptyAtSourceTitle": {
-    "description": ""
-  },
-  "chapterListEmptyAtSourceBody": "The site said so itself. This is what it publishes for this novel, and it is not an error.",
-  "@chapterListEmptyAtSourceBody": {
-    "description": "⚠️ **\"The site said so itself.\"** This is the ONLY place in the app where an empty result is a real answer, and the sentence names the site as the source of the claim — otherwise a reader compares it with an unrelated empty tag and concludes the app is broken."
-  },
-  "chapterListUnreadableTitle": "{source} could not be read",
-  "@chapterListUnreadableTitle": {
-    "description": ""
-  },
-  "chapterListUnreadableBody": "The page loaded and the chapter list was not on it. Your library is untouched and nothing was downloaded.",
-  "@chapterListUnreadableBody": {
-    "description": ""
-  },
-  "chapterListStoredUnreadableTitle": "This app cannot read its own copy",
-  "@chapterListStoredUnreadableTitle": {
-    "description": ""
-  },
-  "chapterListStoredUnreadableBody": "The chapter list is stored on this phone, and the app can no longer read it. Loading it again from {source} would replace it, so the app has not done that.",
-  "@chapterListStoredUnreadableBody": {
-    "description": "⚠️ **\"The app has NOT done that\", stated explicitly.** This is the only state where loading again would be *destructive*, and a screen that offers the button without saying so would quietly replace a copy the reader cannot read with one they can — which loses the unread marks along with it."
-  },
-  "chapterListMarkedReadFailedTitle": "The app's records disagree",
-  "@chapterListMarkedReadFailedTitle": {
-    "description": ""
-  },
-  "chapterListMarkedReadFailedBody": "A chapter you have read is no longer in the list {source} publishes. The app has not deleted your progress.",
-  "@chapterListMarkedReadFailedBody": {
-    "description": "⚠️ **\"Your progress has NOT been deleted.\"** An invariant a reader cannot see is an invariant they learn to distrust. Saying the app has not touched their progress is what stops them re-adding the novel to 'fix' it."
-  },
-  "chapterListSpaceRefusedTitle": "Not enough space",
-  "@chapterListSpaceRefusedTitle": {
-    "description": ""
-  },
-  "chapterListSpaceRefusedBody": "This download needs about {bytes} and there is not that much room. Nothing was queued.",
-  "@chapterListSpaceRefusedBody": {
-    "description": ""
-  },
-  "chapterListTailMarker": "{displayed} of {total} chapters",
-  "@chapterListTailMarker": {
-    "description": ""
-  },
-  "chapterListJumpToCurrent": "Go to the current chapter",
-  "@chapterListJumpToCurrent": {
-    "description": ""
-  },
-  "chapterListUntitled": "Untitled",
-  "@chapterListUntitled": {
-    "description": "⚠️ **B10: shown when the site published no title at all.** Never an index, never a generated \"Chapter 12\" — a fabricated title is a sentence the app invented and the reader would believe."
-  },
-  "chapterListAddToLibrary": "Add to library",
-  "@chapterListAddToLibrary": {
-    "description": "B12 — slot 1 while the novel is NOT in the library. The only path into the library from this screen."
-  },
-  "chapterListReadFromStart": "Read from the start",
-  "@chapterListReadFromStart": {
-    "description": "B12 — slot 1 when the novel IS in the library and there is no reading position."
-  },
-  "chapterListContinue": "Continue",
-  "@chapterListContinue": {
-    "description": "B12 — slot 1 when the novel is in the library and a position exists."
-  },
-  "chapterListContinueSemantics": "Continue, {chapter}, {percent} through this chapter",
-  "@chapterListContinueSemantics": {
-    "description": "B12/B10 — what a screen reader announces. The visible label is the word 'Continue' alone, which tells a sighted reader where the tap goes and a blind reader nothing; this names the chapter and how far into it the position is.",
-    "placeholders": {
-      "chapter": {
-        "type": "String"
-      },
-      "percent": {
-        "type": "int"
-      }
-    }
-  },
-  "chapterListNothingUnopened": "Nothing unopened",
-  "@chapterListNothingUnopened": {
-    "description": "B13 — slot 3 when every chapter has been opened. DISABLED, never absent: an action row that reflows when a counter reaches zero moves the control under the reader's thumb."
-  },
-  "chapterListDownloadAction": "Download",
-  "@chapterListDownloadAction": {
-    "description": "B18 — slot 2 in its idle state. Opens the bulk download sheet, which is 5-1's queue behind a surface this slice renders."
-  },
-  "chapterListMarkAllReadConfirm": "Mark the {count} chapters you have not opened as read?",
-  "@chapterListMarkAllReadConfirm": {
-    "description": "B13 — the confirmation for slot 3. It NAMES THE COUNT in the title, because a title is what a reader reads first and 'are you sure?' does not say what is about to change.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "chapterListMarkAllRead": "Mark all as read",
-  "@chapterListMarkAllRead": {
+  "@settingsSizeLg": {
     "description": ""
   },
-  "chapterListDownloadAll": "Download all",
-  "@chapterListDownloadAll": {
+  "@settingsSizeMd": {
     "description": ""
   },
-  "chapterTileUnread": "Unread",
-  "@chapterTileUnread": {
+  "@settingsSizeSm": {
     "description": ""
   },
-  "chapterTileNotDownloaded": "Not downloaded",
-  "@chapterTileNotDownloaded": {
+  "@settingsSizeXl": {
     "description": ""
   },
-  "chapterTileDownloaded": "Downloaded",
-  "@chapterTileDownloaded": {
+  "@settingsSizeXxl": {
     "description": ""
   },
-  "chapterListActionRetry": "Try again",
-  "@chapterListActionRetry": {
-    "description": ""
-  },
-  "chapterListActionBack": "Back",
-  "@chapterListActionBack": {
-    "description": ""
-  },
-  "settingsGroupSize": "TEXT SIZE",
-  "@settingsGroupSize": {
-    "description": ""
-  },
-  "settingsGroupTheme": "THEME",
-  "@settingsGroupTheme": {
-    "description": ""
-  },
-  "settingsGroupDeferred": "NOT IN THIS VERSION",
-  "@settingsGroupDeferred": {
-    "description": ""
+  "@settingsSnackHistoryCleared": {
+    "description": "The second clause is **mandatory and is the entire success message**, because B46 makes position the thing the reader must believe survived. A generic 'History cleared' leaves the reader fearing they lost their place, which is the app's core promise (B16)."
   },
-  "settingsSpecimenCredit": "From \"{novel}\" · {chapter}",
   "@settingsSpecimenCredit": {
     "description": "⚠️ **Under the specimen only, and `null` when the stand-in is shown.** B44: the seed is site content displayed as published, so naming the book it came from is the only way the reader knows they are looking at their own download and not at marketing copy.",
     "placeholders": {
@@ -1312,114 +1428,451 @@
       }
     }
   },
-  "settingsSpecimenEmptyNote": "You have not downloaded anything yet — this is what the reader will look like.",
   "@settingsSpecimenEmptyNote": {
     "description": "B28's honest empty. It is `--text-caption`, it is ONE line, and it names the sample as a sample — a specimen that pretends to be content would be the misrepresentation § 2.1 exists to prevent."
   },
-  "settingsSpecimenSeedFailed": "A chapter saved on this phone could not be read. Showing a sample instead.",
   "@settingsSpecimenSeedFailed": {
     "description": "⚠️ **`--color-warning`, never `--color-error`.** Nothing failed that the reader asked for: the setting saved, only the seed is unreadable. An error here reads as *the setting did not save*, which is false."
   },
-  "settingsDeferredModes": "No reading modes — reading is one continuous scroll.",
-  "@settingsDeferredModes": {
+  "@settingsThemeDay": {
     "description": ""
   },
-  "settingsDeferredSwipe": "No swipe or tap page-turn.",
-  "@settingsDeferredSwipe": {
+  "@settingsThemeNight": {
     "description": ""
   },
-  "settingsDeferredOrientation": "No orientation or rotation lock.",
-  "@settingsDeferredOrientation": {
+  "@settingsThemeSystem": {
+    "description": "B26's `system` value, named for what it does. NOT 'Automatic': a reader who reads *Automatic* does not learn that the app follows the phone."
+  },
+  "@settingsTitle": {
     "description": ""
   },
-  "settingsDeferredFilters": "No colour filters — sepia, greyscale, inverted.",
-  "@settingsDeferredFilters": {
+  "@sourceUnavailableRetryIn": {
     "description": ""
   },
-  "settingsDeferredJustification": "No text justification. Justified prose at this measure creates rivers, and rivers are worse than a ragged edge.",
-  "@settingsDeferredJustification": {
+  "@sourceUnavailableStillWorksBody": {
+    "description": "⚠️ **The whole reason this screen exists.** SC-6's damage is not the failure — it is a reader concluding their library is gone. The three figures are LOCAL counts (B14, B48), so they are true without a network and they are the sentence that ends the fear."
+  },
+  "@sourceUnavailableStillWorksEmpty": {
+    "description": "⚠️ **A count of zero says \"nothing was lost\" rather than nothing.** The empty case and the failure case read alike otherwise, and a reader who has just seen a failure cannot tell \"empty\" from \"gone\"."
+  },
+  "@sourceUnavailableStillWorksHeading": {
     "description": ""
   },
-  "settingsDeferredParagraphSpacing": "No paragraph spacing control — the 1.72 line-height already sets the rhythm.",
-  "@settingsDeferredParagraphSpacing": {
+  "@sourceUnavailableWaitingForSite": {
     "description": ""
   },
-  "settingsDeferredLineHeight": "No line-height control. It is held at 1.72 at every size on purpose, so the rhythm does not change when the size does.",
-  "@settingsDeferredLineHeight": {
-    "description": ""
-  },
-  "settingsDeferredFonts": "No font picker — the reader uses a serif, decided once. A reading face you can choose is a v2 candidate, not a v1 control.",
-  "@settingsDeferredFonts": {
-    "description": "⚠️ **The eighth, and the prose says seven.** `settings-reader.md` § 3 counts `DeferredItem × 7` while § 4.1 and § 11 both list eight absences. The copy table wins, and dropping this one would forget the font picker — the absence a reader who has used another reader is most likely to look for."
-  },
-  "readerSizeSheetTitle": "Text size",
-  "@readerSizeSheetTitle": {
-    "description": ""
-  },
-  "readerSizeStepPoints": "{px}pt",
-  "@readerSizeStepPoints": {
-    "description": "⚠️ **The EYE's figure.** `settings-reader.md` § 6: it is the one thing the reader can check against the phone's own font slider, so it must never truncate and never be a bare number.",
-    "placeholders": {
-      "px": {
-        "type": "String",
-        "example": "20"
-      }
-    }
-  },
-  "readerSizePixelsSpoken": "{px} pixels",
-  "@readerSizePixelsSpoken": {
-    "description": "⚠️ **The SPOKEN figure, and deliberately not the same string.** § 5's announcement is *\"Large, 20 pixels, not selected\"*; `20pt` read aloud is an abbreviation a screen reader has to guess at. One number, two renderings, two keys — a translation cannot merge them.",
-    "placeholders": {
-      "px": {
-        "type": "String",
-        "example": "20"
-      }
-    }
-  },
-  "readerSizeStepSemantics": "{name}, {pixels}, {state}",
-  "@readerSizeStepSemantics": {
-    "description": "One focusable node per step, announcing `{name}`, `{pixels}` and whether it is selected. ⚠️ **A single ICU sentence rather than three concatenated strings**: the order and the punctuation are the translator's, and `name, pixels, state` does not survive a language that does not use commas.",
-    "placeholders": {
-      "name": {
-        "type": "String",
-        "example": "Large"
-      },
-      "pixels": {
-        "type": "String",
-        "example": "20 pixels"
-      },
-      "state": {
-        "type": "String",
-        "example": "not selected"
-      }
-    }
-  },
-  "readerSizeStepSelected": "selected",
-  "@readerSizeStepSelected": {
-    "description": "The positive half of `readerSizeStepSemantics`. Never signalled by colour alone — `14-design-tokens.md` §Accessibility."
-  },
-  "readerSizeStepNotSelected": "not selected",
-  "@readerSizeStepNotSelected": {
-    "description": "⚠️ **Its own key, never the empty string.** \"Not selected\" is a claim, and a label that goes silent on the four unselected steps is indistinguishable from one that failed to render."
-  },
-  "readerSizeButtonTooltip": "Text size: {name}",
-  "@readerSizeButtonTooltip": {
+  "@unitBytes": {
     "description": "",
     "placeholders": {
-      "name": {
-        "type": "String",
-        "example": "Large"
-      }
+      "count": {}
     }
   },
-  "readerThemeButtonTooltip": "Theme: {name}",
-  "@readerThemeButtonTooltip": {
-    "description": "⚠️ **Names the CURRENT value, not the next one.** The button cycles, so a label naming the result (\"Switch to night\") would be true for one press and false for the next two — and the reader mid-chapter cannot see which.",
+  "@unitGigabytes": {
+    "description": "",
     "placeholders": {
-      "name": {
-        "type": "String",
-        "example": "Follow the phone"
-      }
+      "count": {}
     }
-  }
+  },
+  "@unitKilobytes": {
+    "description": "",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@unitMegabytes": {
+    "description": "",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@warningNotifications": {
+    "description": "A warning, not an error: the app works, the phone decided."
+  },
+  "aboutCopyVersion": "Copy version number",
+  "aboutDataCountUnavailable": "—",
+  "aboutDataDownloaded": "Downloaded chapters",
+  "aboutDataE11": "Nothing here is backed up anywhere. If you uninstall Lumen Tale or lose this phone, all three numbers go to zero and no copy exists. Installing a new version over this one does not touch them — that is the only guarantee this app makes about your data.",
+  "aboutDataLabel": "YOUR DATA ON THIS DEVICE",
+  "aboutDataLibrary": "Library",
+  "aboutDataPositions": "Reading positions",
+  "aboutDeliveryBody": "This app runs on Android phones only. A new build is produced every time a change is merged, and you install it from the file by hand. There is no app store and no store account.",
+  "aboutGuarantee": "Installing a new version keeps your library, your downloads, your reading positions and your history. Nothing is replaced or re-downloaded.",
+  "aboutPrivacyLabel": "WHAT LEAVES THIS DEVICE",
+  "aboutPrivacyNever1": "Your library",
+  "aboutPrivacyNever2": "Your reading positions",
+  "aboutPrivacyNever3": "Your history",
+  "aboutPrivacyNever4": "Your error logs",
+  "aboutPrivacyNever5": "Crash reports",
+  "aboutPrivacyNever6": "Analytics",
+  "aboutPrivacyNever7": "A device identifier",
+  "aboutPrivacySent1": "A chapter's page — but only after you asked for it.",
+  "aboutPrivacySent2": "One request to check whether a newer version exists — only if you tap \"Check for a new version\".",
+  "aboutPrivacyVerify": "Check it yourself: switch the phone to airplane mode, then open the app. Your library, your downloads and your reading positions are all there. Nothing is missing, because nothing was ever sent.",
+  "aboutProvenance": "Android phone · built automatically · no store",
+  "aboutSnackCopied": "Version number copied.",
+  "aboutVersion": "Version {buildName} · build {buildNumber}",
+  "aboutVersionUnreadable": "The installed version number could not be read.",
+  "actionFreeSpace": "Free space",
+  "actionReportBug": "Report the problem",
+  "appTitle": "Lumen Tale",
+  "browseActionBrowseAnother": "Browse another tag",
+  "browseActionOpenLibrary": "Open library",
+  "browseActionRetry": "Retry",
+  "browseEmpty": "This site has nothing to show here.",
+  "browseEmptyBody": "No source is available yet.",
+  "browseEmptyTagBody": "{source} publishes no novel under that tag. Try another tag.",
+  "browseEmptyTagTitle": "Nothing tagged {tag}",
+  "browseFailureItemRemoved": "That novel is no longer on the site",
+  "browseFailureLayoutChanged": "The site's layout changed",
+  "browseFailureNoConnection": "No connection",
+  "browseFailureParse": "The page could not be read",
+  "browseFailureRateLimited": "The site asked us to slow down",
+  "browseFailureUnavailable": "The site is unavailable",
+  "browseFailureUnknownCause": "The app cannot read its own record of this failure",
+  "browseFooterEnd": "That is everything this tag publishes",
+  "browseFooterLoadingMore": "Loading more…",
+  "browseNoConnectionBody": "{source} could not be reached. Your library is unaffected.",
+  "browseNoConnectionTitle": "No connection",
+  "browseSearchHint": "Search this site",
+  "browseSiteSaidNothingBody": "Searching {source} for \"{query}\" returned nothing.",
+  "browseSiteSaidNothingTitle": "The site says it has nothing",
+  "browseSourceUnavailableBody": "The page loaded, but the part that lists novels was not on it. Nothing is wrong with your library, and nothing was downloaded.",
+  "browseSourceUnavailableTitle": "{source} could not be read",
+  "browseSucceeded": "Read successfully.",
+  "browseTileAdd": "Add",
+  "browseTileKept": "In your library",
+  "browseTileOpen": "Open",
+  "browseTitle": "Browse",
+  "causeActionBack": "Back",
+  "causeActionBrowseOther": "Browse another site",
+  "causeActionCopyThis": "Copy this",
+  "causeActionOpenLibrary": "Open library",
+  "causeActionTryAgain": "Try again",
+  "causeContentRemovedBody": "The site says so in its own words. Your saved copy is untouched.",
+  "causeContentRemovedKicker": "REMOVED FROM THE SOURCE",
+  "causeContentRemovedNoRetry": "There is nothing to try again here.",
+  "causeContentRemovedTitle": "This is no longer on {source}",
+  "causeEvidenceHeading": "What happened",
+  "causeLayoutChangedBody": "This is a fault in the copy this app has of {source} — not in {source}, and nothing is to do with how you use it. {retryNote}",
+  "causeLayoutChangedDictation": "Say: \"the pages of {source} have changed and the app can no longer read them.\"",
+  "causeLayoutChangedKicker": "THE PAGES OF THIS SITE HAVE CHANGED",
+  "causeLayoutChangedRetryNote": "Sometimes it resolves on its own. Rarely.",
+  "causeLayoutChangedTitle": "The pages of this site have changed",
+  "causeNoConnectionBody": "Nothing was lost. Your library and your downloaded chapters are exactly as they were.",
+  "causeNoConnectionKicker": "NO CONNECTION",
+  "causeNoConnectionTitle": "No connection to {host}",
+  "causeSiteUnavailableBody": "The site refused or is down. Nothing about your library was touched.",
+  "causeSiteUnavailableKicker": "THE SITE IS NOT ANSWERING",
+  "causeSiteUnavailableTitle": "{source} is not answering",
+  "causeUnreadableRecordBody": "It kept a record it can no longer read, so it will not guess. The app will not invent a diagnosis.",
+  "causeUnreadableRecordKicker": "THIS SITE COULD NOT BE READ",
+  "causeUnreadableRecordTitle": "This app cannot say what happened",
+  "chapterCount": "{count, plural, =0{No chapters} =1{1 chapter} other{{count} chapters}}",
+  "chapterCountPlural": "{count} other chapters",
+  "chapterCountSingular": "1 other chapter",
+  "chapterListActionBack": "Back",
+  "chapterListActionRetry": "Try again",
+  "chapterListAddToLibrary": "Add to library",
+  "chapterListContinue": "Continue",
+  "chapterListContinueSemantics": "Continue, {chapter}, {percent} through this chapter",
+  "chapterListDownloadAction": "Download",
+  "chapterListDownloadAll": "Download all",
+  "chapterListEmptyAtSourceBody": "The site said so itself. This is what it publishes for this novel, and it is not an error.",
+  "chapterListEmptyAtSourceTitle": "{source} publishes no chapters",
+  "chapterListHeaderAtSource": "{count} chapters on {source}",
+  "chapterListHeaderCount": "{count} chapters",
+  "chapterListJumpToCurrent": "Go to the current chapter",
+  "chapterListLoadAction": "Load the chapter list",
+  "chapterListLoadExplainer": "This app has never fetched the chapters of this novel. Nothing has been stored, and nothing was lost.",
+  "chapterListMarkAllRead": "Mark all as read",
+  "chapterListMarkAllReadConfirm": "Mark the {count} chapters you have not opened as read?",
+  "chapterListMarkedReadFailedBody": "A chapter you have read is no longer in the list {source} publishes. The app has not deleted your progress.",
+  "chapterListMarkedReadFailedTitle": "The app's records disagree",
+  "chapterListNeverLoadedBody": "This novel is in your library, but its chapter list has not been fetched yet. Loading it asks {source} for the list and stores it on this phone.",
+  "chapterListNeverLoadedTitle": "The chapters were never loaded",
+  "chapterListNoConnectionBody": "The chapter list has never been fetched, and {source} cannot be reached right now. Nothing about your library is affected.",
+  "chapterListNoConnectionTitle": "No connection",
+  "chapterListNothingUnopened": "Nothing unopened",
+  "chapterListReadFromStart": "Read from the start",
+  "chapterListSpaceRefusedBody": "This download needs about {bytes} and there is not that much room. Nothing was queued.",
+  "chapterListSpaceRefusedTitle": "Not enough space",
+  "chapterListStoredUnreadableBody": "The chapter list is stored on this phone, and the app can no longer read it. Loading it again from {source} would replace it, so the app has not done that.",
+  "chapterListStoredUnreadableTitle": "This app cannot read its own copy",
+  "chapterListTailMarker": "{displayed} of {total} chapters",
+  "chapterListUnreadableBody": "The page loaded and the chapter list was not on it. Your library is untouched and nothing was downloaded.",
+  "chapterListUnreadableTitle": "{source} could not be read",
+  "chapterListUntitled": "Untitled",
+  "chapterTileDownloaded": "Downloaded",
+  "chapterTileNotDownloaded": "Not downloaded",
+  "chapterTileUnread": "Unread",
+  "checkActionSemantics": "Checking, {done} of {total} novels",
+  "checkCancelAction": "Stop the check",
+  "checkCancelled": "Check cancelled.",
+  "checkCancelledByReader": "Check cancelled · your library is unchanged",
+  "checkDiscovered": "Checked {total} novels · {discovered} you had not opened",
+  "checkDiscoveredNothing": "Checked {total} novels · nothing you had not opened",
+  "checkFinishedAfterCancel": "Check finished after you cancelled it.",
+  "checkNeedsConnection": "Checking needs a connection.",
+  "checkNotificationChannelName": "Library checks",
+  "checkNotificationPermissionWarning": "The check will run, but Android will not show its notification: nothing will tell you when it finishes.",
+  "checkNotificationSettingsAction": "Open notification settings",
+  "checkNotificationTitle": "Checking your library",
+  "checkNowAction": "Check for new chapters",
+  "checkProgress": "Checking {done} of {total} novels",
+  "checkProgressNothingDownloaded": "Checking {done} of {total} novels · nothing is downloaded",
+  "checkQueuedNotice": "The check needs to be started again from here — the phone closed the job.",
+  "checkStoppedAppStandby": "Check stopped — the phone put the app to sleep. Try again.",
+  "checkStoppedBackgroundRestriction": "Check stopped — Android paused it. Tap check to finish.",
+  "checkStoppedCancelledByApp": "Check cancelled · your library is unchanged",
+  "checkStoppedDeviceIdle": "Check stopped — the phone put the app to sleep. Try again.",
+  "checkStoppedDeviceState": "Check stopped — the phone is saving power. Try again.",
+  "checkStoppedGpuLimit": "Check stopped — the phone ran out of memory for it. Try again.",
+  "checkStoppedPreempt": "Check stopped — Android gave the phone to something else.",
+  "checkStoppedSystemIgnoredCancel": "Check finished after you cancelled it.",
+  "checkStoppedTimeout": "Check took longer than Android allows and was stopped. Try again.",
+  "checkStoppedUnknown": "Check stopped — Android did not say why. Tap check to finish.",
+  "checkTerminalComplete": "All {total} novels checked · none skipped.",
+  "checkTerminalInterrupted": "Check stopped at {done} of {total} novels.",
+  "checkTerminalWithFailures": "Checked {checked} of {total} novels · {failed} could not be checked.",
+  "commonBack": "Back",
+  "commonCancel": "Cancel",
+  "commonErrorBody": "The operation could not be completed.",
+  "commonErrorTitle": "Something went wrong",
+  "commonOk": "OK",
+  "commonRetry": "Retry",
+  "coverSemanticsLabel": "Cover of {title}",
+  "deleteStoredBody": "This chapter's text will be erased from this phone.\nThe {siblingCount} other chapters of this novel are not touched.\n{freedBytes} will be freed.",
+  "deleteStoredConfirm": "Delete",
+  "deleteStoredFailedSnackbar": "Could not delete this chapter. Nothing was changed.",
+  "deleteStoredTitle": "Delete chapter {ordinal}?",
+  "downloadAddedSnackbar": "Download added",
+  "downloadAlreadyQueuedSnackbar": "This chapter is already in the queue",
+  "downloadAlreadyStoredSnackbar": "This chapter is already downloaded",
+  "downloadDeletedSnackbar": "Chapter deleted — {freedBytes} freed",
+  "downloadDone": "Downloaded",
+  "downloadDownloading": "Downloading",
+  "downloadFailed": "Download interrupted. You can try it again.",
+  "downloadNeedsConnectionSnackbar": "Downloading requires a connection.",
+  "downloadNotDownloadedLabel": "Not downloaded",
+  "downloadNotStoredSnackbar": "This chapter was not downloaded.",
+  "downloadQueued": "Queued for download",
+  "downloadSpaceRefusedAction": "Delete a downloaded chapter, then try again.",
+  "downloadSpaceRefusedBody": "This download needs {requiredBytes}, and this phone has {freeBytes} free.",
+  "downloadWriteFailedSnackbar": "The download could not be added. Nothing was changed.",
+  "errorCountUnavailable": "That count could not be computed.",
+  "errorHistoryClear": "History could not be cleared.",
+  "errorItemRemovedAtSource": "This novel is no longer on the site. The rest of your library is untouched.",
+  "errorNoConnection": "No connection. Your downloaded chapters stay readable.",
+  "errorParseFailed": "A file for this novel could not be read. Please report it to whoever maintains this app.",
+  "errorRateLimited": "The site asked us to slow down. Try again shortly.",
+  "errorRateLimitedIn": "The site asked us to slow down. Try again in {seconds} seconds.",
+  "errorSettingsLoad": "Your settings could not be loaded.",
+  "errorSettingsWrite": "This setting could not be saved. It will keep its previous value.",
+  "errorSiteUnreadable": "This site could not be read. Your other sources work normally.",
+  "errorSourceLayoutChanged": "This site has changed its layout. The app can no longer read it.",
+  "errorSourceUnavailable": "This site is not responding. Try again later.",
+  "errorStorageFull": "Storage is full. Free some space, then try again.",
+  "historyAgedOutBody": "Your reading positions were kept.",
+  "historyAgedOutTitle": "Everything older than one year was dropped",
+  "historyClearAction": "Clear history",
+  "historyClearDialogBody": "{count, plural, =0{No entries will be removed.} =1{One entry will be removed.} other{{count} entries will be removed.}} Your library, your downloads and every remembered reading position will be kept.",
+  "historyClearDialogConfirm": "Clear history",
+  "historyClearDialogTitle": "Clear history?",
+  "historyClearedBody": "Your library, your downloads and every remembered position were kept.",
+  "historyClearedTitle": "History cleared",
+  "historyDayOn": "{date}",
+  "historyDayToday": "Today",
+  "historyDayYesterday": "Yesterday",
+  "historyEmptyActionBrowse": "Browse a source",
+  "historyEmptyActionLibrary": "Open your library",
+  "historyEmptyBody": "The chapters you open appear here, newest first.",
+  "historyEmptyTitle": "Nothing read yet",
+  "historyHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "historyJustNow": "Just now",
+  "historyLoadErrorBody": "Your library, your downloaded chapters and every remembered reading position are unaffected.",
+  "historyLoadErrorTitle": "Your history could not be read",
+  "historyLoadingTitle": "Loading history",
+  "historyMinutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "historyNoticeBody": "Clearing it never moves a remembered reading position.",
+  "historyNoticeTitle": "History is bounded by time",
+  "historyRetentionChange": "Change",
+  "historyRetentionLabel": "Keep history for",
+  "historySheetTitle": "Keep history for",
+  "historySheetWarning": "Entries older than {window} will be dropped, oldest first. Your reading positions are never affected.",
+  "historySheetWarningNone": "No entries will be dropped. Your reading positions are never affected.",
+  "historySnackCleared": "History cleared. Your reading positions were kept.",
+  "historySnackNotCleared": "History was not cleared.",
+  "historySnackWindowChanged": "History is now kept for {window}.",
+  "historyTerminalLine": "This is the oldest entry kept. Entries older than {window} are dropped, oldest first.",
+  "historyTitle": "History",
+  "historyUntitledChapter": "Untitled",
+  "historyUntitledNovel": "Untitled",
+  "historyWindowOneMonth": "one month",
+  "historyWindowOneWeek": "one week",
+  "historyWindowOneYear": "one year",
+  "historyWindowThreeMonths": "three months",
+  "historyWindowTwoYears": "two years",
+  "libraryActionCancel": "Cancel",
+  "libraryAddFailed": "The novel could not be added. It is still listed in Browse.",
+  "libraryAddFailedRetry": "Retry",
+  "libraryContinueOverline": "CONTINUE READING",
+  "libraryEmptyBody": "Add a novel from Browse to start reading.",
+  "libraryEmptyBrowseAction": "Browse a source",
+  "libraryEmptyTitle": "Your library is empty",
+  "libraryFacetDownloaded": "Downloaded",
+  "libraryFacetGroup": "Show",
+  "libraryFacetHasUnopened": "Has unopened chapters",
+  "libraryFacetNotDownloaded": "Not downloaded",
+  "libraryFacetSite": "Site",
+  "libraryFilterCount": "{count} filters on",
+  "libraryLoadErrorBody": "Chapters already downloaded are still on this phone and still readable.",
+  "libraryLoadErrorTitle": "Your library could not be read",
+  "libraryNoDataClearFilters": "Clear filters",
+  "libraryNoDataTitle": "No kept novel matches the filters",
+  "libraryRemoveAction": "Remove",
+  "libraryRemoveBody": "{title} leaves your library. Its {count, plural, =0{no downloaded chapters} =1{1 downloaded chapter} other{{count} downloaded chapters}} and your reading history stay on this phone.",
+  "libraryRemoveKept": "Nothing was deleted. The chapters are still here.",
+  "libraryRemoveTitle": "Remove from library?",
+  "libraryRemoveUndo": "Undo",
+  "libraryRemoved": "{title} was removed",
+  "libraryRowCouldNotCheck": "Could not check",
+  "libraryRowDownloadComplete": "All chapters downloaded",
+  "libraryRowNeverChecked": "Never checked",
+  "libraryRowStopped": "Stopped",
+  "libraryRowStoppedConnection": "Stopped · no connection",
+  "libraryRowStoppedStorage": "Stopped · storage full",
+  "libraryScopeLine": "Titles only — the app does not keep authors, genres or descriptions as searchable fields.",
+  "librarySearchClearAction": "Clear search",
+  "librarySearchHint": "Search by title",
+  "librarySearchNoMatchTitle": "No kept novel matches \"{query}\"",
+  "librarySearchResults": "{count, plural, =0{No novel} =1{1 novel} other{{count} novels}}",
+  "librarySearchSemantics": "Search your library by title",
+  "librarySimilarAddAnyway": "Add anyway",
+  "librarySimilarBody": "\"{existing}\" on {source} has the same title as \"{incoming}\" on {incomingSource}.",
+  "librarySimilarExplain": "Nothing will be merged — they stay two separate novels.",
+  "librarySimilarOpenExisting": "Open the existing one",
+  "librarySimilarTitle": "A novel with this title is already in your library",
+  "librarySortLastRead": "Last read",
+  "librarySortRecentlyAdded": "Recently added",
+  "librarySortSite": "Site",
+  "librarySortTitle": "Sort and filter",
+  "librarySortTitleAz": "Title A–Z",
+  "librarySortUnopened": "Unopened chapters",
+  "libraryTileAuthorMissing": "Author unknown",
+  "libraryTileProgress": "{downloaded} of {total} downloaded",
+  "libraryTileUndownloaded": "Not downloaded yet",
+  "libraryTileUnopened": "{count, plural, =0{No new chapters} =1{1 new chapter} other{{count} new chapters}}",
+  "libraryTitle": "Library",
+  "libraryUnopenedBadgeSemantics": "{count} chapters you have not opened",
+  "navBrowse": "Browse",
+  "navDownloads": "Downloads",
+  "navHistory": "History",
+  "navLibrary": "Library",
+  "navMore": "More",
+  "navSettings": "Settings",
+  "navUpdates": "Updates",
+  "novelDetailsTitle": "Novel",
+  "onboardingButtonNext": "Next",
+  "onboardingButtonSkip": "Skip",
+  "onboardingButtonStart": "Start reading",
+  "onboardingStep1Body": "Keep a novel here once and it opens with the connection switched off — on a train, on a plane, with no data used. Nothing is uploaded: there is no account, no server, and nothing is sent anywhere.",
+  "onboardingStep1Headline": "It reads with no signal.",
+  "onboardingStep1Kicker": "LUMEN TALE",
+  "onboardingStep2Headline": "There is no backup.",
+  "onboardingStep2Kicker": "BEFORE YOU START",
+  "onboardingStepPosition": "Step {current} of {total}",
+  "readerActionBack": "Back",
+  "readerActionDownloadAgain": "Download again",
+  "readerActionDownloadChapter": "Download this chapter",
+  "readerActionOpenDownloads": "Open downloads",
+  "readerActionRetry": "Retry",
+  "readerChapterNumber": "Chapter {number}",
+  "readerChapterNumberUnreadable": "Chapter",
+  "readerDownloadNeedsConnection": "Downloading needs a connection",
+  "readerFileCorruptNotMarkdown": "This chapter's saved copy is not readable",
+  "readerFileCorruptTruncated": "This chapter's saved copy ends mid-sentence",
+  "readerFileCorruptUnreadableIo": "This chapter's file could not be opened",
+  "readerFileEmptyBody": "Nothing was saved, so there is nothing to read.",
+  "readerFileEmptyTitle": "This chapter's recording was interrupted",
+  "readerFileMissingBody": "The download succeeded. The file is what is missing.",
+  "readerFileMissingTitle": "This chapter had been downloaded, but its text is no longer on this phone",
+  "readerLoadFailedBody": "The app does not know whether the file is intact.",
+  "readerLoadFailedTitle": "This chapter could not be opened",
+  "readerNotStoredBody": "Only chapters already on this phone can be read here.",
+  "readerNotStoredTitle": "This chapter is not downloaded",
+  "readerOfflineAbsentBody": "Both are needed: the chapter has to be downloaded once, and downloading needs a connection.",
+  "readerOfflineAbsentTitle": "This chapter is not downloaded and there is no connection",
+  "readerOfflineBanner": "You are reading your downloads",
+  "readerRowGoneBody": "The link may have been saved before the chapter was removed.",
+  "readerRowGoneTitle": "This chapter no longer exists in your library",
+  "readerSizeButtonTooltip": "Text size: {name}",
+  "readerSizePixelsSpoken": "{px} pixels",
+  "readerSizeSheetTitle": "Text size",
+  "readerSizeStepNotSelected": "not selected",
+  "readerSizeStepPoints": "{px}pt",
+  "readerSizeStepSelected": "selected",
+  "readerSizeStepSemantics": "{name}, {pixels}, {state}",
+  "readerThemeButtonTooltip": "Theme: {name}",
+  "settingsButtonCancel": "Cancel",
+  "settingsButtonRetry": "Try again",
+  "settingsDeferredFilters": "No colour filters — sepia, greyscale, inverted.",
+  "settingsDeferredFonts": "No font picker — the reader uses a serif, decided once. A reading face you can choose is a v2 candidate, not a v1 control.",
+  "settingsDeferredJustification": "No text justification. Justified prose at this measure creates rivers, and rivers are worse than a ragged edge.",
+  "settingsDeferredLineHeight": "No line-height control. It is held at 1.72 at every size on purpose, so the rhythm does not change when the size does.",
+  "settingsDeferredModes": "No reading modes — reading is one continuous scroll.",
+  "settingsDeferredOrientation": "No orientation or rotation lock.",
+  "settingsDeferredParagraphSpacing": "No paragraph spacing control — the 1.72 line-height already sets the rhythm.",
+  "settingsDeferredSwipe": "No swipe or tap page-turn.",
+  "settingsDialogClearHistoryBody": "Reading positions are not part of this list and will not be touched.",
+  "settingsDialogClearHistoryConfirm": "Clear",
+  "settingsDialogClearHistoryTitle": "Clear {count} entries?",
+  "settingsDisclosureAboutLink": "What survives an update",
+  "settingsDisclosureE11": "Nothing here is backed up. If you uninstall Lumen Tale or lose this phone, your library, your downloads and your reading positions are gone, and no copy exists anywhere.",
+  "settingsDisclosureE11Footer": "The app cannot warn you at the moment you uninstall — the phone does that, outside the app. So it is said here, before, rather than after.",
+  "settingsErrorCountUnavailable": "Count unavailable",
+  "settingsErrorWrite": "This setting could not be saved. Nothing was changed.",
+  "settingsGroupApp": "APP",
+  "settingsGroupDeferred": "NOT IN THIS VERSION",
+  "settingsGroupHistory": "HISTORY",
+  "settingsGroupReading": "READING",
+  "settingsGroupSize": "TEXT SIZE",
+  "settingsGroupTheme": "THEME",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageFrench": "Français",
+  "settingsRowAboutLabel": "About Lumen Tale",
+  "settingsRowAboutValue": "Version {buildName} · build {buildNumber}",
+  "settingsRowAppearanceLabel": "Reader appearance",
+  "settingsRowAppearanceValue": "{theme} · {size} ({pt} pt)",
+  "settingsRowClearHistoryLabel": "Clear reading history",
+  "settingsRowHistoryLabel": "Reading history",
+  "settingsRowHistoryValue": "{count} entries · oldest {relative}",
+  "settingsRowHistoryValueEmpty": "0 entries",
+  "settingsRowLanguageHint": "Follows your phone. Change it in Android's language settings.",
+  "settingsRowLanguageLabel": "Language",
+  "settingsRowOnboardingLabel": "How this app works",
+  "settingsRowOnboardingValue": "Show the two introduction screens again",
+  "settingsRowRetentionLabel": "Keep history for",
+  "settingsSizeLg": "Large",
+  "settingsSizeMd": "Medium",
+  "settingsSizeSm": "Small",
+  "settingsSizeXl": "Larger",
+  "settingsSizeXxl": "Largest",
+  "settingsSnackHistoryCleared": "Reading history cleared. Your reading positions were kept.",
+  "settingsSpecimenCredit": "From \"{novel}\" · {chapter}",
+  "settingsSpecimenEmptyNote": "You have not downloaded anything yet — this is what the reader will look like.",
+  "settingsSpecimenSeedFailed": "A chapter saved on this phone could not be read. Showing a sample instead.",
+  "settingsThemeDay": "Day",
+  "settingsThemeNight": "Night",
+  "settingsThemeSystem": "Follow the phone",
+  "settingsTitle": "Settings",
+  "sourceUnavailableRetryIn": "Try again in {seconds}s",
+  "sourceUnavailableStillWorksBody": "Your {library} novels and {downloaded} downloaded chapters are on this phone and are readable now, with or without {source}.",
+  "sourceUnavailableStillWorksEmpty": "Nothing is stored yet — and nothing was lost by this failure.",
+  "sourceUnavailableStillWorksHeading": "What still works",
+  "sourceUnavailableWaitingForSite": "The site asked us to wait {seconds}s.",
+  "unitBytes": "{count} B",
+  "unitGigabytes": "{count} GB",
+  "unitKilobytes": "{count} KB",
+  "unitMegabytes": "{count} MB",
+  "warningNotifications": "Notifications are turned off in your phone's settings."
 }

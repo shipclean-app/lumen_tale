@@ -4942,3 +4942,76 @@ twice, which is how `resolve` came to have the `/onboarding` exemption and its s
 **`DoD: PASS — 7 of 7`**, **1 294 passed + 9 skipped**, analyze zero, suite green on three
 consecutive runs. Slices `2-8`, `3-4` and `6-4` are validated; `3-3` has its repository and is
 still `in_progress` (no tile actions, no dialogs).
+
+---
+
+## 2026-10-04 — Session 31: `3-3` completed, and the DoD's three red tests closed
+
+### ⚠️ THE THREE RED TESTS WERE TWO TREE ERRORS AND ONE REAL RULE
+
+| row | what it was really reporting |
+|---|---|
+| `test/widget_test.dart` × 2 | `LumenTaleApp` is a `ConsumerWidget` (B26 applied there and only there) and the rows mounted it **bare** — no `ProviderScope`, and no override of `appThemePreferencesProvider`, which throws **by design** because `main()` is the only place that override exists. The tree threw while building, so `MaterialApp` never existed and the rows were reading nothing. |
+| `test/app/shell` reader one-`pump` | `_redirectStartup` was `async`, so it cost a microtask **even with no gate installed**. go_router awaits a redirect before it builds the first page. |
+
+⚠️ **A `Future`-RETURNING REDIRECT IS NOT FREE EVEN WHEN IT AWAITS NOTHING.** The gate now
+answers through a synchronous `resolveNow` over an answer seeded at bootstrap, and
+`_redirectStartup` is no longer `async`. Both entry points check the latch **first** and share
+one `decide` — see below for why.
+
+### ⚠️ ⚠️ MOVING THE LATCH INSIDE THE DECISION COST **FIVE** READS
+
+`resolve` checked the seeded answer before the latch, so every call asked the store again and
+only *then* discovered the question was spent: `reader.calls` came back **5** where § 3.3
+branch 5 requires **1**. ⚠️ **"Read once per process" is a property of ASKING, not of deciding**
+— a gate must not ask a question it already has the answer to. And `resolve`/`resolveNow` had
+the branches written **twice**, which is how `resolve` came to hold the `/onboarding` exemption
+and its sibling not to. One `decide`, latch checked before the read, in both.
+
+### ⚠️ THE BOOTSTRAP ROW'S CONTRACT WAS DELETED, SO THE ROW WAS DELETED WITH IT
+
+It asserted `app.themeMode == ThemeMode.system`. `2-8` made `themeMode` **resolve**
+`ThemeOverride.resolve(platformBrightnessOf(context))`, so `system` is no longer a value this
+app emits. Asserting it again would assert the deleted contract; asserting only `light` would
+pass on a build that ignores the platform entirely. **Both platforms** are asserted now — which
+is what "honours the system mode" means, and is stronger than what it replaced.
+
+### `3-3` — the rest of the slice, 27 rows
+
+`ChapterDownloadController` · `DeleteChapterController` · `cancelIfNotStarted` ·
+`ChapterProgressLine` · `FailedChapterRetry` · `DeleteStoredChapterDialog` (in **`core/ui/`**,
+three surfaces need it) · `SpaceRefusedDialogData` · `enqueueFeedback`/`deleteFeedback`.
+
+⚠️ **THE OUTCOME → RENDERING TABLE IS A PURE FUNCTION.** § 4.3.2 gives six enqueue arms one
+exact rendering each and § 4.3.3 four delete arms, and every row names what it must NOT do.
+Inside a tile's `build` none of that is testable without a scope and a fake repository — and the
+mapping is the part that drifts. `mutatesTile` is a **property on the value**, so "the tile does
+not change" is asserted rather than inferred from an absence.
+
+⚠️ **SIZES TRUNCATE, AND THE DIRECTION IS THE POINT.** 41 499 bytes is 40.53 KiB. Rounding
+prints `41 KB` and a reader budgeting from that figure is 475 bytes short; truncation never
+overstates a need. The row deliberately uses a value where the two **disagree** — 40 999 gives
+`40` either way and would have "passed" against a rounding formatter and proved nothing.
+
+⚠️ **Riverpod 3.4.3 HAS NO `AutoDisposeAsyncNotifier`.** Auto-dispose is the default and
+`keepAlive` is the opt-in; the v2 class name fails to compile and the error reads as a missing
+import rather than a removed class.
+
+⚠️ **A SUBAGENT CLOBBERED THE ARB FILES.** Both `app_*.arb` came back without any of `3-3`'s
+twenty-one messages — a lost update between two writers of one file. `tool/add_3_3_strings.py`
+was re-run and `gen-l10n` repeated, which is the second time the **pair** of languages has had
+to be restored together.
+
+### SABOTAGE — three rules, each caught by its intended row
+
+| sabotage | row that caught it |
+|---|---|
+| a failed delete rendered as `downloadDeletedSnackbar` with `mutatesTile: true` | *a FAILED delete leaves the tile DOWNLOADED* — `Expected: false, Actual: <true>` |
+| `formatBytes` rounded instead of truncating | *a size TRUNCATES* — `Expected: contains '40 KB', Actual: '41 KB'` |
+| the E20 refusal downgraded to a snackbar | *a SPACE REFUSAL is a DIALOGUE* — `Expected: spaceRefused, Actual: messageOnly` |
+
+### STATUS
+
+`flutter analyze` clean for `3-3`'s files (the remaining errors are the in-flight `5-1`/`6-4`
+agents) · `3-3`'s 27 rows green · full suite `1 321 passed + 9 skipped` · `3-3` **validated**.
+`5-1`, `6-4`, `5-2`, `5-3`, `6-6`, `6-10`, `0-1`, `0-4`, `6-7` remain.

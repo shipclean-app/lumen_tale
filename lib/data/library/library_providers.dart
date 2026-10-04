@@ -16,6 +16,14 @@
 // It is `05-state-management.md` rule 10: the library is the app's spine, every screen
 // reads it, and the alternative is a screen that rebuilds when nothing changed. It is the
 // one provider here whose lifetime is the process's.
+//
+// ## ⚠️ `invalidateLibraryProviders` LIVES HERE TOO, and that is not tidiness
+//
+// It was added by `6-4`. A grouped invalidation helper is only worth having if it
+// sits beside the thing it defines: the helper's whole value is that a caller
+// cannot refresh three things and forget the third, and a copy living in whichever
+// feature needed it this time would be a second place deciding what "the library"
+// means.
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lumen_tale/core/database/app_database_provider.dart';
@@ -41,3 +49,23 @@ final removeFromLibraryProvider =
     Provider.autoDispose<Future<RemoveOutcome> Function(String novelId)>(
       (Ref ref) => ref.watch(libraryRepositoryProvider).removeFromLibrary,
     );
+
+/// `05-state-management.md` §Invalidation — **one call** for the callers that must
+/// refresh the library, its counts and its timestamps together.
+///
+/// ⚠️ **It invalidates ONE provider, and that is not an omission.** A check writes
+/// `novels.last_checked_at` and `sources.last_error_code`; both reach the reader
+/// through [libraryStreamProvider], which is the single read that renders a
+/// library row. The unopened count is **not** here and does not need to be:
+///
+/// - **B48** — it is derived in SQL over chapter rows, and this pass never writes
+///   `is_read`, so it cannot have moved;
+/// - drift's streams re-emit on their own when the tables change, which is what
+///   `readsFrom` is declared for.
+///
+/// So an invalidation for the count would be a refresh that provably produces the
+/// same numbers — the sort of redundant write-down that makes a later reader
+/// believe the two are independent facts.
+void invalidateLibraryProviders(Ref ref) {
+  ref.invalidate(libraryStreamProvider);
+}

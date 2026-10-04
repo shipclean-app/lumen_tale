@@ -29,6 +29,7 @@
 import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/domain/library/similar_title.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
+import 'package:lumen_tale/domain/updates/library_check.dart';
 
 /// B11, B12, B32 — the library.
 abstract interface class LibraryRepository {
@@ -166,4 +167,102 @@ final class RemoveOutcome {
 
   /// The idempotent branch: two library extinctions must not produce two confirmations.
   final bool wasAlreadyRemoved;
+}
+
+/// The local reads and writes a **check** needs — the `6-3 → 6-4` boundary.
+///
+/// ⚠️ **B38 IS THE ABSENCE OF METHODS, NOT THE PRESENCE OF DISCIPLINE.** There is no
+/// `enqueue`, no `download`, no `writeChapterBody` and no `markDownloaded` here, so a
+/// slice that needs one cannot add it without every reader of this file being a reader of
+/// that decision. `drift_library_check_store.dart` is the only implementation and its
+/// only writes are `novels.last_checked_at`, `sources.last_error_code` and `chapters`
+/// rows.
+abstract interface class LibraryCheckStore {
+  /// Every novel with `in_library = 1`, in library order, as a snapshot.
+  ///
+  /// ⚠️ **NO OTHER PREDICATE.** Not "not checked recently", not "not finished", not
+  /// "first fifty". B39 — *no novel is skipped for any reason* — and a filter here would
+  /// be exactly the skip the rule forbids while staying invisible: `run()` would report a
+  /// total the reader never chose.
+  ///
+  /// ⚠️ **Taken once per pass.** A library that gains a novel mid-pass does not get it into
+  /// this run, because the total has already been shown on screen.
+  Future<List<LibraryNovelRef>> listLibraryNovels();
+
+  /// Whether this source is switched on **locally**.
+  ///
+  /// ⚠️ **A FIFTH METHOD, AND IT IS HERE RATHER THAN ON `Source`.** § 3.2's guard 0 asks
+  /// whether a source is enabled, and `enabled` is a column on `sources` — the registry
+  /// has no such flag, and putting one on `Source` would make a code-side setting look
+  /// like a platform feature (B41).
+  ///
+  /// ⚠️ **AN ID WITH NO ROW IS ENABLED.** `sources` is only written once something has
+  /// been said about a source, so a fresh install has no rows at all; reading "absent" as
+  /// "off" would make every novel fail its first check with nothing on screen to explain
+  /// it.
+  Future<bool> isSourceEnabled(String sourceId);
+
+  /// Records that [novelId] was looked at, at [at]. **B49.**
+  ///
+  /// ⚠️ **Called on success, and on E9 alone.** Never on a failure that means "we could
+  /// not look": writing the timestamp there would make "we could not look" render as "we
+  /// looked and there was nothing", which is the exact substitution B49 forbids.
+  ///
+  /// ⚠️ **It also clears `sources.last_error_code` for [novelId]'s OWN source and only
+  /// that one** (§ 3.2 branch 6, B23): a broken site does not stop being broken because
+  /// another site succeeded.
+  Future<void> recordChecked(String novelId, DateTime at);
+
+  /// Records the typed cause for [novelId]. **B22 / B24.**
+  ///
+  /// Writes `sources.last_error_code` for the novel's source so `updates.md` can show
+  /// *Could not check* without having attempted a fetch, and it **never** writes
+  /// `last_checked_at`.
+  ///
+  /// ⚠️ **`failedSelector` IS NOT A PARAMETER.** The selector is evidence for the OWNER
+  /// (`18-external-contracts.md`, C5), not state a reader can be shown, so it rides on
+  /// `NovelCheckFailed` and stops there. Storing it in a column would make that column
+  /// carry a CSS class name, which is what `architecture.md` § 5.2 forbids.
+  Future<void> recordCheckFailure(String novelId, CheckFailureKind kind);
+
+  /// Merges a freshly read chapter list into `chapters`, returning rows **actually
+  /// added**.
+  ///
+  /// ⚠️ **`INSERT OR IGNORE` on `chapters.id`, and nothing else.** The id is
+  /// `SourceId.forChapter`, so a chapter already held cannot duplicate (B3); and because
+  /// `IGNORE` never updates, an existing row keeps `is_read`, `read_at` and
+  /// `downloaded_at` exactly as the reader left them (B13, B6, E16).
+  Future<int> mergeChapterList(String novelId, List<NewChapter> fresh);
+}
+
+/// A library novel, reduced to what a check reads.
+///
+/// ⚠️ **No cover, no description, no chapter count.** Each of those would be a second
+/// query per novel inside a loop that visits every novel — N+1 on a library the reader
+/// chose to keep, which B9 says may hold 10 000 chapters per novel
+/// (`06-database.md` rule 8).
+final class LibraryNovelRef {
+  const LibraryNovelRef({
+    required this.novelId,
+    required this.sourceId,
+    required this.title,
+    required this.url,
+  });
+
+  /// B3 — the stored, derived id.
+  final String novelId;
+
+  /// B2 — the one site this novel came from, resolved through `SourceManager`.
+  final String sourceId;
+
+  /// B10 — the site's own text, verbatim, as stored.
+  final String title;
+
+  /// The stored relative path, so the source can reopen the page. **Reconstruction is the
+  /// source's job** — `HttpSource` composes `'$baseUrl$path'`, and a hand-joined absolute
+  /// URL here would be the one place in the app that knows how a site spells its own URLs.
+  final String url;
+
+  @override
+  String toString() => 'LibraryNovelRef($novelId, $sourceId)';
 }
