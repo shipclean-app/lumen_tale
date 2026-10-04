@@ -4652,3 +4652,80 @@ the discipline is to find out which before changing anything about the product.
 `tool/dod.sh 3-2` → **DoD: PASS — 7 of 7 gates green**, exit 0. **1 103 passed + 9 skipped.**
 `3-2` → **`validated`**; `check-stale` clean.
 Slices: **20 validated** · 2 `in_progress` (`0-1`, `6-7`) · **10 `planned`**.
+
+---
+
+### F-018 PARTIALLY CLOSED — and, more usefully, it is now a GATE
+
+The root was worse than the four imports F-018 described. **`appDatabaseProvider` — the
+database, the most-shared thing in the app — was declared in `features/history/`** and
+imported by six files across four features. So a feature that needed storage had to reach
+through a *history* feature to get it, and ten imports in total broke the rule with **no
+control reporting any of them**.
+
+Moved:
+
+| from | to | why |
+|---|---|---|
+| `features/history/` → `core/database/app_database_provider.dart` | every layer may import `core/` |
+| `features/library/library_screen.dart` → `data/library/library_providers.dart` | the three library providers |
+| `features/library/library_screen.dart` → `core/ui/library_dialogs.dart` | `addWithSimilarTitleCheck`, **taking the repository as a parameter** |
+
+⚠️ **Taking the repository is what made `addWithSimilarTitleCheck` shareable at all.** It
+used to read `libraryRepositoryProvider` through a `WidgetRef`, so a *dialog* owned the
+repository and `novel_details` had to import a feature to reach it. `core/` may not import
+features — so the function takes the repository and any screen that can show a dialog can
+use it.
+
+### ⚠️ THE REFACTOR BROKE TWO TESTS, AND BOTH BREAKAGES WERE INVISIBLE
+
+**The duplicate declaration.** I created `core/database/app_database_provider.dart` and
+**left the original in `history_providers.dart`.** Two `appDatabaseProvider`s, both valid.
+`about_screen_test` overrode the *history* one; `about_providers` read the *core* one — so
+the override did nothing, the counts came back empty, and two rows failed with
+`Found 0 widgets with text "1"`.
+
+⚠️ **That is the most dangerous shape a duplicate takes: both are real, both are referenced,
+and the failure surfaces three files away as a number that is the wrong number.** A rename
+would have been caught by the compiler. A *move* is not.
+
+### ⚠️ `tool/check_boundaries.py` — AND IT IS A GATE, NOT A REPORT
+
+It is now the DoD's fifth gate. **A crossing is either fixed or DECLARED in
+`tool/boundaries.allowlist`; an undeclared one fails.** Declared crossings are printed with
+their reason on every run, so they stay visible.
+
+Proved by sabotage: re-pointing `catalogue_screen.dart` at `library_screen.dart` turns the
+gate **red** and the verdict to `FAIL — 3 of 7`. Restored, green.
+
+⚠️ **Three crossings remain, and they are real rather than accidental**: `settings` needs
+`historyRepositoryProvider` and `historyRetentionProvider`, because the *clear history* row
+edits history's retention **policy**, which is history's domain. Fixing it means moving the
+two providers, `appHistoryRetentionProvider` and `HistoryRetentionNotifier` **together** —
+the notifier reads the store, the store counts through the database, and moving one alone
+leaves a cycle. Declared rather than half-done.
+
+### `tool/sort_imports.py` — AND IT HAD THREE BUGS, EACH CAUGHT BY THE ANALYZER
+
+Written because `directives_ordering` was being fixed by hand, one file at a time.
+
+1. **It forbade blank lines inside the import block** — and this project separates
+   `package:flutter…` from `package:lumen_tale…` with a blank line. It silently sorted
+   *nothing* and printed success. The one control in this session that reported green while
+   doing no work.
+2. **It sorted by URI alone**, which interleaved relative imports with `package:` ones.
+3. **It ranked `package:` before relative but treated `dart:` as "not a package"**, so
+   `dart:io` sorted ahead of the `package:` imports. The convention is three groups.
+
+⚠️ **Also: it rewrote two files in `lib/l10n/generated/`** — codegen output, excluded from
+analysis, and the next `flutter gen-l10n` would have reverted it. Generated paths are now
+skipped unless `--generated` is passed.
+
+⚠️ **A tool that reports success having done nothing is worse than no tool**, because it is
+believed. The first version did exactly that, and only `flutter analyze`'s unfixed
+complaints revealed it.
+
+### STATUS
+
+`tool/dod.sh` → **DoD: PASS — 7 of 7 gates green** (boundaries is the new gate).
+**1 103 passed + 9 skipped.** Slices: 20 validated · 2 `in_progress` · 10 `planned`.

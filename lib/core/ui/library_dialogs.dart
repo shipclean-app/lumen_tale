@@ -19,7 +19,9 @@
 
 import 'package:flutter/material.dart';
 
+import 'package:lumen_tale/domain/library/library_repository.dart';
 import 'package:lumen_tale/domain/library/similar_title.dart';
+import 'package:lumen_tale/domain/sources/models/novel.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 
 /// Shows the similar-title question and returns what the reader chose.
@@ -194,4 +196,29 @@ class ConfirmDialog extends StatelessWidget {
       ],
     );
   }
+}
+
+/// B12/B40 — add this novel, asking about a similar title **before** anything is stored.
+///
+/// ⚠️ **THE REPOSITORY IS A PARAMETER, and that is the whole point of this function living
+/// here.** It used to be declared in `features/library/library_screen.dart` and read
+/// `libraryRepositoryProvider` through a `WidgetRef` — which meant a *dialog* owned the
+/// repository, and `features/novel_details` had to import a feature to reach it.
+///
+/// Taking the repository makes this a pure UI-layer action over a `domain` interface, so
+/// any screen that can show a dialog can use it, and none of them imports another feature.
+///
+/// ⚠️ **A FUNCTION, NOT A WIDGET, and that is `2-5`'s rule kept.** The caller must supply
+/// the dialog and then act on the verdict; a widget that both asks and writes would put
+/// B40's default one layer away from the branch that honours it.
+Future<AddOutcome> addWithSimilarTitleCheck(
+  BuildContext context,
+  LibraryRepository library,
+  Novel novel,
+) {
+  return library.addFromCatalogue(
+    novel: novel,
+    onSimilarTitle: (List<SimilarTitle> similar) =>
+        showSimilarTitleDialog(context, similar: similar),
+  );
 }

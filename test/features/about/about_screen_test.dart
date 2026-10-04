@@ -21,10 +21,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/app/theme/app_version.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
+import 'package:lumen_tale/core/database/app_database_provider.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/features/about/about_providers.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
-import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

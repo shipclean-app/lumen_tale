@@ -4506,9 +4506,9 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 18,
+      "finding_raised": 19,
       "fast_track_enter": 1,
-      "finding_promoted": 13,
+      "finding_promoted": 14,
       "script_failure": 3,
       "user_correction": 1
     }
@@ -4788,11 +4788,24 @@
       "domain": "workflow.md",
       "severity": "majeur",
       "origin": "forge",
-      "status": "open",
+      "status": "resolved",
       "summary": "MESURE 2026-10-04: 02-architecture.md interdit features/* d'importer un autre features/*, et TROIS imports le font deja : features/browse -> features/library (show libraryStreamProvider), features/source_unavailable -> features/library (idem), et le nouveau chemin d'ajout de 3-2 l'aurait fait une quatrieme fois. La cause n'est pas les ecrans : c'est que libraryStreamProvider ET libraryRepositoryProvider VIVENT dans features/library/, alors que data/ est dans la liste des imports autorises pour features/*. Aucun garde-fou ne le detecte.",
       "correction": "Deplacer les providers de bibliotheque vers data/library/ (ou core/), puis retirer les clauses show. Le provider de la BIBLIOTHEQUE est la seule chose que trois ecrans partagent, et il est le seul element de la feature qui merite d'etre partage. Analyse d'impact : library_screen, source_unavailable, browse, main.dart, et 3 fichiers de test. En attendant, le bouton Add de la ligne de catalogue NAVIGUE vers les details plutot que d'ecrire, ce qui rend le bouton VRAI sans ajouter une violation — et l'ecart avec browse-catalogue.md (qui veut une ecriture directe + snackbar Undo) est enregistre, non absorbe.",
       "artifact": null,
       "raised_at": "2026-10-04T11:28:40.154Z",
+      "promoted_to": "workflow.md",
+      "resolved_at": "2026-10-04T12:48:17.758Z"
+    },
+    {
+      "id": "F-019",
+      "domain": "workflow.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "SUITE A F-018 (2026-10-04) : la VERIFICATION existe maintenant, la dette non. appDatabaseProvider -> core/database/app_database_provider.dart ; libraryRepositoryProvider, libraryStreamProvider et removeFromLibraryProvider -> data/library/library_providers.dart ; addWithSimilarTitleCheck -> core/ui/library_dialogs.dart, avec le REPOSITORY EN PARAMETRE (c'est ce qui rend la fonction partageable). tool/check_boundaries.py est un GATE du DoD : une violation non DECLAREE echoue, une declaree est rapportee avec sa raison. Restent 3 crossings, declares dans tool/boundaries.allowlist : settings -> history pour historyRepositoryProvider et historyRetentionProvider, parce que la rangee 'clear history' edite la POLITIQUE de retention, qui est le domaine de history. Les deplier ensemble avec HistoryRetentionNotifier, sinon le notifier et le store se separent.",
+      "correction": null,
+      "artifact": null,
+      "raised_at": "2026-10-04T12:48:17.924Z",
       "promoted_to": null,
       "resolved_at": null
     }

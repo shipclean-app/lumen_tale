@@ -14,9 +14,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:lumen_tale/app/router/app_router.dart' show openNovelDetails;
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
+import 'package:lumen_tale/data/library/library_providers.dart'
+    show libraryStreamProvider;
 import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
@@ -27,8 +28,6 @@ import 'package:lumen_tale/features/browse/catalogue_states.dart';
 import 'package:lumen_tale/features/browse/catalogue_view_state.dart';
 import 'package:lumen_tale/features/browse/search_outcome.dart';
 import 'package:lumen_tale/features/browse/widgets/catalogue_query_field.dart';
-import 'package:lumen_tale/features/library/library_screen.dart'
-    show libraryStreamProvider;
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 
 /// The registry, as a provider.

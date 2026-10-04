@@ -17,13 +17,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
+import 'package:lumen_tale/core/ui/library_dialogs.dart'
+    show addWithSimilarTitleCheck;
+import 'package:lumen_tale/data/library/library_providers.dart'
+    show libraryRepositoryProvider, libraryStreamProvider;
 import 'package:lumen_tale/domain/library/chapter_entry.dart';
 import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
-import 'package:lumen_tale/features/library/library_screen.dart'
-    show addWithSimilarTitleCheck, libraryStreamProvider;
 import 'package:lumen_tale/features/novel_details/chapter_list_view_state.dart';
 import 'package:lumen_tale/features/novel_details/providers/novel_details_providers.dart';
 import 'package:lumen_tale/features/novel_details/widgets/pinned_action_row.dart';
@@ -203,7 +204,13 @@ class _NovelDetailsScreenState extends ConsumerState<NovelDetailsScreen> {
   ) async {
     final Novel? target = novel;
     if (target == null) return;
-    await addWithSimilarTitleCheck(context, ref, target);
+    // ⚠️ **THE REPOSITORY IS PASSED, not a `WidgetRef`** — the signature is what lets a
+    // dialog live in `core/ui/` instead of owning the library feature.
+    await addWithSimilarTitleCheck(
+      context,
+      ref.read(libraryRepositoryProvider),
+      target,
+    );
   }
 }
 

@@ -22,6 +22,7 @@ import 'package:lumen_tale/app/router/app_routes.dart';
 import 'package:lumen_tale/app/router/screen_registry.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
+import 'package:lumen_tale/core/database/app_database_provider.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/data/history/shared_prefs_history_retention.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';

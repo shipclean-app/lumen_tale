@@ -18,7 +18,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:lumen_tale/core/database/app_database.dart';
+import 'package:lumen_tale/core/database/app_database_provider.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/data/history/drift_history_repository.dart';
 import 'package:lumen_tale/data/history/shared_prefs_history_retention.dart';
@@ -27,17 +27,6 @@ import 'package:lumen_tale/domain/history/history_entry.dart';
 import 'package:lumen_tale/domain/history/history_grouping.dart';
 import 'package:lumen_tale/domain/history/history_repository.dart';
 import 'package:lumen_tale/domain/history/history_retention.dart';
-
-/// Overridden at the bootstrap, next to `appThemePreferencesProvider`.
-///
-/// Process-scoped: the database holds the library, the reading positions and the
-/// journal (B7), so it is opened once and closed with the container.
-final appDatabaseProvider = Provider<AppDatabase>(
-  (Ref ref) => throw UnimplementedError(
-    'appDatabaseProvider is overridden at the bootstrap, because a ProviderScope '
-    'that outlives every screen is what lets the connection be closed once',
-  ),
-);
 
 final historyRepositoryProvider = Provider<HistoryRepository>(
   (Ref ref) => DriftHistoryRepository(ref.watch(appDatabaseProvider)),

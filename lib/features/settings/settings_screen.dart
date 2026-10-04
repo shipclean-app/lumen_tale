@@ -47,6 +47,11 @@ import 'package:lumen_tale/app/theme/theme_override.dart';
 import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
 import 'package:lumen_tale/domain/history/history_retention.dart';
+// ⚠️ **Settings legitimately needs HISTORY's retention providers** — the "clear
+// history" control is a settings row, and the policy it edits is history's domain.
+// That dependency is real; the DATABASE provider beside it is not, and now comes
+// from `core/`. See F-018 — moving `historyRepositoryProvider` and
+// `historyRetentionProvider` to `data/history/` retires this last import.
 import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/features/settings/appearance_label.dart';
 import 'package:lumen_tale/features/settings/language_label.dart';

@@ -20,9 +20,7 @@
 // **F-013** record the measurement.
 
 import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
-
 import 'fixture_manifest.dart';
 
 void main() {

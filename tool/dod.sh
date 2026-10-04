@@ -102,7 +102,37 @@ else
   printf '  %sSKIP%s  .forge/plans/check_plans.py not found\n' "$YELLOW" "$OFF"
 fi
 
-# ── Gates 5 and 6 — the Forge guards ──────────────────────────────────────────
+# ── Gate 5 — the architecture boundary ─────────────────────────────────────────
+# ⚠️ **NEW, and it exists because F-018 was invisible for sessions.** Ten cross-feature
+# imports — a DATABASE provider reached through a *history* feature, the library providers
+# reached through a library *screen* — and `flutter analyze` does not check architecture.
+#
+# A crossing is either fixed or declared in `tool/boundaries.allowlist`; an undeclared one
+# fails. "Declared" is not "allowed": the declaration is the record.
+banner "boundaries"
+if [ -f tool/check_boundaries.py ]; then
+  out="$(python3 tool/check_boundaries.py . 2>&1)"; code=$?
+  declared="$(printf '%s\n' "$out" | grep -c 'DECLARED crossing' || true)"
+  if [ $code -eq 0 ]; then
+    record boundaries PASS
+    printf '  %sPASS%s  no undeclared crossings' "$GREEN" "$OFF"
+    if [ "${declared:-0}" -gt 0 ]; then
+      printf ' (%s declared)\n' "$declared"
+      printf '%s\n' "$out" | grep -oE '^  lib/[^ ]+' | sed 's/^/        /'
+    else
+      printf '\n'
+    fi
+  else
+    record boundaries FAIL "cross-feature import"
+    printf '  %sFAIL%s\n' "$RED" "$OFF"
+    printf '%s\n' "$out" | grep -E '^  lib/' | head -10 | sed 's/^/        /'
+  fi
+else
+  record boundaries SKIP "check_boundaries.py absent"
+  printf '  %sSKIP%s  tool/check_boundaries.py not found\n' "$YELLOW" "$OFF"
+fi
+
+# ── Gates 6 and 7 — the Forge guards ──────────────────────────────────────────
 run_forge() {
   local label="$1" script="$2"; shift 2
   if [ ! -f "$FORGE/scripts/$script" ]; then

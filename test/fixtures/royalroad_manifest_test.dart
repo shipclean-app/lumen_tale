@@ -19,9 +19,7 @@
 // single literal substitution and is verified as such.
 
 import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
-
 import 'fixture_manifest.dart';
 
 void main() {

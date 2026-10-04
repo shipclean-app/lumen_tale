@@ -17,10 +17,9 @@
 // library count.
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:lumen_tale/core/database/app_database_provider.dart';
 import 'package:lumen_tale/data/library/local_counts.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
-import 'package:lumen_tale/features/history/history_providers.dart';
 
 /// How many novels are in the library.
 final aboutLibraryCountProvider = FutureProvider<int>(

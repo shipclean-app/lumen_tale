@@ -20,38 +20,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
 import 'package:lumen_tale/core/ui/library_dialogs.dart';
-import 'package:lumen_tale/data/library/drift_library_repository.dart';
+import 'package:lumen_tale/data/library/library_providers.dart';
 import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/domain/library/library_repository.dart';
-import 'package:lumen_tale/domain/library/similar_title.dart';
-import 'package:lumen_tale/domain/sources/models/novel.dart';
-import 'package:lumen_tale/features/history/history_providers.dart'
-    show appDatabaseProvider;
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
-
-/// Overridden at the bootstrap, like every repository over the database.
-final libraryRepositoryProvider = Provider<LibraryRepository>(
-  (Ref ref) => DriftLibraryRepository(ref.watch(appDatabaseProvider)),
-);
-
-/// The library, as a stream.
-///
-/// ⚠️ **`keepAlive`, and it is `05-state-management.md` rule 10.** See the file header.
-final libraryStreamProvider = StreamProvider<List<LibraryEntry>>(
-  (Ref ref) => ref.watch(libraryRepositoryProvider).watchLibrary(),
-);
-
-/// Removes a novel, and reports the count that was downloaded when the reader was asked.
-///
-/// ⚠️ **`autoDispose`,** because it holds one operation in progress and nothing else — the data
-/// lives in the stream, not here.
-final removeFromLibraryProvider =
-    Provider.autoDispose<Future<RemoveOutcome> Function(String novelId)>(
-      (Ref ref) => ref.watch(libraryRepositoryProvider).removeFromLibrary,
-    );
 
 /// `/library` — the reader's own novels, offline.
 class LibraryScreen extends ConsumerWidget {
@@ -280,23 +254,4 @@ class LibraryTile extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The similar-title question, wired to the repository.
-///
-/// ⚠️ **Exposed as a function, not a widget**, because the caller must supply the dialog and
-/// then act on the verdict — and a widget that both asks and writes would put B40's default
-/// one layer away from the branch that honours it.
-Future<AddOutcome> addWithSimilarTitleCheck(
-  BuildContext context,
-  WidgetRef ref,
-  Novel novel,
-) {
-  return ref
-      .read(libraryRepositoryProvider)
-      .addFromCatalogue(
-        novel: novel,
-        onSimilarTitle: (List<SimilarTitle> similar) =>
-            showSimilarTitleDialog(context, similar: similar),
-      );
 }

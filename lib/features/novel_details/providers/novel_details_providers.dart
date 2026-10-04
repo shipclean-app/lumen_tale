@@ -28,17 +28,15 @@
 // answer, which also means every row of its test needs no `ProviderScope` at all.
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:lumen_tale/core/database/app_database_provider.dart';
 import 'package:lumen_tale/core/error/source_failure.dart';
 import 'package:lumen_tale/data/library/drift_chapter_list_repository.dart';
+import 'package:lumen_tale/data/library/library_providers.dart'
+    show libraryRepositoryProvider;
 import 'package:lumen_tale/domain/library/chapter_entry.dart';
 import 'package:lumen_tale/domain/library/chapter_list_repository.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
-import 'package:lumen_tale/features/history/history_providers.dart'
-    show appDatabaseProvider;
-import 'package:lumen_tale/features/library/library_screen.dart'
-    show libraryRepositoryProvider;
 
 /// Overridden in the composition root, because it is the database.
 final chapterListRepositoryProvider = Provider<ChapterListRepository>(

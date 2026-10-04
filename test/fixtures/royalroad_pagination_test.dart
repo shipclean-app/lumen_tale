@@ -20,7 +20,6 @@
 // paginated chapter list on the same fixture. Both are the E8 confusion.
 
 import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;

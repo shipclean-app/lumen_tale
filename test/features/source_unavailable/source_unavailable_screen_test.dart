@@ -7,15 +7,13 @@
 // review can check — only a row can.
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:lumen_tale/core/error/source_failure.dart';
-import 'package:lumen_tale/domain/library/library_entry.dart';
-import 'package:lumen_tale/features/library/library_screen.dart'
+import 'package:lumen_tale/data/library/library_providers.dart'
     show libraryStreamProvider;
+import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/features/source_unavailable/failure_cause.dart';
 import 'package:lumen_tale/features/source_unavailable/source_unavailable_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
