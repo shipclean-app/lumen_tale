@@ -4729,3 +4729,38 @@ complaints revealed it.
 
 `tool/dod.sh` → **DoD: PASS — 7 of 7 gates green** (boundaries is the new gate).
 **1 103 passed + 9 skipped.** Slices: 20 validated · 2 `in_progress` · 10 `planned`.
+
+---
+
+### F-018 FULLY CLOSED — `tool/boundaries.allowlist` IS EMPTY
+
+The three declared crossings are gone:
+
+| crossing | fix |
+|---|---|
+| `settings` → `history` for `historyRepositoryProvider`, `appHistoryRetentionProvider`, `historyRetentionProvider` | all three + **`HistoryRetentionNotifier`** moved to `data/history/history_providers.dart` |
+| `settings` → `history` for `history_time_labels.dart` | moved to `core/ui/` **beside the other labels** — it is presentation copy for a timestamp, so importing a whole FEATURE to format a date was the same violation wearing a different hat |
+
+⚠️ **THE NOTIFIER AND ITS STORE MOVE TOGETHER, AND THAT WAS THE POINT.** `historyRetentionProvider`
+is a `NotifierProvider` whose notifier reads `appHistoryRetentionProvider`, and that store
+counts through the database. Moving the provider and leaving the notifier splits a pair that
+only works together. The three declarations are one file because of that, not for tidiness.
+
+⚠️ **What stayed in `features/history/` is the screen-shaped half** — `historyEntriesProvider`,
+`libraryEntryCountProvider`, `historyAgedOutCountProvider`. They exist to draw one screen and
+no other feature draws it, so moving them would be moving nothing out of a feature.
+
+⚠️ **The allowlist is now EMPTY, and an empty allowlist is the deliverable.** It held three
+entries yesterday. A list that grows is a rule that has stopped being one; its value is that
+it is short enough to read, and now it says one thing — nothing is excepted.
+
+⚠️ **And `local_counts.dart` nearly went with them.** It was in the extracted file's import
+header because the extraction copied the header wholesale; the analyzer caught it as unused
+there while `libraryEntryCountProvider` — which does use it — had lost it. A moved import is
+a moved *dependency*, and the analyzer is the only thing that knows.
+
+### STATUS
+
+`tool/dod.sh` → **DoD: PASS — 7 of 7 gates green**. **1 103 passed + 9 skipped**, analyze
+zero. `tool/check_boundaries.py` → **no undeclared cross-feature imports**, allowlist empty.
+Slices: 20 validated · 2 `in_progress` · 10 `planned`.

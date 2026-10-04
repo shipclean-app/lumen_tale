@@ -1,5 +1,11 @@
 // Lumen Tale — how a `DateTime` becomes the two words a history row carries.
 //
+// ⚠️ **It moved here from `features/history/`, and it is not a provider.** This is
+// presentation copy for a timestamp, so `features/settings` was importing a whole
+// FEATURE to format a date — which `02-architecture.md` forbids and which
+// `tool/check_boundaries.py` reported on every run. Labels belong with labels; the
+// history *providers* it used to sit beside now live in `data/history/`.
+//
 // ⚠️ **Two different questions, two different helpers, and they are not
 // interchangeable.** A day-group header answers *"which day was this"*; a row's
 // trailing time answers *"how long ago"*. The design gives the row a **relative**

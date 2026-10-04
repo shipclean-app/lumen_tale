@@ -18,9 +18,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lumen_tale/core/ui/history_time_labels.dart';
 import 'package:lumen_tale/domain/history/history_entry.dart';
 import 'package:lumen_tale/domain/history/history_grouping.dart';
-import 'package:lumen_tale/features/history/history_time_labels.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 
 HistoryEntry entryOpenedAt(DateTime at) => HistoryEntry(

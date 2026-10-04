@@ -4,18 +4,14 @@
 # a crossing we have chosen to keep, so `tool/check_boundaries.py` reports it as DECLARED
 # rather than failing — and a crossing that is neither fixed nor listed here still fails.
 #
-# ⚠️ **Keep this file short.** Its value is that it is small. A list of twenty exceptions is
-# a list that has stopped being a rule, and the honest signal at that point is that the
-# rule and the code have diverged.
+# ⚠️ **THIS FILE IS EMPTY, AND THAT IS THE POINT.** It held three entries on 2026-10-04 —
+# `settings` reaching into `features/history` for its retention providers and for a
+# timestamp formatter. All three are fixed: the providers and `HistoryRetentionNotifier`
+# moved to `data/history/`, the database provider to `core/database/`, the library providers
+# to `data/library/`, and the time labels to `core/ui/` beside the other labels.
+#
+# ⚠️ **Keep it that way.** An allowlist that grows is a rule that has stopped being one; its
+# value is that it is empty. Add an entry only with a reason that says what would let you
+# remove it.
 
-lib/features/settings/settings_providers.dart:
-  # F-018, partially closed. Settings' "clear history" row edits history's RETENTION
-  # POLICY, so the dependency is real rather than accidental. Fixing it means moving
-  # `historyRepositoryProvider`, `appHistoryRetentionProvider`, `historyRetentionProvider`
-  # and `HistoryRetentionNotifier` together into `data/history/` — the notifier reads the
-  # store and the store counts through the database, so moving one without the other leaves
-  # a cycle. Library and database providers were moved out already; this is the remainder.
-
-lib/features/settings/settings_screen.dart:
-  # F-018, same remainder: `historyRetentionProvider` is what the "Reading history" row
-  # renders, and it lives with the notifier described above.
+# (no entries)

@@ -14,14 +14,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:lumen_tale/app/router/app_router.dart';
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
+import 'package:lumen_tale/core/ui/history_time_labels.dart';
 import 'package:lumen_tale/core/ui/settings_choice_sheet.dart';
+import 'package:lumen_tale/data/history/history_providers.dart';
 import 'package:lumen_tale/domain/history/history_grouping.dart';
 import 'package:lumen_tale/domain/history/history_retention.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
-import 'package:lumen_tale/features/history/history_time_labels.dart';
 import 'package:lumen_tale/features/history/widgets/history_chrome.dart';
 import 'package:lumen_tale/features/history/widgets/history_entry_row.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';

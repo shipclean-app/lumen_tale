@@ -18,16 +18,18 @@ import 'package:go_router/go_router.dart';
 
 import 'package:lumen_tale/app/router/app_router.dart';
 import 'package:lumen_tale/app/router/app_routes.dart';
+import 'package:lumen_tale/core/ui/history_time_labels.dart';
 import 'package:lumen_tale/core/ui/settings_choice_sheet.dart';
+// ⚠️ **Settings needs history's RETENTION POLICY — and no longer imports the feature.**
+// The *Reading history* row and *Clear history* edit the window, which is history's
+// domain, so the dependency was always real. It was expressed as an import of
+// `features/history`, which `02-architecture.md` forbids. F-018 moved the three
+// shared providers — and `HistoryRetentionNotifier` with them, since it reads the
+// store — into `data/history/`, so what remains here is `data/` and `core/`, which
+// are both allowed.
+import 'package:lumen_tale/data/history/history_providers.dart';
 import 'package:lumen_tale/domain/history/history_repository.dart';
 import 'package:lumen_tale/domain/history/history_retention.dart';
-// ⚠️ **Settings legitimately needs HISTORY's retention providers** — the "clear
-// history" control is a settings row, and the policy it edits is history's domain.
-// That dependency is real; the DATABASE provider beside it is not, and now comes
-// from `core/`. See F-018 — moving `historyRepositoryProvider` and
-// `historyRetentionProvider` to `data/history/` retires this last import.
-import 'package:lumen_tale/features/history/history_providers.dart';
-import 'package:lumen_tale/features/history/history_time_labels.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 
