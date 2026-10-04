@@ -464,3 +464,93 @@ Road, and `6-11` is the slice that exists to measure the search half; both are
 recorded above against the slice that closes them rather than as open questions of
 their own, because a question whose answer a scheduled slice will produce is a task,
 not a question.
+
+---
+
+## `6-7` — recorded 2026-10-04: the plan contradicted itself three times, and the code decides
+
+`6-7` § 10 is the slice's acceptance list and it is **not implementable as written**. Three of
+its criteria disagreed with either the shipped code or the plan's own worked example. Each is
+recorded here with what was done and **what would reverse it**, because a deviation that is not
+written down is a deviation the next session re-litigates.
+
+### ADR-029: The sentence rule counts WORDS, not clauses — because the plan's example fails its own rule
+
+**Status:** Closed — 2026-10-04, `6-7`
+
+`6-7` § 3.3 control 6 is `split(RegExp(r'[.!:]')).where(nonEmpty).length >= 2`, and the same
+paragraph offers *"This site changed and can no longer be read."* as a sentence that **passes**.
+That sentence splits into exactly **one** clause. The literal rule therefore fails the plan's
+own model.
+
+§ 10.5 repeats it — *"les 19 messages … chacun contient au moins deux propositions"* — for an
+enum that includes `Queued`, `Downloading` and `Downloaded`, which § 3.2 specifies **as labels**.
+No threshold in clauses satisfies both halves.
+
+**Decided: a failure sentence is at least FOUR WORDS, in each language.** It rejects exactly
+what the rule exists to reject (`Erreur.`, `Failed.`, `Échec.`), it passes every sentence § 3.2
+specifies, and a word count is the one measure that survives translation — a French sentence is
+not an English sentence divided the same way. The four status labels are declared with a reason
+each, and the two lists are asserted **disjoint and together exhaustive**, so an arm cannot fall
+out of both and stop being checked.
+
+**Reverses when:** the plan is amended to say what it meant. Until then the *written* rule and
+the *implemented* rule differ, and the implemented one is what the tests hold.
+
+### ADR-030: The failure-key contract lives in `lib/l10n/`, not `core/utils/i18n/`
+
+**Status:** Closed — 2026-10-04, `6-7`
+
+`6-7` § 2.2 puts `ArbKey` under `core/utils/i18n/`. `AGENTS.md`'s layer table says `core/`
+imports **external packages only**, and this file describes the ARB vocabulary — so the plan's
+path makes a leaf layer depend on `lib/l10n/`, which `tool/check_boundaries.py` refuses.
+
+**Decided: `lib/l10n/arb_error_keys.dart`**, beside `arb_key_derivation.dart`. The two files
+answer the same question — *what does an ARB key mean* — from the same side of the boundary.
+
+**Also decided here:** `6-7` § 2.1's `AppErrorString` was **not** re-implemented. The plan
+shows 19 values over a six-subclass hierarchy including `RateLimitedException`,
+`StorageException` and `ItemRemovedAtSource`; **none of those three classes exists**, and
+`app_exception.dart` is `sealed` over five. `lib/core/ui/app_error_copy.dart` already ships a
+22-arm enum that maps BOTH hierarchies separately and documents why `forSourceFailure` has six
+arms and not seven. A second `AppErrorString` in `core/utils/i18n/` would have been two names
+for one artefact.
+
+### ADR-031: `expected_keys.dart` asserts its keys EXIST, not that the ARBs contain exactly them
+
+**Status:** Closed — 2026-10-04, `6-7`
+
+`6-7` § 9 Phase 1 proposed the list as *"the expected keys, empty at the start, added by each
+screen slice"*, with the test asserting exact equality against the ARBs. Measured today: **387
+keys across eight slices being written concurrently.** Exact equality fails the moment any of
+them writes one more key — a red test owned by nobody, blaming a file `6-7` owns.
+
+**Decided: the declared direction is `declared → ARB`.** Every key this slice promised must be
+in both files. That catches the failure the rule exists for — a key lost from one file by a
+concurrent write, which is how `6-7` lost twenty-one of `3-3`'s messages — and it cannot be made
+false by another slice doing its own work.
+
+### Two copy changes, and the one conflict they exposed
+
+**§ 10.7 (B22).** `errorSiteUnreadable` shipped as *"This site could not be read. Your other
+sources work normally."* — which does **not** distinguish an unreadable site from a site with no
+chapters, which is the entire content of B22. § 11.1 names the clause as a required row.
+**Added:** *"That is not the same as a site with no chapters."* / *"Ce n'est pas la même chose
+qu'un site sans chapitres."*
+
+**§ 10.16 + § 3.2 rule 2 (C11 + "every error names what survived").** `errorSettingsLoad`
+shipped as *"Your settings could not be loaded."* — one clause, and it names nothing that
+survived, which in a product with **no backup** (ADR-010) reads as data loss. § 10.16 also
+requires it to occupy several lines at 200 %; at that scale the one-clause version measured
+**exactly one line** (200 px).
+
+⚠️ **The plan's own FR text is 189 characters and `app_error_copy_test.dart`'s C11 row caps
+sentences at 160.** The plan's copy was therefore **condensed, not adopted verbatim**:
+`Your settings could not be read from this phone. Your library, downloads and reading positions
+are untouched.` (118) and the French equivalent (131). It satisfies § 3.2 rule 2, § 10.16's
+wrapping and the 160 cap at once. **No assertion was weakened**, and the 160 cap — which this
+slice's own test file owns — still stands.
+
+**Reverses when:** `app_error_copy_test.dart`'s 160-character cap is replaced by a measurement of
+the property it proxies (wrapping without truncation, now asserted in `locale_resolution_test.dart`),
+at which point the plan's verbatim 189-character text becomes usable.

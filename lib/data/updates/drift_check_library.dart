@@ -37,6 +37,7 @@ import 'package:lumen_tale/core/error/app_exception.dart';
 import 'package:lumen_tale/core/error/source_failure.dart';
 import 'package:lumen_tale/core/network/host_rate_limiter.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
+import 'package:lumen_tale/domain/library/library_repository.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/models/chapter.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
@@ -44,7 +45,6 @@ import 'package:lumen_tale/domain/sources/source.dart';
 import 'package:lumen_tale/domain/sources/source_id.dart';
 import 'package:lumen_tale/domain/updates/check_library.dart';
 import 'package:lumen_tale/domain/updates/library_check.dart';
-import 'package:lumen_tale/domain/updates/library_check_store.dart';
 
 final class DriftCheckLibrary implements CheckLibrary {
   DriftCheckLibrary({
@@ -174,7 +174,7 @@ final class DriftCheckLibrary implements CheckLibrary {
     } on Object catch (error) {
       throw DatabaseException(
         'the library could not be listed for a check',
-        error,
+        cause: error,
       );
     }
   }
@@ -298,22 +298,36 @@ final class DriftCheckLibrary implements CheckLibrary {
           checkedAt: now,
         );
 
-      case BrowseSucceeded<List<Chapter>>(items: final List<Chapter> items):
+      // ⚠️ **`items` IS `List<List<Chapter>>`, AND THAT IS NOT A TYPO IN THE PLAN.**
+      // `BrowseOutcome<List<Chapter>>` makes the success payload a list of *lists*, so a
+      // site that splits one page into several hands over several batches of chapters.
+      // `drift_chapter_list_repository.dart` reads the same shape for the same reason.
+      case BrowseSucceeded<List<Chapter>>(
+        items: final List<List<Chapter>> pages,
+      ):
+        // ⚠️ **THE ORDINAL COUNTS ACROSS THE BATCHES, NOT WITHIN ONE.** A page boundary
+        // is a fetch artefact; the site's chapter order runs through it, so a per-page
+        // index would restart the sequence and make every page the same order.
+        final List<Chapter> published = <Chapter>[
+          for (final List<Chapter> page in pages) ...page,
+        ];
+
         // ⚠️ **`null` NAME BECOMES THE EMPTY STRING, AND THE NUMBER IS THE SITE'S.** B10:
-        // the label is the site's text and the sentinel is preserved; the loader renders
-        // *Untitled* for the empty name.
+        // the label is the site's text and the `-1` sentinel is preserved; the loader
+        // renders *Untitled* for the empty name.
         final List<NewChapter> fresh = <NewChapter>[
-          for (int i = 0; i < items.length; i++)
+          for (int i = 0; i < published.length; i++)
             NewChapter(
               // B3 — derived from the novel id and the relative url, never minted.
               id: SourceId.forChapter(
                 novelId: novel.novelId,
-                relativeUrl: items[i].url,
+                relativeUrl: published[i].url,
               ),
-              url: items[i].url,
-              name: items[i].name ?? '',
-              number: items[i].number,
-              // B9 — the position in the list the site published, never re-derived.
+              url: published[i].url,
+              name: published[i].name ?? '',
+              number: published[i].number,
+              // B9 — the position in the list the site published, never re-derived from
+              // `number`. Royal Road orders its table by publication date.
               ordinal: i,
             ),
         ];
@@ -325,7 +339,7 @@ final class DriftCheckLibrary implements CheckLibrary {
         await _store.recordChecked(novel.novelId, now);
         return NovelChecked(
           newChaptersFound: added,
-          siteChapterCount: items.length,
+          siteChapterCount: published.length,
           checkedAt: now,
         );
     }
@@ -351,6 +365,16 @@ final class DriftCheckLibrary implements CheckLibrary {
   /// C7 / `17-security.md` rule 6: the wait is the site's own header, read and never
   /// guessed, and "we do not insist" is only true if the *next* request — the next
   /// novel's, from the same host — actually waits.
+  ///
+  /// ⚠️ **THE SELECTOR SURVIVES HERE, AND THIS FUNCTION IS WHERE IT WAS BEING LOST.**
+  /// E4 can arrive from *either* read: the detail page's `getNovelDetails` or the
+  /// chapter table's `getChapterList`. Both produce a [SourceLayoutChanged], and that cause
+  /// carries the one field that makes the site repairable — `failedSelector`. The first
+  /// version of this mapping read `checkFailureKindOf(failure)` and stopped, so an E4 from
+  /// the chapter list produced a `sourceLayoutChanged` with **no selector**: the verdict was
+  /// right and the evidence was gone. C5 requires repairing a changed site to be
+  /// deliverable as a file, and a file cannot be written without knowing which selector came
+  /// back empty. § 11.1 lists this as its own row for exactly that reason.
   Future<NovelCheckFailed> _failWithCause(
     LibraryNovelRef novel,
     SourceFailure failure,
@@ -361,7 +385,17 @@ final class DriftCheckLibrary implements CheckLibrary {
         until: _clock().add(limited.retryAfter),
       );
     }
-    return _fail(novel, checkFailureKindOf(failure));
+    return _fail(
+      novel,
+      checkFailureKindOf(failure),
+      // ⚠️ **`null` for every other cause, and that is not an omission.** Only a selector
+      // that failed identifies a broken selector; a dropped connection broke nothing
+      // selectable, and carrying a stale string would point the owner at the wrong line.
+      selector: switch (failure) {
+        SourceLayoutChanged(:final String failedSelector) => failedSelector,
+        _ => null,
+      },
+    );
   }
 
   /// The `Novel` handed to the source, built from the **stored** row.
@@ -374,6 +408,16 @@ final class DriftCheckLibrary implements CheckLibrary {
     sourceId: novel.sourceId,
     url: novel.url,
     title: novel.title,
+    // ⚠️ **EVERY FIELD THE APP DID NOT READ STAYS AT "THE SITE DID NOT SAY IT".**
+    // `author`, `description` and `coverUrl` are `null`; `status` is
+    // [NovelStatus.unknown] and not `ongoing` — ADR-024's "displayed, never searched"
+    // and rule 8's "empty means the site did not say". Filling `author` from the stored
+    // title would be fabricating B10 verbatim site text.
+    author: null,
+    description: null,
+    status: NovelStatus.unknown,
+    coverUrl: null,
+    genres: const <String>[],
   );
 }
 

@@ -158,9 +158,7 @@ class SelectedChapterTile extends StatelessWidget {
       // rounding it would make a selected chapter look like a different component.
       decoration: BoxDecoration(
         color: colors.accent.withValues(alpha: 0.1),
-        border: Border(
-          left: BorderSide(color: colors.borderStrong, width: 2),
-        ),
+        border: Border(left: BorderSide(color: colors.borderStrong, width: 2)),
         borderRadius: BorderRadius.circular(radius.sm),
       ),
       child: Padding(

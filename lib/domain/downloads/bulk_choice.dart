@@ -76,7 +76,7 @@ final class HandPicked extends BulkChoice {
   HandPicked(List<String> chapterIds)
     : chapterIds = List<String>.unmodifiable(chapterIds),
       assert(
-        chapterIds.length > 0,
+        chapterIds.isNotEmpty,
         'B18: an empty selection is a mistap, not a choice — the selection bar only '
         'offers Download while at least one chapter is selected',
       );

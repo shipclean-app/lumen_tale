@@ -66,7 +66,7 @@ guess as a property of the site.
 
 - **Permission**: permitted. Its `robots.txt` is an **EmpireCMS** file. The `User-agent: *` block disallows exactly seven paths — `/d/`, `/e/class/`, `/e/config/`, `/e/data/`, `/e/enews/`, `/e/update/` (plus `Allow: /ads.txt`). **Novel and chapter content under `/novel/` and `/list/` is not among them.** Note precisely which paths are listed: `/e/search/` is **not** disallowed, so search is not robots-blocked here — see quirk 6. The site also publishes `/terms-of-service.html` and `/dmca.html`; re-read both before shipping. Re-check `robots.txt` on every release and honour a change.
 - **Scope**: fan-fiction / web novels. Genre taxonomy is Chinese-derived. **Eight genres, not nine**: `xianxia`, `xuanhuan`, `shounen`, `shoujo`, `romance`, `contemporary-romance`, `action`, `wuxia`. An earlier note here said nine — it had counted the `all` pseudo-entry as a genre, which it is not, and a screen cannot render nine labels when the site supplies eight.
-- **Last verified**: 2026-10-02 — ⚠️ **superseded for reachability: see § Re-measurement 2026-10-03 at the end of this file. Every path on this site returned 403 to an honest User-Agent on that date.**
+- **Last verified**: 2026-10-04 — **reachable again.** Every path this section documents answered **200** to the honest User-Agent `LumenTale/0.1.0 (personal reader)`, and `0-1` froze fourteen fixtures from it. Reachability on 2026-10-03 was the opposite; see § Re-measurement 2026-10-03 and § FanMTL — re-measured 2026-10-04.
 - **URL structure** (verified by fetching, not guessed):
 
   | Purpose | Pattern | Example |
@@ -88,7 +88,8 @@ guess as a property of the site.
   4. **`&nbsp;` is not used**; separators are plain `<br><br>`. Whitespace normalisation has no entity to decode here.
   5. **Cloudflare, as above** — present, currently not challenging.
   6. **Text search is not reachable by an automated client; tag browsing is.** Measured 2026-10-02: the search form posts to `/e/search/index.php`, but GET returns 404 with a JavaScript meta-refresh, and POST returns the same 404 **even for a query that should match**, with and without a prior session (the site sets no cookies on `/` or `/search.html`). So FanMTL text search does not work for us — this is a reachability problem, **not** a robots.txt one. **What does work:** `/browsetags/` exposes **8 genres** (`action`, `wuxia`, `xianxia`, `xuanhuan`, `shounen`, `romance`, `contemporary-romance`, `shoujo`) plus one `all` pseudo-entry that is the unfiltered catalogue rather than a genre, and `/list/<tag>/<sort>-<page>.html` returns a full page of novels (30 per page, 123 catalogue links observed). **On FanMTL, "find a novel" therefore means browsing tags, not typing a query.** → **`supportsSearch = false`** (ADR-015). Genre browsing is not a consolation prize here; it is how the site is meant to be used, and a novel's detail-page genres are the good way in (browse the genre, never search for the tag).
-  7. **B22's discriminator is satisfiable here.** FanMTL's own failure page carries the explicit string *"No relevant content found"*, which is a real site-supplied empty-result signal — exactly the distinction B22 requires between "genuinely nothing" and "could not read". It is reachable even though the search itself is not. **Do not read it as "no results" on a browse page** — it lives on the search failure page, so it discriminates for search calls only; for genre browsing, an empty tag page is judged by page shape (no novel rows), not by this string.
+  7. ⚠️ **`chapter-multipage-p1` AND `chapter-multipage-p2` ARE NOT IN THE CAPTURE — NAMED ABSENCE.** `0-1`'s § 3.3 marked three lines *"à découvrir"*: `chapter-list-page1`, `chapter-multipage-p1` and `chapter-multipage-p2`. Only the first was resolved: `chapter-list-page1` is a declared entry in `test/fixtures/sources/fanmtl/manifest.json` with a path read off the site's own pager hrefs. **The two multipage-chapter keys are ABSENT and this sentence is why.** They were not resolved and they are not declared, so the manifest holds fourteen entries and none of them is a chapter body reached by paging. `test/fixtures/fanmtl_manifest_test.dart` asserts each of the three is *either* resolved with a real URL *or* named here — **never closed by silence**, because a silence nobody wrote down is indistinguishable from an oversight. ⚠️ **This is a GAP, NOT A FINDING THAT THEY DO NOT EXIST.** The pager for a chapter list was observed (`/list/<tag>/<sort>-<page>.html`, 0-based) and `novel-detail` declares `data-chapters="716"` against 716 distinct chapter hrefs, so multipage chapter bodies are plausible and simply were not captured. Closing this means capturing `chapter-multipage-p1` and `chapter-multipage-p2` from a fiction whose chapter list spans pages, or recording that no v1 fiction does.
+  8. **B22's discriminator is satisfiable here.** FanMTL's own failure page carries the explicit string *"No relevant content found"*, which is a real site-supplied empty-result signal — exactly the distinction B22 requires between "genuinely nothing" and "could not read". It is reachable even though the search itself is not. **Do not read it as "no results" on a browse page** — it lives on the search failure page, so it discriminates for search calls only; for genre browsing, an empty tag page is judged by page shape (no novel rows), not by this string.
 
 - **Pending promotion**: `04-html-to-markdown.md` §The converter is ours §Required behaviour — the `<br><br>` → paragraph rule and the `.chapter-content` selector are **general** enough to promote. Site-specific selectors stay here.
 
@@ -202,6 +203,12 @@ through `0-4` depend on its fixtures.
 capture is the owner's; the cheapest honest option is capturing from the owner's own
 phone, which already carries whatever cookie the challenge requires, and which is the
 same method ADR-014's own measurement used.
+
+⚠️ **F-012 IS RESOLVED — see § FanMTL — re-measured 2026-10-04, at the end of this file.**
+The **same honest User-Agent**, one day later, received **200 on every documented FanMTL
+path**. Nothing was bypassed, no browser was impersonated and no cookie was carried: the
+challenge simply was not being served then. **F-013 is resolved too** — Royal Road's
+catalogue and chapter paths answer 200, and `0-3` froze nine fixtures from them.
 
 
 ## Royal Road — the URLs moved, measured 2026-10-03
@@ -401,3 +408,138 @@ anchors to the pagination container* and *a fixed page size is the normal case, 
 evidence of absence*. The second is cross-site and belongs in the source contract: a
 source that treats "the same number of items" as "there is no page 2" will work on one
 site and fail on every other.
+
+---
+
+## FanMTL — re-measured 2026-10-04: reachable, and fourteen fixtures frozen (`0-1`)
+
+**Measured, not recalled.** Every number below was produced by reading the frozen bytes in
+`test/fixtures/sources/fanmtl/` — and `test/fixtures/fanmtl_manifest_test.dart`
+re-derives the counts on every run, so a re-capture that changes one fails the suite
+instead of quietly invalidating this section.
+
+**The honest User-Agent worked, and that is the whole finding.** `LumenTale/0.1.0
+(personal reader)` — ADR-014's measured-correct client, never a browser's — received
+**200 on every documented path** on 2026-10-04. Twenty-four hours earlier the same client
+received **403 with a Cloudflare interstitial on every one of them**. No bypass was
+attempted, none is wanted, and none would have been legal under ADR-014: *the site was
+declining on that day and stopped declining on this one.* A Cloudflare challenge is
+therefore **not** a stable property of a site, and a source written from one day's 403 is
+written from a measurement that has already expired.
+
+| Path | 2026-10-03 | 2026-10-04 |
+|---|---|---|
+| `/robots.txt` | 403 | **200**, 187 bytes |
+| `/browsetags/` | 403 | **200**, 17,712 bytes |
+| `/list/xianxia/all-lastdotime-0.html` | 403 | **200**, 40,672 bytes |
+| `/novel/ke383028.html` | not measured | **200**, 45,881 bytes |
+| `/novel/ke383028_1.html` | not measured | **200**, 23,931 bytes |
+| `/e/search/index.php` | not measured | **404**, 2,954 bytes — *the same 404 quirk 6 records* |
+
+### Permission, re-read 2026-10-04 — and one path that is easy to get wrong
+
+`robots.txt` is 12 lines. The `User-agent: *` block allows everything except **six**
+EmpireCMS admin prefixes: `/d/`, `/e/class/`, `/e/config/`, `/e/data/`, `/e/enews/`,
+`/e/update/`, plus `Allow: /ads.txt`.
+
+⚠️ **`/e/extend/` is NOT among them, and it is the chapter list.** The chapter-list pager
+lives at `/e/extend/fy.php?page=N&wjm=<novelId>`, which a reader who only memorised the
+six names would plausibly refuse — or, worse, allow without noticing they had not
+checked. `/list/`, `/novel/` and `/browsetags/` are permitted for the same reason.
+**Promotion**: `17-security.md` rule 5 — *read robots.txt, do not recall it* — with this
+as the worked example of a permitted path hiding inside a namespace whose siblings are
+all forbidden.
+
+### The three "à découvrir" lines of `0-1` § 3.3, closed
+
+§ 7 forbids manufacturing a fixture for a line the documents cannot answer. Each is closed
+here by a real href read off a real page, or by a measured negative — never by silence.
+
+| Line | Outcome | Evidence |
+|---|---|---|
+| `catalogue-all-page0` | **RESOLVED** | `/browsetags/` publishes the `all` pseudo-entry as `/list/all/all-newstime-0.html`. Followed, not constructed. Note the sort segment differs from a genre page's: `all`+`newstime`, where a genre page is `<genre>`+`lastdotime`. |
+| `chapter-list-page1` | **RESOLVED** | `novel-detail.html`'s pager publishes `/e/extend/fy.php?page=N&wjm=ke383028`, **0-based**, 19 pages. Page 0 holds chapters 1-100 — **the same rows the novel page already shows**. |
+| `chapter-multipage-p1` / `-p2` | **NOT FOUND** | See E3 below. |
+
+### E3 — a chapter is NEVER split across pages on this site
+
+`chapter-prose.html` carries **zero** occurrences of `page_next`, `下一页`, `part_` or any
+other continuation affordance; its only navigation is `div.chapternav` with prev/next
+**chapter** links. Fifteen chapters across the novel were sampled and every one of them is
+a single page.
+
+**So E3 does not apply to FanMTL, and `2-1` has nothing to write for it.** `B8` (join the
+pages in order) is a contract a source implements *if the site has pages to join*; here it
+has none, and a source that manufactures a second fetch per chapter would be issuing a
+request for a document that does not exist. **This is a fact about the site, not a missing
+fixture** — the line is closed *by a finding*, which is what § 7 asks for.
+
+### E22 — there is NO Extra, Omake or end note on this site either
+
+**Measured negative, exhaustively.** All **1,966** chapter titles of `ke383028` were read,
+across all 19 chapter-list pages, and **not one** is an Extra, Omake, side story, volume
+note, prologue, epilogue, afterword or announcement — checked in English *and* in Chinese
+(`番外`, `外传`, `后记`, `尾声`, `感言`, `公告`, `序章`, `楔子`). Every one of the 1,919
+distinct titles this site publishes for that novel begins with `Chapter <n>` or
+`Chapter <n>:`. Four other novels' full or final chapter lists (`kks45522`, `kks45517`,
+`kks38611`, `kks34257`, `kks33392`) were checked the same way, with the same result.
+
+⚠️ **Fifteen chapter bodies were measured: 22,837 to 24,892 bytes.** The *shortest* chapter
+this novel publishes is 22 KB. FanMTL publishes only numbered chapters of a full length, so
+**E22's trigger never fires on this source**.
+
+**What `0-1` froze, and why it is not what § 3.3 asked for.** § 3.3 asks for `chapter-short`
+to be *"an Extra / Omake / end note, chosen from the real list"*, and § 10 asks its notes to
+name the exact title of a chapter of that kind. **Neither is obtainable from this site**, and
+inventing one would be precisely the fabrication § 7 forbids. So `chapter-short` is the
+**shortest chapter the captured novel actually publishes** — `Chapter 1960 Titans (Part 1)`,
+named exactly, from the real list — and `chapter-long` is the longest of the fifteen
+measured. The pair is a genuine threshold control in the only direction the site allows:
+**nothing FanMTL publishes is anywhere near E18's 100-character floor**, so a source that
+discards chapters under 100 characters discards nothing on this source, and that is now a
+measured statement rather than an assumption.
+
+⚠️ **Promotion**: `E22`'s negative control is not portable. On Royal Road the equivalent
+control is a real short chapter; on FanMTL it is the *shortest* chapter, which is 200× the
+threshold. A source-level "minimum length" guard therefore needs a fixture that is genuinely
+below the floor before it can be claimed to have one, and **neither v1 site currently
+provides that fixture**. Recorded as an open question for `2-2`.
+
+### E4 — the plan's substitution target does not exist on a catalogue page
+
+`0-1` § 3.2 builds the SC-6 artefact by copying `catalogue-genre-page0.html` and renaming
+`chapter-content` → `chapter-content-v2`. **Measured 2026-10-04: `chapter-content` occurs
+ZERO times in any list, catalogue, novel-detail or chapter-list page.** It exists on
+chapter pages only, exactly once each.
+
+Applied to the plan's own source file the substitution has no target, so the artefact would
+have been a byte-identical copy of a healthy page — and the "zero novel rows" it exists to
+demonstrate would have been zero *before* the edit. **The container an adapter actually
+reads on a catalogue page is `div.novel-item`, 30 of them**, so that is the pair: 30
+substitutions, 40,672 → 40,762 bytes, and `novel-item-v2` → `novel-item` restores the source
+byte for byte. § 3.2's *mechanism* is unchanged and its three acceptance criteria are met
+against the class that measurement says is the real one.
+
+**Promotion**: `04-html-to-markdown.md` and `03-source-system.md` — *a selector is a claim
+about markup, and the markup is the only evidence*. § 3.2 was written before any FanMTL page
+had been captured and asserted a class name from a quirk list; the quirk list was right about
+*chapter* pages and had been generalised to *catalogue* pages without a measurement.
+
+### Two more measured facts a probe written from the prose gets wrong
+
+| Written as | Actually | Consequence of trusting the prose |
+|---|---|---|
+| the chapter list is on the novel page | it is on the novel page **and** on `/e/extend/fy.php?page=0` — the same 100 rows twice | a source reading both counts 200 chapters where the novel has 1,966, and 100 of them twice |
+| the novel page publishes a chapter count | it publishes **nothing**; 1,966 is known only by paging to the end | there is no `data-chapters="716"` equivalent here, so completeness is arithmetic against the *last page*, never against a self-reported total |
+| `?page=999` past the end is an error | it returns **200** and 1,228 bytes holding only a pager | "page 20 of 19" reads as *an empty chapter list* rather than as a failure — B22's forbidden answer, reached by asking for a page that was never there |
+| chapter-list hrefs are the list | every pager page also carries a `Latest Release:` link to the novel's **newest** chapter | reading hrefs instead of rows finds chapter 1966 on all 19 pages, and a disjointness check fails on a link that is not a row |
+
+**Promotion**: `0-3`'s finding, independently arrived at on the second site, that *a probe
+must read the row, not every href on the page*. It is now cross-site and belongs in the
+source contract.
+
+### Rate limit observed
+
+None hit. Twenty-four requests across the capture and the discovery probes, 3–4 seconds
+apart, all 200 (or the documented 404), no `429`, no `Retry-After`. `tool/capture.py` holds
+the fixed delay and the `429`/`403`/`5xx` branches so the next capture is not a bare `curl`.

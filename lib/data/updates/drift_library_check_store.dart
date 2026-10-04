@@ -30,8 +30,8 @@
 import 'package:drift/drift.dart';
 
 import 'package:lumen_tale/core/database/app_database.dart';
+import 'package:lumen_tale/domain/library/library_repository.dart';
 import 'package:lumen_tale/domain/updates/library_check.dart';
-import 'package:lumen_tale/domain/updates/library_check_store.dart';
 
 final class DriftLibraryCheckStore implements LibraryCheckStore {
   DriftLibraryCheckStore(this._db);

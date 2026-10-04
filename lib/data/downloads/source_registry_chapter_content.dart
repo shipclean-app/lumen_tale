@@ -26,7 +26,6 @@
 // *"this novel can no longer be refreshed"*, and exactly one typed code.
 
 import 'package:lumen_tale/core/error/source_failure.dart';
-import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/domain/downloads/chapter_content_source.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/models/chapter.dart';

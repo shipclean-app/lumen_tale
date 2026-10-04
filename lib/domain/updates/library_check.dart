@@ -214,6 +214,25 @@ final class LibraryCheckProgress {
 
   /// B39's evidence, as one number: **the counter rises by exactly one per novel**.
   int get remaining => total - done;
+
+  /// ⚠️ **VALUE EQUALITY, BECAUSE ITS TWO SIBLINGS HAVE IT.** `NovelChecked` and
+  /// `NovelCheckFailed` below both compare by value, and this is the third arm of the same
+  /// immutable family — a progress snapshot that cannot be compared is a snapshot a test can
+  /// only assert field by field, which is how a counter's *total* ends up asserted while its
+  /// `inFlightNovelId` is not. All three fields are scalars, so the derivation is total.
+  @override
+  bool operator ==(Object other) =>
+      other is LibraryCheckProgress &&
+      other.total == total &&
+      other.done == done &&
+      other.inFlightNovelId == inFlightNovelId;
+
+  @override
+  int get hashCode => Object.hash(total, done, inFlightNovelId);
+
+  @override
+  String toString() =>
+      'LibraryCheckProgress($done/$total, inFlight: $inFlightNovelId)';
 }
 
 /// The result of one whole pass, and everything `6-10` needs to say about it.

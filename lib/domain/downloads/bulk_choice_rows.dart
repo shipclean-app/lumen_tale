@@ -103,12 +103,13 @@ List<BulkChoiceRow> bulkChoiceRows({
 final class BulkChoiceSelection {
   const BulkChoiceSelection({required this.choice, required this.count});
 
-  /// The reader's chosen row.
-  final BulkChoice choice;
-
-  /// ⚠️ **`rows.firstWhere((r) => r.choice == choice).count`** — recomputed at selection
-  /// time rather than stored, because the count is a function of the chapters and a
-  /// stored figure is a second source of truth (C8).
+  /// **`rows.firstWhere(...)` — AND THE FACT THAT IT CAN THROW IS THE POINT.**
+  ///
+  /// ⚠️ A choice with no row is a **caller defect**, not an empty selection: the sheet
+  /// builds its rows from `kBulkChoices`, so a choice outside that list could not be
+  /// selected through the interface. `13-error-handling.md` rule 1 wants it to fail loudly
+  /// rather than to become a silent zero — a confirm that said "Download 0 chapters" for a
+  /// choice the reader had actually chosen is the worst possible failure of the row.
   factory BulkChoiceSelection.of(BulkChoice choice, List<BulkChoiceRow> rows) {
     final BulkChoiceRow row = rows.firstWhere(
       (BulkChoiceRow r) => r.choice == choice,
@@ -116,10 +117,17 @@ final class BulkChoiceSelection {
     return BulkChoiceSelection(choice: choice, count: row.count);
   }
 
+  /// The reader's chosen row.
+  final BulkChoice choice;
+
   /// ⚠️ **THE CONFIRM NAMES THIS NUMBER.** `Download 212 chapters…` — the number the
   /// reader was shown, not a second one computed here. A confirm whose count differs
   /// from the row beside it is B18 broken in the one place the reader could have caught
   /// it.
+  ///
+  /// The count is derived, never stored: it is a function of the chapters the sheet was
+  /// built with, and a stored figure would be a second source of truth free to drift from
+  /// the rows behind it (C8).
   final int count;
 
   /// Nothing to download: the confirm is **disabled**, and the sheet says why. It is not
@@ -140,6 +148,8 @@ final class BulkChoiceSelection {
 }
 
 /// The reader's chosen chapter ids, in the order they were chosen.
+///
+/// ⚠️ **A `List`, AND THE ORDER IS THE POINT** — see the class body.
 ///
 /// ⚠️ **`ids` AND NOT A `Set` AT THE INTERFACE.** `novel-details.md` § 11.3 declares
 /// **no reordering gesture** in the selection bar, so the insertion order *is* the

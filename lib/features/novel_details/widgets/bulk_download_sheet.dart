@@ -152,20 +152,40 @@ class _BulkDownloadSheetState extends State<BulkDownloadSheet> {
               ),
             ),
           Flexible(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: widget.rows.length,
-              itemBuilder: (BuildContext context, int index) {
-                final BulkChoiceRow row = widget.rows[index];
-                return _ChoiceRow(
-                  key: Key('bulkDownloadSheet.row.$index'),
-                  label: row.label,
-                  count: row.count,
-                  selected: row.choice == _choice,
-                  enabled: !widget.offline,
-                  onTap: () => setState(() => _choice = row.choice),
-                );
-              },
+            // ⚠️ **`RadioGroup` IS AN ANCESTOR, NOT `Radio.groupValue`/`onChanged`.**
+            // Both were deprecated after v3.32.0 and `flutter analyze` counts an
+            // `info` as a failure (AGENTS.md's DoD item 2). Read from the installed SDK
+            // rather than from memory: `RadioGroup<T>` takes `groupValue` and
+            // `onChanged` once for the whole subtree, and each `Radio` under it matches
+            // by `value`.
+            //
+            // ⚠️ **AND IT GIVES THE ARROW KEYS FOR FREE.** `_RadioGroupState` installs
+            // ↓/↑/←/→/space intents, so § 2.12's keyboard behaviour — a radio group a
+            // keyboard can move through — is the framework's rather than five rows each
+            // reimplementing it.
+            child: RadioGroup<BulkChoice>(
+              groupValue: _choice,
+              onChanged: widget.offline
+                  ? (BulkChoice? _) {}
+                  : (BulkChoice? picked) {
+                      if (picked != null) {
+                        setState(() => _choice = picked);
+                      }
+                    },
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: widget.rows.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final BulkChoiceRow row = widget.rows[index];
+                  return _ChoiceRow(
+                    key: Key('bulkDownloadSheet.row.$index'),
+                    label: row.label,
+                    count: row.count,
+                    choice: row.choice,
+                    enabled: !widget.offline,
+                  );
+                },
+              ),
             ),
           ),
           Padding(
@@ -182,10 +202,12 @@ class _BulkDownloadSheetState extends State<BulkDownloadSheet> {
               onPressed: selection.canConfirm && !widget.offline && !_busy
                   ? _confirm
                   : null,
-              child: Text(
-                widget.confirmLabelOf(selection.count),
-                key: const Key('bulkDownloadSheet.confirm'),
-              ),
+              // ⚠️ **THE KEY IS ON THE BUTTON, NOT ON ITS LABEL.** A key on the `Text`
+              // resolves the finder to the text, so `tester.widget<FilledButton>` fails at
+              // runtime with "type 'Text' is not a subtype of type 'FilledButton'". A key
+              // on the control is the only placement both `tap` and `onPressed` can read.
+              key: const Key('bulkDownloadSheet.confirm'),
+              child: Text(widget.confirmLabelOf(selection.count)),
             ),
           ),
           Padding(
@@ -216,23 +238,29 @@ class _ChoiceRow extends StatelessWidget {
   const _ChoiceRow({
     required this.label,
     required this.count,
-    required this.selected,
+    required this.choice,
     required this.enabled,
-    required this.onTap,
     super.key,
   });
 
   final String label;
   final int count;
-  final bool selected;
+
+  /// The choice this row selects. ⚠️ **`BulkChoice` AND NOT `bool`** — `RadioGroup` is
+  /// generic, so `groupValue: true` would make every row the same value and no row would
+  /// ever appear selected.
+  final BulkChoice choice;
+
   final bool enabled;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final LumenColors colors = LumenColors.of(context);
     final LumenSpacing spacing = LumenSpacing.of(context);
     final Color labelColor = enabled ? colors.textPrimary : colors.textDisabled;
+    final RadioGroupRegistry<BulkChoice>? group =
+        RadioGroup.maybeOf<BulkChoice>(context);
+    final bool selected = group?.groupValue == choice;
 
     return Semantics(
       // § 11.1's rows are radios, and a disabled one is `enabled: false` so a screen
@@ -243,14 +271,21 @@ class _ChoiceRow extends StatelessWidget {
       selected: selected,
       label: label,
       value: '$count',
-      child: InkWell(
-        onTap: onTap,
-        child: ConstrainedBox(
-          // ⚠️ **`kBulkDownloadRowHeight`, AND IT IS NOT CONDITIONAL.** § 11.1's offline
-          // state is *"every option disabled at 48dp"* — a disabled row that shrank would
-          // move the row beneath the reader's thumb at the moment they are reaching for
-          // it. C11: one-handed, at night, in transit.
-          constraints: const BoxConstraints(minHeight: kBulkDownloadRowHeight),
+      child: ConstrainedBox(
+        // ⚠️ **`kBulkDownloadRowHeight`, AND IT IS NOT CONDITIONAL.** § 11.1's offline
+        // state is *"every option disabled at 48dp"* — a disabled row that shrank would
+        // move the row beneath the reader's thumb at the moment they are reaching for it.
+        // C11: one-handed, at night, in transit.
+        constraints: const BoxConstraints(minHeight: kBulkDownloadRowHeight),
+        child: InkWell(
+          // ⚠️ **THE ROW IS TAPPABLE, AND IT ASKS THE GROUP — IT DOES NOT DECIDE.**
+          // C11: a reader aims at the *label* of a radio row, not at a 20dp circle, so the
+          // row carries the gesture. The decision is still the group's `onChanged`, which
+          // is the sheet's — the same arrangement `SettingsChoiceSheet` uses, where the
+          // refusal lives in one state machine rather than in each row.
+          onTap: enabled && group != null
+              ? () => group.onChanged(choice)
+              : null,
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: spacing.lg,
@@ -258,11 +293,12 @@ class _ChoiceRow extends StatelessWidget {
             ),
             child: Row(
               children: <Widget>[
-                Radio<bool>(
-                  value: true,
-                  groupValue: selected,
-                  onChanged: enabled ? (bool _) => onTap() : null,
-                ),
+                // ⚠️ **NO `onChanged` ON THE RADIO, AND `toggleable` STAYS `false`.** The
+                // `RadioGroup` ancestor owns the change, so "may this be chosen" is decided
+                // in one place — the sheet — rather than in each row. A radio that could be
+                // deselected would make "no choice" a state the confirm has to handle, and
+                // B18 has six choices and no seventh way of saying none.
+                Radio<BulkChoice>(value: choice, enabled: enabled),
                 SizedBox(width: spacing.sm),
                 Expanded(
                   child: Text(

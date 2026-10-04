@@ -44,9 +44,9 @@ import 'package:lumen_tale/data/library/library_providers.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/data/updates/drift_check_library.dart';
 import 'package:lumen_tale/data/updates/drift_library_check_store.dart';
+import 'package:lumen_tale/domain/library/library_repository.dart';
 import 'package:lumen_tale/domain/updates/check_library.dart';
 import 'package:lumen_tale/domain/updates/library_check.dart';
-import 'package:lumen_tale/domain/updates/library_check_store.dart';
 
 /// The registry, as this layer sees it.
 ///

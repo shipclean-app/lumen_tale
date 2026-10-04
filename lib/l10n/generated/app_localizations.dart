@@ -804,7 +804,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Checking, {done} of {total} novels'**
-  String checkActionSemantics(String done, String total);
+  String checkActionSemantics(int done, int total);
 
   ///
   ///
@@ -828,13 +828,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Checked {total} novels · {discovered} you had not opened'**
-  String checkDiscovered(String total, String discovered);
+  String checkDiscovered(int total, int discovered);
 
   /// ⚠️ **NOT 'nothing is new'.** The distinction B49 is about: this sentence may only be said when the app actually looked. `libraryTileUnopened`'s `=0` arm says 'No new chapters' for a single novel, and it is allowed there because that row carries the novel's own verification chip beside it.
   ///
   /// In en, this message translates to:
   /// **'Checked {total} novels · nothing you had not opened'**
-  String checkDiscoveredNothing(String total);
+  String checkDiscoveredNothing(int total);
 
   /// ⚠️ **Never 'cancelled'.** `StopReason.systemIgnoredCancelledByApp` means the work **finished**: the reader now holds results they did not ask for, and telling them 'cancelled' would make them look for changes that are already saved.
   ///
@@ -882,13 +882,13 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Checking {done} of {total} novels'**
-  String checkProgress(String done, String total);
+  String checkProgress(int done, int total);
 
   /// ⚠️ **THE SENTENCE `6-10`'s NOTIFICATION AND `6-4`'s STATUS LINE SHARE.** B39's counter and B38's promise in one clause, and one key rather than two: a notification that says 'checking 7 of 23' and a status line that says 'checking 7 of 23 · nothing is downloaded' are two claims about one run.
   ///
   /// In en, this message translates to:
   /// **'Checking {done} of {total} novels · nothing is downloaded'**
-  String checkProgressNothingDownloaded(String done, String total);
+  String checkProgressNothingDownloaded(int done, int total);
 
   ///
   ///
@@ -960,19 +960,19 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'All {total} novels checked · none skipped.'**
-  String checkTerminalComplete(String total);
+  String checkTerminalComplete(int total);
 
   ///
   ///
   /// In en, this message translates to:
   /// **'Check stopped at {done} of {total} novels.'**
-  String checkTerminalInterrupted(String done, String total);
+  String checkTerminalInterrupted(int done, int total);
 
   /// B22 in one line: the failure count is **beside** the success count and never inside it. 'Checked 23 of 23 novels' when four sites could not be read is the exact presentation B22 exists to forbid.
   ///
   /// In en, this message translates to:
   /// **'Checked {checked} of {total} novels · {failed} could not be checked.'**
-  String checkTerminalWithFailures(String checked, String total, String failed);
+  String checkTerminalWithFailures(int checked, int total, int failed);
 
   ///
   ///
@@ -1166,10 +1166,10 @@ abstract class AppLocalizations {
   /// **'The site asked us to slow down. Try again in {seconds} seconds.'**
   String errorRateLimitedIn(int seconds);
 
-  /// A startup failure, therefore never a screen state. See the comment on main().
+  /// A startup failure, therefore never a screen state. See the comment on main(). ⚠️ `6-7` § 3.2 rule 2: EVERY failure sentence names what survived, and in a product with no backup (ADR-010) a sentence that names nothing reads as data loss. This one says the library, the downloads and the reading positions are stored separately, which is the fact that makes it survivable. § 10.16 then requires it to be a BLOCK rather than a one-line banner at 200 % type — so the second clause is load-bearing twice.
   ///
   /// In en, this message translates to:
-  /// **'Your settings could not be loaded.'**
+  /// **'Your settings could not be read from this phone. Your library, downloads and reading positions are untouched.'**
   String get errorSettingsLoad;
 
   /// The control snaps back and says why: showing a value it could not store is worse than a visible failure.
@@ -1178,10 +1178,10 @@ abstract class AppLocalizations {
   /// **'This setting could not be saved. It will keep its previous value.'**
   String get errorSettingsWrite;
 
-  /// B22. 'Your other sources': one site failing is not the app failing.
+  /// B22, and the load-bearing half of it: 'not the same as a site with no chapters'. 'Your other sources': one site failing is not the app failing. ⚠️ The distinction B22 exists for is between 'the site answered and had nothing' and 'the site did not answer'; a sentence that only said 'unavailable' would let a reader conclude their novel has no chapters.
   ///
   /// In en, this message translates to:
-  /// **'This site could not be read. Your other sources work normally.'**
+  /// **'This site could not be read. That is not the same as a site with no chapters. Your other sources work normally.'**
   String get errorSiteUnreadable;
 
   /// E4 / SC-6. Nothing to retry: this is a defect to report.

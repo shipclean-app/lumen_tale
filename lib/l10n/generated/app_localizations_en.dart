@@ -437,7 +437,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chapterTileUnread => 'Unread';
 
   @override
-  String checkActionSemantics(String done, String total) {
+  String checkActionSemantics(int done, int total) {
     return 'Checking, $done of $total novels';
   }
 
@@ -452,12 +452,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Check cancelled · your library is unchanged';
 
   @override
-  String checkDiscovered(String total, String discovered) {
+  String checkDiscovered(int total, int discovered) {
     return 'Checked $total novels · $discovered you had not opened';
   }
 
   @override
-  String checkDiscoveredNothing(String total) {
+  String checkDiscoveredNothing(int total) {
     return 'Checked $total novels · nothing you had not opened';
   }
 
@@ -485,12 +485,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkNowAction => 'Check for new chapters';
 
   @override
-  String checkProgress(String done, String total) {
+  String checkProgress(int done, int total) {
     return 'Checking $done of $total novels';
   }
 
   @override
-  String checkProgressNothingDownloaded(String done, String total) {
+  String checkProgressNothingDownloaded(int done, int total) {
     return 'Checking $done of $total novels · nothing is downloaded';
   }
 
@@ -539,21 +539,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Check stopped — Android did not say why. Tap check to finish.';
 
   @override
-  String checkTerminalComplete(String total) {
+  String checkTerminalComplete(int total) {
     return 'All $total novels checked · none skipped.';
   }
 
   @override
-  String checkTerminalInterrupted(String done, String total) {
+  String checkTerminalInterrupted(int done, int total) {
     return 'Check stopped at $done of $total novels.';
   }
 
   @override
-  String checkTerminalWithFailures(
-    String checked,
-    String total,
-    String failed,
-  ) {
+  String checkTerminalWithFailures(int checked, int total, int failed) {
     return 'Checked $checked of $total novels · $failed could not be checked.';
   }
 
@@ -676,7 +672,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get errorSettingsLoad => 'Your settings could not be loaded.';
+  String get errorSettingsLoad =>
+      'Your settings could not be read from this phone. Your library, downloads and reading positions are untouched.';
 
   @override
   String get errorSettingsWrite =>
@@ -684,7 +681,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorSiteUnreadable =>
-      'This site could not be read. Your other sources work normally.';
+      'This site could not be read. That is not the same as a site with no chapters. Your other sources work normally.';
 
   @override
   String get errorSourceLayoutChanged =>

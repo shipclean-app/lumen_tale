@@ -5015,3 +5015,211 @@ to be restored together.
 `flutter analyze` clean for `3-3`'s files (the remaining errors are the in-flight `5-1`/`6-4`
 agents) · `3-3`'s 27 rows green · full suite `1 321 passed + 9 skipped` · `3-3` **validated**.
 `5-1`, `6-4`, `5-2`, `5-3`, `6-6`, `6-10`, `0-1`, `0-4`, `6-7` remain.
+
+### ⚠️ ⚠️ TWO AGENTS ON `6-4` AT ONCE — CAUSED BY ME, NOT BY THE AGENTS
+
+I launched `6-4`, `6-6` and `6-10` as one group, and then — after the group agent returned an
+empty response and I wrongly concluded it had done nothing — launched **`6-4` again on its own.**
+Both were live in one working tree, writing the same symbols.
+
+The result: `lib/data/updates/drift_check_library.dart` and
+`lib/data/updates/drift_library_check_store.dart` overwrote each other, one agent deleted its
+own copies and adopted the other's, and `flutter analyze` output **changed three times in
+ninety seconds**. Neither could have finished; whoever wrote last decided.
+
+⚠️ **THE LESSON IS NOT "BE CAREFUL".** It is that **an agent returning an empty response tells
+you nothing about what it wrote** — and I read "no report" as "no work". The evidence that
+would have settled it was one command: `git status --short` and a grep for the slice's marker.
+I ran neither before re-launching. An empty response is not evidence of absence; it is a
+**malformed result**, and the response to a malformed result is to *inspect*, never to re-run
+the same work under a second writer.
+
+⚠️ ⚠️ `git add -A` THEN SWEPT `6-4`'s WORK INTO THE `3-3` COMMIT.
+
+`2d00fd7` is titled *"feat: 3-3 completed"* and contains **`6-4`/`6-6`/`6-10`'s domain,
+store, presentation and 62 ARB keys** alongside `3-3`'s — 52 files, 12 184 insertions, two
+slices attributed to a third. `11-git-workflow.md`'s selective-staging rule exists for exactly
+this and `git add -A` is how it gets broken while several agents hold uncommitted work.
+
+#### ⚠️ THIS IS AN OPEN OBLIGATION, NOT A CLOSED ITEM
+
+**`2d00fd7` MUST BE SPLIT** into a `3-3` commit and a `6-4`/`6-6`/`6-10` commit. It is already
+pushed, so this is a `--force-with-lease` onto the feature branch. ⚠️ **It is deliberately NOT
+done yet**, because three agents hold uncommitted work in the index right now and rewriting
+history underneath them risks destroying it. It happens when the tree is quiet, before the
+phase is declared finished, and the ARB has to be split at **hunk** level because one file
+carries keys from both slices.
+
+#### THE PLAN DEFECTS `6-4`/`6-6`/`6-10` CONFIRMED
+
+1. **`6-10` § 2.2 CANNOT BE IMPLEMENTED AS WRITTEN.** It imports `StopReason` from
+   `package:workmanager_platform_interface/…` inside `domain/` — not a declared dependency, and
+   importing `package:workmanager/workmanager.dart` instead drags `flutter/widgets.dart` into
+   `domain/` through its re-export of `workmanager_api.g.dart`. `domain/` needs its own
+   `CheckStopReason` and `core/background/` needs an exhaustive `switch`.
+2. **`6-6` § 10's B40 GREP IS FALSE AS WRITTEN.** `grep -rn 'merge\|alias\|rename'
+   lib/domain/library/` returns five lines, all `2-5`'s **prose** ("nothing is ever merged",
+   "a renamed site"). A correct implementation fails it. It must become an identifier-level
+   assertion: `mergeNovel|aliasOf|renameNovel`.
+3. **`6-4` § 2.2 lists four store signatures but § 3.2 guard 0 needs `isSourceEnabled`.**
+   `Source` has no `enabled` flag (B41) — it is the `sources.enabled` column. Both agents added
+   the fifth method independently, for the same reason.
+4. ⚠️ **THE BRIEF WAS WRONG, NOT THE PLAN.** I described `6-6` as "the updates badge/count".
+   It is the **library badge (B14) + title-only search (B45) + similar-title dialog (B40) +
+   `DownloadPresentation` (E6/E7/E20)**, and `6-3` already owns the counting model. `2-5` and
+   `core/ui/library_dialogs.dart` have built parts of its UI. ⚠️ **A brief that misdescribes a
+   slice is worse than no brief** — it sends an agent to build the wrong thing confidently.
+
+---
+
+## 2026-10-04 — Session 32: `6-7` — the barrier, and the two regexes that could not fail
+
+### STARTED FROM
+
+`6-7` was `in_progress` with real work already landed: `lib/core/ui/app_error_copy.dart` (the
+`AppErrorString` enum, 22 arms, `message`/`recovery`/`forAppException`/`forSourceFailure`) and
+`test/core/ui/app_error_copy_test.dart`, **both already marked `// forge:slice 6-7`**. The ARB
+files held 387 keys from eight slices.
+
+⚠️ **WHAT WAS ALREADY RIGHT WAS LEFT ALONE.** The plan § 2.1 shows a 19-value enum over a
+six-subclass `AppException` hierarchy including `RateLimitedException`, `StorageException` and
+`ItemRemovedAtSource`. **None of those three classes exists** — `app_exception.dart` is
+`sealed` over five (`NetworkException`, `CancelledException`, `SourceException`,
+`DatabaseException`, `ChapterNotAvailableException`) and § 5.2's seven causes live on the
+**separate** `SourceFailure` hierarchy. The shipped `app_error_copy.dart` maps BOTH, in
+22 arms, and its `forSourceFailure` comment explains why there are six arms and not seven.
+**The shipped code is more correct than the plan's code sample**, so the plan was not followed
+into `lib/core/utils/i18n/app_error_strings.dart` — a second `AppErrorString` in a second file
+would have been exactly the "two names for one artefact" the project forbids.
+
+### FILES TOUCHED
+
+**new** · `lib/l10n/arb_error_keys.dart` · `test/l10n/arb_file.dart` ·
+`test/l10n/expected_keys.dart` · `test/l10n/translation_completeness_test.dart` ·
+`test/l10n/error_strings_test.dart` · `test/l10n/locale_resolution_test.dart` ·
+`test/l10n/locale_switch_preserves_data_test.dart` · `tool/declare_arb_placeholders.py`
+
+**changed** · `lib/l10n/app_en.arb` · `lib/l10n/app_fr.arb` · `lib/l10n/generated/*` ·
+`.forge/state.json` · `.forge/plans/6-7.md` (frontmatter only) · `SESSION_LOG.md`
+
+### DECIDED
+
+- **`arb_error_keys.dart` lives in `lib/l10n/`, NOT `core/utils/i18n/` where the plan wrote
+  it.** `AGENTS.md`'s layer table says `core/` imports **external packages only**; this file
+  describes the ARB vocabulary, so `core/` would be a leaf layer depending on `lib/l10n/` —
+  the boundary `tool/check_boundaries.py` exists to refuse. The sibling rule
+  `arb_key_derivation.dart` is already in `lib/l10n/`, so the two files that answer "what does
+  an ARB key mean" now sit together.
+- **§ 3.3 control 6 counts WORDS, not `[.!:]` clauses.** ⚠️ **The plan's own passing example
+  fails its own rule**: it offers *"This site changed and can no longer be read."* as a
+  sentence that passes, and that splits into exactly **one** clause. A literal `>= 2` is
+  unsatisfiable for `Queued` / `Downloaded` / `Read successfully.`, which § 3.2 itself
+  specifies as labels or as nothing at all. The threshold is **four words**, chosen because it
+  rejects `Erreur.` / `Failed.` — the two the plan names — and because a word count is the one
+  measure that survives translation. The four labels are declared **with a reason each** in
+  `expected_keys.dart`, and `error_strings_test.dart` asserts the two lists are **disjoint and
+  together exhaustive** over the enum, so an arm cannot fall out of both and stop being checked.
+- **`expected_keys.dart` asserts DECLARED KEYS EXIST, not that the ARBs contain exactly
+  them.** § 9 Phase 1 proposed exact equality. With 387 keys owned by eight slices being
+  written **concurrently**, exact equality fails the moment any of them writes one more key —
+  a red test owned by nobody, blaming the file this slice owns. The declared direction catches
+  the failure the rule exists for (a key this slice promised, absent from one file after a
+  concurrent write — exactly how `6-7` lost twenty-one of `3-3`'s messages) and cannot be made
+  false by another slice doing its own work.
+- **`errorSiteUnreadable` gained B22's distinguishing clause** (§ 10.7, § 11.1 by name).
+  Shipped: *"This site could not be read. Your other sources work normally."* — which does
+  **not** distinguish an unreadable site from a site with no chapters, which is the whole of
+  B22. Now: `… That is not the same as a site with no chapters. Your other sources work
+  normally.` / `… Ce n'est pas la même chose qu'un site sans chapitres. …`. No test pinned the
+  old text.
+- **`errorSettingsLoad` regained its second clause.** § 3.2 rule 2 is *"chaque phrase d'erreur
+  nomme ce qui est resté"*, and the shipped one — *"Your settings could not be loaded."* —
+  names nothing, which in a product with **no backup** (ADR-010) reads as data loss. § 10.16
+  then requires it to occupy **several lines at 200 %**, and at that scale the one-clause
+  version fit on ONE line (measured: 200 px, exactly one line). Now: *"Your settings could not
+  be read from this phone. Your library, downloads and reading positions are untouched."* /
+  the French equivalent. ⚠️ **The plan's own FR text is 189 characters and
+  `app_error_copy_test.dart`'s C11 row caps sentences at 160**, so the plan's copy was NOT
+  used verbatim: it was condensed to 118/131, which satisfies § 3.2 rule 2, § 10.16's wrapping
+  and the 160 cap at once. **No assertion was weakened.**
+
+### ⚠️ ⚠️ TWO REGEXES THAT COULD NOT FAIL, AND A `RangeError` THAT HID IT
+
+The control-5 row scans `lib/**/*.dart` for a literal reaching a widget parameter. Its first
+form used `(?:\\.|(?!\2)[^\\])*` for the quoted content, copied from the usual
+"match a quoted string" shape. **In that shape `\2` is the CONTENT group, not the quote** — the
+quote is only group 2 because a name group came first. The lookahead therefore consulted a
+group from inside itself, matched **empty**, and every literal looked like `''`.
+
+⚠️ **The row reported ZERO offenders against a file containing
+`Text('Bonjour, votre bibliothèque est intacte.')`.** It had never been able to fail.
+
+What exposed it was the **sabotage run**, and then a second defect underneath it: the
+positional branch read `group(3)` on a two-group pattern, so the first offender produced a
+`RangeError` **instead of a report**. Both are fixed
+(`\b(name)\s*:\s*(quote)(content?)\2` and `\b(ctor)\s*\(\s*(quote)(content?)\2`, with the
+group numbers read off the pattern rather than assumed). ⚠️ **A barrier that crashes instead of
+naming the defect is a barrier whose message is a stack trace**, and a barrier that silently
+matches nothing is worse than no barrier, because it is counted as one.
+
+⚠️ **The second, cheaper version of the same lesson:** `test/l10n/error_strings_test.dart`
+reads the **generated bundle** and `translation_completeness_test.dart` reads the **ARB file**.
+Sabotaging the ARB alone failed the second and not the first, because the generated code is
+only as fresh as the last `flutter gen-l10n` — which is DoD item 4 doing its job. Two halves of
+one sentence rule, two sources, both rows needed.
+
+### ⚠️ A RECORDED DEFECT, NOT A PASS: `3-6`'s EVIDENCE SENTENCES ARE STILL ENGLISH
+
+`lib/features/source_unavailable/failure_cause.dart` returns **seven hardcoded English
+sentences** (`'The site answered HTTP $status.'`, …) and
+`source_unavailable_screen.dart` renders one (line 291) **and copies it to the clipboard**
+(line 389). `failureKickers` adds **five** more hardcoded English overlines, rendered at line
+146. B28 covers all twelve as squarely as it covers a `Text(…)`.
+
+⚠️ **They are recorded, keyed per CLASS and per CAUSE**, in `expected_keys.dart` and asserted by
+two rows — so an eighth evidence class or a sixth kicker FAILS. The barrier does not pass them
+by ignoring them, and `3-6` is `validated`, so rewriting its screen and its assertions from
+here is the wrong owner. **The alternative considered and rejected: drop `sentence()` from the
+barrier's vocabulary, which makes the row green by looking at less.**
+
+### SABOTAGE, SIX, ALL CAUGHT
+
+| Sabotage | Rows that caught it |
+|---|---|
+| FR renames `{source}` → `{roman}` (the B28 class) | **2 rows** — mine and `arb_completeness_test.dart`'s |
+| B22's clause removed from `errorSiteUnreadable` in **both** files | *is not the same as having no chapters* |
+| `errorNoConnection` reduced to `"Failed."` / `"Erreur."` | **2 rows** — the ARB one, then the enum one after `gen-l10n` |
+| `Text('Bonjour, votre bibliothèque est intacte.')` added to `lib/` | *no literal passed to a widget parameter reads like prose*, naming file and line |
+| `message:` / `semanticsLabel:` literals added to `lib/` | the same row, **named-parameter branch** (the one that had never worked) |
+| `main.dart`'s `_resolveLocale` fallback flipped `fr` → `en` | **4 rows** — `de-DE`, the unsupported set, every failure sentence French, and no-locale |
+| a preference written as `'Conserver 30 jours'` instead of `window.name` | *every string written to preferences is an enum key* |
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero in `lib/` and in `test/l10n/`** ·
+`check_boundaries.py` **no undeclared crossings** · `test/l10n/` **110 green** ·
+`forge-guard all` **pass** · `consistency-check all` **pass** ·
+⚠️ the host suite has **5 failures, none in this slice's files** —
+`test/data/updates/drift_library_check_store_test.dart` (6-10),
+`test/features/downloads/download_queue_provider_test.dart` ×3 (3-3),
+`test/fixtures/fanmtl_manifest_test.dart` (0-1) — and `flutter analyze` reports 33 issues in
+other agents' `test/` files, none in `lib/`.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not add an ARB key in one file only, and do not skip `flutter gen-l10n`.** § 10.3 was
+  **not** implemented by this project before today: 28 keys in each file interpolated a
+  placeholder their `@key` never declared. `tool/declare_arb_placeholders.py --check` is the
+  row; run it after every ARB edit.
+- **Do not translate a placeholder name.** `{roman}` for `{novel}` compiles, passes
+  `gen-l10n`, and renders braces on the reader's screen. Two files, identical names, always.
+- **Do not write a regex for this and read the group numbers from another pattern.** The two
+  shapes above are numbered differently and the mistake is silent in one direction and a
+  `RangeError` in the other.
+- **Do not treat an empty list of offenders as a pass.** Every scan row here carries a witness
+  row, because the scan is the only kind of row that can pass by finding nothing.
+
+### BLOCKED
+
+Nothing. ⚠️ `§ 11.4` has no E2E row and still has none: **Q-008** (a phone) is unresolved, and
+the "open the app in German and see French" walkthrough stays written rather than run.

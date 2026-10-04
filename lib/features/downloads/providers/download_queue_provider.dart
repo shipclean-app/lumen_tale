@@ -152,7 +152,12 @@ class DownloadQueueNotifier extends Notifier<QueueState> {
       downloadQueueStreamProvider,
     );
     return QueueState(
-      entries: entries.valueOrNull ?? const <QueueEntry>[],
+      // ⚠️ **`value`, NOT `valueOrNull`, AND NOT `requireValue`.** Read from the installed
+      // `riverpod` 3.4.3: `AsyncValue.value` is the nullable getter and
+      // `requireValue` **throws** while loading. A queue screen that crashed on its first
+      // frame because the stream had not emitted yet would be a bug in the queue's
+      // lifetime, not in the reader's data.
+      entries: entries.value ?? const <QueueEntry>[],
       // ⚠️ **READ, NEVER WATCHED, AND THAT IS THE POINT.** The loop's liveness is not in
       // the database, so watching it would rebuild every listener once per chapter —
       // fifty rebuilds of a screen whose numbers come from the stream anyway. It is

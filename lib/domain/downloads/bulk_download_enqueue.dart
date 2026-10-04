@@ -66,7 +66,7 @@ Future<QueueEnqueueOutcome> enqueueBulkChoice({
   // separate them again.
   final List<QueueEntry> rows = await queue.enqueue(picked);
 
-  return QueueEnqueued(rows: rows);
+  return QueueEnqueued(rows);
 }
 
 /// What an enqueue produced.

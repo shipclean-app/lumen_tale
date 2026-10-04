@@ -159,7 +159,7 @@ final class DriftDownloadQueueRepository implements DownloadQueueRepository {
           'WHERE q.chapter_id = ? AND q.state != ?',
           variables: <Variable<Object>>[
             Variable<String>(chapterId),
-            Variable<String>(kDownloadStateDone),
+            const Variable<String>(kDownloadStateDone),
           ],
           readsFrom: <ResultSetImplementation<Object, Object?>>{_db.queueItems},
         )
@@ -316,7 +316,7 @@ final class DriftDownloadQueueRepository implements DownloadQueueRepository {
 
   // ── helpers ──────────────────────────────────────────────────────────────────
 
-  List<Join> _joins() => <Join>[
+  List<Join<HasResultSet, dynamic>> _joins() => <Join<HasResultSet, dynamic>>[
     // ⚠️ **INNER JOINS, DELIBERATELY.** A queue row whose chapter or novel row is gone
     // would produce a `QueueEntry` with an empty title and no source, and the loop
     // would then resolve no source for it. `queue_items.chapter_id` is `CASCADE`, so a

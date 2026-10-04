@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<title>Message hint</title>
+    <style type="text/css">
+        *{ padding: 0; margin: 0; }
+        body{ background: #fff; font-family: "Microsoft Yahei","Helvetica Neue",Helvetica,Arial,sans-serif; color: #333; font-size: 16px; }
+        .system-message{ padding: 24px 48px; }
+        .system-message h1{ font-size: 50px; font-weight: normal; line-height: 120px; margin-bottom: 12px; }
+        .system-message .jump{ padding-top: 10px; }
+        .system-message .jump a{ color: #333; }
+        .system-message .success,.system-message .error{ line-height: 1.8em; font-size: 20px; }
+        .system-message .detail{ font-size: 12px; line-height: 20px; margin-top: 12px; display: none; }
+    </style>
+<SCRIPT language=javascript>
+var secs=3;//3秒
+for(i=1;i<=secs;i++) 
+{ window.setTimeout("update(" + i + ")", i * 1000);} 
+function update(num) 
+{ 
+if(num == secs) 
+{ history.go(-1); } 
+else 
+{ } 
+}
+</SCRIPT>
+</head>
+<body>
+<div class="system-message">
+ <h1>:(</h1>
+<p class="error">No relevant content found</p>
+<p class="detail"></p>
+<p class="jump">Page auto <a id="href" href="javascript:history.go(-1)">jump</a> wait time： <b id="wait">3</b></p>
+</div>
+
+
+<script type="text/javascript">
+        (function(){
+            var wait = document.getElementById('wait'),
+                href = document.getElementById('href').href;
+            var interval = setInterval(function(){
+                var time = --wait.innerHTML;
+                if(time <= 0) {
+                    location.href = href;
+                    clearInterval(interval);
+                };
+            }, 1000);
+        })();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a455fa4e9bb92532',t:'MTc5MTEzNTY5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

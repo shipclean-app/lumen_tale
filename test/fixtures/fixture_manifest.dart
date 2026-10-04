@@ -44,15 +44,32 @@ final class FixtureManifest {
   /// manifest that silently drops half its fixtures is a manifest that lets a test
   /// pass against a file nobody declared.
   // ignore: prefer_constructors_over_static_methods
-  static FixtureManifest load(String site) {
-    final Directory dir = Directory('test/fixtures/sources/$site');
+  static FixtureManifest load(String site) =>
+      loadFrom(Directory('test/fixtures/sources/$site'), expectedSite: site);
+
+  /// Reads `<dir>/manifest.json`, refusing a manifest whose `site` is not
+  /// [expectedSite].
+  ///
+  /// ⚠️ **Split out from [load] for one reason: the guard needs to be provable.**
+  /// `load(site)` hardcodes `test/fixtures/sources/<site>`, so every check in
+  /// [problems] could only ever be run against the real fixtures — where all of them
+  /// pass, because they were made to. A guard that has only ever seen a healthy tree
+  /// is a guard nobody knows fires. [loadFrom] lets a test point the same code at a
+  /// throwaway directory holding a manifest that lies, and watch each branch catch
+  /// it. The refusal to return a partial manifest is unchanged.
+  // ignore: prefer_constructors_over_static_methods
+  static FixtureManifest loadFrom(Directory dir, {String? expectedSite}) {
     final File file = File('${dir.path}/manifest.json');
     if (!file.existsSync()) {
-      throw FixtureManifestException('$site: no manifest at ${file.path}');
+      throw FixtureManifestException('$dir: no manifest at ${file.path}');
     }
     final Object? decoded = jsonDecode(file.readAsStringSync());
     if (decoded is! Map<String, dynamic>) {
-      throw FixtureManifestException('$site: manifest is not a JSON object');
+      throw FixtureManifestException('$dir: manifest is not a JSON object');
+    }
+    final site = expectedSite ?? decoded['site'];
+    if (site is! String || site.isEmpty) {
+      throw FixtureManifestException('$dir: manifest declares no site');
     }
     if (decoded['site'] != site) {
       throw FixtureManifestException(
@@ -88,6 +105,7 @@ final class FixtureManifest {
       site: site,
       baseUrl: decoded['baseUrl'] as String? ?? '',
       dir: dir,
+      capturedBy: decoded['capturedBy'] as String? ?? '0-1',
       pagination: pagination,
       entries: rawEntries
           .map((Object? e) {
@@ -125,9 +143,165 @@ final class FixtureManifest {
     throw FixtureManifestException('$site: no fixture with key "$key"');
   }
 
+  /// The single entry declaring [file], relative to [dir]. Throws when absent.
+  ///
+  /// Needed because a manufactured artefact's manifest entry names its **source
+  /// file**, not the source's key — and the one-substitution proof of § 3.2 is a
+  /// comparison between two files, so resolving it needs a file lookup rather than
+  /// a key one. `require(key)` would answer with "no fixture with key
+  /// catalogue-genre-page0.html", which is true and useless.
+  FixtureEntry requireFile(String file) {
+    for (final FixtureEntry e in entries) {
+      if (e.file == file) return e;
+    }
+    throw FixtureManifestException('$site: no fixture declares file "$file"');
+  }
+
   /// Every entry whose [FixtureEntry.kind] is [kind].
   List<FixtureEntry> ofKind(String kind) =>
       entries.where((FixtureEntry e) => e.kind == kind).toList(growable: false);
+
+  /// Every declared file, relative to [dir]. Used by [problems]' branch A — an
+  /// undeclared file on disk has no provenance, which `18-external-contracts.md`
+  /// rule 1 forbids.
+  Set<String> get declaredFileNames =>
+      entries.map((FixtureEntry e) => e.file).toSet();
+
+  /// The extensions a fixture may legitimately have. A `.json` sidecar and a
+  /// `manifest.in.json` are **not** fixtures and must not be declared as such —
+  /// the input file describes the captures, it is not one.
+  static const Set<String> fixtureExtensions = <String>{
+    '.html',
+    '.htm',
+    '.txt',
+  };
+
+  /// § 3.4, branches A to F — **every** reason this manifest cannot be trusted, not
+  /// the first.
+  ///
+  /// It returns a list rather than throwing, and that is deliberate: a guard that
+  /// stops at the first failure needs six runs to report six mistakes, and the sixth
+  /// is discovered after the fifth is fixed. Empty means the manifest holds.
+  ///
+  /// | Branch | Rule | What it refuses |
+  /// |---|---|---|
+  /// | A | `18-external-contracts.md` rule 1 | an undeclared fixture on disk; an entry declaring a file that is absent |
+  /// | B | § 3.2 | `bytesOnDisk != bytes` — a rewritten file |
+  /// | C | § 3.4 C | an empty `catalogue` / `novel-detail` capture: a capture of nothing proves nothing |
+  /// | D | `18-external-contracts.md` rule 1 | an entry with no observation recorded |
+  /// | E | § 3.2 | a `manufactured` entry that does not state its one edit |
+  /// | F | C2, B4 | a fixture carrying a session token |
+  ///
+  /// It also carries the two manifest-level rules every entry must satisfy: a
+  /// relative `url` (rules 2-3 of `03-source-system.md`) and an ISO 8601 UTC
+  /// `capturedAt`.
+  List<String> problems() {
+    final List<String> found = <String>[];
+    final Set<String> declared = declaredFileNames;
+
+    // ── A. what is on disk and what is declared must be the same set ──────────
+    if (dir.existsSync()) {
+      for (final FileSystemEntity entity in dir.listSync(
+        recursive: true,
+        followLinks: false,
+      )) {
+        if (entity is! File) continue;
+        final String relative = _relativeTo(entity.path);
+        final String extension = _extensionOf(relative);
+        if (!fixtureExtensions.contains(extension)) continue;
+        if (!declared.contains(relative)) {
+          found.add(
+            'fixture on disk is not declared: $relative — '
+            '18-external-contracts.md rule 1 (a fixture with no provenance)',
+          );
+        }
+      }
+    }
+    for (final FixtureEntry entry in entries) {
+      if (!entry.fileOnDisk.existsSync()) {
+        found.add(
+          '${entry.key} declares ${entry.file}, which is not on disk — a test '
+          'would pass against a file nobody can read',
+        );
+        continue;
+      }
+      // ── B. the declared length is the only manifest field asserted (§ 3.2) ────
+      final int onDisk = entry.bytesOnDisk;
+      if (onDisk != entry.bytes) {
+        found.add(
+          '${entry.key}: $onDisk bytes on disk, ${entry.bytes} declared',
+        );
+      }
+      // ── F. no fixture transports an identity ─────────────────────────────────
+      final String text = entry.readText().toLowerCase();
+      for (final String marker in sessionMarkers) {
+        if (text.contains(marker)) {
+          found.add(
+            '${entry.key} carries "$marker" — C2 and B4: a committed fixture '
+            'transports no identity',
+          );
+          break;
+        }
+      }
+      // ── C. a capture of nothing proves nothing ──────────────────────────────
+      if (entry.kind == 'catalogue' ||
+          entry.kind == 'novel-detail' ||
+          entry.kind == 'chapter-list') {
+        if (entry.readText().trim().isEmpty) {
+          found.add(
+            '${entry.key} is empty: a capture of nothing proves nothing',
+          );
+        }
+        if (entry.expected.isEmpty) {
+          found.add(
+            '${entry.key} is a ${entry.kind} with an empty `expected` — what a '
+            'test can affirm about it has never been written down',
+          );
+        }
+      }
+      // ── E. a manufactured artefact states its one edit ───────────────────────
+      if (entry.kind == 'manufactured' && !entry.expected.containsKey('edit')) {
+        found.add(
+          '${entry.key} is manufactured and declares no `expected.edit`, so '
+          'nothing states which single substitution separates it from its source',
+        );
+      }
+      // ── the two per-entry manifest rules ────────────────────────────────────
+      if (entry.url.contains('://')) {
+        found.add(
+          '${entry.key} stores an absolute URL (${entry.url}) — rules 2-3 of '
+          '03-source-system.md store a path, never a full URL',
+        );
+      }
+      if (!entry.capturedAt.endsWith('Z') || entry.capturedAt.length != 20) {
+        found.add(
+          '${entry.key}: capturedAt "${entry.capturedAt}" is not ISO 8601 UTC',
+        );
+      }
+      // ── D. provenance ───────────────────────────────────────────────────────
+      if (entry.notes.trim().isEmpty) {
+        found.add(
+          '${entry.key} records no observation — 18-external-contracts.md rule 1',
+        );
+      }
+    }
+    return found;
+  }
+
+  /// C2, B4, lower-cased before comparison. The lower-casing matters: a fixture
+  /// that says `SESSIONID` is exactly as much of a leak as one that says
+  /// `sessionid`, and a case-sensitive list misses it.
+  static const List<String> sessionMarkers = <String>[
+    'set-cookie',
+    'sessionid',
+    'phpsessid',
+    'csrf',
+  ];
+
+  String _relativeTo(String path) {
+    final String root = dir.path.endsWith('/') ? dir.path : '${dir.path}/';
+    return path.startsWith(root) ? path.substring(root.length) : path;
+  }
 }
 
 /// One list kind's pagination, as recorded at capture time by `0-3`.
@@ -355,11 +529,41 @@ final class FixtureEntry {
   /// The fixture's bytes. Relative to the manifest's directory, never absolute.
   File get fileOnDisk => File('${dir.path}/$file');
 
+  /// The file's length as it is on disk — the only manifest field a guard asserts
+  /// (§ 3.2), because it catches the one thing that matters: the file was rewritten.
+  int get bytesOnDisk => fileOnDisk.lengthSync();
+
+  /// The raw document text, decoded with the charset the manifest recorded.
+  ///
+  /// `utf8` is correct for every capture this project has — both sites declare
+  /// `charset=utf-8` — and `04-html-to-markdown.md` rule 5 says the *charset
+  /// observed* is recorded in the manifest, not that a reader guesses.
+  String readText() => fileOnDisk.readAsStringSync();
+
+  /// The absolute URL this fixture was captured from.
+  ///
+  /// `baseUrl` is passed in rather than read from a static, so a fixture can never
+  /// build a URL against a different site than the one it was captured on — and
+  /// § 2.2's rule is that no test ever concatenates `baseUrl + url` itself.
+  String absoluteUrl(String baseUrl) => '$baseUrl$url';
+
   /// Whether this fixture was really captured, as opposed to manufactured.
   bool get isCaptured => kind != 'manufactured';
 
   @override
   String toString() => 'FixtureEntry($key, $kind, $file)';
+}
+
+/// The lower-cased extension of [path], including the dot, or `''` when it has none.
+///
+/// Written out rather than reached for from `package:path` because this file is pure
+/// Dart with two imports, and a third for one `substring` would be a dependency a test
+/// utility does not need.
+String _extensionOf(String path) {
+  final int dot = path.lastIndexOf('.');
+  final int slash = path.lastIndexOf('/');
+  if (dot < 0 || dot < slash) return '';
+  return path.substring(dot).toLowerCase();
 }
 
 /// A manifest that cannot be trusted.

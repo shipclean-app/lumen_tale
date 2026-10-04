@@ -29,10 +29,14 @@ import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/domain/downloads/bulk_choice_resolver.dart';
 import 'package:lumen_tale/domain/downloads/novel_download_scope.dart';
 
-/// B9 — the chapter list is the site's whole order and must stay complete however long
-/// it is, so this read is a filtered, ordered, **unbounded** select.
-const int kDownloadScopeReadLimit = -1;
-
+/// ⚠️ **THE READ BELOW CARRIES NO `LIMIT` AND THAT IS THE RULE, NOT AN OMISSION.** B9: the
+/// chapter list is the site's whole order and must stay complete however long it is, so a
+/// "just the first 500" would silently drop the tail of a 10 000-chapter novel — which B9
+/// forbids by name. There is deliberately no constant for a bound here, because a constant
+/// is a second place to change it.
+///
+/// ⚠️ `const DriftNovelDownloadScope`, unlike the queue repository: this class holds only
+/// the database and never a counter, so it can be built at the composition root and shared.
 final class DriftNovelDownloadScope implements NovelDownloadScope {
   const DriftNovelDownloadScope(this._db);
 

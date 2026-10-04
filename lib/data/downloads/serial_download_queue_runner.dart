@@ -35,6 +35,7 @@
 // by `ordinal` would discard the only thing the reader expressed. The *enqueue* sorts by
 // `ordinal` (§ 3.2); the *drain* reads the position.
 
+import 'package:lumen_tale/core/pipeline/converted_chapter.dart';
 import 'package:lumen_tale/domain/downloads/chapter_content_source.dart';
 import 'package:lumen_tale/domain/downloads/chapter_markdown_converter.dart';
 import 'package:lumen_tale/domain/downloads/chapter_writer.dart';
@@ -47,7 +48,7 @@ import 'package:lumen_tale/domain/sources/models/chapter.dart';
 
 /// The serial drain loop. B18's first clause, as a loop.
 final class SerialDownloadQueueRunner implements DownloadQueueRunner {
-  const SerialDownloadQueueRunner({
+  SerialDownloadQueueRunner({
     required DownloadQueueRepository queue,
     required ChapterContentSource content,
     required ChapterMarkdownConverter converter,
@@ -85,7 +86,12 @@ final class SerialDownloadQueueRunner implements DownloadQueueRunner {
     _loop = running;
     running.then<void>(
       (void _) => _finish(running),
-      onError: (Object _, StackTrace __) => _finish(running),
+      // ⚠️ **THE ERROR IS *SWALLOWED* HERE, DELIBERATELY, AND IT IS NOT THE ONLY
+      // OBSERVER.** This listener exists solely to clear `_loop`, so a failed loop still
+      // ends. The error itself is still on [running], which `drain()` awaits — so § 3.3's
+      // "the exception rises to `5-3`" holds, and this `onError` does not become the one
+      // place a storage failure disappears.
+      onError: (Object error, StackTrace stack) => _finish(running),
     );
   }
 
@@ -155,13 +161,13 @@ final class SerialDownloadQueueRunner implements DownloadQueueRunner {
     );
 
     switch (outcome) {
-      case BrowseSucceeded(:final List<String> html):
+      case BrowseSucceeded<String>(:final List<String> items):
         // ⚠️ **`items` IS A `List<String>`, NOT A `String`.** `BrowseSucceeded<T>.items`
         // is a list by construction (`browse_outcome.dart`), and `fetchChapterContent`
         // puts the article's inner HTML in it. **The first element is the chapter**; an
         // empty list is a page that arrived with nothing in it, which the threshold
         // below refuses as `no_real_text` rather than being stored as an empty chapter.
-        final String raw = html.isEmpty ? '' : html.first;
+        final String raw = items.isEmpty ? '' : items.first;
 
         final ConvertedChapter converted = _converter.convert(
           rawHtml: raw,

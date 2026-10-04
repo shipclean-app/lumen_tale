@@ -439,7 +439,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chapterTileUnread => 'Non lu';
 
   @override
-  String checkActionSemantics(String done, String total) {
+  String checkActionSemantics(int done, int total) {
     return 'Vérification en cours, $done sur $total romans';
   }
 
@@ -454,12 +454,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vérification annulée · votre bibliothèque n\'est pas modifiée';
 
   @override
-  String checkDiscovered(String total, String discovered) {
+  String checkDiscovered(int total, int discovered) {
     return '$total romans vérifiés · $discovered que vous n\'aviez pas ouverts';
   }
 
   @override
-  String checkDiscoveredNothing(String total) {
+  String checkDiscoveredNothing(int total) {
     return '$total romans vérifiés · rien que vous n\'ayez pas ouvert';
   }
 
@@ -488,12 +488,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get checkNowAction => 'Vérifier les nouveaux chapitres';
 
   @override
-  String checkProgress(String done, String total) {
+  String checkProgress(int done, int total) {
     return 'Vérification : $done sur $total romans';
   }
 
   @override
-  String checkProgressNothingDownloaded(String done, String total) {
+  String checkProgressNothingDownloaded(int done, int total) {
     return 'Vérification : $done sur $total romans · rien n\'est téléchargé';
   }
 
@@ -542,21 +542,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vérification arrêtée — Android n\'a pas dit pourquoi. Relancez-la pour terminer.';
 
   @override
-  String checkTerminalComplete(String total) {
+  String checkTerminalComplete(int total) {
     return '$total romans vérifiés, aucun ignoré.';
   }
 
   @override
-  String checkTerminalInterrupted(String done, String total) {
+  String checkTerminalInterrupted(int done, int total) {
     return 'Vérification arrêtée à $done romans sur $total.';
   }
 
   @override
-  String checkTerminalWithFailures(
-    String checked,
-    String total,
-    String failed,
-  ) {
+  String checkTerminalWithFailures(int checked, int total, int failed) {
     return '$checked romans vérifiés sur $total · $failed n\'ont pas pu être vérifiés.';
   }
 
@@ -680,7 +676,8 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get errorSettingsLoad => 'Vos réglages n\'ont pas pu être chargés.';
+  String get errorSettingsLoad =>
+      'Vos réglages n\'ont pas pu être lus depuis ce téléphone. Votre bibliothèque, vos téléchargements et vos positions de lecture ne sont pas touchés.';
 
   @override
   String get errorSettingsWrite =>
@@ -688,7 +685,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errorSiteUnreadable =>
-      'Ce site n\'a pas pu être lu. Les autres sources fonctionnent normalement.';
+      'Ce site n\'a pas pu être lu. Ce n\'est pas la même chose qu\'un site sans chapitres. Les autres sources fonctionnent normalement.';
 
   @override
   String get errorSourceLayoutChanged =>
