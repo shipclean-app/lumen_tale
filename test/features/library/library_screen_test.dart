@@ -59,6 +59,33 @@ final class FakeLibrary implements LibraryRepository {
     return controller.stream;
   }
 
+  /// ⚠️ **Resolves against [rows], so a row a test seeds IS the novel this returns.**
+  ///
+  /// The alternative — a separate stub list — would let a test seed a library row and read
+  /// back a `null`, and the failure would look like the repository losing data rather than
+  /// the fake having two sources of truth.
+  @override
+  Future<Novel?> readNovel(String novelId) async {
+    calls.add('read:$novelId');
+    for (final LibraryEntry entry in rows) {
+      if (entry.id != novelId) continue;
+      return Novel(
+        id: entry.id,
+        sourceId: entry.sourceId,
+        // ⚠️ **A URL, because `addFromCatalogue` REJECTS an empty one** — a fake that
+        // returned an empty url would be rejected for a reason no real stored row has.
+        url: '/fiction/${entry.id}',
+        title: entry.title,
+        author: entry.author ?? '',
+        description: '',
+        status: NovelStatus.unknown,
+        coverUrl: entry.coverUrl ?? '',
+        genres: const <String>[],
+      );
+    }
+    return null;
+  }
+
   @override
   Future<RemoveOutcome> removeFromLibrary(String novelId) async {
     calls.add('remove:$novelId');

@@ -316,6 +316,48 @@ final class DriftLibraryRepository implements LibraryRepository {
           ..where(($NovelsTable table) => table.id.equals(novelId)))
         .getSingleOrNull();
   }
+
+  @override
+  Future<Novel?> readNovel(String novelId) async {
+    final NovelRow? row = await _rowFor(novelId);
+    if (row == null) return null;
+    return _novelOf(row);
+  }
+
+  /// A stored row as the source-domain [Novel] `addFromCatalogue` takes.
+  ///
+  /// ⚠️ **`genres` is EMPTY, and it has to be.** `genres` is a *discovery* hint — it is what
+  /// a catalogue browse filtered on — and the `novels` table has no column for it, because
+  /// nothing in the library ever filters by genre. Inventing one from the row's `status`, or
+  /// re-fetching the site to recover it, would make "read the novel I already have" cost a
+  /// network call, which is B5's exact prohibition on a read path. An empty list is the
+  /// honest answer: this app does not know the genres of a novel it has already stored.
+  Novel _novelOf(NovelRow row) => Novel(
+    id: row.id,
+    sourceId: row.sourceId,
+    url: row.url,
+    title: row.title,
+    author: row.author,
+    description: row.description,
+    status: _statusOf(row.status),
+    coverUrl: row.coverUrl,
+    genres: const <String>[],
+  );
+
+  /// The stored status string back to the enum, and **never a throw**.
+  ///
+  /// ⚠️ **THE COLUMN IS EMPTY IN PRACTICE.** `addFromCatalogue` never writes `status`, so
+  /// every stored row carries the column default `''`. `NovelStatus.values.byName('')` throws
+  /// — and `13-error-handling.md`'s rule is that a typed value is *returned*, never thrown:
+  /// an unrecognised status is `NovelStatus.unknown`, whose own doc comment is "the site
+  /// published no status". That is exactly the case here, so the fallback is not a
+  /// consolation, it is the correct reading.
+  static NovelStatus _statusOf(String stored) {
+    for (final NovelStatus candidate in NovelStatus.values) {
+      if (candidate.name == stored) return candidate;
+    }
+    return NovelStatus.unknown;
+  }
 }
 
 /// Three counts, read together.

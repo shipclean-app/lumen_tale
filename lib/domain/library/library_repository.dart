@@ -46,6 +46,23 @@ abstract interface class LibraryRepository {
     onSimilarTitle,
   });
 
+  /// The stored novel, or `null` when this id is not in the database.
+  ///
+  /// ⚠️ **It exists because `3-2`'s action row needs to know WHAT it is offering, and B12's
+  /// button needs something to add.** `addFromCatalogue` takes a source-domain [Novel], so a
+  /// screen reached from History — where the novel *is* stored — had no way to produce one.
+  ///
+  /// ⚠️ **A novel that is NOT in the library returns `null`, and that is not a defect.** It
+  /// is the state B12's button appears in: there is no row to read, which is why the
+  /// catalogue must carry the [Novel] it was given rather than expecting to look it up.
+  /// See `Q-028` in `DECISIONS.md` — the first version of that question proposed reading the
+  /// novel back by id *as the way to add one*, and that cannot work, because the row is
+  /// absent precisely when the button is needed.
+  ///
+  /// ⚠️ **Null is a normal answer, not a failure**, so this returns a value and never
+  /// throws: a stale identifier or a restored stack is a state of the world.
+  Future<Novel?> readNovel(String novelId);
+
   /// B32 — removes the entry.
   ///
   /// ⚠️ **Deletes no `chapters` row, no `.md` file, no `history_entries` row and no
