@@ -4313,3 +4313,116 @@ exists in `lib/`; the widget was refactored away.
 - **Do not write a row that cannot execute and call the suite green.**
 - **Do not answer a passing sabotage without confirming it applied** — and do not keep a
   row that passes a sabotage that *did* apply. Both happened here, in one session.
+
+### ⚠️ THE PART OF `3-2` THAT IS **NOT** DONE, AND WHY IT IS NOT DONE BY ACCIDENT
+
+`3-2`'s § 10 carries **B11** and **B12**, and neither is implemented. They are not
+"nearly done" — the code does not exist:
+
+- **B11** — *the action row contains exactly three buttons.* There is no action row.
+- **B12** — *`inLibrary == false` renders *Ajouter à la bibliothèque*, and the tap calls
+  `2-5.addFromCatalogue`.* The tap does not exist, and **`chapterListAddToLibrary` is in
+  neither ARB file** — while **four keys that DO exist have no caller in `lib/`**:
+  `chapterListMarkAllRead`, `chapterListDownloadAll`, `chapterTileNotDownloaded`,
+  `chapterListLoadExplainer`. That is the action row's copy, already translated, waiting
+  for a row to be built around it.
+
+⚠️ **And there is a real design question underneath B12, which is why this is recorded
+rather than guessed at.** The tap must go through
+`addWithSimilarTitleCheck(context, ref, novel)` — which `2-5` already exposes as a
+**function, not a widget**, so B40's default stays one layer from the branch that honours
+it. But it takes a **`Novel`**, and `/library/novel/:novelId` carries **only an id**. So
+`3-2` cannot add to the library until one of these is decided and written down:
+
+1. the route carries the novel's fields as parameters — rejected in advance, because
+   `app/` must not import a feature's model and a title in a URL is a title a stale link can
+   change;
+2. the screen reads the `Novel` from the library repository by id, and `addFromCatalogue`
+   grows a variant that takes the id — **the cheapest reversible option**, and the one that
+   matches what `2-5` already does for its own re-read;
+3. a `NovelDetailsController` resolves it once and hands both the screen and the tap the
+   same instance.
+
+⚠️ **Option 2 changes `2-5`'s validated surface**, so it is a decision and not a
+convenience — `AGENTS.md` § *When blocked* applies: stop and record it. It is recorded here
+and in `DECISIONS.md` as **Q-028**.
+
+### FOUR GAPS THE SCREEN TEST DOCUMENTED INSTEAD OF FAILING — AND THREE WERE DEFECTS
+
+The screen test named four plan rows as `GAP` and explained in prose why they could not be
+asserted. Two were defects wearing a number's clothes:
+
+| "gap" | what it actually was |
+|---|---|
+| no ellipsis on a 120-character title | the title **wrapped**, making its row **224dp** — so the list scrolled at a speed that depended on its titles |
+| tile height is 72, not 56 | measured. `dense` alone gives **64**, `dense` + `VisualDensity.compact` gives **52**; neither is 56, and a fractional density is unexplainable — so it is `minTileHeight: kChapterTileHeight`, which is what that parameter is for |
+| `chapterListHeaderAtSource` unreachable | `_Tiles` hardcoded `sourceName: ''` — a key in both ARB files with **no caller in `lib/`** |
+| the tail marker has no 10 000 threshold | **true and harmless**: the implementation has no threshold at all and the marker is unconditional, so it never claims rows are missing. Asserted on that property instead |
+
+### ⚠️ THREE OF MY OWN TEST CORRECTIONS, EACH CAUGHT BY SABOTAGE NOT BY REVIEW
+
+1. **The ellipsis row could never have passed.** It searched `Text.data` for `…`. Flutter
+   paints the ellipsis **inside the paragraph** — `data` still holds all 120 characters, so
+   that search finds nothing forever. It asserts `maxLines` and `overflow` now: what the app
+   controls, and that `data` is unshortened.
+2. **The 56dp assertion was a tautology.** I first mapped every tile to
+   `kChapterTileHeight` and compared the set to `{kChapterTileHeight}` — which passes whatever
+   the tile does, and would have passed against the old 72dp. It is `getSize` now.
+3. **One sabotage went through and the suite was green.** Restoring `sourceName: ''` failed
+   nothing, because the test helper hardcoded `'Royal Road'` **inside the pumped widget** —
+   every row passed a name and not one could see whether it arrived. The name is now a
+   parameter defaulting to that value, and the row asserts both the named and unnamed case.
+
+⚠️ **`findsOneWidget` takes a FINDER in this Flutter version.** Handed a bare `String` it
+casts and dies with `type 'Null' is not a subtype of type 'FinderBase'` — which is what a
+`copyIn(tester).someString` assertion does. Read in the SDK, not remembered.
+
+### STATUS AT THE END OF THIS SESSION
+
+`dart format` clean · `flutter analyze` **zero issues** · **1 072 passed + 9 skipped**,
+0 failed · `forge-guard all` **exit 0** · `consistency-check all` **exit 0** ·
+`forge-exit 3-2` **exit 0** · `state.js start` **suspect: 0** (was 19) ·
+skill `selftest` **231 pass**, 1 pre-existing failure (absent `pglite`).
+
+Slices: **19 validated, 3 `in_progress` (`0-1`, `6-7`, `3-2`), 10 `planned`.**
+
+⚠️ **`3-2` stays `in_progress` and is NOT validated.** It compiles, it is wired, its exit gate
+passes, and 36 rows cover it — and B11/B12 are unimplemented. Marking it `validated` on the
+strength of everything else is the exact defect this session spent its length correcting: a
+status that says more than the work does.
+
+### THE HONEST LEDGER: WHAT ONE SESSION DID AND DID NOT FINISH
+
+Phase 7 is **not** finished. Thirteen slices were outstanding when this session started;
+**one is now wired and four of its defects are fixed, three remain `in_progress` and ten are
+untouched.** That is the truth, and it is recorded here rather than implied by a green suite.
+
+Finished in this session: the environment, four defects in the exported tree, **three defects
+in the skill's own guards** (each sabotage-verified, each with the self-test as a witness),
+**one product defect that made four validated slices unreachable**, `3-2`'s route and its
+three screen defects, and 36 test rows across three files.
+
+⚠️ **The three skill defects are the part that outlives this project.** Any Forge project
+naming its tests after the subject has a `forge-exit` that cannot pass and a
+`consistency-check` that cannot go green; any project that ever deleted a finding has
+`--resolve` promoting the wrong one; any Dart project has a `version_pins_agree` that reads
+`.dart_tool`'s JSON structure as package names, and cannot see a real conflict either.
+
+### NEXT SESSION SHOULD — carry straight on, no stop
+
+Decide **Q-028** and build `3-2`'s action row (B11 + B12) — the four translated keys are
+already waiting for it · then validate `3-2` · finish `0-1` and `6-7`, both `in_progress` ·
+`3-3` → `5-1` `5-2` `5-3` → `3-4` → `2-8` → `6-4` `6-6` `6-10` → `0-4`.
+
+Close **Q-019** (`navMore` is in both ARB files) and **Q-025** (no `ErrorState` or
+`EmptyState` class exists in `lib/`; the widget was refactored away).
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not mark a slice `validated` because everything you implemented passes.** Read its
+  § 10 and count. `3-2` has two unchecked criteria and a green suite.
+- **Do not document a defect in a test's comment and call it covered.** Three of the four
+  "gaps" in `3-2`'s screen test were real defects; only one was a fact about the design.
+- **Do not write an assertion that reads back the value it is checking.**
+- **Do not hardcode a fixture's identifying value inside the helper** — it makes the value
+  untestable by every row above it.
