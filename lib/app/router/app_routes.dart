@@ -46,7 +46,24 @@ abstract final class AppRoutes {
   static const String _novelRoot = '$library/novel';
   static const String _sourceRoot = browse;
   static const String _genreRoot = '$_sourceRoot/:sourceId/genre';
-  static const String _readerRoot = '/reader';
+
+  /// `/reader` — the **root**, as a location prefix.
+  ///
+  /// ## ⚠️ PUBLIC, BECAUSE SOMETHING OUTSIDE THIS FILE NEEDS THE ROOT AND NOT THE PATTERN
+  ///
+  /// [reader] is `'/reader/:novelId/:chapterId'` — a **pattern**. Comparing a pattern against
+  /// a matched location matches nothing: `'/reader/n1/c1'.startsWith('/reader/:novelId/
+  /// :chapterId')` is `false`, so a rule written that way is a rule that never fires and
+  /// reads as one that always does.
+  ///
+  /// The cold-start gate needs exactly that root, because the whole question it asks is *"is
+  /// this navigation inside the reader?"* — a property of the first segment, before the
+  /// parameters exist. `3-4` wrote the exemption against [reader] and the test
+  /// `test/features/onboarding/onboarding_startup_gate_test.dart` caught it on the first run.
+  ///
+  /// So the root is a named constant, [reader] is derived from it, and nothing in the app
+  /// spells `/reader` in a second place.
+  static const String readerRoot = '/reader';
 
   // ── the five bottom-nav destinations ────────────────────────────────────
   //
@@ -70,7 +87,7 @@ abstract final class AppRoutes {
   static const String settingsAbout = '$settings/about';
 
   // ── OUTSIDE the shell — no tab bar ──────────────────────────────────────
-  static const String reader = '$_readerRoot/:novelId/:chapterId';
+  static const String reader = '$readerRoot/:novelId/:chapterId';
   static const String onboarding = '/onboarding';
 
   /// ⚠️ **THE QUERY PARAMETER THAT MEANS "OPEN ON STEP 2".** It is the **location** form of
@@ -112,7 +129,7 @@ abstract final class AppRoutes {
 
   /// `/reader/<novelId>/<chapterId>` — the destination three screens push.
   static String readerFor(String novelId, String chapterId) =>
-      '$_readerRoot/$novelId/$chapterId';
+      '$readerRoot/$novelId/$chapterId';
 
   static String settingsReaderPath() => settingsReader;
 

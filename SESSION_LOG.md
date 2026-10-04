@@ -4910,3 +4910,35 @@ Close the gate seeding so `resolve` is synchronous for **every** installation pa
 validate `2-8`, `3-4`, `6-4` · `6-6` and `6-10` · `5-1` `5-2` `5-3` · `0-1` `0-4` `6-7`.
 ⚠️ **A slice is not validated because its files landed.** It is validated when `DoD` is green
 and its own rows pass — which is the defect this session began by correcting.
+
+### ⚠️ THE THREE RED TESTS, CLOSED — AND TWO OF THEM WERE NOT RED TESTS
+
+| row | what it was actually reporting |
+|---|---|
+| `test/widget_test.dart` × 2 | `LumenTaleApp` had become a `ConsumerWidget` (B26 applied there and only there) and the rows mounted it **bare**: no `ProviderScope`, and no override of `appThemePreferencesProvider`, which is `throw UnimplementedError('overridden at the bootstrap by 0-5')` by design. The tree threw while building, so `MaterialApp` never existed. |
+| `test/app/shell` reader one-`pump` | `_redirectStartup` was `async`, so it cost a microtask **even with no gate installed** — and go_router awaits a redirect before it builds the first page. |
+
+⚠️ **A `Future`-RETURNING REDIRECT IS NOT FREE EVEN WHEN IT AWAITS NOTHING.** The gate now
+answers through a synchronous `resolveNow`, and `_redirectStartup` is no longer `async`.
+
+⚠️ **THE BOOTSTRAP ROW'S OLD CONTRACT WAS DELETED, SO THE ROW WAS DELETED WITH IT.** It
+asserted `app.themeMode == ThemeMode.system`; `2-8` made `themeMode` *resolve*
+`ThemeOverride.resolve(platformBrightnessOf(context))`, so `system` is no longer a value this
+app emits. Asserting `system` again would assert the old contract, and asserting only `light`
+would pass on a build that ignored the platform entirely. **Both platforms** are asserted now,
+which is what "honours the system mode" actually means and is stronger than what it replaced.
+
+⚠️ ⚠️ **MOVING THE LATCH INSIDE THE DECISION COST FIVE READS.** `resolve` checked the seeded
+answer *before* the latch, so every call asked the store again and only then discovered the
+question was spent: `reader.calls` came back **5** where § 3.3 branch 5 requires **1**.
+"Read once per process" is a property of **asking**, not of deciding — a gate must not ask a
+question it already has the answer to. Both entry points now check the latch first.
+
+⚠️ **AND `resolve`/`resolveNow` NOW SHARE ONE `decide`.** They had the branches written
+twice, which is how `resolve` came to have the `/onboarding` exemption and its sibling not to.
+
+### STATUS
+
+**`DoD: PASS — 7 of 7`**, **1 294 passed + 9 skipped**, analyze zero, suite green on three
+consecutive runs. Slices `2-8`, `3-4` and `6-4` are validated; `3-3` has its repository and is
+still `in_progress` (no tile actions, no dialogs).

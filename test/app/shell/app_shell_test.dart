@@ -460,10 +460,23 @@ void main() {
         );
         expect(
           sourceOf(routerFiles),
-          contains('gate.resolve(state.matchedLocation)'),
+          contains('gate.resolveNow(state.matchedLocation)'),
           reason:
               'the handler must forward the matched location to the gate — a gate that could '
               'not see where it was would redirect `/onboarding` at itself',
+        );
+        // ⚠️ **AND IT MUST BE `resolveNow`, NOT `resolve`.** go_router `await`s the redirect
+        // before it builds the first page, and a `Future`-returning one costs a microtask
+        // even when it never awaits anything. The rows in the `outside the shell` group above
+        // pump **once** and assert the shell is already gone — which is the property `0-5`
+        // wrote down, and which an async redirect taxes. A cold-start gate may not make the
+        // reader opening a chapter wait a frame.
+        assertNoCodeMatch(
+          routerFiles,
+          RegExp(r'\bgate\.resolve\s*\('),
+          'the redirect must be SYNCHRONOUS — use `resolveNow`; `resolve` returns a '
+          'Future and go_router awaits it before the first page is built',
+          witness: 'return gate.resolve(state.matchedLocation);',
         );
       },
     );

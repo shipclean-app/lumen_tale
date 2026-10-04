@@ -179,6 +179,31 @@ void main() {
                 '${step.name} at ${scale * 100}% fits ${wide.characters} characters on a '
                 'screen wide enough to break every other constraint — the cap did not hold',
           );
+          // AND the cap itself grew. The character count alone is scale-invariant
+          // whenever the modelled advance is proportional to the size, so a cap computed
+          // on the NOMINAL step also reads 75 -- the row has to watch the width, which is
+          // where the E14 defect actually lives.
+          final double at100 = prose(
+            step,
+            1,
+          ).measureAt(4000, measurer: const HalfEmAdvance()).width;
+          // The growth factor is the RESOLVED size over the step's own, not the system
+          // scale: resolveProse clamps at 40, so xl at 200% is 40 and not 46.
+          //
+          // ⚠️ **Read from `resolveProse` directly and NEVER from `ReaderProse`.** A row
+          // that asked the class under test what its own answer should be is satisfied by
+          // any answer whatsoever -- the first version of this assertion did exactly that
+          // and survived the very sabotage it was written for.
+          final double growth =
+              resolveProse(step, TextScaler.linear(scale)).fontSize! /
+              step.fontSize;
+          expect(
+            wide.width,
+            closeTo(at100 * growth, 1),
+            reason:
+                '${step.name} at ${scale * 100}% must widen its cap by ${growth}x, or it '
+                'is still measuring the NOMINAL step while the text has grown',
+          );
         }
       }
     });

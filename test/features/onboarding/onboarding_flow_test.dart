@@ -59,17 +59,16 @@ final class _SpyStore implements OnboardingSeenStore {
 GoRouter _router(OnboardingStep? forced) {
   return GoRouter(
     initialLocation: AppRoutes.library,
-    // ⚠️ **THE REAL HANDLER'S LOGIC, COPIED FROM `app_router.dart`'s `_redirectStartup`** —
+    // ⚠️ **THE REAL HANDLER'S LOGIC, MIRRORED FROM `app_router.dart`'s `_redirectStartup`** —
     // and `test/app/shell/app_shell_test.dart` asserts that file wires this same pair. It has
-    // to be here: `GoRouter.redirect` runs **before** the first page is built (go_router
-    // renders an empty box until an async redirect resolves), which is the property that
-    // makes the cold-start decision a state rather than a launch exception.
-    redirect: (BuildContext context, GoRouterState state) async {
+    // to be here, and it has to be **synchronous**: go_router awaits the redirect before it
+    // builds the first page, so an async one taxes the reader's first frame for no reader.
+    redirect: (BuildContext context, GoRouterState state) {
       final StartupGate? gate = installedStartupGate;
       if (gate == null) {
         return null;
       }
-      return gate.resolve(state.matchedLocation);
+      return gate.resolveNow(state.matchedLocation);
     },
     routes: <RouteBase>[
       GoRoute(

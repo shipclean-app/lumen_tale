@@ -38,6 +38,19 @@ abstract interface class StartupGate {
   /// Returning `null` means "no opinion", and it is the answer for both "the reader has
   /// seen the disclosure" and "there is nothing left to decide".
   Future<String?> resolve(String matchedLocation);
+
+  /// ⚠️ **THE SAME ANSWER, WITHOUT THE `await` — and the router calls THIS one.**
+  ///
+  /// A `Future`-returning redirect costs a microtask even when it never awaits anything,
+  /// because go_router awaits the redirect before it builds the first page.
+  /// `test/app/shell/app_shell_test.dart` is the row that measures it: *"outside the shell
+  /// the reader has no transition in"* pumps **once** and asserts the tab bar is gone, which
+  /// only holds if the redirect costs nothing.
+  ///
+  /// ⚠️ **THEREFORE A GATE MUST BE ABLE TO ANSWER WITHOUT READING.** That is why
+  /// `installStartupGate` seeds it before installing: an installed gate has already read the
+  /// flag, so `resolveNow` is a lookup rather than a question.
+  String? resolveNow(String matchedLocation);
 }
 
 /// The gate E11 requires: **the flag, read once, and it fails open.**
@@ -95,10 +108,66 @@ final class OnboardingStartupGate implements StartupGate {
 
   @override
   Future<String?> resolve(String matchedLocation) async {
+    // ⚠️ **THE LATCH IS CHECKED *BEFORE* THE READ, and moving it after cost five reads.**
+    // When the latch lived inside the decision, every call re-read the flag first and only
+    // then discovered the question was already spent: `reader.calls` came back **5** where
+    // § 3.3 branch 5 requires **1**. "Read once per process" is a property of *asking*, not
+    // of deciding, so the gate must not ask a question it already has the answer to.
     if (_decided) {
       return null;
     }
-    // ⚠️ **LATCHED *BEFORE* THE `await`, AND LATCHED EVEN FOR `/onboarding` ITSELF.**
+
+    // ⚠️ **THE SEEDED ANSWER IS TAKEN NEXT, because it needs no `await`.** A
+    // `Future<String?> resolve` is already a microtask even when it returns without awaiting
+    // anything, and go_router `await`s the redirect — so an async signature taxes the first
+    // frame whether or not it reads anything. The bootstrap read happens before `runApp`, so
+    // the async signature is reached only by a caller that installed the gate without
+    // seeding it.
+    final bool? seeded = _answer;
+    if (seeded == null) {
+      bool seen;
+      try {
+        seen = await _readSeen();
+      } on Object {
+        // ⚠️ **BRANCH 1, AND THE `catch` IS NOT DEFENSIVENESS FOR ITS OWN SAKE.**
+        // `readFailsOpen()` is contractually incapable of throwing, so this arm is
+        // unreachable *through the store*. It stays because the gate takes a bare
+        // `Future<bool> Function()`: a caller that supplies a different reader — a test, or a
+        // future store — must not be able to turn a flag failure into an exception, because
+        // go_router turns a throwing `redirect` into an **error page** (verified in
+        // `configuration.dart`, `applyTopLegacyRedirect`'s `catchError`). An exception here
+        // would be the exact opposite of showing the disclosure.
+        seen = false;
+      }
+      return decide(matchedLocation, seen: seen);
+    }
+    return decide(matchedLocation, seen: seeded);
+  }
+
+  @override
+  String? resolveNow(String matchedLocation) {
+    // ⚠️ **THE SAME LATCH-FIRST ORDER AS `resolve`.** A synchronous gate that re-decided
+    // would be no gate at all; one that read would be impossible, since reading is the one
+    // thing it cannot do.
+    if (_decided) {
+      return null;
+    }
+    return decide(matchedLocation, seen: _answer ?? false);
+  }
+
+  /// The whole decision, and it is **synchronous**: the latch, the two exemptions, and the
+  /// one branch.
+  ///
+  /// ⚠️ **ONE IMPLEMENTATION, TWO ENTRY POINTS.** `resolve` and `resolveNow` are the same
+  /// decision reached two ways, and an earlier version had the logic written twice. Two
+  /// copies of a redirect's branches are two sets of rules, and they drift the first time
+  /// one of them gains an exemption — which is exactly what happened: `resolve` had the
+  /// `/onboarding` exemption and `resolveNow` did not.
+  String? decide(String matchedLocation, {required bool seen}) {
+    if (_decided) {
+      return null;
+    }
+    // ⚠️ **LATCHED *BEFORE* ANY BRANCH, AND LATCHED EVEN FOR `/onboarding` ITSELF.**
     //
     // Latching only on a decision would leave the gate open on the one route that must
     // never redirect: the reader who was pushed `/onboarding?step=disclosure` from Settings
@@ -121,32 +190,17 @@ final class OnboardingStartupGate implements StartupGate {
     //
     // `test/app/shell/app_shell_test.dart` is the row that caught this: the gate arrived with
     // the disclosure exemption and not this one.
-    if (matchedLocation.startsWith(AppRoutes.reader)) {
+    //
+    // ⚠️ **`AppRoutes.readerRoot`, NOT `AppRoutes.reader`, AND THE DIFFERENCE IS THE WHOLE
+    // RULE.** `reader` is the **pattern** `'/reader/:novelId/:chapterId'`, and
+    // `'/reader/n1/c1'.startsWith('/reader/:novelId/:chapterId')` is `false` — so the
+    // exemption as first written never fired, while reading exactly like one that always
+    // does. `test/features/onboarding/onboarding_startup_gate_test.dart` caught it on its
+    // first run; `AppRoutes.readerRoot` now exists because a prefix needs a name.
+    if (matchedLocation.startsWith(AppRoutes.readerRoot)) {
       return null;
     }
 
-    // ⚠️ **THE SEEDED ANSWER, and the store is only the FALLBACK.** The bootstrap reads the
-    // flag before `runApp`, so this is the path every real launch takes and it does NOT
-    // await — which is what lets the reader mount in the frame it was asked for.
-    final bool? seeded = _answer;
-    if (seeded != null) {
-      return seeded ? null : AppRoutes.onboarding;
-    }
-
-    bool seen;
-    try {
-      seen = await _readSeen();
-    } on Object {
-      // ⚠️ **BRANCH 1, AND THE `catch` IS NOT DEFENSIVENESS FOR ITS OWN SAKE.**
-      // `readFailsOpen()` is contractually incapable of throwing, so this arm is
-      // unreachable *through the store*. It stays because the gate takes a bare
-      // `Future<bool> Function()`: a caller that supplies a different reader — a test, or a
-      // future store — must not be able to turn a flag failure into an exception, because
-      // go_router turns a throwing `redirect` into an **error page** (verified in
-      // `configuration.dart`, `applyTopLegacyRedirect`'s `catchError`). An exception here
-      // would be the exact opposite of showing the disclosure.
-      seen = false;
-    }
     return seen ? null : AppRoutes.onboarding;
   }
 }

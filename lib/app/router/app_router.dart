@@ -257,15 +257,22 @@ GoRouter _build() {
 /// would hide a real defect behind "the onboarding screen appeared". [StartupGate] handles
 /// the one failure that must be handled — an unreadable flag — and answers it with a
 /// location.
-Future<String?> _redirectStartup(
-  BuildContext context,
-  GoRouterState state,
-) async {
+/// ⚠️ **NOT `async`, AND THAT IS THE WHOLE POINT.**
+///
+/// A `Future<String?>` redirect costs a microtask even when it returns without awaiting
+/// anything, and go_router awaits it before building the first page. So when no gate is
+/// installed — which is every test that does not install one, and the interval between
+/// `runApp` and the first navigation is not the only case — the reader waited an extra
+/// microtask to appear. `test/app/shell/app_shell_test.dart` is the row that caught it: it
+/// pumps **once** and asserts the tab bar is already gone.
+///
+/// The gate answers synchronously because `installStartupGate` seeds it before installing.
+String? _redirectStartup(BuildContext context, GoRouterState state) {
   final StartupGate? gate = installedStartupGate;
   if (gate == null) {
     return null;
   }
-  return gate.resolve(state.matchedLocation);
+  return gate.resolveNow(state.matchedLocation);
 }
 
 /// One branch: a tab root, plus the routes that hang below it.
