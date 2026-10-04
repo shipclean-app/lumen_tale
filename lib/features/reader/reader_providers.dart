@@ -21,12 +21,13 @@
 // sheet, from history, or from "Continue" — four paths. Marking inside one tile's `onTap`
 // catches one of them. § 3.4 pins the moment to **display**, the only one all four share.
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:lumen_tale/domain/library/reading_position_store.dart';
 import 'package:lumen_tale/domain/reader/chapter_document.dart';
 import 'package:lumen_tale/domain/reader/chapter_reader_repository.dart';
+import 'package:lumen_tale/features/reader/reader_layout.dart';
 
 /// The repository. Overridable, so a widget test supplies a fake and the row it returns —
 /// `2-4` § 11.3 opens all seven states and the counter that proves the network is untouched
@@ -111,6 +112,50 @@ final writeReaderPositionProvider =
         required double contentHeight,
       }) => store.write(chapterId, offset, contentHeight: contentHeight);
     });
+
+/// ⚠️ **The reader's layout is derived from the THEME, not from a constant.**
+///
+/// The measure is 65–75 **characters** (`design-system.md` § 1.2), so the width can only be
+/// computed from a measured advance in the resolved font — which means it changes with the
+/// reader's step, their phone's text scale and the family the platform actually resolved.
+/// A provider keyed on the style is what makes that recomputation automatic, and it is why
+/// the screen watches this rather than computing once in `initState`.
+final readerLayoutProvider = Provider<ReaderLayout>((Ref ref) {
+  // ⚠️ **`fontSize` is read, and so is the style the measurement uses.** A measurer built
+  // from a style other than the one being rendered would compute a cap for a font that is
+  // not on screen — and on a device where the platform substituted a family for
+  // `monospace`-less body text, the difference is exactly the difference between a cap that
+  // bites and one that does not.
+  final TextStyle proseStyle = resolveReaderProseStyle(ref);
+  final double fontSize = proseStyle.fontSize ?? kDefaultReaderFontSize;
+  return ReaderLayout(
+    advance: TextPainterAdvanceMeasurer(
+      proseStyle,
+    ).averageAdvanceOf(TextPainterAdvanceMeasurer.sample, fontSize),
+    horizontalMargin: kReaderHorizontalMargin,
+  );
+});
+
+/// The style the reader's prose is rendered in, as far as the layout is concerned.
+typedef ReaderProseStyleResolver = TextStyle Function(Ref ref);
+
+/// ⚠️ **Overridden, because a font needs a `ThemeData` and a `ThemeData` needs a `BuildContext`.**
+///
+/// `Theme.of(context)` is not available to a provider, and reaching for one is how a layout
+/// ends up measuring a default font while the reader looks at another. A test overrides this
+/// with a fixed style and therefore gets a **predictable advance**, which is what makes the
+/// measure assertable at all.
+final readerProseStyleProvider = Provider<ReaderProseStyleResolver>(
+  (Ref ref) =>
+      (Ref _) => const TextStyle(fontSize: kDefaultReaderFontSize),
+);
+
+TextStyle resolveReaderProseStyle(Ref ref) =>
+    ref.watch(readerProseStyleProvider)(ref);
+
+/// ⚠️ **16 dp is a FLOOR, not a default** (`design-quality.md` § 3). It is the smallest text
+/// the app will render, so it is also the smallest the measure may assume.
+const double kDefaultReaderFontSize = 16;
 
 /// Marks the chapter opened, once. B13.
 final markReaderOpenedProvider =

@@ -18,9 +18,9 @@
 // reverse later by changing this one argument.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-
 import 'package:lumen_tale/domain/reader/chapter_document.dart';
+import 'package:lumen_tale/features/reader/reader_layout.dart';
+import 'package:lumen_tale/features/reader/virtualised_chapter_prose.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 
 /// The site's number, as the reader should see it.
@@ -46,19 +46,25 @@ String formatChapterNumber(double number) {
 /// is a real chapter number, so the two cannot share a format string. Formatting `-1` as a
 /// number is how an omake becomes "Chapter 0" forever.
 class ChapterProse extends StatelessWidget {
-  const ChapterProse({required this.document, super.key});
+  const ChapterProse({required this.document, required this.layout, super.key});
 
   final ChapterText document;
 
+  /// The measured width cap, from `2-7`. A parameter rather than a provider read, so the
+  /// prose can be rendered in a test with a **known** advance.
+  final ReaderLayout layout;
+
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final AppLocalizations copy = AppLocalizations.of(context);
     // ⚠️ **`textScalerOf(context)` read here, in `build`.** E14 asks the prose to resize on
     // the next frame, and the read *is* the mechanism — no listener, no state, nothing to
     // forget to update.
     final TextScaler scaler = MediaQuery.textScalerOf(context);
 
+    // ⚠️ **The body is `2-7`'s, not a second `MarkdownBody` here.** Two call sites each
+    // building their own `MarkdownStyleSheet` would be free to disagree, and the pair a reader
+    // notices is the short chapter and the long one — "it looks different once it gets big".
     return ListView.builder(
       // ⚠️ **The key is the reading zone, and it is public on purpose.** `2-4` § 3.5: a tap
       // anywhere in the prose reveals the chrome, and a row needs a stable handle on "the
@@ -75,39 +81,11 @@ class ChapterProse extends StatelessWidget {
             semanticsLabel: _semanticsTitle(context, document, copy),
           );
         }
-        return MarkdownBody(
-          data: document.markdown,
-          selectable: true,
-          // ⚠️ **No fixed `shrinkWrap` and no fixed height anywhere.** The column measures
-          // itself; a height set here would be the clip E14 forbids.
-          styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-            p: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-            h1: theme.textTheme.headlineSmall,
-            h2: theme.textTheme.titleLarge,
-            h3: theme.textTheme.titleMedium,
-            code: theme.textTheme.bodyMedium?.copyWith(
-              fontFamily: 'monospace',
-              fontFamilyFallback: const <String>[
-                'Roboto Mono',
-                'Menlo',
-                'Courier',
-              ],
-            ),
-            blockquote: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            blockquoteDecoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              border: Border(
-                left: BorderSide(
-                  color: theme.colorScheme.outlineVariant,
-                  width: 3,
-                ),
-              ),
-            ),
-            blockquotePadding: const EdgeInsets.fromLTRB(12, 4, 8, 4),
-          ),
-        );
+        // ⚠️ **`2-7`'s column, in the same `ListView`.** The body is virtualised over blocks
+        // when the chapter is large and is one widget when it is not, and it carries the
+        // measured width cap. Putting it inside the title's list rather than beside it keeps
+        // one scrollable — two scrollables in a reader is a gesture that fights itself.
+        return ChapterProseColumn(document: document, layout: layout);
       },
     );
   }

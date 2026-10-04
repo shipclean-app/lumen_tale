@@ -157,7 +157,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                 }
                 return false;
               },
-              child: ChapterProse(document: text),
+              child: ChapterProse(
+                document: text,
+                layout: ref.watch(readerLayoutProvider),
+              ),
             ),
           ),
         ],

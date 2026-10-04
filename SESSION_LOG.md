@@ -3482,3 +3482,103 @@ both ARB files + regenerated l10n;
 - **Do not collapse "not downloaded" and "offline" into one state.** Each alone leaves the
   reader unsure whether the button works.
 - **Do not express one rule twice** — the word and the action of a button are one `switch`.
+
+---
+
+## 2026-10-04 — Session 23: `2-7` — the measured column, and the long chapter
+
+### STARTED FROM
+
+`2-4` at `9e014a6`. `2-7` is how the prose is **presented**, and its four promises are mostly
+absences — which is why most of its rows assert the code or an invariant rather than a
+rendered result.
+
+### DECIDED
+
+- **There is NO hard-coded character count anywhere in the layout, and that is the rule.**
+  `design-system.md` § 1.2 says 65–75 **characters**, which depends on the typeface, the step,
+  the phone's text scale and the family the platform actually resolved. A written number is
+  wrong for at least one of the five steps and wrong *silently*. So the cap is
+  `75 × averageAdvance`, measured from the resolved font, through an `AdvanceMeasurer` with
+  one method — which is what makes the arithmetic testable **without a font**.
+- **The measurer's sample is LOWERCASE, on purpose.** Upper-case is wider than the body text
+  a reader reads, so an upper-case sample makes the computed column *narrower* than the prose
+  it will hold — a fault that shows up as lines under the measure's lower bound rather than
+  as an obvious error.
+- **The `65` is a CHECK, not a floor.** On a narrow phone the available width is below 65
+  characters, and `design-quality.md` § 3's 16 dp floor and the measure's lower bound are two
+  different constraints. Merging them would grow the type to reach 65 and overflow.
+- **ADR-019 is satisfied by NOT BRANCHING.** `Center` + `ConstrainedBox(maxWidth:)` already
+  stops the layout growing past the cap, so there is **no `MediaQuery` width compared against
+  600 anywhere in the layout file** — and a row greps for `600` and `MediaQuery` to keep it
+  that way, while asserting the cap expression is still there so the absence is about the
+  *branch* and not the rule having gone with it.
+- **A large chapter is a `ListView.builder` over BLOCKS, and the split is lossless.**
+  `blocks.join('\n\n') == markdown` is asserted. A lossy split would silently drop the last
+  paragraph of a 10 000-character chapter — the one a reader scrolls to find.
+- **`itemCount` is the block count, never an estimate.** An estimate is the common shortcut
+  for a virtualised list whose length is not known, and it makes the last block unreachable —
+  which is exactly the clipping the slice promises never happens. A sabotage that halves the
+  count is caught.
+- **The threshold is BYTES, and `2-4` already measured the file.** A byte count is free and
+  deterministic; timing the build would be a property of the device, and `Q-003` says there is
+  no device here to time.
+- **A SHORT chapter is one widget, not a list of blocks.** A `ListView.builder` over 30
+  blocks costs more than it saves, and the difference is visible as a scroll that snaps oddly.
+  A sabotage that always virtualises breaks three `2-4` rows.
+- **`readerStyleSheet` is a FUNCTION, not a `const`.** Two call sites each building their own
+  `MarkdownStyleSheet` would be free to disagree — and the pair a reader notices is the short
+  chapter and the long one: "it looks different once it gets big".
+- **`readerProseStyleProvider` is overridden, because a font needs a `ThemeData` and a
+  `ThemeData` needs a `BuildContext`.** `Theme.of` is not available to a provider, and
+  reaching for one is how a layout ends up measuring a default font while the reader looks at
+  another.
+
+### SABOTAGE, SIX, ALL CAUGHT
+
+| Sabotage | Rows that caught it |
+|---|---|
+| the cap is a hard-coded `680`, not `75 × advance` | **3 rows** |
+| a `600` dp threshold branch is added | **2 rows** (the grep + the cap) |
+| `maxWidth` becomes `minWidth` — a full-width column | *a wide screen CENTRES the column* |
+| the block split drops a block | **2 rows** |
+| `itemCount` is halved — the last block is unreachable | *the LAST block is reachable* |
+| always virtualise, even a short chapter | **3 rows** (in `2-4`'s file) |
+
+⚠️ **The first attempt at the third sabotage did not fail, and that was my error writing it:**
+the multi-line replacement did not match after `dart format` had reflowed the comment, so the
+file was never modified and the suite correctly passed. Re-run with a line-index edit, it
+failed immediately. Recorded because a sabotage that never applied is not evidence, and the
+table above only counts the six that actually ran.
+
+### FILES TOUCHED
+
+`lib/features/reader/reader_layout.dart` (new),
+`lib/features/reader/virtualised_chapter_prose.dart` (new),
+`lib/features/reader/reader_providers.dart`,
+`lib/features/reader/widgets/chapter_prose.dart`,
+`lib/features/reader/reader_screen.dart`,
+`test/features/reader/reader_layout_test.dart` (new, 15).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **884 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+### NEXT SESSION SHOULD
+
+- **`2-5`** — the library writes. Nothing can be added to the library yet, and `Novel.id`'s
+  derivation is still not load-bearing anywhere.
+- **`2-8`** — reader display settings; `3-7`'s first row still points at a placeholder, and
+  the reader is the screen whose settings they would change.
+- **`3-1`** — Browse, which consumes `SourceManager` and is what makes the app read a novel
+  end to end.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not write a character count.** `75 × measured advance` or nothing; a literal is wrong
+  for at least one of the five type steps.
+- **Do not compare a screen width against 600.** `Center` + `ConstrainedBox` already stops
+  the growth, and a row greps for both strings.
+- **Do not estimate `itemCount`.** The block count is known — that is the whole reason for
+  splitting on blank lines.
