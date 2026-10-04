@@ -241,6 +241,29 @@ failed to parse.
 
 ---
 
+## Royal Road — the catalogue row's anatomy, re-derived from the frozen fixtures 2026-10-04
+
+**Measured, not recalled.** Every selector below was found by reading
+`test/fixtures/sources/royalroad/catalogue-active-popular-page1.html`, and the counts were
+checked against that fixture's own `manifest.json` (`novelRowsExact: 20` — **20 rows, 20
+distinct `/fiction/<id>` hrefs, and page 0 shares none with page 1**).
+
+| Fact | Selector / value | Why it matters more than a selector |
+|---|---|---|
+| **The catalogue row carries NO author** | a row contains cover `img`, `h2.fiction-title > a`, the tags block, `div.row.stats` and `div#description-<id>` — and **no author element of any kind** | `Novel.author` is `String?` and **stays `null` after a catalogue read**. A source that filled it from the novel's *slug* or from the title would be fabricating B10 verbatim site text. The author arrives only from the **detail** page |
+| **The author lives on the detail page, under `/profile/`, not `/author/`** | `div.fic-title h4 span a[href^="/profile/"]` → `Kuropon` | `/author/<id>` is the shape every other site uses and **matches nothing here**. A source written from the habit would parse `null` and, under `ZeroItemsPolicy.zeroIsBroken`, report a healthy novel as a broken one |
+| **The novel title is `h1.font-white`** | `The Runesmith` | `og:title` is **absent**, so there is no metadata fallback |
+| **The cover's `alt` is the novel title, not the author's** | `alt="The Runesmith"` | So `alt` cannot stand in for a missing author — a shortcut that looks reasonable and is wrong |
+| **The chapter table is complete and self-reporting** | `table#chapters[data-chapters="716"]`, and **716** `tr[data-url]` rows | B9's completeness witness. This is the only source so far that publishes its own count |
+| **`tr[data-url]` carries the FULL five-segment chapter URL** | `/fiction/<id>/<slug>/chapter/<n>/<chapter-slug>` | The **fifth segment is present in the row**, so a source never has to construct it — and constructing it is what produces the 404 that B22's third state cannot distinguish from a missing chapter |
+| **Stats live in `div.row.stats` as `<i class="fa fa-…">` + `<span>`** | `fa-users` → Followers · `fa-star` → Rating (title attribute, **not** the span) · `fa-book` → Pages · `fa-eye` → Views · `fa-list` → Chapters · `fa-calendar` → `time[unixtime]` | **The rating's number is in the `title` attribute of the star `span`, not in its text.** `fa-star`'s text is empty, so a source reading the span reports a rating of `0` for a fiction rated `4.73` |
+| **`tr.fiction-list-item` matches ZERO and the page has no `<table>` at all** | `div.fiction-list#result > div.fiction-list-item.row` | The cross-site shape every other source uses is the one that does not match here |
+
+**The promotion target this satisfies**: every selector `2-1` writes must be traceable to a
+frozen fixture rather than to a habit borrowed from another site. The two rows above — the
+absent author and the `/profile/`-not-`/author/` split — are the ones a habit would have
+got wrong, and neither is discoverable without reading the capture.
+
 ## Royal Road — the search side DOES have an empty marker, measured 2026-10-03 (`6-11`)
 
 **This is the other half of the row above, and the two must not be merged.** The
