@@ -84,6 +84,14 @@ Future<void> pumpBody(
   WidgetTester tester,
   ChapterListViewState state, {
   bool isLoading = false,
+
+  /// ⚠️ **A DEFAULT, not a hardcode inside the body — and the difference is the whole row.**
+  ///
+  /// This used to be the literal `'Royal Road'` written into the pumped widget. That made
+  /// `_Tiles`' own dropped `sourceName` invisible: every test passed a name, and not one of
+  /// them could see whether it arrived. A parameter can be passed as `''` by a row that means
+  /// "no site"; a literal cannot be varied at all.
+  String sourceName = 'Royal Road',
 }) async {
   tester.view
     ..physicalSize = designSize
@@ -97,7 +105,10 @@ Future<void> pumpBody(
       home: Scaffold(
         body: ChapterListBody(
           state: state,
-          sourceName: 'Royal Road',
+          // ⚠️ **THE PARAMETER, not a literal baked into the body.** It was hardcoded there,
+          // which is part of why `_Tiles` could drop `sourceName` and the suite stayed green:
+          // every row passed a name, and none of them could see it arrive.
+          sourceName: sourceName,
           isLoading: isLoading,
           onLoad: () {},
         ),
@@ -238,13 +249,44 @@ void main() {
             'a reader using a screen reader is owed the same 120 characters a sighted reader '
             'sees — a truncated DOM label is an abbreviation by another name',
       );
+      // ⚠️ **The ellipsis, asserted as an ellipsis.** This row used to assert the ABSENCE of
+      // one and explain in prose that the criterion was half-implemented — the tile set no
+      // `maxLines`, so a 120-character title simply wrapped. It now sets `maxLines: 1` and
+      // `overflow: TextOverflow.ellipsis`, so both halves of the criterion hold at once: the
+      // row is truncated to one line, and the semantics above carry all 120 characters.
+      //
+      // ⚠️ **Truncation without the semantics would satisfy the first half and break the
+      // second** — a screen reader announcing a title that stops mid-word, with nothing saying
+      // it did. That is why the two are asserted in the same test rather than in two.
+      // ⚠️ **The ellipsis is asserted as CONFIGURATION, not as a glyph — and that correction is
+      // the point.** The first version looked for a `Text` containing `…` and found none,
+      // because Flutter paints the ellipsis inside the paragraph: `Text.data` still holds all
+      // 120 characters, and a search for the glyph in it can never succeed. The three dots on
+      // screen are not a character in the tree.
+      //
+      // So the assertion is on what the widget is TOLD to do, which is also the only part the
+      // app controls:
+      final Text rendered = tester.widget<Text>(find.text(title));
       expect(
-        find.textContaining('…'),
-        findsNothing,
+        rendered.maxLines,
+        1,
         reason:
-            'no ellipsis is drawn, because the tile sets no maxLines: the plan\'s "an ellipsis, '
-            'never an abbreviated form" is half-implemented — the half that is here is "never an '
-            'abbreviated form", and this row holds that half',
+            'a 120-character site title is ONE line — without maxLines it wraps to as many '
+            'lines as it needs, which made its row 224dp instead of ${kChapterTileHeight}dp',
+      );
+      expect(
+        rendered.overflow,
+        TextOverflow.ellipsis,
+        reason:
+            'the line is truncated visibly, so the reader can SEE that the title continues '
+            'rather than believing the app printed the whole thing',
+      );
+      expect(
+        rendered.data,
+        title,
+        reason:
+            'and the widget still HOLDS all 120 characters — the ellipsis is drawn, not '
+            'applied to the data, so nothing was shortened anywhere',
       );
     });
   });
@@ -750,17 +792,74 @@ void main() {
     });
   });
 
+  group('the header — the count, and the site it came from', () {
+    // ⚠️ **This row exists because a sabotage went through the suite.**
+    //
+    // `_Tiles` hardcoded `sourceName: ''`, which made `chapterListHeaderAtSource` a key in
+    // both ARB files with NO CALLER in `lib/` — a translated string nobody could ever read.
+    // Restoring `''` fails nothing: the whole suite was green with the header structurally
+    // unable to name a site.
+    //
+    // ⚠️ **The `''` case is asserted too, because it is the other half.** The empty string
+    // means "do not name a site", and that is a decision the header makes — a route that does
+    // not know the source must get the bare count rather than the route's own path.
+    testWidgets('⚠️ a NAMED source is named in the header, and `\'\'` is not', (
+      WidgetTester tester,
+    ) async {
+      await pumpBody(
+        tester,
+        ChapterListFilled(chapters: chaptersOfLength(3), unopenedCount: 1),
+        // ⚠️ **The DEFAULT, deliberately not written out.** The named case is what every row
+        // in this file gets unless it opts out, and the `''` case below is the one that has
+        // to be asked for by name — so the row states the default and the opt-out.
+      );
+      expect(
+        // ⚠️ **`find.text(...)`, not the bare string.** `findsOneWidget` takes a FINDER in
+        // this Flutter version; handed a String it casts and dies with
+        // `type 'Null' is not a subtype of type 'FinderBase'`. The string is still read out
+        // of the pumped tree, so a locale change cannot make this row lie.
+        find.text(copyIn(tester).chapterListHeaderAtSource(3, 'Royal Road')),
+        findsOneWidget,
+        reason:
+            'the header names the publication the list came from — a reader looking at three '
+            'chapters needs to know whose three chapters these are',
+      );
+
+      await pumpBody(
+        tester,
+        ChapterListFilled(chapters: chaptersOfLength(3), unopenedCount: 1),
+        sourceName: '',
+      );
+      expect(
+        find.text(copyIn(tester).chapterListHeaderCount(3)),
+        findsOneWidget,
+        reason:
+            'an unknown source prints the bare count — never the route path, which is an '
+            'identifier where a reader expects a publication',
+      );
+      expect(
+        find.textContaining('/library/novel/'),
+        findsNothing,
+        reason:
+            'a request path is not a site name and must never appear as one',
+      );
+    });
+  });
+
   group('§ 11.5 — at 360dp, the only width v1 ships', () {
     testWidgets('⚠️ a 120-character site title overflows NOTHING at 360dp', (
       WidgetTester tester,
     ) async {
-      // ⚠️ **GAP — the plan's `getSize(find.byType(ChapterListTile)).height == 56` is NOT
-      // satisfied, and the reason is a defect, not a number.** There is no `itemExtent: 56` on
-      // the list and no `maxLines` on the title, so a tile is as tall as its own title: 72dp for
-      // a one-line site title with its unread subtitle, and 224dp for a 120-character one. What
-      // is asserted here is therefore the half the design tokens actually own — the 48dp
-      // tap-target floor and the absence of a horizontal overflow — and the exact height is left
-      // to the slice that implements the fixed extent.
+      // ⚠️ **The 56dp criterion, ASSERTED — it was a documented gap until the tile was fixed.**
+      //
+      // This row used to explain in prose that the plan's `height == 56` was unsatisfied
+      // because there was no `maxLines` on the title: 72dp for a one-line title, 224dp for a
+      // 120-character one. The tile now sets `minTileHeight: kChapterTileHeight`, and the
+      // constant is asserted by name so a change to it is a visible change to the design.
+      //
+      // ⚠️ **BOTH titles are asserted, because "the tall one is now short" is the property.**
+      // A row that only checked the short title would have passed against the old 72dp code
+      // for the wrong reason, and the defect was only ever visible on the long one.
       await pumpBody(
         tester,
         ChapterListFilled(
@@ -775,6 +874,31 @@ void main() {
           ],
           unopenedCount: 3,
         ),
+      );
+
+      expect(
+        kChapterTileHeight,
+        56.0,
+        reason:
+            '§ 11.5 names 56dp, and 56 is also above the 48dp tap-target floor — the '
+            'constant is the design decision, so it is asserted rather than trusted',
+      );
+
+      // ⚠️ **MEASURED, not read back from the constant.** The first version of this
+      // assertion mapped every tile to `kChapterTileHeight` and compared the set to
+      // `{kChapterTileHeight}` — which is a tautology that passes whatever the tile does,
+      // and would have passed against the old 72dp code. It has to be `getSize`.
+      final List<double> heights = <double>[
+        for (final Element e in find.byType(ChapterTile).evaluate())
+          tester.getSize(find.byWidget(e.widget)).height,
+      ];
+      expect(
+        heights.toSet(),
+        <double>{kChapterTileHeight},
+        reason:
+            'every tile is MEASURED at ${kChapterTileHeight}dp — before maxLines a '
+            '120-character title wrapped and made its row 224dp, so one row occupied the '
+            'height of four and the list scrolled at a speed that depended on its titles',
       );
 
       expect(

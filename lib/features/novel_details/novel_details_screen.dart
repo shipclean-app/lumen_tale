@@ -120,6 +120,14 @@ class _NovelDetailsScreenState extends ConsumerState<NovelDetailsScreen> {
   }
 }
 
+/// One chapter's row height, in logical pixels.
+///
+/// ⚠️ **A CONSTANT, and named once.** `design-system.md` fixes the list row, and a row height
+/// written twice is two numbers that can disagree — the tile here and the test that measures it.
+/// § 11.5 of `3-2`'s plan names 56dp, and 56 is also above the 48dp minimum tap target, so
+/// the row is comfortable to hit without being a target the thumb has to travel across.
+const double kChapterTileHeight = 56;
+
 /// The list, or the one state that explains why there is no list.
 ///
 /// ⚠️ **A `switch` over a sealed hierarchy with no `default`**, so a tenth state is a compile
@@ -146,7 +154,7 @@ class ChapterListBody extends StatelessWidget {
     // instead of a cast.
     final ChapterListViewState current = state;
     return switch (current) {
-      ChapterListFilled() => _Tiles(state: current),
+      ChapterListFilled() => _Tiles(state: current, sourceName: sourceName),
       ChapterListLoading() => const _TileSkeleton(),
       ChapterListNeverLoaded() => _ChapterListNotice(
         icon: Icons.download_outlined,
@@ -229,9 +237,20 @@ class ChapterListBody extends StatelessWidget {
 void _noop() {}
 
 class _Tiles extends StatelessWidget {
-  const _Tiles({required this.state});
+  const _Tiles({required this.state, required this.sourceName});
 
   final ChapterListFilled state;
+
+  /// ⚠️ **Carried THROUGH, not dropped.**
+  ///
+  /// This hardcoded `''`, which made `chapterListHeaderAtSource` unreachable — a key in both
+  /// ARB files with no caller in `lib/`. An unreachable key is a translated string nobody ever
+  /// reads, and `6-7`'s inventory counts keys rather than reading them, so the ARB looked
+  /// complete while the header could never name a site.
+  ///
+  /// The empty string still means "do not name a site", and `ChapterListHeader` is where that
+  /// decision is honoured — one place, not one per call site.
+  final String sourceName;
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +260,7 @@ class _Tiles extends StatelessWidget {
         ChapterListHeader(
           count: state.chapters.length,
           unopenedCount: state.unopenedCount,
-          sourceName: '',
+          sourceName: sourceName,
           // ⚠️ **Absent, not rendered empty** (B16). A button that navigates to nothing is a
           // button that lies.
           onJump: state.hasCurrent ? _noop : null,
@@ -249,6 +268,13 @@ class _Tiles extends StatelessWidget {
         Expanded(
           child: ListView.separated(
             key: const ValueKey<String>('chapter-list'),
+            // ⚠️ **NO `itemExtent`, and that is the SDK's answer rather than an omission.**
+            //
+            // `ListView.separated` takes no `itemExtent` — read in the installed SDK, not from
+            // memory — so a fixed row height would mean switching to `ListView.builder` and
+            // interleaving the dividers by hand, which would give the DIVIDERS the row's extent
+            // too. The acceptance criterion is about the TILE being 56dp, and `dense` +
+            // `compact` on the tile is what actually makes it so.
             itemCount: state.chapters.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (BuildContext context, int index) {
@@ -290,6 +316,20 @@ class ChapterTile extends StatelessWidget {
     final AppLocalizations copy = AppLocalizations.of(context);
     final ThemeData theme = Theme.of(context);
     return ListTile(
+      // ⚠️ **A 56dp ROW, pinned with `minTileHeight` because that is what it is FOR.**
+      //
+      // Measured, not guessed, and the two obvious alternatives both miss: `dense: true` alone
+      // gives **64**, and `dense` + `VisualDensity.compact` gives **52**. A density is a
+      // *preference* applied to padding, so reaching an exact height through it means a
+      // fractional density that no reader of the file could explain. `minTileHeight` states the
+      // number the acceptance criterion names.
+      //
+      // The property that actually matters is measured alongside it: the short title and the
+      // 120-character one produce the SAME row. Before `maxLines`, a long title wrapped and made
+      // its row 224dp — so the list scrolled at a speed that depended on the titles it happened
+      // to hold, and one row occupied the height of four.
+      minTileHeight: kChapterTileHeight,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       leading: SizedBox(
         width: 40,
         child: Text(
@@ -306,6 +346,20 @@ class ChapterTile extends StatelessWidget {
         // *Untitled* is this tile's rendering of it — B10: never an index, never a generated
         // "Chapter 12".
         chapter.name.isEmpty ? copy.chapterListUntitled : chapter.name,
+        // ⚠️ **ONE LINE, an ellipsis, and the WHOLE title in the semantics.**
+        //
+        // Three things were wrong and they are one decision. Without `maxLines`, a 120-character
+        // site title WRAPPED and made its row 224dp tall — so a list of long titles scrolled
+        // at a different speed than a list of short ones, and one row occupied the height of
+        // four. The acceptance criterion says "renders an ellipsis AND its accessibility label
+        // contains the 120 characters": truncating without the semantics would satisfy the
+        // first half and break the second, because a screen reader would then announce a title
+        // that stops mid-word with no indication that it did.
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        semanticsLabel: chapter.name.isEmpty
+            ? copy.chapterListUntitled
+            : chapter.name,
       ),
       subtitle: chapter.isRead
           ? null
