@@ -1007,6 +1007,31 @@ class AppLocalizationsFr extends AppLocalizations {
   String get chapterListUntitled => 'Sans titre';
 
   @override
+  String get chapterListAddToLibrary => 'Ajouter à la bibliothèque';
+
+  @override
+  String get chapterListReadFromStart => 'Lire depuis le début';
+
+  @override
+  String get chapterListContinue => 'Continuer';
+
+  @override
+  String chapterListContinueSemantics(String chapter, int percent) {
+    return 'Continuer, $chapter, $percent de ce chapitre';
+  }
+
+  @override
+  String get chapterListNothingUnopened => 'Rien de non ouvert';
+
+  @override
+  String get chapterListDownloadAction => 'Télécharger';
+
+  @override
+  String chapterListMarkAllReadConfirm(int count) {
+    return 'Marquer les $count chapitres que vous n\'avez pas ouverts comme lus ?';
+  }
+
+  @override
   String get chapterListMarkAllRead => 'Tout marquer comme lu';
 
   @override

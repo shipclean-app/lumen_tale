@@ -1000,6 +1000,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chapterListUntitled => 'Untitled';
 
   @override
+  String get chapterListAddToLibrary => 'Add to library';
+
+  @override
+  String get chapterListReadFromStart => 'Read from the start';
+
+  @override
+  String get chapterListContinue => 'Continue';
+
+  @override
+  String chapterListContinueSemantics(String chapter, int percent) {
+    return 'Continue, $chapter, $percent through this chapter';
+  }
+
+  @override
+  String get chapterListNothingUnopened => 'Nothing unopened';
+
+  @override
+  String get chapterListDownloadAction => 'Download';
+
+  @override
+  String chapterListMarkAllReadConfirm(int count) {
+    return 'Mark the $count chapters you have not opened as read?';
+  }
+
+  @override
   String get chapterListMarkAllRead => 'Mark all as read';
 
   @override

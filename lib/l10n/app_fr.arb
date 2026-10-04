@@ -1171,6 +1171,41 @@
   "@chapterListUntitled": {
     "description": "⚠️ **B10: shown when the site published no title at all.** Never an index, never a generated \"Chapter 12\" — a fabricated title is a sentence the app invented and the reader would believe."
   },
+  "chapterListAddToLibrary": "Ajouter à la bibliothèque",
+  "@chapterListAddToLibrary": {
+    "description": "B12 — emplacement 1 tant que le roman n'est PAS dans la bibliothèque. Le seul chemin vers la bibliothèque depuis cet écran."
+  },
+  "chapterListReadFromStart": "Lire depuis le début",
+  "@chapterListReadFromStart": {
+    "description": "B12 — emplacement 1 quand le roman EST dans la bibliothèque et qu'il n'y a pas de position de lecture."
+  },
+  "chapterListContinue": "Continuer",
+  "@chapterListContinue": {
+    "description": "B12 — emplacement 1 quand le roman est dans la bibliothèque et qu'une position existe."
+  },
+  "chapterListContinueSemantics": "Continuer, {chapter}, {percent} de ce chapitre",
+  "@chapterListContinueSemantics": {
+    "description": "B12/B10 — ce qu'annonce un lecteur d'écran. Le libellé visible est le seul mot « Continuer », qui dit à un lecteur voyant où mène le tap et rien à un lecteur aveugle ; ceci nomme le chapitre et la position dans celui-ci.",
+    "placeholders": {
+      "chapter": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+  "chapterListNothingUnopened": "Rien de non ouvert",
+  "@chapterListNothingUnopened": {
+    "description": "B13 — emplacement 3 quand chaque chapitre a été ouvert. DÉSACTIVÉ, jamais absent : une rangée d'action qui se recompose quand un compteur atteint zéro déplace le contrôle sous le pouce du lecteur."
+  },
+  "chapterListDownloadAction": "Télécharger",
+  "@chapterListDownloadAction": {
+    "description": "B18 — emplacement 2 à l'état inactif. Ouvre la feuille de téléchargement, c'est-à-dire la file de 5-1 derrière une surface que cette slice rend."
+  },
+  "chapterListMarkAllReadConfirm": "Marquer les {count} chapitres que vous n'avez pas ouverts comme lus ?",
+  "@chapterListMarkAllReadConfirm": {
+    "description": "B13 — la confirmation de l'emplacement 3. Elle NOMME LE COMPTE dans le titre, parce qu'un titre est ce que le lecteur lit en premier et « êtes-vous sûr ? » ne dit pas ce qui va changer.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "chapterListMarkAllRead": "Tout marquer comme lu",
   "@chapterListMarkAllRead": {
     "description": ""

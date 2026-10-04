@@ -1171,6 +1171,41 @@
   "@chapterListUntitled": {
     "description": "⚠️ **B10: shown when the site published no title at all.** Never an index, never a generated \"Chapter 12\" — a fabricated title is a sentence the app invented and the reader would believe."
   },
+  "chapterListAddToLibrary": "Add to library",
+  "@chapterListAddToLibrary": {
+    "description": "B12 — slot 1 while the novel is NOT in the library. The only path into the library from this screen."
+  },
+  "chapterListReadFromStart": "Read from the start",
+  "@chapterListReadFromStart": {
+    "description": "B12 — slot 1 when the novel IS in the library and there is no reading position."
+  },
+  "chapterListContinue": "Continue",
+  "@chapterListContinue": {
+    "description": "B12 — slot 1 when the novel is in the library and a position exists."
+  },
+  "chapterListContinueSemantics": "Continue, {chapter}, {percent} through this chapter",
+  "@chapterListContinueSemantics": {
+    "description": "B12/B10 — what a screen reader announces. The visible label is the word 'Continue' alone, which tells a sighted reader where the tap goes and a blind reader nothing; this names the chapter and how far into it the position is.",
+    "placeholders": {
+      "chapter": { "type": "String" },
+      "percent": { "type": "int" }
+    }
+  },
+  "chapterListNothingUnopened": "Nothing unopened",
+  "@chapterListNothingUnopened": {
+    "description": "B13 — slot 3 when every chapter has been opened. DISABLED, never absent: an action row that reflows when a counter reaches zero moves the control under the reader's thumb."
+  },
+  "chapterListDownloadAction": "Download",
+  "@chapterListDownloadAction": {
+    "description": "B18 — slot 2 in its idle state. Opens the bulk download sheet, which is 5-1's queue behind a surface this slice renders."
+  },
+  "chapterListMarkAllReadConfirm": "Mark the {count} chapters you have not opened as read?",
+  "@chapterListMarkAllReadConfirm": {
+    "description": "B13 — the confirmation for slot 3. It NAMES THE COUNT in the title, because a title is what a reader reads first and 'are you sure?' does not say what is about to change.",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "chapterListMarkAllRead": "Mark all as read",
   "@chapterListMarkAllRead": {
     "description": ""

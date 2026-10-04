@@ -1691,6 +1691,48 @@ abstract class AppLocalizations {
   /// **'Untitled'**
   String get chapterListUntitled;
 
+  /// B12 — slot 1 while the novel is NOT in the library. The only path into the library from this screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to library'**
+  String get chapterListAddToLibrary;
+
+  /// B12 — slot 1 when the novel IS in the library and there is no reading position.
+  ///
+  /// In en, this message translates to:
+  /// **'Read from the start'**
+  String get chapterListReadFromStart;
+
+  /// B12 — slot 1 when the novel is in the library and a position exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get chapterListContinue;
+
+  /// B12/B10 — what a screen reader announces. The visible label is the word 'Continue' alone, which tells a sighted reader where the tap goes and a blind reader nothing; this names the chapter and how far into it the position is.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue, {chapter}, {percent} through this chapter'**
+  String chapterListContinueSemantics(String chapter, int percent);
+
+  /// B13 — slot 3 when every chapter has been opened. DISABLED, never absent: an action row that reflows when a counter reaches zero moves the control under the reader's thumb.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing unopened'**
+  String get chapterListNothingUnopened;
+
+  /// B18 — slot 2 in its idle state. Opens the bulk download sheet, which is 5-1's queue behind a surface this slice renders.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get chapterListDownloadAction;
+
+  /// B13 — the confirmation for slot 3. It NAMES THE COUNT in the title, because a title is what a reader reads first and 'are you sure?' does not say what is about to change.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark the {count} chapters you have not opened as read?'**
+  String chapterListMarkAllReadConfirm(int count);
+
   ///
   ///
   /// In en, this message translates to:
