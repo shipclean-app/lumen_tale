@@ -1,3 +1,4 @@
+// forge:slice 3-1
 // Lumen Tale — `3-1`: B22 made visible. SC-6 is "a site that cannot be read looks like a
 // site with nothing in it".
 //

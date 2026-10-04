@@ -1,3 +1,4 @@
+// forge:slice 6-5
 // Lumen Tale — `design-system.md` § 2.12, the `SettingsChoiceSheet`.
 //
 // The four states § 2.12 lists (`default` · `pressed` · `focused` · `disabled`) are

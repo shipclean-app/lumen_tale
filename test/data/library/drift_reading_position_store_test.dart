@@ -1,3 +1,4 @@
+// forge:slice 2-6
 // Lumen Tale — `2-6`'s drift implementation, round-tripped.
 //
 // `10-testing.md`: a repository round-trip is a high-priority test, because the whole

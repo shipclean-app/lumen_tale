@@ -1,3 +1,4 @@
+// forge:slice 2-3, 2-4
 // Lumen Tale — `2-4`'s decision, all nine branches, against a real filesystem.
 //
 // ## Why these rows use REAL files and not a fake store

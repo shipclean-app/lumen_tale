@@ -1,3 +1,4 @@
+// forge:slice 2-7
 // Lumen Tale — `2-7`: the measured column, and the virtualised long chapter.
 //
 // ## The rows that matter most are about ABSENCE

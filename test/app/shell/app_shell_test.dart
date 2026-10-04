@@ -1,3 +1,4 @@
+// forge:slice 0-5
 // Lumen Tale — `0-5` § 11.2, the shell rendered, and § 11.1's structural rows.
 //
 // Everything here runs at **360dp**, the one width v1 ships (`design-system.md`

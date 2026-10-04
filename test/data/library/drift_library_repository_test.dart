@@ -1,3 +1,4 @@
+// forge:slice 2-5
 // Lumen Tale — `2-5`: the library over a REAL database, because B32 is about the schema.
 //
 // ## Why this uses drift and not a fake store

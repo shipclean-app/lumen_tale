@@ -1,3 +1,4 @@
+// forge:slice 6-7
 // Lumen Tale — `6-7`: every failure has a sentence, and an action that works.
 //
 // B28: *every user-visible string exists in French and in English, **including all

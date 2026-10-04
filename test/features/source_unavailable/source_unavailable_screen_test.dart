@@ -1,3 +1,4 @@
+// forge:slice 3-6
 // Lumen Tale — `3-6`: SC-6's only surface, and the seven differences from an empty list.
 //
 // ## A reader who mistakes this for a list concludes the site has no novels

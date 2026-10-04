@@ -1,3 +1,4 @@
+// forge:slice 0-1
 // Lumen Tale — `0-1` § 11.1, the manifest BUILDER's refusals.
 //
 // `tool/build_manifest.py` turns files dropped into a fixture folder into a

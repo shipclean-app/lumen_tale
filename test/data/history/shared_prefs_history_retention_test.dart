@@ -1,3 +1,4 @@
+// forge:slice 6-5
 // Lumen Tale — `6-5`'s retention store, and the count that must run BEFORE a purge.
 //
 // ## The two properties worth stating before the rows

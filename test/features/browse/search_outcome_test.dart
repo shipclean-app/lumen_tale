@@ -1,3 +1,4 @@
+// forge:slice 6-2
 // Lumen Tale — `6-2`: one route, two modes, and one impossible sentence.
 //
 // ## The rows that carry the slice

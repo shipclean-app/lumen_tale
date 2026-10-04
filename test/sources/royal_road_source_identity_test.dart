@@ -1,3 +1,4 @@
+// forge:slice 2-1, 6-1
 // Lumen Tale — `6-1`'s acceptance list, checked directly. The gap `2-1` left.
 //
 // ## Why this file exists when 26 rows already cover the source

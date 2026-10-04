@@ -1,3 +1,4 @@
+// forge:slice 0-1, 0-3
 // Lumen Tale — `0-3`: the Royal Road capture, measured rather than assumed.
 //
 // The plan's `Emplacement` for this slice is `test/fixtures/royalroad_fixtures_test.dart`;

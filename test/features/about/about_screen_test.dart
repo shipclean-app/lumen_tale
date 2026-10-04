@@ -1,3 +1,4 @@
+// forge:slice 3-5
 // Lumen Tale — `/more/settings/about`: B43's version, and B31's three figures.
 //
 // ## What this file is for

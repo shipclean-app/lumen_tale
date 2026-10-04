@@ -1,3 +1,4 @@
+// forge:slice 2-1
 // Lumen Tale — `2-1`'s source, against the **frozen** captures.
 //
 // `03-source-system.md` rule 12: parsing unit tests ship with fixture HTML. Every row

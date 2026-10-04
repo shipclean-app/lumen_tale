@@ -1,3 +1,4 @@
+// forge:slice 2-4
 // Lumen Tale — `2-4` § 3.2's guarantee, as greps and as a counter.
 //
 // ## Two different proofs, and neither is "the app does not normally fetch"

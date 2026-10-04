@@ -1,3 +1,4 @@
+// forge:slice 2-4
 // Lumen Tale — `2-4`'s screen: nine states, one write at a settle, one mark at a display.
 //
 // ## What is asserted here and what is asserted elsewhere

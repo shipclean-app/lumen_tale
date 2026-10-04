@@ -1,3 +1,4 @@
+// forge:slice 6-5
 // Lumen Tale — `6-5`'s drift implementation, round-tripped, and B46 proved.
 //
 // ## What makes these rows different from a normal repository test

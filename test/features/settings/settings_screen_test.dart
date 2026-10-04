@@ -1,3 +1,4 @@
+// forge:slice 3-7
 // Lumen Tale — `/more/settings`: seven rows, and the four ways a settings screen lies.
 //
 //   **a value that says its own name** — every row prints the *value*, never the

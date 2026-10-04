@@ -1,3 +1,4 @@
+// forge:slice 0-1, 2-1
 // Lumen Tale — `0-1` § 11.1 against the Royal Road capture.
 //
 // ⚠️ **FanMTL could not be captured.** Measured 2026-10-03 with the honest

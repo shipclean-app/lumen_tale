@@ -1,3 +1,4 @@
+// forge:slice 6-3
 // Lumen Tale — `6-3`: B48's derived count, and the four ways it can be wrong.
 //
 // ## The claims under test

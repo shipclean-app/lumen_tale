@@ -1,3 +1,4 @@
+// forge:slice 3-2
 // Lumen Tale — `3-2`: nine chapter-list states, and the three rows where a reader could not
 // tell two of them apart.
 //

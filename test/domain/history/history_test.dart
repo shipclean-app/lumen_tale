@@ -1,3 +1,4 @@
+// forge:slice 6-5
 // Lumen Tale — `6-5`: B46 (a position is not a history entry) and B47 (the journal
 // is bounded by TIME, never by a count).
 //

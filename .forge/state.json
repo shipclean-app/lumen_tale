@@ -4506,7 +4506,7 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 13,
+      "finding_raised": 16,
       "fast_track_enter": 1,
       "finding_promoted": 12,
       "script_failure": 3,
@@ -4743,6 +4743,32 @@
       "promoted_to": "data-and-state.md",
       "resolved_at": "2026-10-03T19:39:13.291Z",
       "retired_at": "2026-10-03T19:39:13.290Z"
+    },
+    {
+      "id": "F-015",
+      "domain": "testing.md",
+      "severity": "critique",
+      "origin": "forge",
+      "status": "open",
+      "summary": "MESURE 2026-10-04: les trois scripts qui comptent les cas de test d'une slice (state.js sliceReality, consistency-check countTestCases, forge-exit findTestFiles) avaient chacun une COPIE de la meme heuristique — un fichier de test dont le NOM contient l'identifiant de la slice. Sur un projet qui nomme ses tests d'apres le SUJET (la convention Dart/Python/Go), elle renvoie 0 : les 19 slices validees portaient test_count 0 alors que le projet compte 1029 cas, et forge-exit rendait slice_has_test_cases fail pour chacune. La porte de sortie EXECUTABLE n'a donc jamais laisse passer une seule slice, et sessions 26-28 ont note 'consistency-check pass' en lisant la DERNIERE LIGNE de la sortie au lieu du CODE DE SORTIE (qui vaut 1).",
+      "correction": "forge-lib.testFilesForSlice est devenu le resolvant unique : marqueur '// forge:slice 2-1, 6-1' lu dans le fichier de test lui-meme (une table dans state.json deriverait de son premier commit), repli sur le nom conserve. Les trois appelants ne comptent plus que. Prouve : marqueurs retires -> exit 1 (repli intact, aucun affaiblissement) ; marqueur present mais zero cas -> exit 1 en nommant la BONNE slice (2-7) ; restaure -> exit 0. selftest : 231 passes, 1 echec preexistant lie a pglite absent.",
+      "artifact": null,
+      "raised_at": "2026-10-04T08:08:06.888Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-016",
+      "domain": "data-and-state.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "MESURE 2026-10-04: state.js finding attribuait l'identifiant avec findings.length + 1. F-011 ayant ete supprime, la liste est passee de 15 a 14 et F-014 a ete attribue DEUX FOIS dans .forge/state.json : deux constats portaient le meme ID, et '--resolve F-014' promouvait alors le mauvais. C'est l'interdit que le skill enonce pour les exigences — ne reattribuer jamais un numero libere — applique a un endroit ou il n'etait pas applique.",
+      "correction": "Le plus haut numero deja utilise (Math.max), plus une garde qui refuse un ID deja present meme si la liste vient d'ailleurs. Prouve : le meme etat, qui aurait produit F-014, produit F-016 en sautant F-011 brule. Le doublon ecrit dans state.json a ete renomme F-015.",
+      "artifact": null,
+      "raised_at": "2026-10-04T08:08:53.165Z",
+      "promoted_to": null,
+      "resolved_at": null
     }
   ]
 }

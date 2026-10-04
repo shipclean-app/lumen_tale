@@ -1,3 +1,4 @@
+// forge:slice 2-2
 // Lumen Tale — `2-2`, the HTML→Markdown converter, and the rule it exists for.
 //
 // ## The fixture shape that decided the design

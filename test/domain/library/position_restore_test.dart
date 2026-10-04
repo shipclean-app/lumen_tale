@@ -1,3 +1,4 @@
+// forge:slice 2-6
 // Lumen Tale — `2-6` § 3.2: the restore function, branch by branch.
 //
 // Pure Dart, no widget binding, no database. The interesting cases here are all

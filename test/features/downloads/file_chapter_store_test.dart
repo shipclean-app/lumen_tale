@@ -1,3 +1,4 @@
+// forge:slice 2-3
 // Lumen Tale — `2-3`: the atomic chapter write, and the order that IS B6.
 //
 // ## The order is the rule, and a test is the only thing that can check it

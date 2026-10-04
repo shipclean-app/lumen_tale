@@ -1,3 +1,4 @@
+// forge:slice 0-2, 0-3, 6-11
 // Lumen Tale — `6-11`: is the search a reader would call useful?
 //
 // ADR-015, word for word: *set `supportsSearch = true` only after you have fetched

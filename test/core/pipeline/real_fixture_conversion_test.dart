@@ -1,3 +1,4 @@
+// forge:slice 2-1, 2-2
 // Lumen Tale — `2-2` against **real captured bytes**, not synthetic HTML.
 //
 // ## Why this file exists beside `html_to_markdown_test.dart`

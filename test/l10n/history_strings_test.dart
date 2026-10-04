@@ -1,3 +1,4 @@
+// forge:slice 6-5
 // Lumen Tale — `6-5`'s copy, and the two things a translation table can silently get wrong.
 //
 // B28 demands **every** user-visible string in French and English. `arb_completeness_test`

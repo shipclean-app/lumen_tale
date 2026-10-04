@@ -1,3 +1,4 @@
+// forge:slice 3-2
 // Lumen Tale — `3-2`: the drift repository's own rows. No fixture is needed here; the question
 // is what the DATABASE does with a site's chapter list.
 //
@@ -395,7 +396,8 @@ void main() {
       expect(
         code,
         isNotEmpty,
-        reason: 'the walk found no Dart source at all, so it would have passed vacuously',
+        reason:
+            'the walk found no Dart source at all, so it would have passed vacuously',
       );
 
       final RegExp thrownCause = RegExp(

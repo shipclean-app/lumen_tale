@@ -917,3 +917,8 @@
 {"ts":"2026-10-04T05:46:04.531Z","type":"status_change","kind":"slice","key":"3-1","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/3-1.md","from":"planned","to":"validated"}}
 {"ts":"2026-10-04T06:02:17.579Z","type":"status_change","kind":"slice","key":"3-6","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/3-6.md","from":"planned","to":"validated"}}
 {"ts":"2026-10-04T06:50:38.157Z","type":"status_change","kind":"slice","key":"6-2","from":"planned","to":"validated","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/6-2.md","from":"planned","to":"validated"}}
+{"ts":"2026-10-04T08:02:18.122Z","type":"stale_clear","slice":"local-store","reasons":[],"drifted":[]}
+{"ts":"2026-10-04T08:07:00.293Z","type":"exit_criterion_met","slice":"6-2","test_cases":20}
+{"ts":"2026-10-04T08:08:06.891Z","type":"finding_raised","id":"F-014","domain":"testing.md","severity":"critique"}
+{"ts":"2026-10-04T08:08:33.763Z","type":"finding_raised","id":"F-016","domain":"workflow.md","severity":"mineur"}
+{"ts":"2026-10-04T08:08:53.168Z","type":"finding_raised","id":"F-016","domain":"data-and-state.md","severity":"majeur"}

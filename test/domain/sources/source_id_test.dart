@@ -1,3 +1,4 @@
+// forge:slice 2-1
 // Lumen Tale — the three derived identifiers, pinned to values written by hand.
 //
 // B3 is the rule these tests exist for: an id is **derived**, never typed by

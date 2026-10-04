@@ -1,3 +1,4 @@
+// forge:slice 0-1
 // Lumen Tale — `0-1` § 11.1, the manifest rows.
 //
 // ⚠️ **Every row below is currently INACTIVE, and that is the honest state, not a

@@ -1,3 +1,4 @@
+// forge:slice 0-1
 // Lumen Tale — `localisation` § 11.1, string resolution.
 //
 // The rows about **resolution**: does a key actually produce text, in the right

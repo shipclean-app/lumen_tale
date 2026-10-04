@@ -1,3 +1,4 @@
+// forge:slice 0-5
 // Lumen Tale — `0-5` § 11.1, the route table as data.
 //
 // Four kinds of claim are checked here, and they are not interchangeable:

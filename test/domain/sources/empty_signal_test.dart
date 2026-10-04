@@ -1,3 +1,4 @@
+// forge:slice 0-2
 // Lumen Tale — `0-2`: does Royal Road publish an explicit empty-result signal?
 //
 // ⚠️ **The point of this file is the guard, not the probe.** The probe ran once and
