@@ -37,7 +37,7 @@ class CatalogueStates extends StatelessWidget {
   final CatalogueViewState state;
 
   static Widget forState(CatalogueViewState state) => switch (state) {
-    CatalogueFilled() => throw StateError(
+    CatalogueFilled() || CatalogueSearchFilled() => throw StateError(
       'CatalogueStates.forState was given CatalogueFilled — the list is drawn by the screen, '
       'not by this dispatcher. A call here means a state was routed to the wrong place, and '
       'it is better to say so than to draw nothing.',

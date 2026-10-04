@@ -14,12 +14,11 @@
 // attempt is the only source of truth about whether the site answered — a connectivity check
 // that says "online" and a site that times out would both produce a list-shaped nothing.
 
-import 'package:flutter/foundation.dart';
-
 import 'package:lumen_tale/core/error/source_failure.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/models/novels_page.dart';
 import 'package:lumen_tale/domain/sources/source.dart';
+import 'package:lumen_tale/features/browse/search_outcome.dart';
 
 /// Reads a catalogue from one registered source.
 final class BrowseRepository {
@@ -30,6 +29,13 @@ final class BrowseRepository {
 
   /// The source's own display name, for a screen's sentences.
   ///
+  /// ⚠️ **Whether this source declares a search, and `false` for an unregistered id.**
+  ///
+  /// The conservative direction: a field that does nothing is worse than no field, and a deep
+  /// link to a site this build does not ship must not draw one.
+  bool supportsSearchOf(String sourceId) =>
+      sourceById(sourceId)?.supportsSearch ?? false;
+
   /// ⚠️ **`unknown` and never the id.** Printing a raw MD5 where a site name belongs tells a
   /// reader nothing they can act on, and puts an internal identifier on screen.
   String sourceNameOf(String sourceId) =>
@@ -56,28 +62,25 @@ final class BrowseRepository {
         retriable: false,
       );
     }
+    // ⚠️ **A search goes to `searchNovels` and a catalogue to `getPopularNovels`.** Routing a
+    // search through the catalogue call would return whatever the site ranks first and call it
+    // results — which is a confidently wrong list rather than an error.
+    if (request case SearchCatalogueRequest(:final String words)) {
+      return source.searchNovels(request.page, words, kNoSearchFilters);
+    }
     return source.getPopularNovels(request.page);
   }
 }
 
-/// One catalogue read, in the site's own terms.
+/// What the catalogue screen is reading. **A sealed hierarchy, not an optional field.**
 ///
-/// ⚠️ **[tag] is carried for COPY and is not yet a path.** Royal Road's two catalogue paths are
-/// `/fictions/active-popular` and `/fictions/latest-updates`, which are **not tags** — so a
-/// request whose tag this implementation silently ignored would show a reader a different tag's
-/// novels under the tag they tapped. `6-2` is the slice that turns a tag into a path; until it
-/// lands, the tag is used only for the sentence an empty state says, and that limitation is
-/// recorded in `18-external-contracts.md` rather than papered over.
-@immutable
-final class CatalogueRequest {
-  const CatalogueRequest({
-    required this.sourceId,
-    required this.tag,
-    this.page = 1,
-  });
+/// ⚠️ **"No tag" and "a search" are different requests**, and an optional `String? tag` cannot
+/// tell a search from a tag that happens to be null. So the two are two types, and a request is
+/// one or the other with no third possibility.
+sealed class CatalogueRequest {
+  const CatalogueRequest({required this.sourceId, this.page = 1});
 
   final String sourceId;
-  final String tag;
 
   /// The site's own page number, in the site's own base: Royal Road's `?page=N` is 1-based and
   /// a 0-based site's is not translated here.
@@ -85,14 +88,42 @@ final class CatalogueRequest {
 
   @override
   bool operator ==(Object other) =>
+      other.runtimeType == runtimeType &&
       other is CatalogueRequest &&
       other.sourceId == sourceId &&
-      other.tag == tag &&
       other.page == page;
 
   @override
-  int get hashCode => Object.hash(sourceId, tag, page);
+  int get hashCode => Object.hash(runtimeType, sourceId, page);
 
   @override
-  String toString() => 'CatalogueRequest($sourceId/$tag p$page)';
+  String toString() => 'CatalogueRequest($sourceId p$page)';
+}
+
+/// The site's own default catalogue — Royal Road's `/fictions/active-popular`.
+final class TagCatalogueRequest extends CatalogueRequest {
+  const TagCatalogueRequest({
+    required super.sourceId,
+    required this.tag,
+    super.page,
+  });
+
+  final String tag;
+
+  @override
+  String toString() => 'TagCatalogueRequest($sourceId/$tag p$page)';
+}
+
+/// A search, and the words are the READER'S byte for byte (B41).
+final class SearchCatalogueRequest extends CatalogueRequest {
+  const SearchCatalogueRequest({
+    required super.sourceId,
+    required this.words,
+    super.page,
+  });
+
+  final String words;
+
+  @override
+  String toString() => 'SearchCatalogueRequest($sourceId q"$words" p$page)';
 }

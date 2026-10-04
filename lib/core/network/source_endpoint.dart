@@ -7,6 +7,11 @@
 /// therefore has no access to `versionId`, and that is correct — if it had one,
 /// it could rewrite an identity.
 final class SourceEndpoint {
+  /// ⚠️ **NOT `const`, and the reason is worth recording.** A `const` constructor would let the
+  /// registry's entry list be a literal, which reads better — but the trailing-slash assertion
+  /// calls `String.endsWith`, which is not permitted in a constant expression, so `const` here
+  /// would mean dropping the assertion. The assertion is the rule that catches the silent
+  /// `//novel/x.html` 404; the syntax sugar is not worth it.
   SourceEndpoint({required this.baseUrl})
     : assert(
         !baseUrl.endsWith('/'),

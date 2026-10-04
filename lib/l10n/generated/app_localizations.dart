@@ -1552,6 +1552,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The app cannot read its own record of this failure'**
   String get browseFailureUnknownCause;
+
+  /// Shown only when the source declares `supportsSearch`; the field is **absent** otherwise, never disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Search this site'**
+  String get browseSearchHint;
 }
 
 class _AppLocalizationsDelegate

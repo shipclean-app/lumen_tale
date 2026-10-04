@@ -67,6 +67,19 @@ final class CatalogueFilled extends CatalogueViewState {
   );
 }
 
+/// A search that returned novels.
+///
+/// ⚠️ **Its OWN state, not a [CatalogueFilled].** The two have different rules — a search may
+/// legitimately be "the site said nothing", and a catalogue may not — and folding them together
+/// would give one of them the other's rule.
+final class CatalogueSearchFilled extends CatalogueViewState {
+  const CatalogueSearchFilled({required this.state});
+
+  /// The filled state underneath, so the grid draws one list and there is no second rendering
+  /// path to keep in step.
+  final CatalogueFilled state;
+}
+
 /// The tag has no novels, **and that is a fact about the tag**.
 final class CatalogueEmptyTag extends CatalogueViewState {
   const CatalogueEmptyTag({required this.sourceName, required this.tag});

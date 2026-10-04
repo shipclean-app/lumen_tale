@@ -10,6 +10,7 @@ import 'package:lumen_tale/app/theme/app_version.dart';
 import 'package:lumen_tale/app/theme/theme_providers.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
+import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/browse/catalogue_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
@@ -73,9 +74,23 @@ void registerScreens() {
   );
   registerScreen(
     AppRoutes.sourceGenre,
+    // ⚠️ **ONE route, TWO modes — `?q=` is the discriminator, and it is `null` for a
+    // catalogue and non-null for a search.** `browse-catalogue.md` § 1.1 asks for one screen
+    // rather than two, because the two differ in a query field and a set of rows and nothing
+    // else; two screens would be two copies of the list to keep in step.
+    //
+    // ⚠️ **An empty `?q=` is STILL a search.** `q=` in the URL and `q` absent are different
+    // requests, and collapsing them would mean this app deciding that an empty field means "show
+    // me the catalogue" — which is the site's decision to make, not ours.
+    //
+    // ⚠️ `supportsSearch` is NOT passed: it is the source's own answer, it lives in the
+    // registry, and the screen reads it from the same repository it reads the catalogue from. A
+    // builder that looked it up would be a second place where "does this site have search" is
+    // decided.
     (BuildContext context, GoRouterState state) => CatalogueScreen(
       sourceId: state.pathParameters['sourceId']!,
       tag: state.pathParameters['genre']!,
+      words: state.uri.queryParameters['q'],
     ),
   );
   registerScreen(
@@ -166,14 +181,23 @@ Future<void> main() async {
         //
         // The version goes into the User-Agent, and `readBuildVersion()` is a function rather
         // than a `final` precisely so this call site is where the read happens.
+        sourceManagerProvider.overrideWithValue(sources),
         browseRepositoryProvider.overrideWithValue(
-          buildBrowseRepository(appVersion: _appVersion()),
+          buildBrowseRepository(sources),
         ),
       ],
       child: const LumenTaleApp(),
     ),
   );
 }
+
+/// The registry, built ONCE.
+///
+/// ⚠️ **A local, and then overridden as a value twice.** The manager is the thing both the
+/// browse repository and the router's `supportsSearch` read, and a second build here would
+/// give two sets of `Dio` instances and two rate limiter states — so the limiter would throttle
+/// half of what it thinks it is throttling.
+final SourceManager sources = buildSourceManager(appVersion: _appVersion());
 
 /// The version string that goes into the User-Agent.
 ///

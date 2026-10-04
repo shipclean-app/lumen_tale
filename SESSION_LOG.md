@@ -3995,3 +3995,128 @@ both ARB files + regenerated l10n (36 keys),
 - **Do not paint a failure red unless the app's selectors are what changed.**
 - **Do not add a disabled retry.** Absent, or present.
 - **Do not put a request path on a screen.**
+
+---
+
+## 2026-10-04 — Session 28: `6-2` — one route, two modes, and one impossible sentence
+
+### STARTED FROM
+
+`3-6` validated at `c0cc582`. Continued straight into `6-2`.
+
+### DECIDED
+
+- **`SearchOutcome` has FOUR cases and one of them THROWS.** `BrowseSucceeded` with zero rows and
+  no marker of the site's own cannot be "no results" — the site never said so — and it cannot be
+  an error either, because nothing the reader can see went wrong. So it raises
+  `SilentEmptySearchPage`: a **source defect**, not a screen state. Rendering it would be lying,
+  and dressing a defect as a state is how it ships.
+- **`BrowseEmpty` is the ONLY path to "no results"**, and that is forced by the type: it is
+  reachable only where the site supplied a signal. Royal Road's three frozen search captures
+  prove both directions — a query that must match returns 20 rows, one that must NOT returns
+  `There is nothing here :(`. There is **no code path** from a silence to "no results".
+- **A `CatalogueRequest` is a SEALED HIERARCHY, not an optional `String? tag`.** "No tag" and
+  "a search" are different requests, and a nullable tag cannot tell a search from a tag that
+  happens to be null. Two types, one of them, no third possibility.
+- **A search and a catalogue are DIFFERENT MAPPINGS.** Running a search through the catalogue
+  mapping would let a silent empty page become an empty tag — the sentence E8 forbids.
+- **`SearchCatalogueRequest` routes to `searchNovels`, and the routing is asserted.** See below;
+  it is the row a sabotage earned.
+- **The field is RENDERED or it is ABSENT.** `rendersQueryField(supportsSearch:)` is a predicate,
+  and `supportsSearch` is a **`bool?`** on the screen that resolves to `false` for an
+  unregistered id — never a defaulted `false`, because a forgotten argument would silently drop
+  the field and "the field is missing" would be indistinguishable from "this site has no
+  search", the one confusion this slice exists to prevent.
+- **The field NEVER turns red.** The query was well-formed and accepted; what failed is the
+  site's answer. A red field tells the reader they typed something wrong, which is the one thing
+  that is not true. A row asserts the `InputDecoration` carries no `errorText`, no `error`, no
+  `enabledBorder` and no `focusedErrorBorder`.
+- **`?q=` empty is STILL a search.** `q=` and an absent `q` are different requests, and
+  collapsing them would mean this app deciding that an empty field means "show me the catalogue",
+  which is the site's decision.
+- **B41's words leave byte for byte, and the assertion is at TWO hops.** The URI builder and the
+  call into `searchNovels` are different places; a refactor could build a correct URL and then
+  normalise the string on its way out, and only one of the two would notice. Both rows exist.
+
+### THE REGISTRY WAS REBUILT, AND THAT WAS NOT THE PLAN
+
+- **`SourceEndpoint`'s constructor is NOT `const`, and the reason is recorded in the class.** A
+  `const` constructor would let the registry's entry list be a literal — which reads better — but
+  the trailing-slash assertion calls `String.endsWith`, which is not permitted in a constant
+  expression. So `const` would mean dropping the assertion, and the assertion is what catches the
+  silent `//novel/x.html` 404. The sugar is not worth the rule.
+- **`buildSourceManager` is now the ONE builder**, and `buildBrowseRepository` takes it as a
+  parameter. Two builders would give two sets of `Dio` instances for the same sites — two
+  connection pools and two rate-limiter states, so the limiter would throttle half of what it
+  thinks it is throttling.
+- **`RoyalRoadSource.kEndpoint` and `.build` are named**, so the entry list is a list of
+  functions and a rename of the class cannot change the host.
+- **The registry is a top-level `final` in `main.dart`, overridden twice as a VALUE.** The
+  router's builder does not look `supportsSearch` up: the screen reads it from the same
+  repository it reads the catalogue from, so "does this site have search" is decided in one place.
+
+### SABOTAGE, SIX ATTEMPTED, FOUR CAUGHT FIRST TIME
+
+| Sabotage | Rows that caught it |
+|---|---|
+| a silent empty page becomes `SearchNothing` | *E8: a SILENT empty page THROWS* |
+| an empty page with a row rendered as `SearchNothing` | *E8: a SILENT empty page THROWS* |
+| the words trimmed and lower-cased (B41) | **2 rows** |
+| the field rendered even with no search | **2 rows** |
+
+### ⚠️ TWO SABOTAGES THAT DID NOT FAIL, AND WHAT EACH WAS
+
+**1. Removing the `searchNovels` branch from `BrowseRepository.readCatalogue` entirely left all
+69 rows green.** Every row in the file tested what the classification does *with an outcome*;
+none tested which door the outcome came *through*. A search answered by the site's popular list
+is a **confidently wrong list** — not an error, which is exactly what makes it dangerous — and the
+only reason anyone noticed is that the sabotage was run.
+
+`test/features/browse/search_outcome_test.dart` now carries a `RecordingSource` that logs which
+method was called and with what query, and four rows: a search calls `searchNovels` and never
+`getPopularNovels`; a tag request still calls `getPopularNovels`; the words arrive byte for byte
+**at the call site**; and an unregistered id is a typed `BrowseFailed` with `retriable == false`.
+
+**2. A `BrowseFailed` rendered as `SearchNothing` (B50) also passed — twice, and both attempts
+were sabotages that did not apply.** The first did not match the formatter's reflow. The second
+edited line indices `i+2` and `i+3`, which are `words: words,` and `failure: reason,` — so it
+deleted a named argument and left `SearchUnusable` in place. It changed the file and changed
+nothing about the behaviour.
+
+⚠️ **This is the third time a sabotage has "passed" because it never applied, and it is the
+reason the file is written out before the suite runs.** A suite that does not fail is not
+evidence; the sabotage is only evidence once `dart format` has confirmed it parses. Re-run with a
+line-index edit on line `i` itself: *a typed failure → `SearchUnusable`, NEVER `SearchNothing`*
+fails.
+
+### FILES TOUCHED
+
+`lib/features/browse/search_outcome.dart` (new),
+`lib/features/browse/widgets/catalogue_query_field.dart` (new),
+`lib/features/browse/browse_repository.dart` (sealed `CatalogueRequest`, `searchNovels` routing,
+`supportsSearchOf`),
+`lib/features/browse/catalogue_screen.dart` (one route two modes, `sourceManagerProvider`),
+`lib/features/browse/catalogue_view_state.dart` (+`CatalogueSearchFilled`),
+`lib/sources/implementations/source_registry.dart` (`buildSourceManager`),
+`lib/sources/implementations/royal_road_source.dart` (`kEndpoint`, `build`),
+`lib/core/network/source_endpoint.dart` (the non-`const` note),
+`lib/main.dart` (the registry `final`, `?q=` wiring),
+both ARB files + regenerated l10n,
+`test/features/browse/search_outcome_test.dart` (new, 25).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **989 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+### NEXT — carry straight on, no stop
+
+`3-2` (novel details) · `3-3` (chapter download/delete) · `5-1` `5-2` `5-3` (the queue) ·
+`3-4` (onboarding) · `2-8` (reader settings) · `6-4` `6-6` `6-10` (check, badge, foreground job) ·
+`0-1` `0-4` (fixtures, classification) · `6-7` (i18n taxonomy).
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not render a silent empty page as "no results".** It raises, on purpose.
+- **Do not let a search reach `getPopularNovels`.** There is a row for it now.
+- **Do not report a passing sabotage without confirming it applied.**

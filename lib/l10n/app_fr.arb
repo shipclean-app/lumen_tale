@@ -1078,5 +1078,9 @@
   "browseFailureUnknownCause": "L'application ne peut pas lire son propre enregistrement de cet échec",
   "@browseFailureUnknownCause": {
     "description": "⚠️ **Not \"no connection\".** `CauseUnknown` means the app cannot read its own record; it does not mean the phone is offline, and a reader sent to check a setting that is already correct learns to distrust every error this app shows."
+  },
+  "browseSearchHint": "Rechercher sur ce site",
+  "@browseSearchHint": {
+    "description": "Shown only when the source declares `supportsSearch`; the field is **absent** otherwise, never disabled."
   }
 }

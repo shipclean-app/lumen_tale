@@ -13,8 +13,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
+import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
@@ -22,9 +24,23 @@ import 'package:lumen_tale/domain/sources/models/novels_page.dart';
 import 'package:lumen_tale/features/browse/browse_repository.dart';
 import 'package:lumen_tale/features/browse/catalogue_states.dart';
 import 'package:lumen_tale/features/browse/catalogue_view_state.dart';
+import 'package:lumen_tale/features/browse/search_outcome.dart';
+import 'package:lumen_tale/features/browse/widgets/catalogue_query_field.dart';
 import 'package:lumen_tale/features/library/library_screen.dart'
     show libraryStreamProvider;
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
+
+/// The registry, as a provider.
+///
+/// ⚠️ **Overridden with a VALUE at the bootstrap**, never computed by a factory: the registry is
+/// a list of clients, and a factory would build a fresh set of `Dio` instances per listener.
+final sourceManagerProvider = Provider<SourceManager>(
+  (Ref ref) => throw UnimplementedError(
+    'sourceManagerProvider is overridden in the composition root, because it is the '
+    'compilation of the static source registry, one HTTP client per source, and one rate '
+    'limiter shared by them all',
+  ),
+);
 
 /// ⚠️ **`keepAlive`, because it BUILDS the registry and not because it has state.**
 ///
@@ -57,7 +73,7 @@ final catalogueControllerProvider = FutureProvider.autoDispose
         // route from a throw to a view state, and it cannot return a list-shaped one.
         return mapAsyncError(
           sourceName: request.sourceId,
-          tag: request.tag,
+          tag: request is TagCatalogueRequest ? request.tag : '',
           error: StateError(
             'unreachable — the error is not carried into the state',
           ),
@@ -67,7 +83,7 @@ final catalogueControllerProvider = FutureProvider.autoDispose
       return mapBrowseOutcome(
         outcome: outcome,
         sourceName: browse.sourceNameOf(request.sourceId),
-        tag: request.tag,
+        tag: request is TagCatalogueRequest ? request.tag : '',
         requestedPage: request.page,
         hasMore: true,
         // ⚠️ **The library's ids ride along, so a tile can say "kept" without a second
@@ -79,12 +95,15 @@ final catalogueControllerProvider = FutureProvider.autoDispose
       );
     });
 
-/// `/browse/:sourceId/genre/:genre` — the catalogue of one tag on one site.
+/// `/browse/:sourceId/genre/:genre` — the catalogue of one tag, or a search when `?q=` is
+/// present. **One route, two modes** (`browse-catalogue.md` § 1.1).
 class CatalogueScreen extends ConsumerWidget {
   const CatalogueScreen({
     required this.sourceId,
     required this.tag,
     this.page = 1,
+    this.words,
+    this.supportsSearch,
     super.key,
   });
 
@@ -92,31 +111,81 @@ class CatalogueScreen extends ConsumerWidget {
   final String tag;
   final int page;
 
+  /// ⚠️ **`null` means a catalogue and a non-null means a search** — and a search whose words
+  /// are the empty string is still a search, because the reader submitted an empty field and the
+  /// site, not this app, decides what that means.
+  final String? words;
+
+  /// ⚠️ **`null` means "ask the registry", and it is resolved in `build`.**
+  ///
+  /// The source's own answer decides whether a line is drawn, and it is the *registry's* answer
+  /// — so the screen reads it from the same repository it reads the catalogue from. A caller may
+  /// pass a value, which is how a row pins the source's answer without a registry.
+  ///
+  /// ⚠️ **Never a default of `false`.** A `false` default would make a forgotten argument
+  /// silently drop the field, and "the field is missing" is indistinguishable from "this site has
+  /// no search" — the one confusion `6-2` exists to prevent.
+  final bool? supportsSearch;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations copy = AppLocalizations.of(context);
+    final bool searchSupported =
+        supportsSearch ??
+        ref.read(browseRepositoryProvider).supportsSearchOf(sourceId);
+    final CatalogueRequest request = words == null
+        ? TagCatalogueRequest(sourceId: sourceId, tag: tag, page: page)
+        : SearchCatalogueRequest(sourceId: sourceId, words: words!, page: page);
     final AsyncValue<CatalogueViewState> catalogue = ref.watch(
-      catalogueControllerProvider(
-        CatalogueRequest(sourceId: sourceId, tag: tag, page: page),
-      ),
+      catalogueControllerProvider(request),
     );
 
     return AppScaffold(
       titleBar: AppBar(title: Text(copy.browseTitle)),
-      content: switch (catalogue) {
-        AsyncData<CatalogueViewState>(value: final CatalogueViewState state) =>
-          switch (state) {
-            CatalogueFilled() => _Grid(state: state),
-            _ => CatalogueStates.forState(state),
-          },
-        AsyncError<CatalogueViewState>(error: final Object failure) =>
-          CatalogueStates.forState(
-            mapAsyncError(sourceName: sourceId, tag: tag, error: failure),
+      content: Column(
+        children: <Widget>[
+          // ⚠️ **RENDERED OR NOT RENDERED — there is no disabled state.** A disabled field is a
+          // promise about a version that does not exist, and it takes a line on the most
+          // comparative screen in the app.
+          if (rendersQueryField(supportsSearch: searchSupported))
+            CatalogueQueryField(
+              initialWords: words ?? '',
+              onSubmitted: (String typed) =>
+                  goToSearch(context, sourceId, typed),
+            ),
+          Expanded(
+            child: switch (catalogue) {
+              AsyncData<CatalogueViewState>(
+                value: final CatalogueViewState state,
+              ) =>
+                switch (state) {
+                  CatalogueFilled() => _Grid(state: state),
+                  CatalogueSearchFilled() => _Grid(state: state.state),
+                  _ => CatalogueStates.forState(state),
+                },
+              AsyncError<CatalogueViewState>(error: final Object failure) =>
+                CatalogueStates.forState(
+                  mapAsyncError(sourceName: sourceId, tag: tag, error: failure),
+                ),
+              _ => const _CatalogueSkeleton(),
+            },
           ),
-        _ => const _CatalogueSkeleton(),
-      },
+        ],
+      ),
     );
   }
+}
+
+/// Navigates to a search on the same source, carrying the words **byte for byte**.
+///
+/// ⚠️ **A top-level function taking a [BuildContext], not a provider.** Navigation needs a
+/// context and `05-state-management.md` forbids a provider modifying another's state — which
+/// starts with the router — so this is the same shape as `openReader` in `app_router.dart` and
+/// exists for the same reason.
+void goToSearch(BuildContext context, String sourceId, String words) {
+  GoRouter.of(
+    context,
+  ).go(searchQueryFor(sourceId: sourceId, words: words).toString());
 }
 
 /// The list, in the site's order with no sort applied by this app.

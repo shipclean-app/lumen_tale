@@ -41,6 +41,7 @@ import 'package:html/parser.dart' as html_parser;
 
 import 'package:lumen_tale/core/network/http_client.dart';
 import 'package:lumen_tale/core/network/http_response.dart';
+import 'package:lumen_tale/core/network/source_endpoint.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/http_fetching.dart';
 import 'package:lumen_tale/domain/sources/models/chapter.dart';
@@ -77,6 +78,17 @@ final class RoyalRoadSource extends ParsedHttpSource with HttpFetching {
   /// `SourceEndpoint` per registered source, and an endpoint declared inside a getter would
   /// make "which host is this" readable only by calling the class.
   static const String kBaseUrl = 'https://www.royalroad.com';
+
+  /// The endpoint the registry builds this source's client against.
+  ///
+  /// ⚠️ **`static final` and not a `get`**, so a rename of the class cannot change the host and
+  /// the registry's entry list reads as one line per source. `final` rather than `const`
+  /// because `SourceEndpoint`'s constructor carries a runtime assertion — see its doc comment.
+  static final SourceEndpoint kEndpoint = SourceEndpoint(baseUrl: kBaseUrl);
+
+  /// The registry's builder, named so the entry list is a list of *functions* and a reader can
+  /// see which class each row constructs.
+  static Source build(HttpClient client) => RoyalRoadSource(client: client);
 
   @override
   String get baseUrl => kBaseUrl;

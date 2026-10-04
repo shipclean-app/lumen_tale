@@ -910,4 +910,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get browseFailureUnknownCause =>
       'L\'application ne peut pas lire son propre enregistrement de cet échec';
+
+  @override
+  String get browseSearchHint => 'Rechercher sur ce site';
 }
