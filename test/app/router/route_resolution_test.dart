@@ -152,15 +152,27 @@ void main() {
     test('⚠️ every REGISTERED path is resolved THROUGH the registry', () {
       final String router = _readRouter();
 
+      for (final MapEntry<String, String> e in resolvedByConstant.entries) {
+        expect(
+          router,
+          contains('screenBuilderFor(AppRoutes.${e.key})'),
+          reason:
+              '${e.value} has a registered builder and a route, but the route does not look '
+              'it up by that constant — a relative or misspelled key registers under a name '
+              'nothing reads, and the screen renders a placeholder while reporting itself '
+              'registered',
+        );
+      }
+
       for (final String path in registeredScreens.keys) {
         expect(
           resolved,
           contains(path),
           reason:
-              '$path has a registered builder, so a route must look it up by that exact '
-              'key. A relative or misspelled key registers under a name nothing reads — a '
-              'screen that reports itself registered and renders a placeholder. Add the '
-              'route to `_subRoutesFor`, and its constant here.',
+              '$path has a registered builder, so a route must resolve it. If this fails '
+              'and the row above passed, a new route was added without being listed in '
+              '`resolvedByConstant` — add it there, and do NOT read the failure as a '
+              'licence to leave the route out.',
         );
       }
     });

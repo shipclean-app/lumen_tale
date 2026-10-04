@@ -925,3 +925,4 @@
 {"ts":"2026-10-04T08:09:01.910Z","type":"status_change","kind":"slice","key":"3-2","from":"planned","to":"in_progress","mirrored":{"mirrored":true,"changed":true,"path":".forge/plans/3-2.md","from":"planned","to":"in_progress"}}
 {"ts":"2026-10-04T09:15:26.263Z","type":"finding_promoted","id":"F-005","promoted_to":"data-and-state.md"}
 {"ts":"2026-10-04T09:15:26.335Z","type":"finding_raised","id":"F-017","domain":"data-and-state.md","severity":"majeur"}
+{"ts":"2026-10-04T09:53:43.372Z","type":"exit_criterion_met","slice":"3-2","test_cases":75}

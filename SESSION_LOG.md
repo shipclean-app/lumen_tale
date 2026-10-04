@@ -4120,3 +4120,196 @@ both ARB files + regenerated l10n,
 - **Do not render a silent empty page as "no results".** It raises, on purpose.
 - **Do not let a search reach `getPopularNovels`.** There is a row for it now.
 - **Do not report a passing sabotage without confirming it applied.**
+
+---
+
+## 2026-10-04 — Session 29: a new Codespace, three defects in the export, and four screens nobody could reach
+
+### STARTED FROM
+
+`6-2` validated at `233a112`. The quota was exhausted, the Codespace was replaced, and the
+branch `codespace-urban-robot-wr4r657wjqr935jv4` carries `f9af7f0` *"Pending changes
+exported from your codespace"* — 2 894 lines that were never verified by anything.
+
+⚠️ **The stopping point was NOT in `state.json`.** `3-2` was still `planned` while its
+whole implementation sat in the export: the domain types, the drift repository, the view
+state, the screen, the providers, 116 lines in each ARB, and two test files. So the
+tracking file said "not started" about a slice that was 90% written, and "validated"
+about nineteen slices that had never passed an executable gate.
+
+### THE ENVIRONMENT, AND WHY IT MATTERED MORE THAN THE CODE
+
+Flutter was absent. Installing 3.47.6 / Dart 3.13.5 — the versions `ADR-004` names — and
+`pub get` produced the first real measurement available: **the tree did not compile.**
+
+### THREE DEFECTS THE EXPORT CARRIED
+
+| defect | why it matters |
+|---|---|
+| `import … show Batch, Value, \$ChaptersTable` | a shell escape leaked into the file. `\$` is not Dart, so the file did not parse |
+| `AppDatabase(NativeDatabase.memory())` | the executor is **named** (`forTesting`), so this does not compile — and had it compiled, it would have skipped the `foreign_keys` PRAGMA, which is exactly the trap `app_database.dart` documents at length |
+| `File('lib').readAsStringSync()` | `lib` is a directory. The row *never ran*; it had never passed either |
+
+⚠️ **The third is the one worth keeping.** *"NO source THROWS a typed cause"* was a row
+that could not execute, in a suite that was reported green. It is now a **recursive walk**
+— `Directory('lib').listSync(recursive: true)` — because a single-level read would not
+have reached `lib/sources/implementations/`, which is where a `throw` would live. It also
+asserts it found source at all, so it cannot pass vacuously.
+
+Sabotaged with `throw const NoConnection()` planted in `royal_road_source.dart`: it fails.
+That sabotage also *proves* the recursion reaches `sources/`, which is what the broken
+version did not.
+
+### ⚠️ THE FINDING THAT MATTERED MOST: NO SLICE HAD EVER PASSED ITS EXIT GATE
+
+`state.js start` reported **19 slices `validated` with `test_count: 0`** — against a suite
+of 1 029 cases. Three scripts each carried **its own copy** of one heuristic: *a test file
+whose NAME contains the slice id*. This project names its tests after the **subject**
+(`royal_road_source_test.dart`), which is the normal convention in Dart, Python and Go —
+so the heuristic returned zero, always.
+
+Two consequences, and the second is the expensive one:
+
+1. `forge-exit` — the **executable** exit gate — failed `slice_has_test_cases` for all 19.
+   A gate that always fails is a gate that gets switched off.
+2. **Sessions 26, 27 and 28 recorded "`consistency-check all` **pass**".** The real exit
+   code was **1**. They read the *last line* of the output — which was `phase_journal:
+   pass` — instead of the exit status. Three sessions of a recorded green that was not one.
+
+⚠️ **This is the same failure the session log already warns about twice, in a new place.**
+It is written here because the guard that should have caught it was itself the thing that
+was broken.
+
+`forge-lib.testFilesForSlice` is now the **single** resolver. It reads
+`// forge:slice 2-1, 6-1` from the test file itself — *not* from `state.json`, because a
+table there drifts from its first commit — and keeps the filename fallback, so a project
+with no markers behaves exactly as before. The three callers now only count.
+
+Proved by sabotage, not by inspection:
+
+| sabotage | result |
+|---|---|
+| every marker stripped | **exit 1** — the fallback is intact, nothing was weakened |
+| marker present, file has zero cases | **exit 1**, naming the **right** slice (`2-7`) and the **right** reason ("declares no test case" ≠ "no file") |
+| restored | **exit 0** |
+
+⚠️ **And the second defect in the same area:** `state.js finding` allocated IDs with
+`findings.length + 1`. `F-011` had been removed, the list was 14 long, and **`F-014` was
+issued twice** — so `--resolve F-014` promoted whichever matched first. This is the skill's
+own prohibition (*"ne réattribue jamais un numéro libéré"*) applied where it was not
+applied. Now `max + 1`, plus a guard that refuses a duplicate outright. The already-written
+collision was renamed `F-015`; the probe that proved the new allocator works got `F-016`.
+
+### ⚠️ FOUR VALIDATED SLICES WERE REGISTERED AND UNREACHABLE
+
+`registerScreens()` registered builders for `AppRoutes.novelDetails`,
+`AppRoutes.sourceGenre` and `AppRoutes.sourceUnavailable`. `_subRoutesFor` rendered
+`PlaceholderScreen(screenKey: …)` for **all three**.
+
+So **`3-1`, `3-6`, `6-2` and `3-2` were implemented, registered, tested and marked
+`validated` in `state.json`, and a reader tapping through to them landed on a placeholder
+naming the route.** Nothing was red. `app_router_test.dart` asserted `registeredScreens`
+**contains** `AppRoutes.history` — and it did. The table was correct; the route never read
+it.
+
+`registerScreens`' own doc comment names this hazard — *"a registration that can only
+happen by running the app cannot be asserted"* — and then the registration **was**
+assertable, and nobody asserted the half that matters: that a route **resolves** it.
+
+`test/app/router/route_resolution_test.dart` guards it now, and **its first version passed
+a sabotage.** It searched the source for the literal path, while the source names a
+*constant* — so it could not see `PlaceholderScreen(screenKey: AppRoutes.novelDetails)`,
+the exact defect it was written for. It now captures the `screenKey` **argument** and
+resolves a constant to its value, and it **fails loudly on a constant it cannot resolve**
+rather than skipping it. Three sabotages caught, each naming the right path.
+
+Also removed: a **duplicated** `registerScreens()` call whose comment claimed it was
+deliberate. It was idempotent — which is exactly why it survived — and it still reads as
+two registrations to anyone who later makes `registerScreen` order-dependent.
+
+### `F-005`, THE FALSE POSITIVE THAT WAS ALSO A BLIND SPOT
+
+`forge-guard version_pins_agree` had failed for sessions on a package literally named
+`version`: it scanned `.dart_tool/package_graph.json`, whose entries each carry a JSON key
+called `version`, and read that key as a package name.
+
+`F-005` said it was unfixed and said why that mattered: *"un contrôle qui échoue pour une
+raison structurelle apprend à être ignoré."* Fixing it exposed that the check was also
+**blind where it matters** — no pattern matched the form `AGENTS.md` actually uses
+(`` `dio` 5.11.1 ``), so **the file listing the resolved versions was outside the check
+meant to verify they agree.** An inline-prose pattern now covers it.
+
+⚠️ **Two of my own bugs, both caught by the skill's selftest rather than by me:**
+
+- `readRealPackages` returned the structural-key list as an **allowlist** when no lockfile
+  existed, so only `version` and `name` counted as packages. The skill's selftest failed on
+  it — *"le conflit de version aurait dû être détecté"* — which is what caught the inversion.
+- the version suffix `(\d+\.\d+\.\d+[^\s…]*)` swallowed a sentence's full stop and produced
+  `workmanager 0.10.10.` — **a false positive manufactured by the pattern itself.**
+
+Proved four ways: real conflict in a markdown table → exit 1; real conflict in `AGENTS.md`'s
+prose → exit 1; prose that is not a package (*"La version 3.9.9 de Flutter"*) → exit 0;
+restored → exit 0. `AGENTS.md` and `pubspec.yaml` **agree** — 0 conflicts, and
+`duplicated_facts` now lists `drift`, `dio`, `flutter_markdown_plus` across
+`architecture.md` + `AGENTS.md` + `pubspec.yaml`, which is the proof the new pattern reads
+`AGENTS.md` at all.
+
+### `3-2` — CARRIED OVER, AND WHAT IS STILL MISSING
+
+The export's `3-2` is good work: a **sealed** `ChapterListViewState` with nine cases, a
+`switch` with no `default`, the mark-not-the-disk rule, and a recursive query ordered by
+`ordinal`. `drift_chapter_list_repository_test.dart` (11 rows) and
+`chapter_list_view_state_test.dart` both exist and pass.
+
+Still missing, and **not** to be papered over: `novel_details_screen_test.dart` was being
+written when the session ended, and `chapter_entry_test.dart` (18 rows, B10/E3/B9) was
+finished and sabotage-verified — `numberLabel` returning an em dash for `0` fails it.
+
+⚠️ **`3-2` stays `in_progress`.** The route is wired and the exit gate passes, but a slice
+whose screen-level acceptance criteria are half-covered is not `validated`, and marking it
+otherwise is the exact defect this session spent its length correcting.
+
+### FILES TOUCHED
+
+`test/data/library/drift_chapter_list_repository_test.dart` (3 fixes + the recursive walk),
+`lib/app/router/app_router.dart` (3 routes now resolve), `lib/main.dart` (novel details
+registered, duplicate call removed, `NovelDetailsScreen` import),
+`test/app/router/route_resolution_test.dart` (new, 7 rows),
+`test/domain/library/chapter_entry_test.dart` (new, 18 rows),
+`test/features/novel_details/novel_details_screen_test.dart` (new),
+36 test files annotated `// forge:slice …`, `.forge/state.json` (F-005 resolved, F-015/16/17).
+
+**Skill:** `lib/forge-lib.js` (`testFilesForSlice`, `slicesDeclaredBy`),
+`consistency-check.js`, `forge-exit.js`, `state.js` (slice reality + finding IDs),
+`forge-guard.js` (generated dirs, `readRealPackages`, inline-prose pattern).
+
+### STATUS
+
+`dart format` clean · `flutter analyze` **zero issues** · **1 029 passed + 9 skipped**,
+0 failed · `forge-guard all` **exit 0** · `consistency-check all` **exit 0** ·
+`forge-exit 6-2` **exit 0 — the first slice ever to pass its own gate** ·
+`state.js start` **suspect: 0** (was 19) · skill `selftest` **231 pass**, 1 pre-existing
+failure (absent `pglite` engine, unrelated to any patch here).
+
+### NEXT — carry straight on, no stop
+
+Finish **`3-2`**'s screen rows and validate it · `0-1` and `6-7` are `in_progress` and were
+never finished · then `3-3` (chapter download/delete) → `5-1` `5-2` `5-3` (the queue) ·
+`3-4` (onboarding) · `2-8` (reader settings) · `6-4` `6-6` `6-10` ·
+`0-4` (fixtures, classification) · **10 slices remain `planned`.**
+
+⚠️ **Q-019 in `DECISIONS.md` is STALE:** `navMore` is in **both** ARB files. Close it.
+`Q-025`'s `ErrorState` string is likewise moot — no `ErrorState` or `EmptyState` class
+exists in `lib/`; the widget was refactored away.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not trust a guard's last line — read its EXIT CODE.** Three sessions recorded a
+  green that was a `1`.
+- **Do not believe a slice is reachable because it is registered.** Assert that a route
+  *resolves* the registration. Four were not.
+- **Do not let two scripts each hold a copy of one heuristic.** They will disagree, and
+  neither will say so.
+- **Do not write a row that cannot execute and call the suite green.**
+- **Do not answer a passing sabotage without confirming it applied** — and do not keep a
+  row that passes a sabotage that *did* apply. Both happened here, in one session.
