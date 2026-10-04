@@ -13,7 +13,7 @@
 
 import 'dart:io';
 
-import 'package:drift/drift.dart' show Batch, Value, \$ChaptersTable;
+import 'package:drift/drift.dart' show Batch, Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
@@ -29,7 +29,7 @@ import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 /// suite passes on a table it never actually wrote to.
 Future<(AppDatabase, DriftChapterListRepository, Future<void> Function())>
 harness() async {
-  final AppDatabase db = AppDatabase(NativeDatabase.memory());
+  final AppDatabase db = AppDatabase.forTesting(NativeDatabase.memory());
   return (db, DriftChapterListRepository(db), db.close);
 }
 
@@ -379,7 +379,25 @@ void main() {
       // lint agrees, because `SourceFailure` is not an `Exception`. So the catch arm is
       // defence in depth, and this row is what keeps it defence: a future source that threw one
       // would be caught here rather than in a crash report nobody reads.
-      final String code = File('lib').readAsStringSync();
+      //
+      // ⚠️ **It walks `lib/` RECURSIVELY, and the walk is the row.** A single-level read found
+      // nothing because `lib` is a directory, and `Directory.listSync(recursive: true)` is what
+      // makes the claim mean something: a `throw` in `lib/sources/implementations/` is in
+      // `lib/` too. A guard that only looks one level down is a guard that passes for the wrong
+      // reason, which is the failure this project has already paid for once.
+      final String code = Directory('lib')
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((File f) => f.path.endsWith('.dart'))
+          .map((File f) => f.readAsStringSync())
+          .join('\n');
+
+      expect(
+        code,
+        isNotEmpty,
+        reason: 'the walk found no Dart source at all, so it would have passed vacuously',
+      );
+
       final RegExp thrownCause = RegExp(
         r'throw\s+(const\s+)?(NoConnection|SourceLayoutChanged|SourceUnavailable|'
         r'ItemRemovedAtSource|ParseFailed|RateLimited|CauseUnknown)\b',
