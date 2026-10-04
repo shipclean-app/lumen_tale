@@ -1558,6 +1558,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search this site'**
   String get browseSearchHint;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Novel'**
+  String get novelDetailsTitle;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{count} chapters'**
+  String chapterListHeaderCount(Object count);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{count} chapters on {source}'**
+  String chapterListHeaderAtSource(Object count, Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Load the chapter list'**
+  String get chapterListLoadAction;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'This app has never fetched the chapters of this novel. Nothing has been stored, and nothing was lost.'**
+  String get chapterListLoadExplainer;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The chapters were never loaded'**
+  String get chapterListNeverLoadedTitle;
+
+  /// ⚠️ **It says what loading DOES before offering it.** B12's whole point is that a list nobody asked for is not an empty list, and a reader who sees an empty area and one button cannot tell whether the button will create something or reveal something. This sentence says: it asks the site, and it stores.
+  ///
+  /// In en, this message translates to:
+  /// **'This novel is in your library, but its chapter list has not been fetched yet. Loading it asks {source} for the list and stores it on this phone.'**
+  String chapterListNeverLoadedBody(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No connection'**
+  String get chapterListNoConnectionTitle;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The chapter list has never been fetched, and {source} cannot be reached right now. Nothing about your library is affected.'**
+  String chapterListNoConnectionBody(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{source} publishes no chapters'**
+  String chapterListEmptyAtSourceTitle(Object source);
+
+  /// ⚠️ **"The site said so itself."** This is the ONLY place in the app where an empty result is a real answer, and the sentence names the site as the source of the claim — otherwise a reader compares it with an unrelated empty tag and concludes the app is broken.
+  ///
+  /// In en, this message translates to:
+  /// **'The site said so itself. This is what it publishes for this novel, and it is not an error.'**
+  String get chapterListEmptyAtSourceBody;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{source} could not be read'**
+  String chapterListUnreadableTitle(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The page loaded and the chapter list was not on it. Your library is untouched and nothing was downloaded.'**
+  String get chapterListUnreadableBody;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'This app cannot read its own copy'**
+  String get chapterListStoredUnreadableTitle;
+
+  /// ⚠️ **"The app has NOT done that", stated explicitly.** This is the only state where loading again would be *destructive*, and a screen that offers the button without saying so would quietly replace a copy the reader cannot read with one they can — which loses the unread marks along with it.
+  ///
+  /// In en, this message translates to:
+  /// **'The chapter list is stored on this phone, and the app can no longer read it. Loading it again from {source} would replace it, so the app has not done that.'**
+  String chapterListStoredUnreadableBody(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The app\'s records disagree'**
+  String get chapterListMarkedReadFailedTitle;
+
+  /// ⚠️ **"Your progress has NOT been deleted."** An invariant a reader cannot see is an invariant they learn to distrust. Saying the app has not touched their progress is what stops them re-adding the novel to 'fix' it.
+  ///
+  /// In en, this message translates to:
+  /// **'A chapter you have read is no longer in the list {source} publishes. The app has not deleted your progress.'**
+  String chapterListMarkedReadFailedBody(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough space'**
+  String get chapterListSpaceRefusedTitle;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'This download needs about {bytes} and there is not that much room. Nothing was queued.'**
+  String chapterListSpaceRefusedBody(Object bytes);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{displayed} of {total} chapters'**
+  String chapterListTailMarker(Object displayed, Object total);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the current chapter'**
+  String get chapterListJumpToCurrent;
+
+  /// ⚠️ **B10: shown when the site published no title at all.** Never an index, never a generated "Chapter 12" — a fabricated title is a sentence the app invented and the reader would believe.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get chapterListUntitled;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get chapterListMarkAllRead;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Download all'**
+  String get chapterListDownloadAll;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get chapterTileUnread;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Not downloaded'**
+  String get chapterTileNotDownloaded;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded'**
+  String get chapterTileDownloaded;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get chapterListActionRetry;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get chapterListActionBack;
 }
 
 class _AppLocalizationsDelegate

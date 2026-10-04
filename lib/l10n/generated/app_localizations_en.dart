@@ -908,4 +908,115 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get browseSearchHint => 'Search this site';
+
+  @override
+  String get novelDetailsTitle => 'Novel';
+
+  @override
+  String chapterListHeaderCount(Object count) {
+    return '$count chapters';
+  }
+
+  @override
+  String chapterListHeaderAtSource(Object count, Object source) {
+    return '$count chapters on $source';
+  }
+
+  @override
+  String get chapterListLoadAction => 'Load the chapter list';
+
+  @override
+  String get chapterListLoadExplainer =>
+      'This app has never fetched the chapters of this novel. Nothing has been stored, and nothing was lost.';
+
+  @override
+  String get chapterListNeverLoadedTitle => 'The chapters were never loaded';
+
+  @override
+  String chapterListNeverLoadedBody(Object source) {
+    return 'This novel is in your library, but its chapter list has not been fetched yet. Loading it asks $source for the list and stores it on this phone.';
+  }
+
+  @override
+  String get chapterListNoConnectionTitle => 'No connection';
+
+  @override
+  String chapterListNoConnectionBody(Object source) {
+    return 'The chapter list has never been fetched, and $source cannot be reached right now. Nothing about your library is affected.';
+  }
+
+  @override
+  String chapterListEmptyAtSourceTitle(Object source) {
+    return '$source publishes no chapters';
+  }
+
+  @override
+  String get chapterListEmptyAtSourceBody =>
+      'The site said so itself. This is what it publishes for this novel, and it is not an error.';
+
+  @override
+  String chapterListUnreadableTitle(Object source) {
+    return '$source could not be read';
+  }
+
+  @override
+  String get chapterListUnreadableBody =>
+      'The page loaded and the chapter list was not on it. Your library is untouched and nothing was downloaded.';
+
+  @override
+  String get chapterListStoredUnreadableTitle =>
+      'This app cannot read its own copy';
+
+  @override
+  String chapterListStoredUnreadableBody(Object source) {
+    return 'The chapter list is stored on this phone, and the app can no longer read it. Loading it again from $source would replace it, so the app has not done that.';
+  }
+
+  @override
+  String get chapterListMarkedReadFailedTitle => 'The app\'s records disagree';
+
+  @override
+  String chapterListMarkedReadFailedBody(Object source) {
+    return 'A chapter you have read is no longer in the list $source publishes. The app has not deleted your progress.';
+  }
+
+  @override
+  String get chapterListSpaceRefusedTitle => 'Not enough space';
+
+  @override
+  String chapterListSpaceRefusedBody(Object bytes) {
+    return 'This download needs about $bytes and there is not that much room. Nothing was queued.';
+  }
+
+  @override
+  String chapterListTailMarker(Object displayed, Object total) {
+    return '$displayed of $total chapters';
+  }
+
+  @override
+  String get chapterListJumpToCurrent => 'Go to the current chapter';
+
+  @override
+  String get chapterListUntitled => 'Untitled';
+
+  @override
+  String get chapterListMarkAllRead => 'Mark all as read';
+
+  @override
+  String get chapterListDownloadAll => 'Download all';
+
+  @override
+  String get chapterTileUnread => 'Unread';
+
+  @override
+  String get chapterTileNotDownloaded => 'Not downloaded';
+
+  @override
+  String get chapterTileDownloaded => 'Downloaded';
+
+  @override
+  String get chapterListActionRetry => 'Try again';
+
+  @override
+  String get chapterListActionBack => 'Back';
 }

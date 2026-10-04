@@ -1082,5 +1082,121 @@
   "browseSearchHint": "Rechercher sur ce site",
   "@browseSearchHint": {
     "description": "Shown only when the source declares `supportsSearch`; the field is **absent** otherwise, never disabled."
+  },
+  "novelDetailsTitle": "Roman",
+  "@novelDetailsTitle": {
+    "description": ""
+  },
+  "chapterListHeaderCount": "{count} chapitres",
+  "@chapterListHeaderCount": {
+    "description": ""
+  },
+  "chapterListHeaderAtSource": "{count} chapitres sur {source}",
+  "@chapterListHeaderAtSource": {
+    "description": ""
+  },
+  "chapterListLoadAction": "Charger la liste des chapitres",
+  "@chapterListLoadAction": {
+    "description": ""
+  },
+  "chapterListLoadExplainer": "Cette application n'a jamais récupéré les chapitres de ce roman. Rien n'a été enregistré, et rien n'a été perdu.",
+  "@chapterListLoadExplainer": {
+    "description": ""
+  },
+  "chapterListNeverLoadedTitle": "Les chapitres n'ont jamais été chargés",
+  "@chapterListNeverLoadedTitle": {
+    "description": ""
+  },
+  "chapterListNeverLoadedBody": "Ce roman est dans votre bibliothèque, mais sa liste de chapitres n'a pas encore été récupérée. La charger demande la liste à {source} et la conserve sur ce téléphone.",
+  "@chapterListNeverLoadedBody": {
+    "description": "⚠️ **It says what loading DOES before offering it.** B12's whole point is that a list nobody asked for is not an empty list, and a reader who sees an empty area and one button cannot tell whether the button will create something or reveal something. This sentence says: it asks the site, and it stores."
+  },
+  "chapterListNoConnectionTitle": "Pas de connexion",
+  "@chapterListNoConnectionTitle": {
+    "description": ""
+  },
+  "chapterListNoConnectionBody": "La liste des chapitres n'a jamais été récupérée, et {source} n'est pas joignable maintenant. Votre bibliothèque n'est pas touchée.",
+  "@chapterListNoConnectionBody": {
+    "description": ""
+  },
+  "chapterListEmptyAtSourceTitle": "{source} ne publie aucun chapitre",
+  "@chapterListEmptyAtSourceTitle": {
+    "description": ""
+  },
+  "chapterListEmptyAtSourceBody": "Le site le dit lui-même. C'est ce qu'il publie pour ce roman, et ce n'est pas une erreur.",
+  "@chapterListEmptyAtSourceBody": {
+    "description": "⚠️ **\"The site said so itself.\"** This is the ONLY place in the app where an empty result is a real answer, and the sentence names the site as the source of the claim — otherwise a reader compares it with an unrelated empty tag and concludes the app is broken."
+  },
+  "chapterListUnreadableTitle": "{source} n'a pas pu être lu",
+  "@chapterListUnreadableTitle": {
+    "description": ""
+  },
+  "chapterListUnreadableBody": "La page s'est chargée et la liste des chapitres n'y était pas. Votre bibliothèque n'est pas touchée et rien n'a été téléchargé.",
+  "@chapterListUnreadableBody": {
+    "description": ""
+  },
+  "chapterListStoredUnreadableTitle": "Cette application ne peut pas lire sa propre copie",
+  "@chapterListStoredUnreadableTitle": {
+    "description": ""
+  },
+  "chapterListStoredUnreadableBody": "La liste des chapitres est enregistrée sur ce téléphone, et l'application ne peut plus la lire. La recharger depuis {source} la remplacerait, donc l'application ne l'a pas fait.",
+  "@chapterListStoredUnreadableBody": {
+    "description": "⚠️ **\"The app has NOT done that\", stated explicitly.** This is the only state where loading again would be *destructive*, and a screen that offers the button without saying so would quietly replace a copy the reader cannot read with one they can — which loses the unread marks along with it."
+  },
+  "chapterListMarkedReadFailedTitle": "Les enregistrements de l'application se contredisent",
+  "@chapterListMarkedReadFailedTitle": {
+    "description": ""
+  },
+  "chapterListMarkedReadFailedBody": "Un chapitre que vous avez lu ne figure plus dans la liste publiée par {source}. L'application n'a pas supprimé votre progression.",
+  "@chapterListMarkedReadFailedBody": {
+    "description": "⚠️ **\"Your progress has NOT been deleted.\"** An invariant a reader cannot see is an invariant they learn to distrust. Saying the app has not touched their progress is what stops them re-adding the novel to 'fix' it."
+  },
+  "chapterListSpaceRefusedTitle": "Pas assez de place",
+  "@chapterListSpaceRefusedTitle": {
+    "description": ""
+  },
+  "chapterListSpaceRefusedBody": "Ce téléchargement demande environ {bytes} et il n'y a pas cette place. Rien n'a été mis en file.",
+  "@chapterListSpaceRefusedBody": {
+    "description": ""
+  },
+  "chapterListTailMarker": "{displayed} chapitres sur {total}",
+  "@chapterListTailMarker": {
+    "description": ""
+  },
+  "chapterListJumpToCurrent": "Aller au chapitre actuel",
+  "@chapterListJumpToCurrent": {
+    "description": ""
+  },
+  "chapterListUntitled": "Sans titre",
+  "@chapterListUntitled": {
+    "description": "⚠️ **B10: shown when the site published no title at all.** Never an index, never a generated \"Chapter 12\" — a fabricated title is a sentence the app invented and the reader would believe."
+  },
+  "chapterListMarkAllRead": "Tout marquer comme lu",
+  "@chapterListMarkAllRead": {
+    "description": ""
+  },
+  "chapterListDownloadAll": "Tout télécharger",
+  "@chapterListDownloadAll": {
+    "description": ""
+  },
+  "chapterTileUnread": "Non lu",
+  "@chapterTileUnread": {
+    "description": ""
+  },
+  "chapterTileNotDownloaded": "Non téléchargé",
+  "@chapterTileNotDownloaded": {
+    "description": ""
+  },
+  "chapterTileDownloaded": "Téléchargé",
+  "@chapterTileDownloaded": {
+    "description": ""
+  },
+  "chapterListActionRetry": "Réessayer",
+  "@chapterListActionRetry": {
+    "description": ""
+  },
+  "chapterListActionBack": "Retour",
+  "@chapterListActionBack": {
+    "description": ""
   }
 }
