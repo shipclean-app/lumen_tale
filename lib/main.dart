@@ -16,6 +16,7 @@ import 'package:lumen_tale/features/browse/catalogue_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/features/library/library_screen.dart';
+import 'package:lumen_tale/features/novel_details/novel_details_screen.dart';
 import 'package:lumen_tale/features/reader/reader_screen.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/features/source_unavailable/failure_cause.dart';
@@ -57,6 +58,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// `app/` still imports no `features/` **package** — these are function bodies reached
 /// through the registry, and `test/app/shell/app_shell_test.dart` greps the import lines.
 void registerScreens() {
+  registerScreen(
+    AppRoutes.novelDetails,
+    // ⚠️ **`sourceName` is EMPTY, and that is the screen's own documented contract** —
+    // `ChapterListHeader.sourceName` says an empty string means "do not name a site",
+    // and the header then prints the bare count.
+    //
+    // ⚠️ **The URL carries a novel id and nothing else, so a name read from the path
+    // would be an invention.** A deep link knows which novel, not which site published
+    // it; printing `/library/novel/n1` as though it were a site name would put an
+    // identifier where a reader expects a publication. A future slice that knows the
+    // source can pass it here — as a value, never as something parsed out of the path.
+    (BuildContext context, GoRouterState state) => NovelDetailsScreen(
+      novelId: state.pathParameters['novelId']!,
+      sourceName: '',
+      currentChapterId: state.uri.queryParameters['chapter'],
+    ),
+  );
   registerScreen(
     AppRoutes.sourceUnavailable,
     // ⚠️ **`pathParameters['failure']` is a CAUSE NAME, not a failure object.** A failure is
@@ -138,10 +156,13 @@ Future<void> main() async {
   // lands without registering is visible in one second of running the app — except for the
   // reader, which is reached by `push` from four places, and which `registerScreens` is
   // extracted so a row can assert it.
-  registerScreens();
-
-  // ⚠️ **Registration, and only registration.** See `registerScreens` above for why it is
-  // a function rather than code in here.
+  //
+  // ⚠️ **CALLED ONCE. It was called twice here**, and the second call carried a comment
+  // describing it as deliberate. `registerScreen` assigns into a map, so the second call
+  // overwrote the first with identical builders and changed nothing — which is exactly
+  // why it survived: a duplicate that happens to be idempotent is invisible at runtime
+  // and meaningless in review, and it still reads as two registrations to anyone who
+  // later makes `registerScreen` do something order-dependent.
   registerScreens();
 
   runApp(

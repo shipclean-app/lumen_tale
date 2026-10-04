@@ -225,29 +225,49 @@ List<RouteBase> _subRoutesFor(AppNavDestination destination) {
       return <RouteBase>[
         GoRoute(
           path: 'novel/:novelId',
+          // ⚠️ **`screenBuilderFor`, like `settings` below — and this line is the fix
+          // for four slices that were implemented, registered, tested and marked
+          // validated… and unreachable.**
+          //
+          // `registerScreens()` registered a builder for `AppRoutes.novelDetails`,
+          // `AppRoutes.sourceGenre` and `AppRoutes.sourceUnavailable`, and this table
+          // rendered `PlaceholderScreen` for all three. The registration was real and
+          // the route never consulted it, so `3-1`, `6-2`, `3-6` and `3-2` opened a
+          // placeholder naming the route. Nothing failed: the registration test
+          // asserted the TABLE contained the path, and it did.
+          //
+          // That is the hazard `registerScreens`' own doc comment names — "a
+          // registration that can only happen by running the app cannot be asserted" —
+          // except here the registration WAS assertable and nobody asserted the half
+          // that matters: that the route RESOLVES it.
           builder: (BuildContext context, GoRouterState state) =>
-              const PlaceholderScreen(screenKey: AppRoutes.novelDetails),
+              screenBuilderFor(AppRoutes.novelDetails)(context, state),
         ),
       ];
 
     case AppNavDestination.browse:
       return <RouteBase>[
         GoRoute(
+          // ⚠️ **`3-1` and `6-2`'s catalogue. It was a placeholder while both slices
+          // were validated.** See the library branch above for the whole story.
           path: ':sourceId',
           builder: (BuildContext context, GoRouterState state) =>
-              const PlaceholderScreen(screenKey: AppRoutes.sourceBrowse),
+              screenBuilderFor(AppRoutes.sourceBrowse)(context, state),
           routes: <RouteBase>[
             GoRoute(
               path: 'genre/:genre',
+              // ⚠️ **The FULL route path as the key, never the relative one.** The
+              // table is keyed by what `AppRoutes` spells out, so a relative path
+              // registers under a key nothing looks up — a screen that reported itself
+              // registered and rendered a placeholder. Same reason as `about` below.
               builder: (BuildContext context, GoRouterState state) =>
-                  const PlaceholderScreen(screenKey: AppRoutes.sourceGenre),
+                  screenBuilderFor(AppRoutes.sourceGenre)(context, state),
             ),
             GoRoute(
               path: 'unavailable',
+              // ⚠️ **`3-6` — SC-6's only surface — was a placeholder too.**
               builder: (BuildContext context, GoRouterState state) =>
-                  const PlaceholderScreen(
-                    screenKey: AppRoutes.sourceUnavailable,
-                  ),
+                  screenBuilderFor(AppRoutes.sourceUnavailable)(context, state),
             ),
           ],
         ),
