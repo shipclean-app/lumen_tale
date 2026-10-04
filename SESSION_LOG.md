@@ -3028,3 +3028,120 @@ number; three rows now drive the real provider.
 - **Do not localize `settingsLanguageEnglish` / `settingsLanguageFrench`.** They are
   identical in both files on purpose: the row reports the *phone's* language.
 - **Do not pin a time-dependent string in a widget row.** Pin `openedAt`.
+
+---
+
+## 2026-10-04 — Session 19: `2-1` — Royal Road, and the order the site actually publishes
+
+### STARTED FROM
+
+`3-7` at `7885f75`, with `50ee274` having recorded the catalogue row's anatomy from the
+frozen fixtures. `2-1` is the product's premise and the last unblocked Wave-2 item.
+
+### DECIDED
+
+- **`lib/domain/sources/http_fetching.dart` is a MIXIN, and `2-1` writes no
+  `HttpSource`.** `source.dart` already declares `HttpSource` as an abstract **class**,
+  so `class RoyalRoadSource extends HttpSource` would work today and break the moment a
+  source needed a second base. `Source` and `HttpSource` are both abstract classes and
+  Dart has no multiple inheritance.
+- **`ReadPipeline` makes the four steps of a read one call.** fetch → probe → attempt →
+  classify. A source that branched on `rows.isEmpty` before classifying would have
+  re-implemented B22 in a place with no tests, so the class removes the opportunity.
+- **`requestPath` carries no query string.** A failure line is something an owner reads,
+  and a reader's search term inside one is a small leak (C5).
+- **The catalogue probe is the CONTAINER, not the rows.** This site publishes **no**
+  empty marker on the browse side, so page shape is the only discriminator available:
+  "container present" means intact, "container absent" means the layout moved.
+- **An empty-but-intact catalogue is reported as `SourceLayoutChanged`, and that is
+  recorded rather than worked around.** With no site-supplied signal,
+  `ZeroItemsPolicy.zeroIsBroken` means an empty catalogue *cannot* be reported as "no
+  results". B22 says the discriminator is the site's own signal; this site publishes
+  none, so the honest answer is "we could not read it", and inventing a marker would make
+  every empty catalogue indistinguishable from a successful one.
+- **The B9 witness is CHECKED, not read.** `table#chapters[data-chapters="716"]` carries
+  exactly 716 rows on the capture. A mismatch is reported as `SourceLayoutChanged` —
+  **never padded and never trimmed**, because padding would invent chapters and a short
+  list returned as the whole one is B9 broken with no error anywhere.
+- **`NovelUpdate.chapters` is the WHOLE list the site publishes**, not only the
+  additions: the field is the novel's chapters and the screen diffs them. Passing only
+  the additions would make every chapter look new on every check, which trains a reader
+  to ignore the update screen.
+- **`fetchChapterContent` returns the container's `innerHtml` and stops** — no cleaning,
+  no thresholds, no joining beyond the site's own order (`03-source-system.md` rule 11).
+  A present-but-empty container is **not** a failure: the container IS the element being
+  looked for, and inventing a failure for it would be the app overruling the site.
+- **FanMTL and Novel Fire are NOT in the registry.** FanMTL answers 403 with a Cloudflare
+  challenge (ADR-014 rejected impersonation; no bypass will be built), and Novel Fire is
+  **UNMEASURED**, not `false`. Registering either would put a tab on the reader's screen
+  that reports every read as broken, or claim a measurement nobody took.
+
+### THE FINDING THAT WAS NOT EXPECTED
+
+**Royal Road's chapter table is ordered by PUBLICATION, not by number.** The Runesmith
+capture's first three numbers are `526587`, `568159`, `520102` — measured, and **not
+ascending**. This surfaced because a row asserting ascending numbers **failed**, which is
+the only reason it is worth recording.
+
+A source that sorted by number, or renumbered rows `1, 2, 3…`, would produce an order the
+site never published — and **every chapter would still be present**, so nothing would look
+wrong. The capture's first row is also a glossary (`data-content="0"`), so renumbering
+would silently claim the glossary is chapter 1.
+
+The row now asserts the three numbers exactly **and** that they are not ascending, so a
+change in the site's order fails a test that says so. Promoted to
+`18-external-contracts.md` with the cross-site rule: *a chapter list is the site's order,
+and the site may order it by something other than the number in the URL.*
+
+### FILES TOUCHED
+
+`lib/domain/sources/http_fetching.dart` (new), `lib/domain/sources/read_pipeline.dart`
+(new), `lib/sources/implementations/royal_road_source.dart` (new),
+`lib/sources/implementations/source_registry.dart` (new),
+`lib/data/sources/source_manager.dart` (new),
+`test/sources/royal_road_source_test.dart` (new, 26),
+`.opencode/rules/18-external-contracts.md` (+2 sections).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **752 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+**Sabotage, seven, all caught:**
+
+| Sabotage | Rows that caught it |
+|---|---|
+| the author selector uses `/author/` — the shape every other site uses | *the author is under `/profile/`* |
+| the catalogue row invents an author from the title | *the row carries NO author, and none is invented* |
+| the rating is read from the `fa-star` span's **text**, which is empty | *the rating comes from the title attribute* |
+| the chapter-body selector is an exact `class="chapter-content"` match | **2 rows** |
+| the published chapter count is not read at all | *a truncated table is reported* |
+| a short chapter table is returned as the whole one | *a truncated table is reported* |
+| chapters are renumbered `1..n` | *the order is the TABLE order, and it is NOT ascending* |
+
+### STILL NOT DONE IN `2-1`
+
+- **No live verification.** Every row runs against the frozen captures; the selectors were
+  never re-fetched. The network answers 200 today, and confirming the selectors still
+  match is a `18-external-contracts.md` re-measurement, not something the tests can do.
+- **The registry is not wired to a provider**, so the Browse tab still has no source
+  behind it. That is `3-1`, and `SourceManager` exists for it.
+- **No genre browsing**, because this source declares an empty `filterList` — Royal Road
+  filters by tag through its own tag pages rather than through a filter list this contract
+  carries.
+
+### NEXT SESSION SHOULD
+
+- **`2-2`** (library writes) — the first slice that stores anything, so `Novel.id`'s
+  derivation becomes load-bearing rather than theoretical.
+- **`3-1`** (Browse), which consumes `SourceManager` and makes the app read a novel.
+- **Re-measure Royal Road's selectors live**, and record the result the way the two
+  sections above are recorded.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not sort or renumber a chapter list.** The site orders by publication, and every
+  chapter being present does not make the order right.
+- **Do not register FanMTL or Novel Fire.** F-012 stands; Novel Fire is UNMEASURED.
+- **Do not add a `downloaded` flag or an `author` fallback.** Both would be a second
+  source of truth against a measurement that already exists.
