@@ -3582,3 +3582,113 @@ table above only counts the six that actually ran.
   the growth, and a row greps for both strings.
 - **Do not estimate `itemCount`.** The block count is known — that is the whole reason for
   splitting on blank lines.
+
+---
+
+## 2026-10-04 — Session 24: `2-5` — the library, and the UPDATE that is B32
+
+### STARTED FROM
+
+`2-7` at `512da42`. `2-5` is the first slice that stores a reader's *decision* rather than a
+site's data, so every rule in it is about what must and must not happen on a write.
+
+### DECIDED
+
+- **`removeFromLibrary` is an UPDATE, and that is not a style choice.** `chapters.novelId` is
+  `ON DELETE CASCADE` and `history_entries.novelId` is `ON DELETE RESTRICT`, so
+  `DELETE FROM novels` would erase the chapter metadata B14/B48 count **and would fail
+  outright** the first time a chapter had been opened. B32 says the downloads stay. All three
+  facts hold at once only because the removal is `inLibrary = false`.
+- **The five things deliberately NOT written are the function's real content**, and they are
+  listed in the file header so a reader does not have to infer them: no `DELETE`, no `.md`
+  files (B32), no `history_entries` (B32), no `reading_positions` (B46), no `queue_items`
+  (B21), and no `lastCheckedAt` (B49).
+- **There is NO `if (downloadedCount > 0)` branch, and that absence is the trap.** An
+  implementation in a hurry adds one, and that branch is precisely what makes a removal
+  silently delete downloads. A row greps the source for `delete(` — so the absence is
+  checked, not assumed.
+- **ONE membership write method, and the TYPE is what enforces B12.** `addFromCatalogue(Novel)`
+  — not `addById`, not `addMany`, not `setFollowed`. An identifier could have come from a
+  list, a restored stack or a deep link, and none of those three is a reader's action on a
+  novel they have seen.
+- **Dismissing the similar-title dialog is DECLINING.** The default has to be the safe one:
+  the easiest gesture on a device with no cloud backup (C8) must not be the one that adds a
+  second copy of a novel the reader already has. `dismissed`, `declined` and `openExisting`
+  all reach the same branch for that reason.
+- **The candidate filter is `inLibrary = true`.** A removed novel occupies no space and B32
+  says it can be put back without hindrance, so it must not occupy the collision slot of
+  somebody else's add. A sabotage that drops the filter is caught.
+- **The comparison is EQUALITY on a normalised key — not edit distance, not a substring test,
+  not common tokens.** A substring test would call "The Rune Smith" and "The Rune Smith
+  Returns" the same novel and warn about a collision that does not exist, which trains a
+  reader to dismiss the warning, and a dismissed warning protects nobody.
+- **`addedAt` becomes NOW on restore, not the previous value**, because § 4.1 required it
+  nulled on removal. The consequence is named in the code and the log rather than discovered:
+  after a remove-and-restore the novel sorts as *recently added*. No rule says otherwise.
+- **The unopened count is `unread among DOWNLOADED`.** B14 counts the chapters a reader can
+  still act on, and a chapter that is not on the phone cannot be opened — so counting unread
+  chapters of an undownloaded novel would put a badge on a tile whose contents the reader
+  does not have.
+- **Three SQL aggregates, never a loop.** A novel can carry 10 000 chapter rows and B9
+  requires that list to stay complete whatever its length.
+
+### TWO FINDINGS THIS SLICE PRODUCED
+
+- **drift stores a SQLite `DateTime` as UNIX SECONDS.** Two novels added in the same second
+  have byte-identical `addedAt` columns, so "newest first" is only meaningful to the second —
+  and the `id` tiebreaker is therefore the **normal** case, not an edge one. A library whose
+  order shifts between two reads of the same database is a library a reader cannot find
+  anything in, so `id` is in the `ORDER BY`. The ordering row writes its instants explicitly
+  rather than sleeping for a second.
+- **`replaceAll(Pattern, String)` takes ONE replacement for every match.** The accent table
+  was first joined with `|` on both sides, which folded every accented letter in a title into
+  the first value in the table. Caught by the row asserting "The Rêverie" collides with "The
+  Reverie" — which failed, because Dart has no NFD normaliser and precomposed `ê` is not a
+  combining mark. Fixed with `replaceAllMapped` over an explicit Latin table, bounded on
+  purpose: a Greek or Cyrillic title keeps its own letters, so two of them collide only if
+  they are genuinely equal, which is the correct answer rather than a missed fold.
+
+### SABOTAGE, FIVE, ALL CAUGHT
+
+| Sabotage | Rows that caught it |
+|---|---|
+| the removal **DELETEs** the novel row | **3 rows** |
+| the similar-title dialog is never asked | **2 rows** |
+| dismissing the dialog adds anyway | **3 rows** |
+| the candidate filter drops `inLibrary` | *a REMOVED novel does not collide* |
+| the comparison becomes a **substring test** | *the comparison is EQUALITY* |
+
+⚠️ **The first two attempts at the first and fourth sabotages did not compile.** Line-index
+edits broke multi-line expressions, so the suite failed to *load* — which is not evidence. Only
+the third attempts, which produced valid Dart, are counted above. Recorded because a sabotage
+that never ran says nothing about the tests.
+
+### FILES TOUCHED
+
+`lib/domain/library/library_repository.dart` (new),
+`lib/domain/library/library_entry.dart` (new),
+`lib/domain/library/similar_title.dart` (new),
+`lib/data/library/drift_library_repository.dart` (new),
+`test/data/library/drift_library_repository_test.dart` (new, 24).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **908 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass`.
+
+### NEXT SESSION SHOULD
+
+- **`2-5`'s remaining surface — the library SCREEN**, which is the half this slice's UI plan
+  covers and this session did not reach: the list, the tile, the "similar title" dialog and the
+  removal confirmation that quotes `downloadedChapterCount`. The repository, its four
+  operations and B40's normalisation are done and tested; what is missing is the widget tree and
+  its copy in both ARB files.
+- **`3-2`** (library) or **`3-1`** (Browse) — Browse is what makes the app read a novel end to
+  end, and `2-5`'s add needs a catalogue to add from.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not `DELETE` a novel row.** Three rows fail, and the schema would refuse anyway.
+- **Do not add `if (downloadedCount > 0) { … }` to the removal.** That branch is the trap.
+- **Do not treat dismissing the similar-title dialog as consent.**
+- **Do not sort by `addedAt` without `id`.** Same-second rows are the normal case.
