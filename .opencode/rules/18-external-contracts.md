@@ -264,6 +264,26 @@ frozen fixture rather than to a habit borrowed from another site. The two rows a
 absent author and the `/profile/`-not-`/author/` split — are the ones a habit would have
 got wrong, and neither is discoverable without reading the capture.
 
+## Royal Road — the chapter table is ordered by PUBLICATION, not by number, measured 2026-10-04
+
+**Found because a test failed with the opposite expectation**, which is the only reason it
+is worth writing down. The Runesmith capture's first three `tr[data-url]` numbers are
+**`526587`, `568159`, `520102`** — measured, and **not ascending**.
+
+Royal Road orders `table#chapters` by publication date. A source that sorted by chapter
+number, or renumbered rows `1, 2, 3…`, would produce an order the site never published —
+and **every chapter would still be present**, so nothing would look wrong. B9 requires the
+site's own complete order; this is the case where getting it wrong is invisible.
+
+The capture's **first row is a glossary** (`data-content="0"`), so renumbering would also
+silently claim the glossary is chapter 1.
+
+**The cross-site rule this adds:** *a chapter list is the site's order, and the site may
+order it by something other than the number in the URL.* `number` is a **sortable hint**,
+never an index to assign from. A row now asserts the first three numbers are exactly
+`[526587, 568159, 520102]` **and that they are not ascending**, so a future change in the
+site's order fails a test that says so rather than passing silently.
+
 ## Royal Road — the search side DOES have an empty marker, measured 2026-10-03 (`6-11`)
 
 **This is the other half of the row above, and the two must not be merged.** The
