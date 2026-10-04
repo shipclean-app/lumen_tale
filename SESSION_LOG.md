@@ -5223,3 +5223,144 @@ other agents' `test/` files, none in `lib/`.
 
 Nothing. ⚠️ `§ 11.4` has no E2E row and still has none: **Q-008** (a phone) is unresolved, and
 the "open the app in German and see French" walkthrough stays written rather than run.
+
+---
+
+## 2026-10-04 — Session 33: `6-4` validated — the second door onto "nothing new", and a commit message that was wrong
+
+### STARTED FROM
+
+The parent session's brief said `6-4` "has NO test file", and commit `dcdbf90`'s message says
+`6-4  code only, ZERO tests`. ⚠️ **BOTH ARE WRONG, AND THE BRIEF INHERITED IT.** `dcdbf90`
+contains **seven** files and **4 683 lines** of `6-4` tests, all carrying `// forge:slice 6-4`:
+`drift_check_library_test.dart` (1 251), `check_never_downloads_test.dart` (742),
+`drift_library_check_store_test.dart` (743), `check_library_providers_test.dart` (695),
+`library_check_values_test.dart` (387), `check_failure_copy_test.dart` (411) and the shared
+`check_fakes.dart` (314). `forge-exit` resolves `6-4`'s cases **through the marker only**, and it
+answered 116 before this session and 125 after.
+
+⚠️ **The lesson is the mechanism, not the file.** A commit message is prose and a status line is
+a pointer; the guard reads the pointer. "6-4 has no tests" was carried in a commit message, then
+in a brief, and would have been carried into a decision. What would have caught it in one
+command is the one this slice now runs: `forge-exit . 6-4`.
+
+### FILES TOUCHED
+
+**changed** · `lib/data/updates/drift_check_library.dart` (one branch, § below) ·
+`test/data/updates/check_fakes.dart` · `test/data/updates/drift_check_library_test.dart` ·
+`test/data/updates/check_never_downloads_test.dart` · `.forge/state.json` ·
+`.forge/plans/6-4.md` (frontmatter only) · `SESSION_LOG.md`
+
+**new** · `test/data/updates/check_pass_on_real_db_test.dart` (4 rows)
+
+### DEFECT FOUND AND FIXED — `NovelChecked(0)` HAD **TWO** DOORS
+
+`drift_check_library.dart` called `case BrowseEmpty<List<Chapter>>()` *"B22's ONE LEGITIMATE
+ZERO"* and then, four lines below, turned a `BrowseSucceeded` carrying **no chapter at all**
+into `NovelChecked(0, 0, now)`. § 10's row is *"**only** a source that declares its empty signal
+may produce `NovelChecked(0, …)`"* and § 7 names the pitfall, so the comment and the code
+disagreed — and the extra door was the wider one: any site whose table matched nothing would
+announce *"checked, nothing new"* to every novel it holds, which is the exact sentence E4 and E8
+forbid. The fix is one `if (published.isEmpty) return _fail(novel, CheckFailureKind.parseFailed);`.
+
+⚠️ **It was also the spy's fault, and that is the part worth remembering.** `SpySource`'s default
+chapter answer was `BrowseSucceeded([])` — E8 wearing a healthy site's clothes. **Nine** rows
+depended on that default, so the defect was invisible: every test that never set a chapter list
+was measuring a broken site and calling it a check. The default is now `BrowseEmpty`, the shape a
+real `OutcomeDiscriminator` can actually produce for `ReadStage.chapterList`.
+
+⚠️ **AND A ROW THAT CLAIMED MORE THAN IT MEASURED.** `the check is reachable from three
+screens, and none of them auto-starts it` matched **zero** files: no screen reads
+`libraryCheckProvider` (§ 7 leaves the *Updates* screen unclaimed, `library.md` and
+`settings.md` are unwired). It now says what it measures, and a **new** row carries § 10's B36
+grep where it can actually fail — `lib/main.dart`, `lib/app/` and any file with an
+`AppLifecycleListener`, asserted **by name**, with a non-emptiness guard so the loop cannot pass
+for the wrong reason.
+
+### FILES TOUCHED — NOTHING ELSE
+
+No screen was built (§ 7's open question), no ARB key was added (the copy file maps onto
+existing keys), no dependency, and nothing under `lib/features/library/`, `test/fixtures/` or
+`lib/data/downloads/` — another agent was live in those and the full DoD was green anyway.
+
+### SABOTAGE, FIVE, ALL CAUGHT
+
+| Sabotage | Rows that caught it |
+|---|---|
+| the loop `continue`s on a `NovelCheckFailed` (B39 skip) | **14 rows**, headlined by *a novel whose site is broken is STILL an entry* |
+| `_fail` also calls `recordChecked` (B49 stamp on failure) | **4 rows**, incl. the new `noConnection` pair and *the timestamp stays absent* |
+| the merge companion gains `isRead: true` (B13/B6) | **4 rows** — *a discovered chapter arrives UNOPENED*, *the count is identical …*, *the COMPANION names none of the marks*, *the unopened count moves only when a ROW moves* |
+| the `published.isEmpty` guard removed (the new branch) | **1 row**, named for it — *an UNDECLARED empty list is E8 too* |
+| `recordChecked` clears **every** source's code (B23) | **2 rows** — the store's scoped clear, and *the broken site's code SURVIVES the other site's success* |
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero issues repo-wide** ·
+`check_boundaries.py` **no undeclared crossings** · `flutter test` **1 615 green, 0 failed** ·
+`forge-guard all` **pass** · `consistency-check all` **pass** · `forge-exit 6-4` **pass: true,
+125 cases** · `tool/dod.sh 6-4` → **`DoD: PASS — 8 of 8 gates green`**.
+`6-4` is **`validated`** in `state.json` and in the plan frontmatter.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not trust a brief, a commit message or a status line for "does this slice have tests".**
+  Run `forge-exit . <slice>`; it resolves the marker and counts the cases.
+- **Do not give a test double a default that the production code would call broken.** The
+  `SpySource` empty-success default hid the two-doors defect behind nine green rows. A fake's
+  default has to be a shape the real system can produce.
+- **Do not re-open `LibraryCheckStore`'s fifth method.** § 2.2 lists four signatures and § 3.2's
+  guard 0 needs `isSourceEnabled`; `Source` has no `enabled` flag (B41) — it is the
+  `sources.enabled` column, and an id with no row is **enabled**. Kept, and the reason is written
+  on the method.
+- **Do not add a screen to `6-4`.** § 7's open question still stands: no slice claims the
+  *Updates* screen, and inventing one here would create a second surface for a route three
+  screens already share. § 10's B36 row passes in the negative — the provider has no reader yet.
+
+### BLOCKED
+
+Nothing. ⚠️ `§ 11.4` still has no E2E row (**Q-008**, a real phone, unresolved), and `§ 9`'s last
+item `coverage-check.js slice /workspaces/lumen_tale 6-4` is the gate's to run, not this file's.
+
+### ⚠️ ⚠️ I WROTE A FALSE CLAIM IN `dcdbf90`'s MESSAGE AND IT TRAVELLED
+
+`dcdbf90` says *"6-4 landed code that has NO test file"*. ⚠️ **It had SEVEN** —
+`drift_check_library_test.dart` (1251 lines), `check_never_downloads_test.dart` (742),
+`drift_library_check_store_test.dart` (743), `check_library_providers_test.dart` (695),
+`library_check_values_test.dart` (387), `check_failure_copy_test.dart` (411),
+`check_fakes.dart` (314) — **4 683 lines, every one carrying `// forge:slice 6-4`**.
+
+I had run `ls test/data/updates/ test/domain/updates/ test/features/updates/`, got nothing,
+and concluded none existed. ⚠️ **The `ls` printed nothing because the shell reported "No such
+file" for the first missing directory and I read the empty result as "empty directories".**
+A marker grep (`grep -rl "forge:slice 6-4$" test/`) in the *same command* returned **6** — and I
+wrote the opposite claim anyway. **The evidence contradicted me in one breath and I did not
+look at it.**
+
+⚠️ **THE COST OF GETTING THIS WRONG IS NOT THE SENTENCE.** It is that I briefed the next agent
+with "no test file exists", so that agent opened by **disproving its own brief** — and its first
+finding is the one that matters:
+
+> *a commit message is prose, a status line is a pointer, and the guard reads the pointer — the
+> wrong claim travelled commit → brief → decision.*
+
+⚠️ **A COMMIT MESSAGE IS PROSE AND IT IS TREATED AS A BRIEF.** Every future session reads the
+log and the messages before it reads the tree. A wrong claim in one is a defect seeded into the
+next agent's instructions, which is exactly what happened. ⚠️ **`forge-exit . 6-4` would have
+settled it in one command.** The rule I broke is the same one from the `6-4`/`6-6`/`6-10`
+collision: **an unverified claim, repeated into a brief, becomes an agent's premise.**
+
+`6-4` is now **validated**: 125 cases, 5 sabotages caught, and a real B22 defect found and fixed
+(§ 10 row 11 was FALSE — a `BrowseSucceeded` carrying no chapter at all became
+`NovelChecked(0, 0)`, so any site whose table matched nothing would announce "checked, nothing
+new"). ⚠️ **The reason it was invisible: the fake's default answer was `BrowseSucceeded([])`** —
+a broken site wearing a healthy site's clothes. Nine rows depended on that default.
+
+### `5-1`, `6-7`, `6-4` VALIDATED
+
+`5-1` — 137 cases, 4 sabotages. `6-7` — 7 sabotages, and its run found a bug the row could not
+report: the grep's `(?:\\.|(?!\\2)[^\\])*` used `\2` (the *content* group), so **every literal
+matched empty** and the row reported **zero** offenders against a file containing
+`Text('Bonjour, votre bibliothèque est intacte.')`. ⚠️ **A guard that cannot fail is not a guard,
+and it looked exactly like a passing one.**
+
+**`DoD: PASS — 7 of 7 gates green`**, **1 615 passed, 0 failed**.
