@@ -4506,7 +4506,7 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 17,
+      "finding_raised": 18,
       "fast_track_enter": 1,
       "finding_promoted": 13,
       "script_failure": 3,
@@ -4780,6 +4780,19 @@
       "correction": "Ajout d'un motif PROSE EN LIGNE, filtre par readRealPackages (liste du lockfile quand il existe, filet de cles de structure sinon — jamais l'inverse, ce qui a casse le selftest). Suffixe de version explicite et non '.*' : une classe 'tout sauf l'espace' produisait '0.10.10.' et fabriquait un faux positif sur workmanager. Prouve : conflit reel en table markdown -> exit 1 ; conflit reel dans la prose d'AGENTS.md -> exit 1 ; prose non-paquet ('La version 3.9.9 de Flutter') -> exit 0 ; restaure -> exit 0. selftest 231 passe, 1 echec preexistant (pglite absent).",
       "artifact": null,
       "raised_at": "2026-10-04T09:15:26.331Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-018",
+      "domain": "workflow.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "MESURE 2026-10-04: 02-architecture.md interdit features/* d'importer un autre features/*, et TROIS imports le font deja : features/browse -> features/library (show libraryStreamProvider), features/source_unavailable -> features/library (idem), et le nouveau chemin d'ajout de 3-2 l'aurait fait une quatrieme fois. La cause n'est pas les ecrans : c'est que libraryStreamProvider ET libraryRepositoryProvider VIVENT dans features/library/, alors que data/ est dans la liste des imports autorises pour features/*. Aucun garde-fou ne le detecte.",
+      "correction": "Deplacer les providers de bibliotheque vers data/library/ (ou core/), puis retirer les clauses show. Le provider de la BIBLIOTHEQUE est la seule chose que trois ecrans partagent, et il est le seul element de la feature qui merite d'etre partage. Analyse d'impact : library_screen, source_unavailable, browse, main.dart, et 3 fichiers de test. En attendant, le bouton Add de la ligne de catalogue NAVIGUE vers les details plutot que d'ecrire, ce qui rend le bouton VRAI sans ajouter une violation — et l'ecart avec browse-catalogue.md (qui veut une ecriture directe + snackbar Undo) est enregistre, non absorbe.",
+      "artifact": null,
+      "raised_at": "2026-10-04T11:28:40.154Z",
       "promoted_to": null,
       "resolved_at": null
     }

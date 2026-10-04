@@ -4529,3 +4529,70 @@ fails to build is not a sabotage that passed.
 `tool/dod.sh 3-2` → **DoD: PASS — 7 of 7 gates green**, exit 0.
 **1 083 passed + 9 skipped**, analyze zero, format clean, both Forge guards exit 0.
 Slices: 19 validated · 3 `in_progress` · 10 `planned`.
+
+---
+
+### ⚠️ `3-1`'s CATALOGUE ROW HAD A BUTTON THAT DID NOTHING
+
+`CatalogueRow` rendered `TextButton(onPressed: () {}, child: Text('Add'))` — a control
+labelled *add this novel* that **added nothing**. `3-1` was validated with 69 rows and none
+of them pressed it, because a widget that renders an empty closure is indistinguishable from
+one that renders a working one until a reader puts a finger on it.
+
+This is the **third** control in this project found to lie, and the shape is always the same:
+a callback that was never wired, in a screen whose tests asserted the *state* rather than the
+*gesture*. (`3-6`'s absent retry, the duplicated `registerScreens()`, and now this.)
+
+### THE CATALOGUE NOW REACHES THE DETAILS SCREEN — AND B12 IS EXERCISABLE
+
+Both row actions go through `app/router/app_router.dart`'s `openNovelDetails`, which is the
+one navigation path `02-architecture.md` allows a feature to use. That makes `3-2`'s
+`OfferToAdd` reachable: until now the details screen's **only** production caller was
+History, where the novel is already kept, so slot 1 was always *Continue* and B12's button
+was unreachable in the running app.
+
+⚠️ **THE ADD BUTTON NAVIGATES INSTEAD OF WRITING, AND THAT IS A DEVIATION FROM
+`browse-catalogue.md`.** The design's interaction table says the row's `AddAction` writes the
+library directly and shows a snackbar with *Undo*. Doing that here needs
+`features/browse → features/library`, and **two features already do that** (`browse` and
+`source_unavailable`, both for `libraryStreamProvider`). So the boundary is already crossed
+three times over, by a rule nothing enforces.
+
+⚠️ **The cause is not the screens — it is where the providers live.** `libraryRepositoryProvider`
+and `libraryStreamProvider` sit in `features/library/`, while `data/` is on the list of
+imports `features/*` may use. The library provider is the *only* thing three screens share,
+and it is the only part of that feature that deserves sharing. Moving it to `data/library/`
+retires three violations at once. Recorded as **F-018** with its impact list.
+
+Until then the button **navigates**, which makes it true rather than decorative, and the
+one-extra-tap cost is recorded rather than absorbed.
+
+### TWO OF MY OWN ROWS WERE WRONG, AND RUNNING THEM IS WHAT CAUGHT IT
+
+- **Long-press OPENS the novel, and that is correct.** The row asserted a long press does
+  *nothing*; it failed, because with no long-press handler `ListTile`'s tap recogniser wins
+  the gesture arena and fires `onTap`. That is Material's documented behaviour. The row now
+  states the rule B12 actually cares about — **a long press must never ADD** — plus rows
+  proving there is no `Checkbox`, no `Dismissible` and no `CheckboxListTile` on the row at
+  all. The failure mode the design names is a gesture that fires *while scrolling* **keeping**
+  novels nobody looked at. Keeping, not opening.
+- **The identity row could have passed against the wrong implementation.** With one novel in
+  the fixture, "the tap opens this novel" also holds for a row that looked the novel *up by
+  title*. So there are two rows: one id, and **two novels sharing the title `Regression`
+  opening two different destinations** — which is the anti-merge case as two taps.
+
+### SABOTAGE, THREE ATTEMPTED — AND THE THIRD DID NOT APPLY
+
+| sabotage | result |
+|---|---|
+| the shipped `onPressed: () {}` restored | **caught** — *a control that navigates to nothing is a button that lies* |
+| the row's `onTap` removed | **caught** — *two novels with the SAME title* |
+| kept row given a disabled Add | **first attempt did not apply** — the edit produced `false ? null : isKept ? …`, which leaves the kept case unchanged. Re-run as a real substitution of the marker for a disabled button, it is **caught** |
+
+### STATUS
+
+`tool/dod.sh` → **DoD: PASS — 6 of 6 gates green**, exit 0. **1 096 passed + 9 skipped.**
+Slices: 19 validated · 3 `in_progress` · 10 `planned`. `3-2` still `in_progress` — its two
+remaining gaps are the screen-level wiring of the row into `NovelDetailsScreen` and B12's
+tap, and **`OfferToAdd` is now reachable for the first time**, which is what makes them
+buildable rather than theoretical.

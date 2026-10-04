@@ -929,3 +929,4 @@
 {"ts":"2026-10-04T10:11:35.360Z","type":"exit_criterion_met","slice":"3-2","test_cases":76}
 {"ts":"2026-10-04T10:51:31.258Z","type":"exit_criterion_met","slice":"3-2","test_cases":87}
 {"ts":"2026-10-04T10:59:13.371Z","type":"exit_criterion_met","slice":"3-2","test_cases":87}
+{"ts":"2026-10-04T11:28:40.179Z","type":"finding_raised","id":"F-018","domain":"workflow.md","severity":"majeur"}

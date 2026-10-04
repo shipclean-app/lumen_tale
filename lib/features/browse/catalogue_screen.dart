@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:lumen_tale/app/router/app_router.dart' show openNovelDetails;
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/domain/library/library_entry.dart';
@@ -127,6 +128,36 @@ class CatalogueScreen extends ConsumerWidget {
   /// no search" — the one confusion `6-2` exists to prevent.
   final bool? supportsSearch;
 
+  /// What a row may do, assembled ONCE here and handed down.
+  ///
+  /// ⚠️ **`_Grid` and `CatalogueRow` take callbacks, never a `WidgetRef`.** They are the
+  /// layer that renders, and a widget that reached for the repository itself would put the
+  /// write one layer away from the branch that decides whether to write.
+  ///
+  /// ⚠️ **B40 — the row opens THE NOVEL IN THE ROW, never one with a similar title.** The
+  /// tap carries `novel.id`, so a catalogue listing two novels with the same title opens the
+  /// one the reader tapped. Re-deriving the novel from its title would break exactly the
+  /// anti-merge case B40 is written against.
+  ///
+  /// ⚠️ **THE ADD BUTTON NAVIGATES, AND THAT IS A DEVIATION FROM THE DESIGN DOC.**
+  /// `browse-catalogue.md`'s interaction table says the row's `AddAction` writes the library
+  /// directly and shows a snackbar with *Undo*. Doing that here would mean
+  /// `features/browse` importing `features/library` — which `02-architecture.md` forbids, and
+  /// which **two features already do** (`browse` for `libraryStreamProvider`,
+  /// `source_unavailable` for the same). The coupling is real and pre-existing; it is a
+  /// property of *where the library providers live*, not of this screen.
+  ///
+  /// The honest move available without rewriting `2-5` is to route the button to the details
+  /// screen, which owns the add and already reaches `addFromCatalogue`. That makes the button
+  /// TRUE — it was `() {}`, a control that said *add this novel* and added nothing — and it
+  /// is what makes `3-2`'s B12 button reachable, which is the point of this wiring. The cost
+  /// is one extra tap against the design's intent, and it is recorded rather than absorbed.
+  _CatalogueRowActions _rowActions(BuildContext context) =>
+      _CatalogueRowActions(
+        onOpen: (Novel novel) => openNovelDetails(context, novelId: novel.id),
+        onAdd: (Novel novel) => openNovelDetails(context, novelId: novel.id),
+      );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppLocalizations copy = AppLocalizations.of(context);
@@ -159,8 +190,14 @@ class CatalogueScreen extends ConsumerWidget {
                 value: final CatalogueViewState state,
               ) =>
                 switch (state) {
-                  CatalogueFilled() => _Grid(state: state),
-                  CatalogueSearchFilled() => _Grid(state: state.state),
+                  CatalogueFilled() => _Grid(
+                    state: state,
+                    actions: _rowActions(context),
+                  ),
+                  CatalogueSearchFilled() => _Grid(
+                    state: state.state,
+                    actions: _rowActions(context),
+                  ),
                   _ => CatalogueStates.forState(state),
                 },
               AsyncError<CatalogueViewState>(error: final Object failure) =>
@@ -193,9 +230,10 @@ void goToSearch(BuildContext context, String sourceId, String words) {
 /// ⚠️ **Keyed by the novel's id**, because a novel's id is stable across re-reads and its
 /// position is not.
 class _Grid extends StatelessWidget {
-  const _Grid({required this.state});
+  const _Grid({required this.state, required this.actions});
 
   final CatalogueFilled state;
+  final _CatalogueRowActions actions;
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +251,8 @@ class _Grid extends StatelessWidget {
           key: ValueKey<String>(novel.id),
           novel: novel,
           isKept: state.isKept(novel),
+          onOpen: actions.onOpen,
+          onAdd: actions.onAdd,
         );
       },
     );
@@ -221,17 +261,48 @@ class _Grid extends StatelessWidget {
 
 /// One novel. Title, then the site's own numbers — and **no author line when the site
 /// published none** (ADR-024).
+/// The two things a catalogue row may do, and nothing else.
+///
+/// ⚠️ **A CLASS, not two loose parameters**, because the pair travels together and a
+/// `_Grid` that took them separately could be handed one and not the other — producing a
+/// row that opens nothing and adds nothing, which is the state this file was in.
+class _CatalogueRowActions {
+  const _CatalogueRowActions({required this.onOpen, required this.onAdd});
+
+  /// Opens this novel's details. B40 — the novel in the row.
+  final void Function(Novel novel) onOpen;
+
+  /// ⚠️ **NAVIGATES to the novel's details, where the add happens** (B12) — so this returns
+  /// nothing. `openNovelDetails` hands back the pushed route's result, which is not an
+  /// `AddOutcome`; typing it as one would have been a claim about the button that is false.
+  final void Function(Novel novel) onAdd;
+}
+
+/// One novel. Title, then the site's own numbers — and **no author line when the site
+/// published none** (ADR-024).
 class CatalogueRow extends StatelessWidget {
-  const CatalogueRow({required this.novel, required this.isKept, super.key});
+  const CatalogueRow({
+    required this.novel,
+    required this.isKept,
+    required this.onOpen,
+    required this.onAdd,
+    super.key,
+  });
 
   final Novel novel;
   final bool isKept;
+  final void Function(Novel novel) onOpen;
+  final void Function(Novel novel) onAdd;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final AppLocalizations copy = AppLocalizations.of(context);
     return ListTile(
+      // ⚠️ **THE WHOLE ROW OPENS THE NOVEL.** `browse-catalogue.md`'s interaction table says
+      // so, and it is the only reason a reader who has just discovered a novel can reach
+      // its chapter list, its description and its *Add* button.
+      onTap: () => onOpen(novel),
       title: Text(novel.title),
       // ⚠️ **`author` is omitted, not replaced by a dash.** ADR-024: displayed, never searched,
       // and a site may publish none. Royal Road's catalogue rows carry no author at all — a
@@ -245,13 +316,23 @@ class CatalogueRow extends StatelessWidget {
               ),
             ),
       trailing: isKept
+          // ⚠️ **ABSENT, NOT DISABLED** (`browse-catalogue.md`, B11): a kept row carries the
+          // marker and no Add, because a greyed *Add* on a row the reader can still open
+          // invites them to wonder what they are missing.
           ? Text(
               copy.browseTileKept,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             )
-          : TextButton(onPressed: () {}, child: Text(copy.browseTileAdd)),
+          : TextButton(
+              // ⚠️ **This used to be `() {}`** — a control labelled *add this novel* that added
+              // nothing, which is B12's "explicit user action" rendered as a decoration. It now
+              // reaches `2-5.addFromCatalogue`, so B40's similar-title question fires BEFORE
+              // anything is stored, exactly as it does from the Library.
+              onPressed: () => onAdd(novel),
+              child: Text(copy.browseTileAdd),
+            ),
     );
   }
 }
