@@ -1368,6 +1368,190 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'That is everything this tag publishes'**
   String get browseFooterEnd;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'NO CONNECTION'**
+  String get causeNoConnectionKicker;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'THE PAGES OF THIS SITE HAVE CHANGED'**
+  String get causeLayoutChangedKicker;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'THE SITE IS NOT ANSWERING'**
+  String get causeSiteUnavailableKicker;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'REMOVED FROM THE SOURCE'**
+  String get causeContentRemovedKicker;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'THIS SITE COULD NOT BE READ'**
+  String get causeUnreadableRecordKicker;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'No connection to {host}'**
+  String causeNoConnectionTitle(Object host);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was lost. Your library and your downloaded chapters are exactly as they were.'**
+  String get causeNoConnectionBody;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The pages of this site have changed'**
+  String get causeLayoutChangedTitle;
+
+  /// ⚠️ **"A fault in the copy this app HAS of {source} — not in {source}".** E8's whole point: the reader did not break anything and the site did not break anything. A message that says "{source} is broken" transfers the fault to the site, which is the wrong party and the one the reader cannot report to.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a fault in the copy this app has of {source} — not in {source}, and nothing is to do with how you use it. {retryNote}'**
+  String causeLayoutChangedBody(Object retryNote, Object source);
+
+  /// ⚠️ **Said BEFORE the button, and it hedges honestly.** A site mid-deployment is a temporary state, and "sometimes it resolves on its own. Rarely." is a sentence that sets the expectation a retry needs to be fair.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes it resolves on its own. Rarely.'**
+  String get causeLayoutChangedRetryNote;
+
+  /// ⚠️ **A sentence the reader can read ALOUD**, which is C12: the reader is often on a phone they cannot type on, and "the pages of X have changed" is something a person can act on while "HTTP 200" is not.
+  ///
+  /// In en, this message translates to:
+  /// **'Say: \"the pages of {source} have changed and the app can no longer read them.\"'**
+  String causeLayoutChangedDictation(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{source} is not answering'**
+  String causeSiteUnavailableTitle(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The site refused or is down. Nothing about your library was touched.'**
+  String get causeSiteUnavailableBody;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'This is no longer on {source}'**
+  String causeContentRemovedTitle(Object source);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The site says so in its own words. Your saved copy is untouched.'**
+  String get causeContentRemovedBody;
+
+  /// ⚠️ **The caption that replaces the button.** There is no retry here and a greyed-out one would tell a reader the app is considering an action it will not take. The words say why.
+  ///
+  /// In en, this message translates to:
+  /// **'There is nothing to try again here.'**
+  String get causeContentRemovedNoRetry;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'This app cannot say what happened'**
+  String get causeUnreadableRecordTitle;
+
+  /// ⚠️ **"It will not guess", stated as a virtue.** This is the only screen that admits the app does not know, and saying so plainly is what stops a reader assuming the app knows and is being coy.
+  ///
+  /// In en, this message translates to:
+  /// **'It kept a record it can no longer read, so it will not guess. The app will not invent a diagnosis.'**
+  String get causeUnreadableRecordBody;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'What happened'**
+  String get causeEvidenceHeading;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get causeActionTryAgain;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Copy this'**
+  String get causeActionCopyThis;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get causeActionBack;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Browse another site'**
+  String get causeActionBrowseOther;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Open library'**
+  String get causeActionOpenLibrary;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'What still works'**
+  String get sourceUnavailableStillWorksHeading;
+
+  /// ⚠️ **The whole reason this screen exists.** SC-6's damage is not the failure — it is a reader concluding their library is gone. The three figures are LOCAL counts (B14, B48), so they are true without a network and they are the sentence that ends the fear.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {library} novels and {downloaded} downloaded chapters are on this phone and are readable now, with or without {source}.'**
+  String sourceUnavailableStillWorksBody(
+    Object downloaded,
+    Object library,
+    Object source,
+  );
+
+  /// ⚠️ **A count of zero says "nothing was lost" rather than nothing.** The empty case and the failure case read alike otherwise, and a reader who has just seen a failure cannot tell "empty" from "gone".
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is stored yet — and nothing was lost by this failure.'**
+  String get sourceUnavailableStillWorksEmpty;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Try again in {seconds}s'**
+  String sourceUnavailableRetryIn(Object seconds);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'The site asked us to wait {seconds}s.'**
+  String sourceUnavailableWaitingForSite(Object seconds);
+
+  /// ⚠️ **Not "no connection".** `CauseUnknown` means the app cannot read its own record; it does not mean the phone is offline, and a reader sent to check a setting that is already correct learns to distrust every error this app shows.
+  ///
+  /// In en, this message translates to:
+  /// **'The app cannot read its own record of this failure'**
+  String get browseFailureUnknownCause;
 }
 
 class _AppLocalizationsDelegate

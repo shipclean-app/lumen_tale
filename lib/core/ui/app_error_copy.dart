@@ -42,6 +42,11 @@ enum AppErrorString {
   storageFull,
   parseFailed,
 
+  /// ⚠️ **The app could not read its own record of the failure.** Its own string, because "the
+  /// site changed" and "the site is down" are both claims this app is not in a position to make
+  /// when it cannot say which happened.
+  causeUnknown,
+
   // ── the other `AppException` subclasses ──────────────────────────────────
   databaseUnavailable,
   chapterNotAvailable,
@@ -89,6 +94,7 @@ extension AppErrorCopy on AppLocalizations {
       AppErrorString.itemRemovedAtSource => errorItemRemovedAtSource,
       AppErrorString.storageFull => errorStorageFull,
       AppErrorString.parseFailed => errorParseFailed,
+      AppErrorString.causeUnknown => errorSiteUnreadable,
       AppErrorString.databaseUnavailable => errorSiteUnreadable,
       AppErrorString.chapterNotAvailable => errorSiteUnreadable,
       AppErrorString.settingsWriteFailed => errorSettingsWrite,
@@ -131,6 +137,11 @@ extension AppErrorCopy on AppLocalizations {
       AppErrorString.storageFull => actionFreeSpace,
       // Report. A retry cannot repair a bad conversion.
       AppErrorString.parseFailed => actionReportBug,
+      // ⚠️ **Retry, and that is a guess.** An app that does not know what happened cannot know
+      // whether trying again helps — but a reader stuck with no button at all has nothing to do
+      // either, and the copy says the app does not know. The screen offers the retry; the words
+      // keep the claim honest.
+      AppErrorString.causeUnknown => commonRetry,
       AppErrorString.databaseUnavailable => commonRetry,
       AppErrorString.chapterNotAvailable => commonBack,
       // B24's pattern: the control snapped back, so the sentence explains it.
@@ -194,6 +205,7 @@ extension AppErrorCopy on AppLocalizations {
       SourceUnavailable() => AppErrorString.sourceUnavailable,
       ItemRemovedAtSource() => AppErrorString.itemRemovedAtSource,
       ParseFailed() => AppErrorString.parseFailed,
+      CauseUnknown() => AppErrorString.causeUnknown,
     };
   }
 

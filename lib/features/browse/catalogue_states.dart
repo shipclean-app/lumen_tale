@@ -237,5 +237,9 @@ extension SourceFailureCopy on SourceFailure {
     SourceUnavailable() => copy.browseFailureUnavailable,
     ItemRemovedAtSource() => copy.browseFailureItemRemoved,
     ParseFailed() => copy.browseFailureParse,
+    // ⚠️ **Its own sentence, and "no connection" would be a guess.** This cause means the app
+    // cannot read its own record; it does not mean the phone is offline, and saying so would
+    // send a reader to check a setting that is already correct.
+    CauseUnknown() => copy.browseFailureUnknownCause,
   };
 }

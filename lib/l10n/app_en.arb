@@ -958,5 +958,125 @@
   "browseFooterEnd": "That is everything this tag publishes",
   "@browseFooterEnd": {
     "description": ""
+  },
+  "causeNoConnectionKicker": "NO CONNECTION",
+  "@causeNoConnectionKicker": {
+    "description": ""
+  },
+  "causeLayoutChangedKicker": "THE PAGES OF THIS SITE HAVE CHANGED",
+  "@causeLayoutChangedKicker": {
+    "description": ""
+  },
+  "causeSiteUnavailableKicker": "THE SITE IS NOT ANSWERING",
+  "@causeSiteUnavailableKicker": {
+    "description": ""
+  },
+  "causeContentRemovedKicker": "REMOVED FROM THE SOURCE",
+  "@causeContentRemovedKicker": {
+    "description": ""
+  },
+  "causeUnreadableRecordKicker": "THIS SITE COULD NOT BE READ",
+  "@causeUnreadableRecordKicker": {
+    "description": ""
+  },
+  "causeNoConnectionTitle": "No connection to {host}",
+  "@causeNoConnectionTitle": {
+    "description": ""
+  },
+  "causeNoConnectionBody": "Nothing was lost. Your library and your downloaded chapters are exactly as they were.",
+  "@causeNoConnectionBody": {
+    "description": ""
+  },
+  "causeLayoutChangedTitle": "The pages of this site have changed",
+  "@causeLayoutChangedTitle": {
+    "description": ""
+  },
+  "causeLayoutChangedBody": "This is a fault in the copy this app has of {source} — not in {source}, and nothing is to do with how you use it. {retryNote}",
+  "@causeLayoutChangedBody": {
+    "description": "⚠️ **\"A fault in the copy this app HAS of {source} — not in {source}\".** E8's whole point: the reader did not break anything and the site did not break anything. A message that says \"{source} is broken\" transfers the fault to the site, which is the wrong party and the one the reader cannot report to."
+  },
+  "causeLayoutChangedRetryNote": "Sometimes it resolves on its own. Rarely.",
+  "@causeLayoutChangedRetryNote": {
+    "description": "⚠️ **Said BEFORE the button, and it hedges honestly.** A site mid-deployment is a temporary state, and \"sometimes it resolves on its own. Rarely.\" is a sentence that sets the expectation a retry needs to be fair."
+  },
+  "causeLayoutChangedDictation": "Say: \"the pages of {source} have changed and the app can no longer read them.\"",
+  "@causeLayoutChangedDictation": {
+    "description": "⚠️ **A sentence the reader can read ALOUD**, which is C12: the reader is often on a phone they cannot type on, and \"the pages of X have changed\" is something a person can act on while \"HTTP 200\" is not."
+  },
+  "causeSiteUnavailableTitle": "{source} is not answering",
+  "@causeSiteUnavailableTitle": {
+    "description": ""
+  },
+  "causeSiteUnavailableBody": "The site refused or is down. Nothing about your library was touched.",
+  "@causeSiteUnavailableBody": {
+    "description": ""
+  },
+  "causeContentRemovedTitle": "This is no longer on {source}",
+  "@causeContentRemovedTitle": {
+    "description": ""
+  },
+  "causeContentRemovedBody": "The site says so in its own words. Your saved copy is untouched.",
+  "@causeContentRemovedBody": {
+    "description": ""
+  },
+  "causeContentRemovedNoRetry": "There is nothing to try again here.",
+  "@causeContentRemovedNoRetry": {
+    "description": "⚠️ **The caption that replaces the button.** There is no retry here and a greyed-out one would tell a reader the app is considering an action it will not take. The words say why."
+  },
+  "causeUnreadableRecordTitle": "This app cannot say what happened",
+  "@causeUnreadableRecordTitle": {
+    "description": ""
+  },
+  "causeUnreadableRecordBody": "It kept a record it can no longer read, so it will not guess. The app will not invent a diagnosis.",
+  "@causeUnreadableRecordBody": {
+    "description": "⚠️ **\"It will not guess\", stated as a virtue.** This is the only screen that admits the app does not know, and saying so plainly is what stops a reader assuming the app knows and is being coy."
+  },
+  "causeEvidenceHeading": "What happened",
+  "@causeEvidenceHeading": {
+    "description": ""
+  },
+  "causeActionTryAgain": "Try again",
+  "@causeActionTryAgain": {
+    "description": ""
+  },
+  "causeActionCopyThis": "Copy this",
+  "@causeActionCopyThis": {
+    "description": ""
+  },
+  "causeActionBack": "Back",
+  "@causeActionBack": {
+    "description": ""
+  },
+  "causeActionBrowseOther": "Browse another site",
+  "@causeActionBrowseOther": {
+    "description": ""
+  },
+  "causeActionOpenLibrary": "Open library",
+  "@causeActionOpenLibrary": {
+    "description": ""
+  },
+  "sourceUnavailableStillWorksHeading": "What still works",
+  "@sourceUnavailableStillWorksHeading": {
+    "description": ""
+  },
+  "sourceUnavailableStillWorksBody": "Your {library} novels and {downloaded} downloaded chapters are on this phone and are readable now, with or without {source}.",
+  "@sourceUnavailableStillWorksBody": {
+    "description": "⚠️ **The whole reason this screen exists.** SC-6's damage is not the failure — it is a reader concluding their library is gone. The three figures are LOCAL counts (B14, B48), so they are true without a network and they are the sentence that ends the fear."
+  },
+  "sourceUnavailableStillWorksEmpty": "Nothing is stored yet — and nothing was lost by this failure.",
+  "@sourceUnavailableStillWorksEmpty": {
+    "description": "⚠️ **A count of zero says \"nothing was lost\" rather than nothing.** The empty case and the failure case read alike otherwise, and a reader who has just seen a failure cannot tell \"empty\" from \"gone\"."
+  },
+  "sourceUnavailableRetryIn": "Try again in {seconds}s",
+  "@sourceUnavailableRetryIn": {
+    "description": ""
+  },
+  "sourceUnavailableWaitingForSite": "The site asked us to wait {seconds}s.",
+  "@sourceUnavailableWaitingForSite": {
+    "description": ""
+  },
+  "browseFailureUnknownCause": "The app cannot read its own record of this failure",
+  "@browseFailureUnknownCause": {
+    "description": "⚠️ **Not \"no connection\".** `CauseUnknown` means the app cannot read its own record; it does not mean the phone is offline, and a reader sent to check a setting that is already correct learns to distrust every error this app shows."
   }
 }

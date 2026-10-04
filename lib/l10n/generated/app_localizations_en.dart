@@ -787,4 +787,122 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get browseFooterEnd => 'That is everything this tag publishes';
+
+  @override
+  String get causeNoConnectionKicker => 'NO CONNECTION';
+
+  @override
+  String get causeLayoutChangedKicker => 'THE PAGES OF THIS SITE HAVE CHANGED';
+
+  @override
+  String get causeSiteUnavailableKicker => 'THE SITE IS NOT ANSWERING';
+
+  @override
+  String get causeContentRemovedKicker => 'REMOVED FROM THE SOURCE';
+
+  @override
+  String get causeUnreadableRecordKicker => 'THIS SITE COULD NOT BE READ';
+
+  @override
+  String causeNoConnectionTitle(Object host) {
+    return 'No connection to $host';
+  }
+
+  @override
+  String get causeNoConnectionBody =>
+      'Nothing was lost. Your library and your downloaded chapters are exactly as they were.';
+
+  @override
+  String get causeLayoutChangedTitle => 'The pages of this site have changed';
+
+  @override
+  String causeLayoutChangedBody(Object retryNote, Object source) {
+    return 'This is a fault in the copy this app has of $source — not in $source, and nothing is to do with how you use it. $retryNote';
+  }
+
+  @override
+  String get causeLayoutChangedRetryNote =>
+      'Sometimes it resolves on its own. Rarely.';
+
+  @override
+  String causeLayoutChangedDictation(Object source) {
+    return 'Say: \"the pages of $source have changed and the app can no longer read them.\"';
+  }
+
+  @override
+  String causeSiteUnavailableTitle(Object source) {
+    return '$source is not answering';
+  }
+
+  @override
+  String get causeSiteUnavailableBody =>
+      'The site refused or is down. Nothing about your library was touched.';
+
+  @override
+  String causeContentRemovedTitle(Object source) {
+    return 'This is no longer on $source';
+  }
+
+  @override
+  String get causeContentRemovedBody =>
+      'The site says so in its own words. Your saved copy is untouched.';
+
+  @override
+  String get causeContentRemovedNoRetry =>
+      'There is nothing to try again here.';
+
+  @override
+  String get causeUnreadableRecordTitle => 'This app cannot say what happened';
+
+  @override
+  String get causeUnreadableRecordBody =>
+      'It kept a record it can no longer read, so it will not guess. The app will not invent a diagnosis.';
+
+  @override
+  String get causeEvidenceHeading => 'What happened';
+
+  @override
+  String get causeActionTryAgain => 'Try again';
+
+  @override
+  String get causeActionCopyThis => 'Copy this';
+
+  @override
+  String get causeActionBack => 'Back';
+
+  @override
+  String get causeActionBrowseOther => 'Browse another site';
+
+  @override
+  String get causeActionOpenLibrary => 'Open library';
+
+  @override
+  String get sourceUnavailableStillWorksHeading => 'What still works';
+
+  @override
+  String sourceUnavailableStillWorksBody(
+    Object downloaded,
+    Object library,
+    Object source,
+  ) {
+    return 'Your $library novels and $downloaded downloaded chapters are on this phone and are readable now, with or without $source.';
+  }
+
+  @override
+  String get sourceUnavailableStillWorksEmpty =>
+      'Nothing is stored yet — and nothing was lost by this failure.';
+
+  @override
+  String sourceUnavailableRetryIn(Object seconds) {
+    return 'Try again in ${seconds}s';
+  }
+
+  @override
+  String sourceUnavailableWaitingForSite(Object seconds) {
+    return 'The site asked us to wait ${seconds}s.';
+  }
+
+  @override
+  String get browseFailureUnknownCause =>
+      'The app cannot read its own record of this failure';
 }

@@ -17,6 +17,8 @@ import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/features/library/library_screen.dart';
 import 'package:lumen_tale/features/reader/reader_screen.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
+import 'package:lumen_tale/features/source_unavailable/failure_cause.dart';
+import 'package:lumen_tale/features/source_unavailable/source_unavailable_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
 import 'package:lumen_tale/sources/implementations/source_registry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -54,6 +56,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// `app/` still imports no `features/` **package** — these are function bodies reached
 /// through the registry, and `test/app/shell/app_shell_test.dart` greps the import lines.
 void registerScreens() {
+  registerScreen(
+    AppRoutes.sourceUnavailable,
+    // ⚠️ **`pathParameters['failure']` is a CAUSE NAME, not a failure object.** A failure is
+    // not serialisable and must not be reconstructed from a URL — so the route names the
+    // cause and the screen rebuilds the typed failure from it. That keeps B24's rule (a
+    // typed reason, never a string) intact through a navigation boundary, and it means a
+    // stale deep link cannot invent a cause this build does not have.
+    (BuildContext context, GoRouterState state) => SourceUnavailableScreen(
+      sourceId: state.pathParameters['sourceId']!,
+      sourceName: state.pathParameters['sourceId']!,
+      failure: failureFromCauseName(
+        state.uri.queryParameters['cause'] ?? 'unreadable-record',
+      ),
+    ),
+  );
   registerScreen(
     AppRoutes.sourceGenre,
     (BuildContext context, GoRouterState state) => CatalogueScreen(

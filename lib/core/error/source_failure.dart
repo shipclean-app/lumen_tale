@@ -221,3 +221,31 @@ final class ParseFailed extends SourceFailure {
   @override
   int get hashCode => Object.hash(ParseFailed, path);
 }
+
+/// The app cannot say what happened, because it cannot read its own record of the failure.
+///
+/// ⚠️ **Its own case, and it is a claim rather than a default.** A reader who is told "the site
+/// changed" and is then told the site is fine, and then is told the network is down, has been
+/// told three things and believes none. Saying *this app cannot say* is weaker than any of
+/// them and is the only one that is true.
+///
+/// It exists in `core/error` rather than in a feature because `SourceFailure` is sealed here,
+/// and a vocabulary that lives apart from the type it extends cannot be exhaustive.
+final class CauseUnknown extends SourceFailure {
+  const CauseUnknown();
+
+  /// ⚠️ **Not retriable, and that is a claim.** An app that does not know what happened cannot
+  /// know whether trying again would help — and a retry button here would be the app guessing
+  /// twice.
+  @override
+  bool get isRetriable => false;
+
+  @override
+  bool operator ==(Object other) => other is CauseUnknown;
+
+  @override
+  int get hashCode => 0;
+
+  @override
+  String toString() => 'CauseUnknown';
+}

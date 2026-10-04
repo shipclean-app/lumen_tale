@@ -3895,3 +3895,103 @@ the classification table) · `6-7` (i18n taxonomy content).
 
 - **Do not map a failure to an empty list.** That is SC-6 and three rows now say so.
 - **Do not invent `hasMore`** when the site did not say there is more.
+
+---
+
+## 2026-10-04 — Session 27: `3-6` — SC-6's only surface
+
+### STARTED FROM
+
+`3-1` validated at `ca421f1`. Continued straight into `3-6`.
+
+### DECIDED
+
+- **`SourceFailure` GAINED A SEVENTH CASE, `CauseUnknown`, and the compiler enforced four files.**
+  Adding it broke `app_error_copy.dart`, `catalogue_states.dart` and `source_failure_test.dart`
+  before it broke a single test — which is the sealed hierarchy working as intended. The case is
+  in `core/error/` because a vocabulary that lives apart from the type it extends cannot be
+  exhaustive.
+- **`CauseUnknown` is a CLAIM, not a default.** A reader told "the site changed", then "the site
+  is fine", then "the network is down" has been told three things and believes none. *This app
+  cannot say* is weaker than all of them and is the only one that is true. It carries
+  `isRetriable == false` — an app that does not know what happened cannot know whether trying
+  again helps.
+- **The COLOUR is the message, and red means exactly one thing**: this app's selectors no longer
+  match the site. `noConnection` is `primary`, `siteUnavailable` is `tertiary`,
+  `contentRemoved` is `onSurface` — the author withdrew a chapter, which is the site *working*.
+  A failure page that is red whatever happened teaches a reader that red means "the app is in a
+  mood", and the reader who needs to tell the owner **which** thing broke is exactly the one who
+  can no longer.
+- **A content removal has NO retry — absent, not disabled.** There is nothing to retry; a
+  greyed-out *Try again* tells a reader the app is considering an action it will not take, and a
+  caption says so in words.
+- **The evidence line never contains a PATH.** `ParseFailed.path` is deliberately not
+  destructured, and a row asserts the rendered sentence contains no `/fictions` and no `?page=1`.
+  A request path is not a fact a reader can act on and is a site-internal URL on their screen.
+- **The site's own marker is KEPT in the evidence.** "The site said: There is nothing here :("
+  is the proof that B22's discriminant was applied, and discarding it would leave a reader with
+  "the page was empty" and no explanation.
+- **C12's sentence is on the screen.** *Say: "the pages of Royal Road have changed and the app
+  can no longer read them."* — because the reader is often on a phone they cannot type on, and
+  this is something a person can act on while "HTTP 200" is not.
+- **A layout change blames the APP'S COPY, not the site.** *"a fault in the copy this app has of
+  Royal Road — not in Royal Road, and nothing is to do with how you use it."* E8's whole point:
+  the reader broke nothing and the site broke nothing, and a message saying "{source} is broken"
+  transfers the fault to the one party the reader cannot report to.
+- **The still-works block carries three LOCAL counts**, and a count of zero says *"Nothing is
+  stored yet — and nothing was lost by this failure"* rather than nothing. Without that sentence
+  the empty case and the failure case read alike.
+- **A route carries a CAUSE NAME, never a failure.** A `SourceFailure` is not serialisable, and
+  rebuilding one from URL fields would accept a status code and a selector from whatever typed
+  the link — B24's rule arriving through the back door. An unknown name becomes `CauseUnknown`,
+  not a guess.
+
+### TWO SABOTAGES THAT DID NOT FAIL, AND WHAT EACH ONE WAS
+
+- **Repainting `colourFor` so no-connection went red passed every row** — because the colour rows
+  asserted `classify`'s `CauseColour` enum, and the enum still said `info` while the screen drew
+  red. The rule is about what a **reader sees**, so the row now asserts `colourFor` directly and
+  asserts the **kicker on screen** is not the error colour. Re-run, both fail.
+- **Turning a `ParseFailed` into its own mystery cause passed** — because the sabotage's first
+  attempt did not match the formatted source. Re-run with a line-index edit, the exhaustive
+  classification row fails.
+
+### SABOTAGE, SEVEN ATTEMPTED, FIVE CAUGHT FIRST TIME
+
+| Sabotage | Rows that caught it |
+|---|---|
+| a content removal gets a disabled retry | *a REMOVED chapter has NO retry* |
+| the evidence line is dropped | *an evidence line, with the observed facts* |
+| the still-works block is dropped | **2 rows** |
+| **no-connection painted red** | **2 rows** (after the colour rows were fixed) |
+| **a parse failure becomes a mystery cause** | *every SourceFailure has a cause* |
+
+### FILES TOUCHED
+
+`lib/core/error/source_failure.dart` (+`CauseUnknown`),
+`lib/core/ui/app_error_copy.dart` (+its arm and its copy),
+`lib/features/source_unavailable/failure_cause.dart` (new),
+`lib/features/source_unavailable/source_unavailable_screen.dart` (new),
+`lib/features/browse/catalogue_states.dart` (+its arm),
+both ARB files + regenerated l10n (36 keys),
+`lib/main.dart` (registers `/browse/:sourceId/unavailable`),
+`test/features/source_unavailable/source_unavailable_screen_test.dart` (new, 20),
+`test/core/error/source_failure_test.dart` (+1 arm).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **969 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass**.
+
+### NEXT — carry straight on, no stop
+
+`6-2` (search mode) · `3-2` (novel details) · `3-3` (chapter download/delete) ·
+`5-1` `5-2` `5-3` (the queue) · `3-4` (onboarding) · `2-8` (reader settings) ·
+`6-4` `6-6` `6-10` (check, badge, foreground job) · `0-1` `0-4` (fixtures, classification) ·
+`6-7` (i18n taxonomy).
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not paint a failure red unless the app's selectors are what changed.**
+- **Do not add a disabled retry.** Absent, or present.
+- **Do not put a request path on a screen.**

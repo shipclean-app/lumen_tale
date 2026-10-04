@@ -38,6 +38,9 @@ void main() {
               'the site answered and we could not read it',
             ItemRemovedAtSource() => 'the site says the item is gone',
             ParseFailed() => 'we could not turn the page into elements',
+            // ⚠️ **"we" and not "the site".** Every other description names an actor, and this
+            // one has none to name — the app cannot read its own record of what happened.
+            CauseUnknown() => 'we could not read our own record of the failure',
           },
       };
       expect(descriptions, hasLength(6));
