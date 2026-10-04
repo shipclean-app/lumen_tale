@@ -12,6 +12,7 @@ import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/history/history_providers.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
+import 'package:lumen_tale/features/library/library_screen.dart';
 import 'package:lumen_tale/features/reader/reader_screen.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/l10n/generated/app_localizations.dart';
@@ -50,6 +51,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// `app/` still imports no `features/` **package** — these are function bodies reached
 /// through the registry, and `test/app/shell/app_shell_test.dart` greps the import lines.
 void registerScreens() {
+  registerScreen(
+    AppRoutes.library,
+    (BuildContext context, GoRouterState state) => const LibraryScreen(),
+  );
   registerScreen(
     AppRoutes.history,
     (BuildContext context, GoRouterState state) => const HistoryScreen(),

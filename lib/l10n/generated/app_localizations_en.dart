@@ -611,4 +611,100 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get readerChapterNumberUnreadable => 'Chapter';
+
+  @override
+  String get libraryTitle => 'Library';
+
+  @override
+  String get libraryContinueOverline => 'CONTINUE READING';
+
+  @override
+  String libraryTileUnopened(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new chapters',
+      one: '1 new chapter',
+      zero: 'No new chapters',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get libraryTileAuthorMissing => 'Author unknown';
+
+  @override
+  String libraryTileProgress(Object downloaded, Object total) {
+    return '$downloaded of $total downloaded';
+  }
+
+  @override
+  String get libraryTileUndownloaded => 'Not downloaded yet';
+
+  @override
+  String get libraryRemoveTitle => 'Remove from library?';
+
+  @override
+  String libraryRemoveBody(num count, Object title) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count downloaded chapters',
+      one: '1 downloaded chapter',
+      zero: 'no downloaded chapters',
+    );
+    return '$title leaves your library. Its $_temp0 and your reading history stay on this phone.';
+  }
+
+  @override
+  String get libraryRemoveAction => 'Remove';
+
+  @override
+  String get libraryRemoveKept =>
+      'Nothing was deleted. The chapters are still here.';
+
+  @override
+  String get libraryRemoveUndo => 'Undo';
+
+  @override
+  String libraryRemoved(Object title) {
+    return '$title was removed';
+  }
+
+  @override
+  String get librarySimilarTitle =>
+      'A novel with this title is already in your library';
+
+  @override
+  String librarySimilarBody(
+    Object existing,
+    Object incoming,
+    Object incomingSource,
+    Object source,
+  ) {
+    return '\"$existing\" on $source has the same title as \"$incoming\" on $incomingSource.';
+  }
+
+  @override
+  String get librarySimilarOpenExisting => 'Open the existing one';
+
+  @override
+  String get librarySimilarAddAnyway => 'Add anyway';
+
+  @override
+  String get librarySimilarExplain =>
+      'Nothing will be merged — they stay two separate novels.';
+
+  @override
+  String get libraryLoadErrorTitle => 'Your library could not be read';
+
+  @override
+  String get libraryAddFailed =>
+      'The novel could not be added. It is still listed in Browse.';
+
+  @override
+  String get libraryAddFailedRetry => 'Retry';
+
+  @override
+  String get libraryActionCancel => 'Cancel';
 }

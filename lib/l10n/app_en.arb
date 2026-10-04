@@ -704,5 +704,167 @@
   "readerChapterNumberUnreadable": "Chapter",
   "@readerChapterNumberUnreadable": {
     "description": "The word used when the site's number could not be parsed. Not a number and not an ellipsis: the reader is told the chapter has no number rather than shown a `0`."
+  },
+  "libraryTitle": "Library",
+  "@libraryTitle": {
+    "description": "⚠️ **Identical in meaning to `navLibrary`, and separate anyway.** The tab label and the screen title are two surfaces, and the design gives the screen a `--text-h1` title bar. Merging them would make one string serve a 13 dp tab and a 31 dp title."
+  },
+  "libraryContinueOverline": "CONTINUE READING",
+  "@libraryContinueOverline": {
+    "description": "An **overline**, 11/16, 600 weight, and it is a LABEL rather than a sentence — the tile under it carries the words."
+  },
+  "libraryTileUnopened": "{count, plural, =0{No new chapters} =1{1 new chapter} other{{count} new chapters}}",
+  "libraryTileAuthorMissing": "Author unknown",
+  "@libraryTileAuthorMissing": {
+    "description": "⚠️ **A WORD, not a dash.** ADR-024: the author is displayed, never searched, and a site may publish none. An em dash is what a rendering fallback produces; a sentence says the library does not know, which is the actual fact."
+  },
+  "libraryTileProgress": "{downloaded} of {total} downloaded",
+  "@libraryTileProgress": {
+    "description": "**The mark's count, not the files'** (B48, ADR-022). An interrupted download has no mark, so this figure never counts a chapter the reader cannot open."
+  },
+  "libraryTileUndownloaded": "Not downloaded yet",
+  "libraryRemoveTitle": "Remove from library?",
+  "libraryRemoveBody": "{title} leaves your library. Its {count, plural, =0{no downloaded chapters} =1{1 downloaded chapter} other{{count} downloaded chapters}} and your reading history stay on this phone.",
+  "@libraryRemoveBody": {
+    "description": "⚠️ **The number appears INSIDE every plural branch, and that is the bug a row caught.** With the count only in the placeholder selector and never in the branches, the sentence renders \"Its downloaded chapters and your reading history stay\" — no figure at all, in a dialog whose whole purpose is to quote one. B32 is a promise about what survives, and \"nothing\" survives it as well as 148 chapters do."
+  },
+  "libraryRemoveAction": "Remove",
+  "libraryRemoveKept": "Nothing was deleted. The chapters are still here.",
+  "@libraryRemoveKept": {
+    "description": "Shown after a removal, and it says **nothing was deleted**. B32 is a promise the reader should be able to see, not a rule they have to trust."
+  },
+  "libraryRemoveUndo": "Undo",
+  "libraryRemoved": "{title} was removed",
+  "librarySimilarTitle": "A novel with this title is already in your library",
+  "@librarySimilarTitle": {
+    "description": "⚠️ **B40's dialog asks a question the reader can answer, so it names BOTH novels and BOTH sites.** \"Is this the same novel?\" is unanswerable without knowing which site published which."
+  },
+  "librarySimilarBody": "\"{existing}\" on {source} has the same title as \"{incoming}\" on {incomingSource}.",
+  "librarySimilarOpenExisting": "Open the existing one",
+  "librarySimilarAddAnyway": "Add anyway",
+  "librarySimilarExplain": "Nothing will be merged — they stay two separate novels.",
+  "@librarySimilarExplain": {
+    "description": "⚠️ **Said BEFORE the choice, not after it.** \"Add anyway\" reads like a merge; this line is what makes it a second row."
+  },
+  "libraryLoadErrorTitle": "Your library could not be read",
+  "libraryAddFailed": "The novel could not be added. It is still listed in Browse.",
+  "@libraryAddFailed": {
+    "description": "⚠️ **`It is still listed in Browse`**, because B24's submit-error state says the row is still there and nothing is optimistic. A failure that reads as \"gone\" teaches a reader not to trust the screen."
+  },
+  "libraryAddFailedRetry": "Retry",
+  "libraryActionCancel": "Cancel",
+  "@appTitle": {
+    "description": ""
+  },
+  "@navLibrary": {
+    "description": ""
+  },
+  "@navBrowse": {
+    "description": ""
+  },
+  "@navUpdates": {
+    "description": ""
+  },
+  "@navHistory": {
+    "description": ""
+  },
+  "@navMore": {
+    "description": ""
+  },
+  "@navDownloads": {
+    "description": ""
+  },
+  "@navSettings": {
+    "description": ""
+  },
+  "@commonRetry": {
+    "description": ""
+  },
+  "@commonCancel": {
+    "description": ""
+  },
+  "@commonBack": {
+    "description": ""
+  },
+  "@commonErrorTitle": {
+    "description": ""
+  },
+  "@commonErrorBody": {
+    "description": ""
+  },
+  "@libraryEmptyTitle": {
+    "description": ""
+  },
+  "@libraryEmptyBody": {
+    "description": ""
+  },
+  "@browseEmptyBody": {
+    "description": ""
+  },
+  "@readerOfflineAbsentBody": {
+    "description": ""
+  },
+  "@readerFileMissingTitle": {
+    "description": ""
+  },
+  "@readerFileEmptyBody": {
+    "description": ""
+  },
+  "@readerRowGoneBody": {
+    "description": ""
+  },
+  "@readerLoadFailedBody": {
+    "description": ""
+  },
+  "@readerActionDownloadChapter": {
+    "description": ""
+  },
+  "@readerActionDownloadAgain": {
+    "description": ""
+  },
+  "@readerActionOpenDownloads": {
+    "description": ""
+  },
+  "@readerActionBack": {
+    "description": ""
+  },
+  "@readerActionRetry": {
+    "description": ""
+  },
+  "@libraryTileUnopened": {
+    "description": ""
+  },
+  "@libraryTileUndownloaded": {
+    "description": ""
+  },
+  "@libraryRemoveTitle": {
+    "description": ""
+  },
+  "@libraryRemoveAction": {
+    "description": ""
+  },
+  "@libraryRemoveUndo": {
+    "description": ""
+  },
+  "@libraryRemoved": {
+    "description": ""
+  },
+  "@librarySimilarBody": {
+    "description": ""
+  },
+  "@librarySimilarOpenExisting": {
+    "description": ""
+  },
+  "@librarySimilarAddAnyway": {
+    "description": ""
+  },
+  "@libraryLoadErrorTitle": {
+    "description": ""
+  },
+  "@libraryAddFailedRetry": {
+    "description": ""
+  },
+  "@libraryActionCancel": {
+    "description": ""
   }
 }

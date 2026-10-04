@@ -98,97 +98,97 @@ abstract class AppLocalizations {
     Locale('fr'),
   ];
 
-  /// No description provided for @appTitle.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Lumen Tale'**
   String get appTitle;
 
-  /// No description provided for @navLibrary.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Library'**
   String get navLibrary;
 
-  /// No description provided for @navBrowse.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Browse'**
   String get navBrowse;
 
-  /// No description provided for @navUpdates.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Updates'**
   String get navUpdates;
 
-  /// No description provided for @navHistory.
+  ///
   ///
   /// In en, this message translates to:
   /// **'History'**
   String get navHistory;
 
-  /// No description provided for @navMore.
+  ///
   ///
   /// In en, this message translates to:
   /// **'More'**
   String get navMore;
 
-  /// No description provided for @navDownloads.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Downloads'**
   String get navDownloads;
 
-  /// No description provided for @navSettings.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Settings'**
   String get navSettings;
 
-  /// No description provided for @commonRetry.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Retry'**
   String get commonRetry;
 
-  /// No description provided for @commonCancel.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get commonCancel;
 
-  /// No description provided for @commonBack.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Back'**
   String get commonBack;
 
-  /// No description provided for @commonErrorTitle.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get commonErrorTitle;
 
-  /// No description provided for @commonErrorBody.
+  ///
   ///
   /// In en, this message translates to:
   /// **'The operation could not be completed.'**
   String get commonErrorBody;
 
-  /// No description provided for @libraryEmptyTitle.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Your library is empty'**
   String get libraryEmptyTitle;
 
-  /// No description provided for @libraryEmptyBody.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Add a novel from Browse to start reading.'**
   String get libraryEmptyBody;
 
-  /// No description provided for @browseEmptyBody.
+  ///
   ///
   /// In en, this message translates to:
   /// **'No source is available yet.'**
@@ -980,13 +980,13 @@ abstract class AppLocalizations {
   /// **'This chapter is not downloaded and there is no connection'**
   String get readerOfflineAbsentTitle;
 
-  /// No description provided for @readerOfflineAbsentBody.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Both are needed: the chapter has to be downloaded once, and downloading needs a connection.'**
   String get readerOfflineAbsentBody;
 
-  /// No description provided for @readerFileMissingTitle.
+  ///
   ///
   /// In en, this message translates to:
   /// **'This chapter had been downloaded, but its text is no longer on this phone'**
@@ -1004,7 +1004,7 @@ abstract class AppLocalizations {
   /// **'This chapter\'s recording was interrupted'**
   String get readerFileEmptyTitle;
 
-  /// No description provided for @readerFileEmptyBody.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Nothing was saved, so there is nothing to read.'**
@@ -1034,7 +1034,7 @@ abstract class AppLocalizations {
   /// **'This chapter no longer exists in your library'**
   String get readerRowGoneTitle;
 
-  /// No description provided for @readerRowGoneBody.
+  ///
   ///
   /// In en, this message translates to:
   /// **'The link may have been saved before the chapter was removed.'**
@@ -1046,37 +1046,37 @@ abstract class AppLocalizations {
   /// **'This chapter could not be opened'**
   String get readerLoadFailedTitle;
 
-  /// No description provided for @readerLoadFailedBody.
+  ///
   ///
   /// In en, this message translates to:
   /// **'The app does not know whether the file is intact.'**
   String get readerLoadFailedBody;
 
-  /// No description provided for @readerActionDownloadChapter.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Download this chapter'**
   String get readerActionDownloadChapter;
 
-  /// No description provided for @readerActionDownloadAgain.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Download again'**
   String get readerActionDownloadAgain;
 
-  /// No description provided for @readerActionOpenDownloads.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Open downloads'**
   String get readerActionOpenDownloads;
 
-  /// No description provided for @readerActionBack.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Back'**
   String get readerActionBack;
 
-  /// No description provided for @readerActionRetry.
+  ///
   ///
   /// In en, this message translates to:
   /// **'Retry'**
@@ -1099,6 +1099,137 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chapter'**
   String get readerChapterNumberUnreadable;
+
+  /// ⚠️ **Identical in meaning to `navLibrary`, and separate anyway.** The tab label and the screen title are two surfaces, and the design gives the screen a `--text-h1` title bar. Merging them would make one string serve a 13 dp tab and a 31 dp title.
+  ///
+  /// In en, this message translates to:
+  /// **'Library'**
+  String get libraryTitle;
+
+  /// An **overline**, 11/16, 600 weight, and it is a LABEL rather than a sentence — the tile under it carries the words.
+  ///
+  /// In en, this message translates to:
+  /// **'CONTINUE READING'**
+  String get libraryContinueOverline;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No new chapters} =1{1 new chapter} other{{count} new chapters}}'**
+  String libraryTileUnopened(num count);
+
+  /// ⚠️ **A WORD, not a dash.** ADR-024: the author is displayed, never searched, and a site may publish none. An em dash is what a rendering fallback produces; a sentence says the library does not know, which is the actual fact.
+  ///
+  /// In en, this message translates to:
+  /// **'Author unknown'**
+  String get libraryTileAuthorMissing;
+
+  /// **The mark's count, not the files'** (B48, ADR-022). An interrupted download has no mark, so this figure never counts a chapter the reader cannot open.
+  ///
+  /// In en, this message translates to:
+  /// **'{downloaded} of {total} downloaded'**
+  String libraryTileProgress(Object downloaded, Object total);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Not downloaded yet'**
+  String get libraryTileUndownloaded;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from library?'**
+  String get libraryRemoveTitle;
+
+  /// ⚠️ **The number appears INSIDE every plural branch, and that is the bug a row caught.** With the count only in the placeholder selector and never in the branches, the sentence renders "Its downloaded chapters and your reading history stay" — no figure at all, in a dialog whose whole purpose is to quote one. B32 is a promise about what survives, and "nothing" survives it as well as 148 chapters do.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} leaves your library. Its {count, plural, =0{no downloaded chapters} =1{1 downloaded chapter} other{{count} downloaded chapters}} and your reading history stay on this phone.'**
+  String libraryRemoveBody(num count, Object title);
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get libraryRemoveAction;
+
+  /// Shown after a removal, and it says **nothing was deleted**. B32 is a promise the reader should be able to see, not a rule they have to trust.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was deleted. The chapters are still here.'**
+  String get libraryRemoveKept;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get libraryRemoveUndo;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'{title} was removed'**
+  String libraryRemoved(Object title);
+
+  /// ⚠️ **B40's dialog asks a question the reader can answer, so it names BOTH novels and BOTH sites.** "Is this the same novel?" is unanswerable without knowing which site published which.
+  ///
+  /// In en, this message translates to:
+  /// **'A novel with this title is already in your library'**
+  String get librarySimilarTitle;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'\"{existing}\" on {source} has the same title as \"{incoming}\" on {incomingSource}.'**
+  String librarySimilarBody(
+    Object existing,
+    Object incoming,
+    Object incomingSource,
+    Object source,
+  );
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Open the existing one'**
+  String get librarySimilarOpenExisting;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get librarySimilarAddAnyway;
+
+  /// ⚠️ **Said BEFORE the choice, not after it.** "Add anyway" reads like a merge; this line is what makes it a second row.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing will be merged — they stay two separate novels.'**
+  String get librarySimilarExplain;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Your library could not be read'**
+  String get libraryLoadErrorTitle;
+
+  /// ⚠️ **`It is still listed in Browse`**, because B24's submit-error state says the row is still there and nothing is optimistic. A failure that reads as "gone" teaches a reader not to trust the screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The novel could not be added. It is still listed in Browse.'**
+  String get libraryAddFailed;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get libraryAddFailedRetry;
+
+  ///
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get libraryActionCancel;
 }
 
 class _AppLocalizationsDelegate

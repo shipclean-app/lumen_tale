@@ -616,4 +616,100 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get readerChapterNumberUnreadable => 'Chapitre';
+
+  @override
+  String get libraryTitle => 'Bibliothèque';
+
+  @override
+  String get libraryContinueOverline => 'CONTINUE LA LECTURE';
+
+  @override
+  String libraryTileUnopened(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nouveaux chapitres',
+      one: '1 nouveau chapitre',
+      zero: 'Aucun nouveau chapitre',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get libraryTileAuthorMissing => 'Auteur inconnu';
+
+  @override
+  String libraryTileProgress(Object downloaded, Object total) {
+    return '$downloaded sur $total téléchargés';
+  }
+
+  @override
+  String get libraryTileUndownloaded => 'Pas encore téléchargé';
+
+  @override
+  String get libraryRemoveTitle => 'Retirer de la bibliothèque ?';
+
+  @override
+  String libraryRemoveBody(num count, Object title) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count chapitres téléchargés',
+      one: '1 chapitre téléchargé',
+      zero: 'chapitre téléchargé',
+    );
+    return '$title quitte votre bibliothèque. Ses $_temp0 et votre historique de lecture restent sur ce téléphone.';
+  }
+
+  @override
+  String get libraryRemoveAction => 'Retirer';
+
+  @override
+  String get libraryRemoveKept =>
+      'Rien n\'a été supprimé. Les chapitres sont toujours là.';
+
+  @override
+  String get libraryRemoveUndo => 'Annuler';
+
+  @override
+  String libraryRemoved(Object title) {
+    return '$title a été retiré';
+  }
+
+  @override
+  String get librarySimilarTitle =>
+      'Un roman portant ce titre est déjà dans votre bibliothèque';
+
+  @override
+  String librarySimilarBody(
+    Object existing,
+    Object incoming,
+    Object incomingSource,
+    Object source,
+  ) {
+    return '« $existing » sur $source porte le même titre que « $incoming » sur $incomingSource.';
+  }
+
+  @override
+  String get librarySimilarOpenExisting => 'Ouvrir celui qui existe';
+
+  @override
+  String get librarySimilarAddAnyway => 'Ajouter quand même';
+
+  @override
+  String get librarySimilarExplain =>
+      'Rien ne sera fusionné — ils restent deux romans distincts.';
+
+  @override
+  String get libraryLoadErrorTitle => 'Votre bibliothèque n\'a pas pu être lue';
+
+  @override
+  String get libraryAddFailed =>
+      'Le roman n\'a pas pu être ajouté. Il est toujours listé dans Parcourir.';
+
+  @override
+  String get libraryAddFailedRetry => 'Réessayer';
+
+  @override
+  String get libraryActionCancel => 'Annuler';
 }

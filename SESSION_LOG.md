@@ -3692,3 +3692,104 @@ that never ran says nothing about the tests.
 - **Do not add `if (downloadedCount > 0) { … }` to the removal.** That branch is the trap.
 - **Do not treat dismissing the similar-title dialog as consent.**
 - **Do not sort by `addedAt` without `id`.** Same-second rows are the normal case.
+
+---
+
+## 2026-10-04 — Session 25: `2-5` finished — the library screen, and the dialogs that must not lie
+
+### STARTED FROM
+
+`2-5` at `46cf49d`, marked **in_progress** with the screen outstanding. This session closes it.
+
+### DECIDED
+
+- **Both dialogs live in `core/ui/`, not in the feature.** `09-widgets-ui.md` § Overlays: never
+  a local copy inside a feature. `3-1`'s catalogue and `3-2`'s details raise the same
+  similar-title question, and a second copy of a dialog that decides whether a duplicate gets
+  written is two places for B40's default to be wrong in.
+- **Dismissing the similar-title dialog is `dismissed`, and `dismissed` declines.** The default
+  has to be the safe one — C8: on a device with no cloud backup the easiest gesture must not be
+  the one that writes a second copy of a novel the reader already has.
+- **`ConfirmDialog.ask` answers `false` on a null answer, for the same reason.** Closing a
+  confirmation is not agreeing to it. This one needed its OWN row: a sabotage that answered
+  `true` on null passed every existing row, because they all tapped *Cancel* — an explicit
+  `pop(false)` — and never the barrier. The barrier row caught it.
+- **The removal dialog quotes a count read BEFORE the write**, and the sheet afterwards says
+  what survived. B32 is a promise the reader can *see* rather than a rule they must trust, and
+  a number in a confirmation has to be checkable.
+- **The list is keyed by id, not by index.** A removal above reindexes every row below it, and
+  an index key would make Flutter reuse the wrong tile's state — which on a removal dialog means
+  the next tap opens the wrong novel's dialog.
+- **Empty is NOT an error and never says "0 results".** It names the next step, because an
+  empty library is the state every reader is in until they browse once.
+- **An unknown author is a WORD, and the source is on the same line either way.** ADR-024:
+  displayed, never searched. A dash is what a rendering fallback produces; a sentence says what
+  the library does not know. And the source is there even when the author is known, because two
+  sites publish the same pen name.
+- **The "check for new chapters" action is `onPressed: null`.** An interface hole, labelled. A
+  live-looking button that silently does nothing is worse than a disabled one — the reader
+  presses it and concludes the app is broken. B36/B38/B39's wire belongs to `6-3`/`6-4`/`6-10`.
+- **`libraryStreamProvider` is `keepAlive`.** `05-state-management.md` rule 10 names the library:
+  it is the first-rank destination (ADR-018), so an `autoDispose` stream would re-query the
+  whole table on every tab press and the reader would watch the list rebuild.
+
+### TWO FINDINGS THIS SESSION
+
+- **The plural placeholder swallowed the count.** The removal body was
+  `"Its {count, plural, =0{downloaded chapters} =1{downloaded chapter} other{downloaded chapters}}"` —
+  the count appeared only in the *selector*, never in a branch, so the dialog rendered **"Its
+  downloaded chapters and your reading history stay on this phone"** with no figure at all, in a
+  dialog whose whole purpose is to quote one. Caught by the row asserting `148 downloaded
+  chapters`. Every branch now carries its own numeral, and `0` says **"no downloaded
+  chapters"** rather than a bare noun phrase — B32 is a promise about what survives, and
+  "nothing" survives it as well as 148 chapters do.
+- **A broadcast controller with no listener DROPS an `addError`.** The load-failure row pushed
+  its error before subscribing, so it tested the harness rather than the screen. The error is
+  now emitted after the first pump, with a comment saying why.
+
+### SABOTAGE, FOUR, ALL CAUGHT
+
+| Sabotage | Rows that caught it |
+|---|---|
+| dismissing the similar-title dialog answers **add anyway** | *dismissing answers DISMISSED* |
+| dismissing the **barrier** confirms the removal | *the BARRIER also declines* |
+| the removal dialog quotes `0` instead of asking | *the dialog quotes the count* |
+| the author line drops the source | *the SOURCE is always shown* |
+
+⚠️ **The barrier row did not exist until a sabotage proved it was missing.** The first attempt
+at the second sabotage passed every row, because every row tapped *Cancel* — an explicit
+`pop(false)` — and none of them dismissed the dialog the way a thumb does. The row was written,
+and the same sabotage then failed it. That is the only way this defect would ever have been
+found, and it is worth recording that a passing sabotage is information rather than a nuisance.
+
+### FILES TOUCHED
+
+`lib/core/ui/library_dialogs.dart` (new — `SimilarTitleDialog`, `showSimilarTitleDialog`,
+`ConfirmDialog`),
+`lib/features/library/library_screen.dart` (new — providers, screen, tile),
+`lib/main.dart` (registers `/library`),
+both ARB files + regenerated l10n (21 keys),
+`test/features/library/library_screen_test.dart` (new, 15).
+
+### STATUS
+
+`dart format` clean · `analyze --fatal-infos` **zero** · host **923 passed + 9 skipped**
+· `forge-guard all` **pass** · `consistency-check all` **pass`.
+
+### NEXT SESSION SHOULD
+
+- **`3-1` (Browse)** — it consumes `SourceManager`, it is what the app has never done end to end,
+  and `2-5`'s *add* needs a catalogue to add from. It also raises the similar-title dialog for
+  the first time in anger, through the shared widget `2-5` just wrote.
+- **`3-2`** (novel details) and then **`3-6`** (Settings → Reader), which is still the first row
+  of `3-7`'s screen pointing at a placeholder.
+- **`2-8`** — reader display settings, which `2-7`'s measured column and `2-4`'s `textScaler`
+  both already assume exist.
+
+### NEXT SESSION SHOULD NOT
+
+- **Do not answer a dismissal with an affirmative.** Both dialogs now have a barrier row; a
+  third dialog must come with the same one.
+- **Do not quote a plural without the numeral.** "Its downloaded chapters" is a sentence about
+  nothing, in a dialog whose purpose is a figure.
+- **Do not key a removable list by index.**
