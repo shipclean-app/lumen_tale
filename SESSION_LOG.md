@@ -4764,3 +4764,56 @@ a moved *dependency*, and the analyzer is the only thing that knows.
 `tool/dod.sh` → **DoD: PASS — 7 of 7 gates green**. **1 103 passed + 9 skipped**, analyze
 zero. `tool/check_boundaries.py` → **no undeclared cross-feature imports**, allowlist empty.
 Slices: 20 validated · 2 `in_progress` · 10 `planned`.
+
+---
+
+### `3-3` OPENED — the domain contract, and a GAP THAT BLOCKS THE REST
+
+`3-3`'s stated core is two prohibitions: **the UI never writes `chapters.downloadedAt`**, and
+**a delete never removes the `chapters` row**. Both live in `data/`. What speaks to them is
+the vocabulary, and that is what this session landed.
+
+`lib/domain/downloads/download_request.dart` — `DownloadRequest` and the outcome types.
+
+⚠️ **`DownloadRequest` takes a LIST, and a row asserts the ABSENCE of `from`/`to`/`count`.**
+A range is an *intention*: correct only while the list behind it does not move, and a novel's
+chapter list grows, shrinks and reorders at the site. "The next 25 chapters" is converted to a
+list **once, at the tap**, and never re-derived. This is the one row in the file that is
+source-level, because a `count` field that crept in would change no behaviour any other test
+can see.
+
+⚠️ **EQUALITY IS INDEXED, NOT SET-BASED.** Two requests naming the same chapters in a
+different order are different requests, because `queuePosition` follows the order — a set
+comparison would let a cache serve one queue plan for another. My first attempt used
+`every((id, i) => …)`, which does not compile: `every` takes one argument. Caught by the
+analyzer, not by reading.
+
+⚠️ **E20's REFUSAL CARRIES BOTH NUMBERS AND THEY ARE DISTINCT**, with a row asserting they
+differ — because when they are equal the refusal is not a refusal, and a type that cannot
+express that difference will report it anyway.
+
+### ⚠️ THE GAP: THERE IS NO FREE-SPACE FACILITY ANYWHERE IN THE PROJECT
+
+E20 requires `EnqueueRefusedForSpace` carrying `requiredBytes` **and** `freeBytes`, and the
+plan's own `grep` forbids `~`, `≈` and `estimate` in `lib/features/downloads` — so the bytes
+must be **MEASURED**. C14 requires **zero network requests** at enqueue.
+
+Those two together mean: measure a chapter's size from a copy **already on disk**, and read
+the system's free space. ⚠️ **`grep` for `freeSpace|availableBytes|diskFree|StorageSpace`
+across `lib/` returns nothing.** There is no such facade, so today `enqueue` has no way to
+say no. Logged as a finding with the only honest answer: a `data/storage/space_probe.dart`
+reading free space without a network call, plus a `requiredBytes` measured from an existing
+sibling copy. ⚠️ **An estimate would produce exactly the lying dialogue the rule forbids**, so
+this is a blocker for E20 rather than a detail.
+
+### `3-3` IS NOT FINISHED, and is still `planned`
+
+Landed: the domain contract and 10 rows. Not landed: the repository (the two prohibitions),
+the tile's two actions, the delete confirmation, the space-refusal dialogue, `FailedChapterRetry`,
+the selection sheet, and `queue_items` writes. `3-3` stays `planned` because a half-built
+slice marked otherwise is the exact defect this session spent its length correcting.
+
+### STATUS
+
+`tool/dod.sh` → **DoD: PASS — 7 of 7 gates green**. **1 113 passed + 9 skipped**, analyze
+zero. Slices: 20 validated · 2 `in_progress` · 10 `planned`.

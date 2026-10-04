@@ -935,3 +935,4 @@
 {"ts":"2026-10-04T11:53:35.125Z","type":"stale_clear","slice":"3-2","reasons":[],"drifted":[]}
 {"ts":"2026-10-04T12:48:17.802Z","type":"finding_promoted","id":"F-018","promoted_to":"workflow.md"}
 {"ts":"2026-10-04T12:48:17.933Z","type":"finding_raised","id":"F-019","domain":"workflow.md","severity":"majeur"}
+{"ts":"2026-10-04T13:19:43.463Z","type":"finding_raised","id":"F-020","domain":"data-and-state.md","severity":"majeur"}

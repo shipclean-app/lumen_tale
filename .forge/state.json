@@ -4506,7 +4506,7 @@
       "nav_prioritized": 1,
       "sync": 1,
       "dependency_declared": 37,
-      "finding_raised": 19,
+      "finding_raised": 20,
       "fast_track_enter": 1,
       "finding_promoted": 14,
       "script_failure": 3,
@@ -4806,6 +4806,19 @@
       "correction": null,
       "artifact": null,
       "raised_at": "2026-10-04T12:48:17.924Z",
+      "promoted_to": null,
+      "resolved_at": null
+    },
+    {
+      "id": "F-020",
+      "domain": "data-and-state.md",
+      "severity": "majeur",
+      "origin": "forge",
+      "status": "open",
+      "summary": "MESURE 2026-10-04 en ouvrant 3-3 : E20 exige EnqueueRefusedForSpace portant requiredBytes ET freeBytes, avec grep interdisant '~', '~[0-9]' et 'estimate' dans lib/features/downloads — donc des octets MESURES. Or C14 impose ZERO requete reseau a l'enqueue. Les deux ensemble imposent de mesurer la taille d'un chapitre DEJA TELECHARGE (une copie d'un chapitre frere, mesuree sur le disque) et l'espace libre du systeme. Il n'existe AUCUNE facade d'espace libre dans lib/ : grep sur freeSpace|availableBytes|diskFree|StorageSpace ne retourne rien. L'enqueue n'a donc, aujourd'hui, aucun moyen de dire non.",
+      "correction": "Il faut une porte d'espace libre — data/storage/space_probe.dart — qui lit l'espace disponible SANS reseau, plus une source pour requiredBytes mesuree sur une copie existante. Ce n'est pas une estimation : c'est la seule figure qui peut fonder un refus ET une promesse. Tant qu'elle n'existe pas, le refus E20 ne peut pas etre implemente honnetement, et une estimation produirait exactement le dialogue mensonger que la regle interdit.",
+      "artifact": null,
+      "raised_at": "2026-10-04T13:19:43.429Z",
       "promoted_to": null,
       "resolved_at": null
     }
