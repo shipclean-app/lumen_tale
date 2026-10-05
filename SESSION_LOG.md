@@ -5768,3 +5768,88 @@ frontmatters (both written by `state.js set-status`, not by hand).
   stronger than the literal criterion in one direction (three chapters instead of two pages;
   a real Royal Road `<img>` instead of an assumed one) and weaker in the other (no prose link
   at all). Neither proxy is presented as the literal test.
+
+---
+
+## 2026-10-05 — Session 36: PHASE 7 COMPLETE — all 32 slices validated
+
+### THE GATE
+
+```
+DoD: PASS — 7 of 7 gates green          (FORGE=/home/codespace/.agents/skills/forge ./tool/dod.sh)
+format clean · analyze zero issues ZERO INFOS · +1927 All tests passed
+plan corpus: derived counts agree · boundaries: no undeclared crossings
+forge-guard.js PASS · consistency-check.js PASS
+```
+
+`.forge/state.json`: **32 of 32 slices `validated`.** Every `.forge/plans/*.md` frontmatter
+agrees with it (`state_frontmatter_in_sync`).
+
+### ⚠️ ⚠️ ⚠️ THIS SESSION'S REAL SUBJECT WAS NOT THE SLICES — IT WAS VACUOUS GUARDS
+
+Six slices landed in this session. The finding that outranks all of them is a **class** of
+defect this project has now hit **four times**, and it is invisible by construction:
+
+> **A guard that cannot fail is not a guard, and it looks exactly like a passing one.**
+
+| slice | the vacuity | what it reported while broken |
+|---|---|---|
+| `6-7` | the grep `(?:\\.|(?!\2)[^\\])*` used `\2` — the **content** group, so every literal matched **empty** | **zero offenders** against a file containing `Text('Bonjour, votre bibliothèque est intacte.')` |
+| `6-10` | the ordering row asserted `[...interlockLog, ...engineLog] == ['release','cancel:…']` — **two logs concatenated afterwards** | green either way |
+| `0-4` | the first sabotage asserted a marker occurring **zero times** in the artefact | `AssertionError: 0`, suite 50/50 |
+| `6-4` | the **fake's** default chapter answer was `BrowseSucceeded([])` — E8 in a healthy site's clothes | nine rows depended on a **broken-site default**, so a real B22 defect was invisible |
+
+⚠️ **THE COMMON SHAPE IS A TEST THAT PASSES WITHOUT EXERCISING THE RULE.** In every case the
+suite was green, the gate reported `pass: true`, and the defect was real. ⚠️ **The only thing
+that catches it is deliberately breaking the implementation and watching a NAMED row go red** —
+which is why sabotage verification is a method step here and not a nicety. **A green run after
+a sabotage that never applied is indistinguishable from a passing guard.**
+
+### ⚠️ FOUR REAL DEFECTS FOUND BY THE WORK, NOT BY THE WORK
+
+1. **`6-4` §10 row 11 WAS FALSE IN SHIPPED CODE.** A `BrowseSucceeded` carrying no chapter at
+   all became `NovelChecked(0, 0)` — so any site whose table matched nothing would announce
+   "checked, nothing new" to every novel it holds. Now a `published.isEmpty → parseFailed`
+   branch, with no timestamp and a typed code.
+2. **`0-4`'s `selectContent` as §2.2 wrote it** (`querySelector`) returns the **first** match,
+   contradicting its own "exactly one node" doc comment. A duplicated container would silently
+   drop half a chapter.
+3. **`6-6`'s §2.1 `unopened_count` was `COUNT(c.id)` — IDENTICAL to `chapter_count`.** It would
+   have shown the chapter count while claiming to show the unopened count.
+4. **`0-1` §10 row 7 was green and WRONG.** It proved a manifest note *named* a chapter title;
+   nothing proved the chapter existed. Now resolved against a frozen `chapter-list` page —
+   `1960 → "Chapter1960 Titans (Part 1)"`.
+
+### ⚠️ SIX PLAN DEFECTS, EACH FIXED IN THE IMPLEMENTATION AND REPORTED
+
+`6-10` §2.2 imports `StopReason` inside `domain/` (undeclared dependency; `workmanager`'s barrel
+drags Flutter into pure Dart) · `6-6` §10's B40 grep returns five lines of `2-5`'s **prose**
+· `6-4` §2.2 lists four store signatures, §3.2 needs `isSourceEnabled` · `0-4` §10 row 4 is
+**false against the capture** (the three fixtures disagree: 0/104, 53/0, 110/0) · `6-10` §10
+wants five C12 sentences where `6-7` deliberately made two identical · `0-1` §10 row 7 above.
+
+⚠️ **`6-6`'s fixed B40 row failed on its own author's doc comment**, which spelled the three
+banned identifiers out while explaining why they are banned. ⚠️ **That is the row working.**
+
+### ⚠️ TWO RUNTIME HOLES, BOTH REAL, BOTH CLOSED
+
+`main.dart` never overrode `libraryCheckSourceManagerProvider` /
+`libraryCheckRateLimiterProvider`, so `6-4`'s `libraryCheckProvider` **threw on every tap**. Both
+are now overridden — **with the SAME `HostRateLimiter`**, because a second limiter is a second
+table of per-host windows and the `Retry-After` a check records (C7) would be honoured by
+nobody. ⚠️ **Two of a thing is not one of a thing.**
+
+Still open, and it is not this phase's: `lib/data/library/library_providers.dart:41` builds
+`DriftLibraryRepository` with **no source-name resolver**, so `LibraryEntry.sourceName` is
+`'unknown'` in production. The fix is one registry lookup per ADR-013.
+
+### ⚠️ `2d00fd7` IS STILL MISATTRIBUTED, AND THIS IS THE ACCEPTED DEVIATION
+
+`2d00fd7` is titled *"feat: 3-3 completed"* and contains `6-4`/`6-6`/`6-10`'s domain, store,
+presentation and 62 ARB keys. The correction is in `3ff9c2f` and above. ⚠️ **The history is
+NOT rewritten**, and the reason is a judgement worth recording rather than hiding: it is already
+pushed, twenty commits of real work sit on top of it, and the ARB would have to be split at
+**hunk** level because one file carries keys from three slices. ⚠️ **A `--force-with-lease`
+rewrite that risks a day's work to fix a commit *subject line* is a bad trade** — and the wrong
+claim was already corrected where it will actually be read, which is the log and the message
+that followed it. **This is a documented deviation, not a closed item.**
