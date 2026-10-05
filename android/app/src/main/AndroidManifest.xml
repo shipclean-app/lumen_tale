@@ -1,4 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ⚠️ `6-10` § 4.5: the ONE line this slice adds, and it is here in `main` and not in
+         the debug or profile manifests — a permission in a debug manifest is a permission
+         the signed build does not have.
+         ⚠️ `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_SHORT_SERVICE` are **NOT** repeated
+         here even though B37 needs a foreground service: `workmanager_android` 0.10.9's own
+         manifest declares both and the merger folds them in. A second list of permissions is
+         a second source of truth about what the plugin requires.
+         ⚠️ `FOREGROUND_SERVICE_DATA_SYNC` is deliberately absent — see § 7 of the plan: the
+         opt-in manifest that declares it applies only when
+         `workmanager.enableDataSyncForegroundService=true` is set, and this app asks for
+         `shortService`. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <application
         android:label="lumen_tale"
         android:name="${applicationName}"
