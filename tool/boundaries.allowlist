@@ -1,0 +1,17 @@
+# Cross-feature imports this project ACCEPTS, each with the reason it is not fixed yet.
+#
+# `02-architecture.md` forbids `features/*` importing another `features/*`. A line here is
+# a crossing we have chosen to keep, so `tool/check_boundaries.py` reports it as DECLARED
+# rather than failing — and a crossing that is neither fixed nor listed here still fails.
+#
+# ⚠️ **THIS FILE IS EMPTY, AND THAT IS THE POINT.** It held three entries on 2026-10-04 —
+# `settings` reaching into `features/history` for its retention providers and for a
+# timestamp formatter. All three are fixed: the providers and `HistoryRetentionNotifier`
+# moved to `data/history/`, the database provider to `core/database/`, the library providers
+# to `data/library/`, and the time labels to `core/ui/` beside the other labels.
+#
+# ⚠️ **Keep it that way.** An allowlist that grows is a rule that has stopped being one; its
+# value is that it is empty. Add an entry only with a reason that says what would let you
+# remove it.
+
+# (no entries)

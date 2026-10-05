@@ -15,9 +15,9 @@ It is inspired by [Mihon](https://github.com/mihonapp/mihon) (a manga reader) bu
 Source website (HTML)
   → Source.fetchChapterContent(chapter)     raw HTML
   → clean: strip nav, ads, scripts, boilerplate (per-source selectors)
-  → convert: HTML → Markdown (html2md + overrides)
+  → convert: HTML → Markdown (in-repo converter on `html`, per-source overrides)
   → persist: chapter .md file + metadata on disk
-  → render: Markdown reader (flutter_markdown)
+  → render: Markdown reader (flutter_markdown_plus)
 ```
 
 This pipeline is the heart of the product. Every source-specific rule must preserve this contract.
@@ -29,8 +29,8 @@ This pipeline is the heart of the product. Every source-specific rule must prese
 - Fetch, convert, and download chapters as Markdown.
 - Read chapters online and offline.
 - Track read progress (history, "continue reading", unread badges).
-- Update the library (check for new chapters).
-- Source configuration (per-source preferences).
+- Update the library — **manually only in v1**. The reader taps *Check for updates* and a cancellable foreground job runs (B36, B37). **There is no schedule**: B35 was withdrawn 2026-10-02 (ADR-023), so nothing checks on its own.
+- ~~Source configuration (per-source preferences).~~ **Not v1.** Slice `6-9` was withdrawn 2026-10-02 for want of a rule: **B1 says which sites ship and says nothing about hiding one**, so no SC requires an enable switch. The `sources` screen and its route stay for v2.
 
 ## Non-goals for v1 (do not build)
 

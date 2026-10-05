@@ -6,19 +6,27 @@
   ],
   "permission": {
     "bash": {
-      "*": "ask",
-      "flutter pub get": "allow",
-      "flutter pub add *": "allow",
-      "flutter pub remove *": "allow",
-      "flutter analyze": "allow",
-      "flutter analyze *": "allow",
-      "flutter test": "allow",
-      "flutter test *": "allow",
-      "dart format *": "allow",
-      "dart run build_runner *": "allow",
-      "git status": "allow",
-      "git diff *": "allow",
-      "git log *": "allow"
+      "allow": [
+        "flutter pub get",
+        "flutter pub add *",
+        "flutter pub remove *",
+        "flutter analyze",
+        "flutter test",
+        "flutter gen-l10n",
+        "flutter doctor",
+        "flutter --version",
+        "dart format .",
+        "dart run build_runner build *",
+        "dart run drift_dev *",
+        "git status",
+        "git diff *",
+        "git log *",
+        "git add *",
+        "git commit *",
+        "git branch *",
+        "git checkout *",
+        "git show *"
+      ]
     }
   }
 }

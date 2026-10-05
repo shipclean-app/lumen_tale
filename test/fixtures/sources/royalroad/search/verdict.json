@@ -1,0 +1,82 @@
+{
+  "site": "Royal Road",
+  "baseUrl": "https://www.royalroad.com",
+  "measuredAt": "2026-10-03",
+  "measuredBy": "honest User-Agent, curl -L, no session, no cookies",
+  "userAgent": "LumenTale/1.0.0 (personal reader)",
+  "method": "ADR-015 word for word: fetch the site's OWN search with a query that MUST match and one that MUST NOT match, and judge the RESULTS. A 200 is not a verdict and a non-empty list is not a verdict — results a reader would call useful is the verdict, and the negative query is the control that stops 'no results' being concluded from a search that never searched.",
+  "urlMap": {
+    "searchByTitle": "https://www.royalroad.com/fictions/search?title=<query>",
+    "method": "GET only. No session, no cookies, no browser impersonation (ADR-014)."
+  },
+  "queries": [
+    {
+      "query": "litrpg",
+      "mustMatch": true,
+      "httpStatus": 200,
+      "bytes": 250980,
+      "rowSelector": "div.fiction-list-item.row",
+      "rows": 20,
+      "sampleTitles": [
+        "The Land: Founding",
+        "Cards of Transcendence - A Deck Building LitRPG Adventure (Book 1 Stub)",
+        "Integrated Universe - A LitRPG Adventure",
+        "Queen of the Dead: A Progression LitRPG Adventure",
+        "Epic Blade - a LitRPG Adventure"
+      ],
+      "fixture": "test/fixtures/sources/royalroad/search/rr-search-litrpg.html"
+    },
+    {
+      "query": "system+fantasy",
+      "mustMatch": true,
+      "httpStatus": 200,
+      "bytes": 251066,
+      "rowSelector": "div.fiction-list-item.row",
+      "rows": 20,
+      "sampleTitles": [
+        "Chance's Gambit (LitRPG | Progression Fantasy | System Integration)",
+        "The Villainess Protocol [LitRPG, Progression, Urban Fantasy, System In",
+        "One Inch Kingdom [ Progression Fantasy | System Apocalypse | Kingdom B",
+        "I Died to a Pole and Woke Up a Dragonborn [LitRPG System Fantasy]",
+        "As a Raven, I Broke the Game [Raven MC, Infinite Flow, Fantasy, System"
+      ],
+      "fixture": "test/fixtures/sources/royalroad/search/rr-search-system-fantasy.html"
+    },
+    {
+      "query": "zzzqqqxxnotanovelname",
+      "mustMatch": false,
+      "httpStatus": 200,
+      "bytes": 97498,
+      "rowSelector": "div.fiction-list-item.row",
+      "rows": 0,
+      "carriesEmptyMarker": true,
+      "emptyMarker": "No results matching these criteria were found",
+      "emptyMarkerSelector": "div.search-item.clearfix > h4.font-red-sunglo",
+      "emptyMarkerOccurrencesWithRows": 0,
+      "emptyMarkerOccurrencesWithoutRows": 1,
+      "emptyMarkerIsVisibleText": true,
+      "fixture": "test/fixtures/sources/royalroad/search/rr-search-zzzqqqxxnotanovelname.html"
+    }
+  ],
+  "verdict": {
+    "supportsSearch": true,
+    "basis": "Two queries that MUST match each returned 20 rows whose titles carry the queried words (LitRPG, System Fantasy, Progression) — 10 of 10 sampled titles, so these are results and not a page that always lists 20 things. The control query that cannot match returned 0 rows with a 200 and the SAME page shell: 97 498 bytes against 250 980, so the difference is the rows and not a different or broken page. ADR-015's criterion is 'results a reader would call useful', and these are.",
+    "zeroRowResultIsDistinguishable": true,
+    "zeroRowEvidence": "97 498 bytes vs 250 980 for the same endpoint with rows. The container is present in both; only the rows differ.",
+    "emptyMarkerOnZeroRows": "No results matching these criteria were found",
+    "emptyMarkerNote": "CORRECTS the first reading of this same file, written 20 minutes earlier, which claimed NO marker existed. It did: the literal is in the page, inside div.search-item.clearfix > h4.font-red-sunglo, as VISIBLE text, exactly once on the zero-row page and zero times on either 20-row page. The first reading listed 'No results' among the markers it checked and then asserted that no checked marker was present — the list contained its own answer. See SESSION_LOG.md session 12.",
+    "emptyMarkerScope": "SEARCH ONLY. It is on /fictions/search. `0-2` measured the BROWSE side and found no marker there, and that retraction still stands: the browse-side claim is about div.fiction-list#result > div.text-center > h3 reading 'There is nothing here :(', which matches nothing on a live catalogue page."
+  },
+  "consequences": [
+    "`supportsSearch = true` for Royal Road is now a MEASURED promise (ADR-015), so `3-1` MAY render a search entry for it and `03-source-system.md` rule 5a no longer applies to this site.",
+    "`ReadStage.searchResults` becomes `zeroIsGenuine` for Royal Road, and BrowseEmpty becomes REACHABLE there — on search only. B22 is satisfiable on this site because the site supplies the signal itself, which is exactly what B22 asks for.",
+    "The browse side is unchanged and stays `zeroIsBroken`: a zero-row catalogue page on Royal Road carries no marker, so it is reported rather than shown as an empty page. One stage becoming genuine does not move the others; the policy is per stage, per source, precisely so a measurement on one cannot silently become a policy on all seven.",
+    "Novel Fire could not be measured at all — see its own entry."
+  ],
+  "notMeasured": [
+    "POST vs GET. Only GET was tried, because the GET demonstrably works and rule 5a asks about the endpoint, not about verb symmetry.",
+    "Author search (`?author=`), tag search, and combined filters. Out of 6-11's scope: the question is whether the site implements search a reader would call useful, and one working query shape answers it.",
+    "Rate limiting, and whether repeated searches earn a 429. Not measured here, deliberately: finding that out by hammering is the thing `17-security.md` rules 5-6 forbid.",
+    "Whether the marker changes on a future site release. The test re-derives its presence from the frozen capture, so a CHANGE IN THE CAPTURE is what would be caught — and a change in the live site is not, because nothing re-fetches. That is the limit of a frozen fixture, and it is written down rather than pretended away."
+  ]
+}

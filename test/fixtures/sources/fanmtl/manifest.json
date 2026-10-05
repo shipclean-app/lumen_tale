@@ -1,0 +1,224 @@
+{
+  "site": "fanmtl",
+  "baseUrl": "https://www.fanmtl.com",
+  "capturedBy": "0-1",
+  "capturedAt": "2026-10-04T18:02:48Z",
+  "entries": [
+    {
+      "key": "robots",
+      "file": "robots.txt",
+      "url": "/robots.txt",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 187,
+      "sha256": "3fef711f6027c86dd04ce12834685506b525517b328d1ad34766fbbb810a0168",
+      "kind": "robots",
+      "expected": {},
+      "notes": "Site's own robots.txt, captured verbatim. The User-agent: * block allows everything except six EmpireCMS admin paths: /d/, /e/class/, /e/config/, /e/data/, /e/enews/, /e/update/. NONE of the paths captured here falls under one — /list/, /novel/, /browsetags/ and /e/extend/ are all permitted. /e/extend/ is the chapter-list pager and is NOT disallowed, which a reader checking only the six names would not know."
+    },
+    {
+      "key": "browsetags",
+      "file": "browsetags.html",
+      "url": "/browsetags/",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 17712,
+      "sha256": "f679f2031078ef46a90742e9c8470f7d2467aff7771cd0857f298b4fea066e37",
+      "kind": "genre-index",
+      "expected": {
+        "genreLinksExact": 9
+      },
+      "notes": "The genre index. It publishes 8 genre links under /list/ — wuxia, xianxia, xuanhuan, shounen, romance, contemporary-romance, shoujo, action — plus an `all` pseudo-entry at /list/all/all-newstime-0.html, which is the unfiltered catalogue and is the 9th /list/ link on the page. It also publishes 26 letter-index pages /browsetags/A-0.html .. /browsetags/Z-0.html and a set of /tags/<id>-0.html tag pages. MEASURED 2026-10-04: 9 hrefs start with /list/, and `all` appears twice, once in the nav and once as the pseudo-entry."
+    },
+    {
+      "key": "catalogue-genre-page0",
+      "file": "catalogue-genre-page0.html",
+      "url": "/list/xianxia/all-lastdotime-0.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 40672,
+      "sha256": "aa1eee4df816e23efced30338789396cd21def65cbab7c4ab4b47239754cc5af",
+      "kind": "catalogue",
+      "expected": {
+        "novelRowsAtLeast": 30,
+        "novelRowsExact": 30
+      },
+      "notes": "xianxia listing, page 0. MEASURED 2026-10-04 by hand: 30 div.novel-item rows, each carrying a div.novel-title.text2row title and an a[href^=/novel/kks]. Novel ids are kks*, NOT ke* — ke383028 is the one novel with its own id scheme. Page 0 and page 1 share none of their /novel/ hrefs, so the pagination is real. The page number is a 0-based PATH SEGMENT: -0.html, -1.html."
+    },
+    {
+      "key": "catalogue-genre-page1",
+      "file": "catalogue-genre-page1.html",
+      "url": "/list/xianxia/all-lastdotime-1.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 40199,
+      "sha256": "8c90e425a19c368b7aa42a63bf46bf743e02737f70d8429bbb20a6e2cf02a07b",
+      "kind": "catalogue",
+      "expected": {
+        "novelRowsAtLeast": 30,
+        "novelRowsExact": 30
+      },
+      "notes": "xianxia listing, page 1 — the second page, reached by changing the last path segment from 0 to 1. MEASURED 2026-10-04: 30 div.novel-item rows, and zero /novel/ hrefs in common with page 0, which is what makes B9's completeness requirement testable here rather than assumed. A source that builds the page-2 URL as `-2.html` reads page 1 again forever."
+    },
+    {
+      "key": "catalogue-all-page0",
+      "file": "catalogue-all-page0.html",
+      "url": "/list/all/all-newstime-0.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 39890,
+      "sha256": "414788ce64d03e21985fbdfff64e6fe9d88ce27f54c9985c47e3d596fa47f0ae",
+      "kind": "catalogue",
+      "expected": {
+        "novelRowsAtLeast": 30,
+        "novelRowsExact": 30
+      },
+      "notes": "The unfiltered catalogue, reached by FOLLOWING the href browsetags.html publishes for its `all` pseudo-entry — never by constructing the path. MEASURED 2026-10-04: 30 div.novel-item rows. Note the sort segment differs from a genre page's: `all` genre + `newstime` sort, where a genre page is `<genre>` + `lastdotime`. The `all` listing is therefore not a genre page with the genre blanked out."
+    },
+    {
+      "key": "novel-detail",
+      "file": "novel-detail.html",
+      "url": "/novel/ke383028.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 45881,
+      "sha256": "316643b02800cdb3be11abca996ebf5cb8e5f6b438eabf10879e0cbd04ec7f9e",
+      "kind": "novel-detail",
+      "expected": {
+        "chapterRowsExact": 100
+      },
+      "notes": "Novel page for 'Pirates: Building a Pirate Family', 1,966 chapters. MEASURED 2026-10-04: 100 chapter rows in div.chapter-list, each a <li> carrying data-chapterno / data-volumeno / data-orderno, a span.chapter-no, a strong.chapter-title and a time.chapter-update. THE PAGE CARRIES NO TOTAL: there is no data-chapters attribute and no count anywhere, so unlike Royal Road this site publishes no completeness witness and 1,966 is known only by paging to the end. The rows here are chapters 1-100, which the pager links AGAIN as fy.php?page=0 — a source that reads both the detail page and the first pager page double-counts them."
+    },
+    {
+      "key": "chapter-list-page0",
+      "file": "chapter-list-page0.html",
+      "url": "/e/extend/fy.php?page=0&wjm=ke383028",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 29905,
+      "sha256": "43eb1f3b7276e28a2b5bb369060ea4231b37cb95492a304ee3451c375598b4e7",
+      "kind": "chapter-list",
+      "expected": {
+        "chapterRowsExact": 100
+      },
+      "notes": "The chapter list's OWN first page, discovered by reading the pager hrefs novel-detail.html publishes — NOT guessed. It is 0-based and it is a different SCRIPT from the novel page: /e/extend/fy.php?page=N&wjm=<novelId>, with N counting from 0 and wjm carrying the id without its .html. MEASURED 2026-10-04: 100 rows, the same chapters 1-100 that novel-detail.html already shows. An out-of-range N (999) does NOT clamp — it returns a 200 page of 1,228 bytes holding only a pager, so 'page 20 of 19' reads as an empty list rather than as an error. The pager header also carries a 'Latest Release:' link to the novel's NEWEST chapter (1966), which is on every pager page and is not a row — a source that reads hrefs rather than rows counts that chapter on all nineteen of them."
+    },
+    {
+      "key": "chapter-list-page1",
+      "file": "chapter-list-page1.html",
+      "url": "/e/extend/fy.php?page=2&wjm=ke383028",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 30613,
+      "sha256": "9f9bfaa2e1ebb5e05094c579233887efeba3bf548b76a2fff35d03ec65140670",
+      "kind": "chapter-list",
+      "expected": {
+        "chapterRowsExact": 100
+      },
+      "notes": "The second full page of the chapter list, read off the pager novel-detail.html publishes. MEASURED 2026-10-04: 100 rows, chapters 201-300, and ZERO chapter numbers in common with chapter-list-page0. The key says page1 because the pager's own index is 0-based; the QUERY it carries is page=2, and that asymmetry is the whole trap — a source that trusts the key, or that assumes a query page number is 1-based, reads the wrong rows. Its pager header carries the same 'Latest Release:' link to chapter 1966, which is a link and not one of its 100 rows."
+    },
+    {
+      "key": "chapter-list-last",
+      "file": "chapter-list-last.html",
+      "url": "/e/extend/fy.php?page=19&wjm=ke383028",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 13685,
+      "sha256": "900e8e7d5d042a0c65790096dc72f624a250a56b2527c135051fbad8d5e8519d",
+      "kind": "chapter-list",
+      "expected": {
+        "chapterRowsExact": 42
+      },
+      "notes": "The LAST page of the chapter list, so B9 has a terminal page to compare a partial parse against. MEASURED 2026-10-04: 42 rows, the last being chapter 1966 'The Mist of the North Sea (Part 1)'. The novel therefore lists 1,966 chapters over 19 pager pages, but the page arithmetic does NOT close — 100 + 17*100 + 42 = 1,842, not 1,966 — so the total must be read off the last chapter number and never summed from row counts. Every <li> carries data-chapterno, data-volumeno and data-orderno, which are this site's only ordering witness: it publishes no total anywhere."
+    },
+    {
+      "key": "chapter-prose",
+      "file": "chapter-prose.html",
+      "url": "/novel/ke383028_1.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 23931,
+      "sha256": "e3a8bf514ac270ef720d4ef98652b4f3652c62e85d9d453697b6153a0fa75010",
+      "kind": "chapter",
+      "expected": {
+        "textCharsAtLeast": 100
+      },
+      "notes": "Chapter 1, 'Chapter 1 Rockefeller Charlotte'. MEASURED 2026-10-04: exactly ONE div.chapter-content on the page, and its class attribute carries nothing else — unlike Royal Road, an exact match on chapter-content is correct here. The body is <br>-separated with only 2 <p> in 208 <br>, so a converter keyed on <p> alone reads two paragraphs of a 207-line chapter. Two advertising scripts (/d/js/ad/page_01.js and page_02.js) sit INSIDE the content div, and they are why the fixture was not cleaned."
+    },
+    {
+      "key": "chapter-short",
+      "file": "chapter-short.html",
+      "url": "/novel/ke383028_1960.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 22837,
+      "sha256": "0c7c5e0780048cb44486acb9a6eb66946fd742a68095e14648eb7321c9de3b0a",
+      "kind": "chapter",
+      "expected": {
+        "textCharsAtLeast": 100
+      },
+      "notes": "E22's negative control, and what this site actually offers. EXACT TITLE from the novel's own list: 'Chapter 1960 Titans (Part 1)'. It is the SMALLEST of the fifteen chapters measured on 2026-10-04 (22,837 bytes, the largest 24,892). It is NOT an Extra, Omake or end note, because MEASURED NEGATIVE: all 1,966 chapter titles of this novel were read across all 19 chapter-list pages and none of them is an Extra, Omake, volume-closing note, prologue, epilogue, afterword or announcement, in English or in Chinese (番外/外传/后记/尾声/感言/公告/序章/楔子); four other novels' full or final list pages were checked the same way with the same result. FanMTL publishes only numbered chapters, and its shortest body measures 22,837 bytes."
+    },
+    {
+      "key": "chapter-long",
+      "file": "chapter-long.html",
+      "url": "/novel/ke383028_1100.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 24892,
+      "sha256": "8e23f2e9953e4ac9f45d6b0b58bbdb0d383cfe0648206a3d5629665f4a47e23f",
+      "kind": "chapter",
+      "expected": {
+        "textCharsAtLeast": 100
+      },
+      "notes": "E18's positive control: the LONGEST chapter of the fifteen measured on 2026-10-04, at 24,892 bytes. Without a known-long page, 'long enough' is untested — a threshold that rejects everything and a threshold that rejects nothing both pass against a fixture set of only short pages. PROVENANCE LIMIT, MEASURED 2026-10-05: chapter 1100 is on NONE of the three frozen chapter-list pages (they hold 1-100, 201-300 and 1923-1966), because pager page 11 was never captured. So unlike chapter-short, its existence and its title cannot be cross-checked against anything on disk, and the title it would carry is deliberately NOT recorded here rather than guessed. novel-detail itself publishes only chapters 1-100 and the site publishes no total, so the novel's full list is not readable without paging to the end."
+    },
+    {
+      "key": "search-failure",
+      "file": "search-failure.html",
+      "url": "/e/search/index.php",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 2954,
+      "sha256": "545c52af51315d03d23e5a8886c312a11da408e699e46d7413bcd224e1168e27",
+      "kind": "failure-page",
+      "expected": {},
+      "notes": "What the site's own search endpoint returns when there is nothing behind it. MEASURED 2026-10-04: HTTP 404, 2,954 bytes, a styled page — not a 403, not an interstitial, not an empty body. The status is the DATA and not a failed capture: 0-2 needs it to tell B22's 'the site could not be read' apart from 'genuinely nothing'. B50 already records that FanMTL's search is unreachable, which is why the app offers genre browsing instead of a search box."
+    },
+    {
+      "key": "fanmtl-broken-layout",
+      "file": "fanmtl-broken-layout.html",
+      "url": "/list/xianxia/all-lastdotime-0.html",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "capturedAt": "2026-10-04T18:02:48Z",
+      "bytes": 40762,
+      "sha256": "d0d1e44d0b92db2cb8624b1322383524880c78be34a28fc0ba928122c03fee93",
+      "kind": "manufactured",
+      "expected": {
+        "novelRowsExact": 0,
+        "catalogueContainerPresent": false,
+        "edit": {
+          "sourceFile": "catalogue-genre-page0.html",
+          "from": "novel-item",
+          "to": "novel-item-v2",
+          "occurrences": 30
+        }
+      },
+      "notes": "Byte-for-byte copy of catalogue-genre-page0.html with ONE edit: novel-item -> novel-item-v2, applied literally across the whole file, nothing else changed — same title, same meta, same advertising scripts, and 40,762 bytes against the source's 40,672, which is exactly the 30 substitutions times three characters. MANUFACTURED, NEVER CAPTURED. DEVIATION FROM SECTION 3.2, MEASURED: the plan names chapter-content -> chapter-content-v2, but chapter-content occurs ZERO times in a catalogue page on this site — it exists on chapter pages only, once each, and on no list, catalogue, novel-detail or genre page. Applied to this source it would have produced a copy with nothing broken about it, and the 'zero novel rows' the artefact exists to demonstrate would have been zero before the edit too. The container an adapter actually reads on a catalogue is div.novel-item, so that is the pair, and the proof is unchanged: reversing novel-item-v2 -> novel-item restores the source byte for byte."
+    }
+  ]
+}

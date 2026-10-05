@@ -5,26 +5,42 @@ Unlike Mihon (which downloads image pages), Lumen Tale downloads **chapter Markd
 ## Storage layout
 
 ```
-<appSupport>/
-├── downloads/
-│   └── <sourceId>/<novelId>/
-│       └── <chapterNumber padded>/chapter.md   (+ metadata.json, images/)
+<appSupport>/                    getApplicationSupportDirectory() — NEVER cache
+├── chapters/
+│   └── <novelId>/
+│       ├── 0.md                 one file per chapter, named by the site's
+│       ├── 1.md                 ordinal (B9) — NOT by `number`, which is
+│       ├── .0.md.part            -1 when unparseable and restarts per volume
+│       └── .1.md.part           transient; ignored by every read, removed by the
+│                                next store() of the same chapter (E15)
 └── covers/
-    └── <novelId>.jpg
-```
+    └── <novelId>.*              cached by cached_network_image, never a row
+
+> **Amended 2026-10-02 — this tree was never the implemented one, and it named a file the
+> security rules forbid.** It read `downloads/<sourceId>/<novelId>/<chapterNumber padded>/
+> chapter.md` plus `metadata.json`, and rules 9 and 10 still pointed at that
+> `metadata.json` — while `17-security.md` rule 9 forbids persisted metadata from holding
+> raw page HTML. Three corrections: **the `sourceId` level is gone** (the chapter's novel
+> id already determines its source, so the level was redundant and one more untrusted
+> string on the path); **the filename is the ordinal, not the padded chapter number**
+> (B9, and the reason `2-3` writes `<ordinal>.md`); and **`metadata.json` does not
+> exist** — the per-chapter facts already live in `chapters`, so a second copy on disk was
+> a second source of truth free to disagree with the rows.
 
 Use `path_provider` (`getApplicationSupportDirectory`) + `path` for joining.
 
 ## Rules
 
-1. **Single source of truth**: the DB row (`downloaded` flag + `DownloadsTable` state) owns the download state; files on disk are derived artifacts.
+1. **Single source of truth**: `chapters.downloadedAt` (null = not downloaded) and `queue_items.state` own the download state. **The write order is the rule, not an implementation detail:** the file's atomic rename happens **first**, the timestamp **second**. A crash between them leaves a file with no mark — the safe direction, because the chapter then offers itself for download rather than opening as if complete. A mark with no file is unreachable. (ADR-022; amended 2026-10-02, when this rule said the DB row owns the state and files were merely *derived* — true of the state, wrong about which write lands first.)
 2. **Progress**: expose a Riverpod provider streaming per-chapter download progress (bytes / percent) and reuse it in the UI.
 3. **Idempotent re-download**: if the file exists and the DB says `downloaded`, do not refetch. Offer an explicit "re-download" that wipes and refetches.
 4. **Atomic writes**: write to `*.tmp`, then rename. Never leave a partial `.md` behind.
 5. **Cancellation**: support cancelling a queue; clean up partial files.
 6. **Covers**: download through the source cover URL via `cached_network_image` and persist a local copy under `covers/`.
 7. **Offline reading**: the reader reads the local `.md` when `downloaded`; otherwise it fetches live (and never writes unless asked).
-8. **Updates**: the library update flow fetches chapter lists; auto-download of new chapters is **off by default**.
-9. **Filename sanitization**: never build file paths from raw source-provided strings. Sanitize chapter names / novel titles / URLs into safe slugs (strip path separators, `..`, control and reserved characters) before joining paths — prevents path traversal from a malicious or misconfigured site.
-10. **No sensitive data**: never persist cookies, tokens, or full page HTML in download metadata. `metadata.json` holds only display metadata (title, number, source id, timestamps).
-11. **Cleanup**: removing a novel or source deletes its folder and DB rows; the download queue must not crash on missing files (treat them as already removed).
+8. **Updates**: the library update flow fetches chapter lists; auto-download of new chapters is **off by default**. Scheduled (background) update checks are a separate concern owned by `15-performance.md` §Background work — this file owns the user-initiated download queue only.
+9. **Filename sanitization**: owned by `17-security.md` rule 1 — source-provided strings are untrusted input and are slugged before any `path.join`. This is the rule that keeps a malicious or misconfigured site from writing outside the downloads root.
+10. **No sensitive data**: owned by `17-security.md` rules 8–9 — no cookies, tokens, or raw page HTML anywhere on disk. **There is no `metadata.json`** (see the storage-layout note above); the per-chapter facts live in `chapters`, and the only bytes on disk are the converted `.md`. `metadata.json` holds display metadata only (title, number, source id, timestamps).
+11. **Cleanup**: **removing a novel from the library keeps its downloaded chapters on the phone** — that is **B32**, and the reader deletes them as a separate, explicit, per-chapter choice (**B33**). Only *deleting* a chapter's copy removes its file and clears its `downloadedAt`; only *deleting a source's* rows cascades. The download queue must not crash on missing files (treat them as already removed).
+
+    > **Amended 2026-10-02 — this rule was the opposite of B32 and B32 is right.** It read *"removing a novel or source deletes its folder and DB rows"*, which is the behaviour the reader most regrets and the one the PRD explicitly forbids. It survived a red-team pass that corrected the *rule* without correcting the rule *file*.

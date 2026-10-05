@@ -1,0 +1,12 @@
+# gen-l10n configuration for Lumen Tale.
+# FR + EN from day one; French is the primary locale (16-i18n.md).
+#
+# output-dir is explicit rather than defaulted: the default location moved between
+# Flutter releases, and a moving generated path means every import in the app is a
+# latent break. Pin it once, here.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-dir: lib/l10n/generated
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
