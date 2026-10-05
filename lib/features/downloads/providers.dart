@@ -58,6 +58,20 @@ final Provider<ChapterStore> chapterStoreProvider = Provider<ChapterStore>(
   (Ref ref) => FileChapterStore(marker: ref.watch(chapterMarkerProvider)),
 );
 
+/// ⚠️ **`5-2`'s CANCELLATION PORT, AND IT IS A SEPARATE PROVIDER ON PURPOSE.**
+///
+/// `PartialChapterDiscarder` is its own one-method interface (`chapter_store.dart` says
+/// why), so this provider is typed on **it** rather than on `ChapterStore`. Reading
+/// `ChapterStore` and casting would put the cast at the one call site that matters, and the
+/// compiler would no longer be able to tell that `cancel()` really needs the second method.
+///
+/// Two providers over one `FileChapterStore` is fine and intentional: each is read through
+/// the capability its caller uses, and `chapterStoreProvider` is not rebuilt by this.
+final Provider<PartialChapterDiscarder> chapterPartialDiscarderProvider =
+    Provider<PartialChapterDiscarder>(
+      (Ref ref) => FileChapterStore(marker: ref.watch(chapterMarkerProvider)),
+    );
+
 /// ⚠️ **THE PROBE WRITES WHERE DOWNLOADS GO.** It is the **support** directory's parent, not
 /// `systemTemp`: measuring a different filesystem than the one chapters land on would make
 /// E20's two numbers describe two different volumes, and the refusal would be arithmetic on

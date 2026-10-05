@@ -94,4 +94,37 @@ abstract interface class DownloadQueueRepository {
   /// `chapters`** — B32: removing a novel from the library keeps its downloaded
   /// chapters, and a queue row is state, not content.
   Future<int> clearUnfinished();
+
+  /// ⚠️ **`5-2` § 3.1's ONE ALGORITHM: bring every in-flight row back to `queued`, once per
+  /// session, and start nothing.**
+  ///
+  /// - `state = 'queued'`
+  /// - `started_at = NULL`
+  /// - **`attempts` is KEPT** — B20 counts attempts, it does not reset them
+  /// - `error_code` is KEPT — an interruption is not a failure
+  /// - **`downloadedAt` is not touched**, and it never could be: nothing here writes
+  ///   `chapters`, and an interrupted item was never marked (ADR-022)
+  ///
+  /// Returns how many rows were brought back.
+  ///
+  /// ⚠️ **THE ABSENCE OF A `start()` IN ITS NEIGHBOURHOOD IS THE SLICE.** After this call
+  /// there are `queued` rows, and the temptation is to run the loop — that is precisely the
+  /// automatic resume E7 forbids (*"It does not resume on its own … The reader resumes it"*).
+  /// The caller resets and returns.
+  Future<int> resetInterruptedToQueued();
+
+  /// ⚠️ **`5-3` § 3.5's `Retry`: ONE chapter, put back at the END of the queue.**
+  ///
+  /// - `state = 'queued'`
+  /// - `queue_position = MAX(queue_position) + 1` — the last, i.e. the back of the reading
+  ///   order, which is what `downloads.md` § 5 means by *"it re-enters the queue and runs
+  ///   in reading order among the others"*
+  /// - **`attempts` is KEPT** and incremented by the next `markDownloading` — B20
+  /// - `error_code` is cleared — the reason belonged to the previous attempt
+  /// - `finished_at` is cleared — the chapter is no longer finished
+  ///
+  /// Returns `false` and writes nothing when the row is **not** `failed`. `downloads.md`
+  /// § 4's *Read-only* state is why: a `downloading` row has nothing to replay and a `done`
+  /// row is a stored chapter whose removal is B33, not a Retry.
+  Future<bool> retry(String queueItemId);
 }

@@ -48,6 +48,7 @@ final class SourceRegistryChapterContent implements ChapterContentSource {
   Future<BrowseOutcome<String>> fetchChapterContent({
     required String sourceId,
     required Chapter chapter,
+    void Function(int received, int? total)? onProgress,
   }) async {
     final Source? source = _byId(sourceId);
     // ⚠️ **NOT REACHABLE THROUGH THE RUNNER, AND IT IS A TYPED FAILURE ANYWAY.** The
@@ -62,6 +63,16 @@ final class SourceRegistryChapterContent implements ChapterContentSource {
         retriable: false,
       );
     }
+    // ⚠️ **`onProgress` IS **NOT** FORWARDED, AND THAT IS A DOCUMENTED LIMITATION.**
+    //
+    // `Source.fetchChapterContent(Chapter)` takes no progress channel, and widening *that*
+    // signature would touch every `Source` in `sources/implementations/` and the whole
+    // `HttpClient` below it — for a callback none of them currently produces. The port
+    // offers it so the queue's wiring is complete and a future transport can use it; until
+    // one does, the queue's own figure (the converted chapter's byte length, reported when
+    // it is wholly in hand) is the honest one, and `totalBytes` stays `null` while the
+    // request is in flight — which `downloads.md` § 8 says renders **no** percentage
+    // rather than a bar at zero.
     return source.fetchChapterContent(chapter);
   }
 }

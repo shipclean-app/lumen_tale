@@ -367,8 +367,15 @@ List<RouteBase> _subRoutesFor(AppNavDestination destination) {
       return <RouteBase>[
         GoRoute(
           path: 'downloads',
+          // ⚠️ **`screenBuilderFor` WITH THE FULL ROUTE PATH, NOT THE RELATIVE ONE.**
+          //
+          // `5-2`'s screen. It was a `PlaceholderScreen` here while `5-2` was implemented,
+          // registered and tested — the same defect the library branch's comment describes:
+          // a registration the route never consults. The registry is keyed by what `AppRoutes`
+          // spells out, so the relative `'downloads'` would register under a key nothing
+          // reads.
           builder: (BuildContext context, GoRouterState state) =>
-              const PlaceholderScreen(screenKey: AppRoutes.downloads),
+              screenBuilderFor(AppRoutes.downloads)(context, state),
         ),
         GoRoute(
           path: 'settings',

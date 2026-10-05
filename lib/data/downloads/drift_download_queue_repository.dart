@@ -314,6 +314,64 @@ final class DriftDownloadQueueRepository implements DownloadQueueRepository {
         .go();
   }
 
+  @override
+  Future<int> resetInterruptedToQueued() {
+    // ⚠️ **ONE `UPDATE`, AND `attempts` IS ABSENT FROM THE COMPANION ON PURPOSE.**
+    //
+    // § 3.1 lists exactly three writes: `state`, `started_at`, and nothing else. B20 counts
+    // attempts, so an item that was on its second try before the kill is still on its
+    // second try after it — and a reset that zeroed the counter would make a resume
+    // indistinguishable from a first fetch, which is the one distinction E15 needs.
+    //
+    // `error_code` is absent for the same reason from the other side: an interruption is not
+    // a failure, and clearing a reason that was never set would be a second way of saying
+    // the same thing.
+    return (_db.update(_db.queueItems)..where(
+          ($QueueItemsTable t) => t.state.equals(kDownloadStateDownloading),
+        ))
+        .write(
+          const QueueItemsCompanion(
+            state: Value<DownloadState>(DownloadState.queued),
+            startedAt: Value<DateTime?>(null),
+          ),
+        );
+  }
+
+  @override
+  Future<bool> retry(String queueItemId) async {
+    // ⚠️ **`state = 'failed'` IS THE PREDICATE, NOT A POST-HOC CHECK.** `downloads.md`
+    // § 4's *Read-only* state and § 11.2's row agree: a `downloading` row has nothing to
+    // replay, and a `done` row is a **stored chapter** — re-queueing it would download a
+    // file that is already whole, which is `3-3`'s explicit *re-download* and B33's
+    // deletion, not this. Writing `false` and changing nothing is the honest answer for
+    // both.
+    final QueueRow? row = await _rowById(queueItemId);
+    if (row == null || row.state != DownloadState.failed) {
+      return false;
+    }
+
+    // ⚠️ **`_nextPosition()`, SO A RETRIED CHAPTER GOES TO THE BACK OF THE QUEUE.**
+    // § 3.5: *"it re-enters the queue and runs in reading order among the others"* — a
+    // retry in its old slot would put chapter 3 ahead of chapters 4 and 5 again, which
+    // B18's order does not allow and which would make a failure block everything behind it.
+    await (_db.update(_db.queueItems)..where(
+          ($QueueItemsTable t) =>
+              t.id.equals(queueItemId) & t.state.equals(kDownloadStateFailed),
+        ))
+        .write(
+          QueueItemsCompanion(
+            state: const Value<DownloadState>(DownloadState.queued),
+            queuePosition: Value<int>(await _nextPosition()),
+            // ⚠️ **`attempts` IS **NOT** WRITTEN.** B20: the count must survive a retry, and
+            // `markDownloading` is the only thing that increments it — so the second
+            // attempt reads `2` and the reader's screen can say "tried twice".
+            errorCode: const Value<String>(''),
+            finishedAt: const Value<DateTime?>(null),
+          ),
+        );
+    return true;
+  }
+
   // ── helpers ──────────────────────────────────────────────────────────────────
 
   List<Join<HasResultSet, dynamic>> _joins() => <Join<HasResultSet, dynamic>>[
@@ -355,3 +413,8 @@ final class DriftDownloadQueueRepository implements DownloadQueueRepository {
 const String kDownloadStateQueued = 'queued';
 const String kDownloadStateDownloading = 'downloading';
 const String kDownloadStateDone = 'done';
+
+/// ⚠️ **`retry` FILTERS ON IT**, and it is written here for the same reason the other three
+/// are: the `DownloadStateConverter` applies to column *reads*, so a hand-written predicate
+/// has to bind a name and not an enum.
+const String kDownloadStateFailed = 'failed';

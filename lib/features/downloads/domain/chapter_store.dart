@@ -43,6 +43,35 @@ abstract interface class ChapterStore {
   Future<void> deleteOne(ChapterRecord chapter);
 }
 
+/// ⚠️ **`5-2` § 3.4 STEP 4 — ITS OWN INTERFACE, NOT A `ChapterStore` METHOD.**
+///
+/// The rule (`09-widgets-ui.md` rule 2) is *"when a primitive is missing, add it once to
+/// `core/ui/` and reuse it"*, and the companion rule is that adding a method to an existing
+/// interface is a **breaking change to every implementer**. Three validated test doubles
+/// implement `ChapterStore` today, and a cancellation's courtesy call would have forced an
+/// unrelated `no-op` into all three — three stubs asserting nothing about anything.
+///
+/// A second, one-method interface is the reversible arrangement: `FileChapterStore`
+/// implements it, the control notifier takes it, and nothing that only needs to write or
+/// delete a chapter has to know the method exists.
+abstract interface class PartialChapterDiscarder {
+  /// Deletes the transient `.part` for [chapter] and **nothing else**.
+  ///
+  /// B19 says a cancellation *"takes effect without a further action"*, and § 4 says the
+  /// in-flight chapter's partial file is discarded. `2-3` already deletes it on the next
+  /// `store()` of the same chapter, so this is a **courtesy, not a correctness
+  /// requirement** — and it is here because doing it makes the cancellation instant and
+  /// stops a `.part` from surviving on a phone for weeks.
+  ///
+  /// ⚠️ **A MISSING `.part` IS NOT AN ERROR.** The common case is a chapter that was never
+  /// mid-write, and `ChapterStore.fileFor`'s doc gives the reason: a miss is not exceptional
+  /// here.
+  ///
+  /// ⚠️ **NEVER TOUCHES `<ordinal>.md`.** A stored chapter is B32/B33's business — only the
+  /// reader may delete that, through an explicit confirmation.
+  Future<void> discardPartial(ChapterRecord chapter);
+}
+
 /// The minimum this slice needs to know about a chapter.
 final class ChapterRecord {
   const ChapterRecord({

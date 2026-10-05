@@ -28,12 +28,56 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lumen_tale/core/database/app_database_provider.dart';
 import 'package:lumen_tale/data/library/drift_library_repository.dart';
+import 'package:lumen_tale/data/library/drift_library_rows_repository.dart';
+import 'package:lumen_tale/data/library/drift_similar_title_finder.dart';
 import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/domain/library/library_repository.dart';
+import 'package:lumen_tale/domain/library/library_row.dart';
+import 'package:lumen_tale/domain/library/library_rows_repository.dart';
+import 'package:lumen_tale/domain/library/similar_title.dart';
 
 /// Overridden at the bootstrap, like every repository over the database.
 final libraryRepositoryProvider = Provider<LibraryRepository>(
   (Ref ref) => DriftLibraryRepository(ref.watch(appDatabaseProvider)),
+);
+
+/// `6-6`'s rows: the library with the counts and facts the **row** renders.
+///
+/// ⚠️ **A SEPARATE STREAM FROM [libraryStreamProvider], and the reason is a number.**
+/// `LibraryEntry.unopenedCount` is `2-5`'s *unread among downloaded*;
+/// `LibraryRow.unopenedCount` is `6-6` § 3.2's `COUNT(is_read = 0)` over every chapter,
+/// which is the number `6-3` — the plan's owner for the counting model — computes. Both
+/// are asserted by a passing test, so neither could be moved, and a screen that read one
+/// while claiming the other would be the app contradicting itself inside one row. See
+/// `library_row.dart`'s header.
+///
+/// ⚠️ **THE SOURCE-NAME RESOLVER IS [LibraryRepository.sourceNameOf], and not a second
+/// registry.** ADR-013 says there is exactly one compiled registry and no stored source
+/// name; wiring a second `SourceManager` here to resolve the same ids would be a second
+/// answer to "what is this site called", and `main.dart` overrides one provider rather
+/// than two.
+final libraryRowsRepositoryProvider = Provider<LibraryRowsRepository>(
+  (Ref ref) => DriftLibraryRowsRepository(
+    ref.watch(appDatabaseProvider),
+    sourceNameOf: ref.watch(libraryRepositoryProvider).sourceNameOf,
+  ),
+);
+
+/// The library rows, reactively.
+///
+/// ⚠️ **`keepAlive`, for [libraryStreamProvider]'s reason and not a new one.** It reads
+/// the same table, and a provider that disposed while the tab was away would re-run one
+/// aggregate per return for the screen the reader came back to.
+final libraryRowsStreamProvider = StreamProvider<List<LibraryRow>>(
+  (Ref ref) => ref.watch(libraryRowsRepositoryProvider).watchRows(),
+);
+
+/// B40's finder, over the same local table.
+final similarTitleFinderProvider = Provider<SimilarTitleFinder>(
+  (Ref ref) => DriftSimilarTitleFinder(
+    ref.watch(appDatabaseProvider),
+    sourceNameOf: ref.watch(libraryRepositoryProvider).sourceNameOf,
+  ),
 );
 
 /// The library, as a stream — **`keepAlive`**, for the reason in the file header.
@@ -68,4 +112,12 @@ final removeFromLibraryProvider =
 /// believe the two are independent facts.
 void invalidateLibraryProviders(Ref ref) {
   ref.invalidate(libraryStreamProvider);
+  // ⚠️ **The rows stream is invalidated too, and `6-6` says why that is not redundant.**
+  // drift re-emits a custom select on its own when a table it reads changes, so the badge
+  // would refresh regardless — but `libraryRowsStreamProvider` also feeds the *search id
+  // set*, whose `readsFrom` is `novels` alone, and a novel removed while a query is open
+  // must leave the results. Invalidating the derived stream rather than each reader is
+  // the same "a caller cannot refresh three things and forget the third" argument this
+  // helper exists for.
+  ref.invalidate(libraryRowsStreamProvider);
 }

@@ -30,7 +30,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 /// The filesystem implementation.
-final class FileChapterStore implements ChapterStore {
+final class FileChapterStore implements ChapterStore, PartialChapterDiscarder {
   FileChapterStore({
     required ChapterMarker marker,
     Future<Directory> Function()? supportDirectory,
@@ -131,6 +131,29 @@ final class FileChapterStore implements ChapterStore {
     final DateTime storedAt = DateTime.now();
     await _marker.markDownloaded(chapter, storedAt);
     return storedAt;
+  }
+
+  @override
+  Future<void> discardPartial(ChapterRecord chapter) async {
+    final File temp = File(
+      p.join(
+        (await root()).path,
+        chapter.novelId,
+        // ⚠️ **THE SAME NAME `store()` WRITES, SPELLED ONCE HERE AND IN `store()` ABOVE.**
+        // A `.part` whose name this method guessed differently from the writer's would make
+        // a cancellation delete nothing while appearing to — the worst kind of half-fix.
+        '.${chapter.ordinal}.md.part',
+      ),
+    );
+    // ⚠️ **`existsSync`, LIKE `fileFor`.** A cancellation on a chapter that was never
+    // mid-write is the ordinary case, not an error, and `File.delete` throws on a missing
+    // path — so the predicate is what makes "nothing to discard" a state rather than a
+    // crash inside `5-2`'s `cancel()`.
+    if (temp.existsSync()) {
+      await temp.delete();
+    }
+    // ⚠️ **AND NOTHING ELSE.** No mark, no row, no `.md`. `discardPartial` is a courtesy
+    // call and must never become a second deletion path (B32/C4).
   }
 
   @override

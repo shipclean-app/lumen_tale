@@ -47,8 +47,18 @@ abstract interface class ChapterContentSource {
   ///
   /// ⚠️ **CALLED ONLY AFTER [baseUrlOf] RETURNED NON-NULL.** The runner resolves once
   /// and passes the answer, so an implementation may rely on the pairing.
+  ///
+  /// [onProgress] is `5-3` § 3.1's seam: `(received, total)`, with `total` `null` when the
+  /// server sent no `Content-Length`. ⚠️ **IT IS OPTIONAL AND MAY BE IGNORED.** The
+  /// `Source` contract declares `fetchChapterContent(Chapter)` with no progress channel,
+  /// and widening *that* signature would touch every source implementation for a channel
+  /// none of them uses. So the queue offers the callback, the registry declines it, and the
+  /// queue reports what it can measure itself — see `serial_download_queue_runner.dart`.
+  /// An implementation that has a transport-level byte count SHOULD call it; there is
+  /// nothing in the interface that requires it and everything in the cadence that benefits.
   Future<BrowseOutcome<String>> fetchChapterContent({
     required String sourceId,
     required Chapter chapter,
+    void Function(int received, int? total)? onProgress,
   });
 }

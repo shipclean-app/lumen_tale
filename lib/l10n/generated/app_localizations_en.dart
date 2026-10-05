@@ -1466,4 +1466,184 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get warningNotifications =>
       'Notifications are turned off in your phone\'s settings.';
+
+  @override
+  String downloadsAttemptCount(Object count) {
+    return 'Tried $count times';
+  }
+
+  @override
+  String get downloadsCancelAction => 'Cancel download';
+
+  @override
+  String get downloadsCancelFailedSnackbar =>
+      'Could not cancel. The download is still running.';
+
+  @override
+  String downloadsCancelledKept(Object kept) {
+    return 'Download cancelled — $kept chapters kept.';
+  }
+
+  @override
+  String get downloadsEmptyActionBrowse => 'Browse sources';
+
+  @override
+  String get downloadsEmptyBody =>
+      'Downloaded chapters read with no signal at all. Start one from any novel\'s page.';
+
+  @override
+  String get downloadsEmptyTitle => 'Nothing is downloaded yet';
+
+  @override
+  String downloadsFailedRowTitle(Object name) {
+    return 'Chapter: $name';
+  }
+
+  @override
+  String get downloadsFailedSectionLabel => 'COULD NOT DOWNLOAD';
+
+  @override
+  String downloadsHeaderCounts(Object downloaded, Object total) {
+    return '$downloaded of $total downloaded';
+  }
+
+  @override
+  String get downloadsInProcessNotice =>
+      'Downloads continue only while the app is open.';
+
+  @override
+  String downloadsInProgressSuffix(Object count) {
+    return '· $count in progress';
+  }
+
+  @override
+  String get downloadsLoadErrorBody =>
+      'Nothing has been deleted. This app cannot see what it has already stored, and nothing can be fetched until it can.';
+
+  @override
+  String get downloadsLoadErrorRetry => 'Try again';
+
+  @override
+  String get downloadsLoadErrorTitle =>
+      'Lumen Tale could not read its download records';
+
+  @override
+  String get downloadsPauseAction => 'Pause';
+
+  @override
+  String get downloadsPausedLabel => 'Paused';
+
+  @override
+  String get downloadsQueueSectionLabel => 'DOWNLOAD QUEUE';
+
+  @override
+  String get downloadsResumeAction => 'Resume';
+
+  @override
+  String get downloadsRetryAction => 'Retry this chapter';
+
+  @override
+  String get downloadsRunningLabel => 'Downloading';
+
+  @override
+  String downloadsSemanticsChapterProgress(
+    Object percent,
+    Object position,
+    Object total,
+  ) {
+    return 'Chapter $position of $total, $percent per cent';
+  }
+
+  @override
+  String downloadsSemanticsProgressUndetermined(Object position, Object total) {
+    return 'Chapter $position of $total, downloading';
+  }
+
+  @override
+  String get downloadsStoppedLabel => 'Stopped';
+
+  @override
+  String get downloadsStoppedNoConnection => 'No connection';
+
+  @override
+  String get downloadsStoppedOutOfStorage =>
+      'The phone is out of storage. Free up some space, then resume.';
+
+  @override
+  String downloadsStoppedRateLimited(Object time) {
+    return 'The site asked us to wait until $time.';
+  }
+
+  @override
+  String downloadsStoppedSourceUnreadable(Object source) {
+    return 'Lumen Tale could not read $source.';
+  }
+
+  @override
+  String downloadsStorageNeeded(Object bytes) {
+    return 'This chapter needs $bytes.';
+  }
+
+  @override
+  String get downloadsTitle => 'Downloads';
+
+  @override
+  String get downloadsWillNotContinueOnItsOwn =>
+      'It will not continue on its own when the signal comes back.';
+
+  @override
+  String queueCancelBody(Object kept) {
+    return 'The $kept chapters already downloaded are kept. Nothing else is fetched.';
+  }
+
+  @override
+  String queueCancelBodyWithChapter(Object kept, Object name) {
+    return '\'$name\' is being downloaded. It will be discarded. The $kept chapters already downloaded are kept.';
+  }
+
+  @override
+  String get queueCancelConfirm => 'Cancel the download';
+
+  @override
+  String get queueCancelTitle => 'Cancel this download?';
+
+  @override
+  String get queueCauseItemRemovedAtSource =>
+      'The site says this chapter has been removed.';
+
+  @override
+  String get queueCauseNoConnection =>
+      'The connection dropped while this chapter was being downloaded.';
+
+  @override
+  String get queueCauseNoRealText =>
+      'This chapter had no readable text on the page.';
+
+  @override
+  String get queueCauseParseFailed =>
+      'This chapter\'s text could not be built.';
+
+  @override
+  String get queueCauseRateLimited => 'The site asked us to slow down.';
+
+  @override
+  String get queueCauseSourceEmpty =>
+      'The site published nothing for this chapter.';
+
+  @override
+  String get queueCauseSourceLayoutChanged =>
+      'This site has changed its layout, so this app can no longer read it.';
+
+  @override
+  String get queueCauseSourceUnavailable =>
+      'This novel\'s site is not in this version of the app.';
+
+  @override
+  String get queueCauseStorageFull => 'The phone ran out of storage.';
+
+  @override
+  String get queueCauseUnknown => 'This app cannot say what went wrong.';
+
+  @override
+  String get downloadsOpenNovelAction => 'Open the novel';
 }

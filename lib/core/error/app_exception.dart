@@ -7,6 +7,12 @@
 //
 // The hierarchy is `sealed`, so `catch (e)` over `AppException` is exhaustive at
 // compile time and a new member breaks every caller that must decide about it.
+//
+// ⚠️ **`5-3`'s `StorageFullException` IS **NOT** IN THIS HIERARCHY, AND IT WAS.** See
+// `storage_full_exception.dart`'s header: a `sealed` base charges every addition to every
+// exhaustive `switch` over it, and two of them live in files this slice does not own. A full
+// disk is a *write* failure and never arrives as a `BrowseFailed` — the same argument
+// `ChapterStoreException` makes.
 
 /// The root of every named application error.
 sealed class AppException implements Exception {

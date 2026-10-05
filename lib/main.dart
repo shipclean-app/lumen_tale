@@ -9,14 +9,22 @@ import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/app/theme/app_theme_preferences.dart';
 import 'package:lumen_tale/app/theme/app_version.dart';
 import 'package:lumen_tale/app/theme/theme_providers.dart';
+import 'package:lumen_tale/core/background/check_job_engine.dart'
+    show checkJobAppVersionKey;
+import 'package:lumen_tale/core/background/check_job_interlock.dart';
 import 'package:lumen_tale/core/database/app_database.dart';
 import 'package:lumen_tale/core/database/app_database_provider.dart';
+import 'package:lumen_tale/core/network/host_rate_limiter.dart';
 import 'package:lumen_tale/core/storage/onboarding_seen.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
+import 'package:lumen_tale/data/background/check_job_entry_point.dart';
+import 'package:lumen_tale/data/background/check_job_providers.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
+import 'package:lumen_tale/data/updates/check_library_providers.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/browse/catalogue_screen.dart';
+import 'package:lumen_tale/features/downloads/screens/downloads_screen.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/features/library/library_screen.dart';
 import 'package:lumen_tale/features/novel_details/novel_details_screen.dart';
@@ -136,6 +144,17 @@ void registerScreens() {
     AppRoutes.settings,
     (BuildContext context, GoRouterState state) => const SettingsScreen(),
   );
+  // ⚠️ **`5-2`'s SCREEN, AND IT IS THE ROUTE `downloads.md` § 3 IS WRITTEN FOR.**
+  //
+  // `/more/downloads` is where the reader pauses, resumes and cancels a queue, and where
+  // E7's standing notice lives. It renders a `PlaceholderScreen` until this line exists —
+  // and the registration alone would not have been enough, because `app_router.dart`'s
+  // `_subRoutesFor` also had to resolve it by the FULL constant. `test/app/router/
+  // route_resolution_test.dart` asserts both halves, which is the whole reason it exists.
+  registerScreen(
+    AppRoutes.downloads,
+    (BuildContext context, GoRouterState state) => const DownloadsScreen(),
+  );
   // ⚠️ **The reader registers as a STANDALONE route, not a screen.**
   //
   // `/reader/:novelId/:chapterId` is outside the shell — no tab bar, no transition — so it
@@ -218,6 +237,32 @@ Future<void> main() async {
     ),
   );
 
+  // ⚠️ **B37's ENGINE IS INITIALISED HERE, BEFORE `runApp`, AND IT IS NOT OPTIONAL.**
+  //
+  // `6-10` § 3.5 gives the order and the reason: `executeTask` registers its handlers on
+  // the isolate's messenger and the platform calls the dispatcher afterwards, so a task that
+  // ran before the handlers existed would find an engine with nothing to receive it. The
+  // same section installs the progress listener, which is the app-side half of the bridge a
+  // background isolate's integers travel over.
+  //
+  // ⚠️ **`MissingPluginException` IS NOT CAUGHT HERE, for the reason the header of this
+  // file gives for the theme.** An app that cannot schedule its one foreground job must not
+  // pretend it can; swallowing this would give the reader a *Check* button that silently
+  // does nothing.
+  await initializeBackgroundCheckEngine();
+
+  // ⚠️ **A FLAG LEFT BY A KILLED ISOLATE IS RELEASED HERE, AND NOTHING IS REGISTERED.**
+  //
+  // `6-10` § 3.3 branches 7 and 8: a background isolate the system takes away runs no
+  // `finally` and fires no `onTaskStopped`, so the one-flight flag is the only evidence that
+  // anything was in flight. Releasing it makes the next tap work.
+  //
+  // ⚠️ **NO RESUME AND NO RE-REGISTRATION, AND BOTH ARE RULES.** Resuming would complete an
+  // interrupted pass from a partial state, which B20 forbids; registering anything would make
+  // *opening the app* a trigger, which is B36 — and ADR-023 withdrew the schedule, so there
+  // is nothing to re-arm.
+  await releaseStaleCheckJobFlag(SharedPreferencesCheckJobInterlock(prefs));
+
   runApp(
     ProviderScope(
       overrides: [
@@ -259,6 +304,35 @@ Future<void> main() async {
         browseRepositoryProvider.overrideWithValue(
           buildBrowseRepository(sources),
         ),
+        // ⚠️ **THE LAST TWO OVERRIDES EXIST BECAUSE `6-4`'s INTERACTOR THROWS WITHOUT THEM,
+        // AND UNTIL `6-10` NOTHING DID.**
+        //
+        // `libraryCheckSourceManagerProvider` and `libraryCheckRateLimiterProvider` are
+        // declared `throw UnimplementedError` in `data/updates/check_library_providers.dart`,
+        // for a stated reason: `data/` may not import the `features/browse` provider that
+        // holds the one registry, and the limiter was a *local* inside `buildSourceManager`
+        // so nothing outside could name it. Both are bootstrap overrides — the same shape as
+        // `appDatabaseProvider` — and `6-4` shipped without them. The consequence was not a
+        // missing feature: **the Check button threw `UnimplementedError` the moment it was
+        // tapped**, because `checkLibraryProvider` reads both to build `DriftCheckLibrary`.
+        //
+        // ⚠️ **THE SAME INSTANCES, NOT FRESH ONES.** `sources` is the registry every `Dio`
+        // client already points at, and `sharedRateLimiter` is the object
+        // `buildSourceManager` was handed, so a `429`'s `Retry-After` recorded by a check is
+        // honoured by the very clients that will make the next request (C7). A second
+        // registry would be a second set of HTTP clients (ADR-013) and a second set of
+        // per-host windows — the exact hole `buildSourceManager`'s new `limiter` parameter
+        // was added to close.
+        libraryCheckSourceManagerProvider.overrideWithValue(sources),
+        libraryCheckRateLimiterProvider.overrideWithValue(sharedRateLimiter),
+        // ⚠️ **THE BUILD VERSION CROSSES INTO THE BACKGROUND ISOLATE AS TASK INPUT.**
+        // `_appVersion()` is private to this file, and `data/background/` may not import
+        // `app/theme/app_version.dart` — so the composition root hands it over. It is the
+        // only value in `inputData`, and `inputData` is never drawn: the notification and
+        // the progress map are integers and localized strings only (C2).
+        checkJobInputDataProvider.overrideWithValue(<String, Object?>{
+          checkJobAppVersionKey: _appVersion(),
+        }),
       ],
       child: const LumenTaleApp(),
     ),
@@ -271,7 +345,21 @@ Future<void> main() async {
 /// browse repository and the router's `supportsSearch` read, and a second build here would
 /// give two sets of `Dio` instances and two rate limiter states — so the limiter would throttle
 /// half of what it thinks it is throttling.
-final SourceManager sources = buildSourceManager(appVersion: _appVersion());
+final SourceManager sources = buildSourceManager(
+  appVersion: _appVersion(),
+  limiter: sharedRateLimiter,
+);
+
+/// The **shared** per-host limiter, and a top-level `final` for the same reason
+/// [sources] is one.
+///
+/// ⚠️ **DECLARED HERE BECAUSE TWO CALLERS MUST NAME THE SAME OBJECT.** `main.dart` hands it
+/// to `buildSourceManager` *and* overrides `libraryCheckRateLimiterProvider` with it, and the
+/// background isolate (`6-10`) does the same inside its own process. Building it inline at
+/// either use site produced the defect this declaration exists to prevent: a limiter whose
+/// table stays empty while the requests it was meant to space go straight through, so the
+/// `Retry-After` a check records is honoured by nobody (C7).
+final HostRateLimiter sharedRateLimiter = HostRateLimiter();
 
 /// The version string that goes into the User-Agent.
 ///

@@ -54,7 +54,16 @@ final class SpySource implements ParsedHttpSource {
   /// echoes the probe it was handed, which is the honest healthy answer.
   BrowseOutcome<Novel>? details;
 
-  /// What `getChapterList` answers. `null` means *an empty but read page*.
+  /// What `getChapterList` answers. `null` means *the site declared itself empty*, which
+  /// is [BrowseEmpty] and the only shape that may become `NovelChecked(0)`.
+  ///
+  /// ⚠️ **THE DEFAULT IS A DECLARED EMPTY, NOT AN EMPTY SUCCESS.** A spy that answered
+  /// `BrowseSucceeded([])` by default was E8 wearing a healthy site's clothes — the check
+  /// reads an undeclared empty list as a failure (`drift_check_library.dart`, § 7), so
+  /// every row that never set a chapter list would have measured a broken site. A fake's
+  /// default has to be the shape a real `OutcomeDiscriminator` can actually produce for
+  /// `ReadStage.chapterList`, and for a chapter table that is either a non-empty success or
+  /// the site's own signal.
   BrowseOutcome<List<Chapter>>? chapters;
 
   /// Thrown **instead of** an answer, so `13-error-handling.md` rule 1 and B23 are
@@ -154,7 +163,9 @@ final class SpySource implements ParsedHttpSource {
     if (thrown != null) throw thrown;
     return chaptersFor[novel.id] ??
         chapters ??
-        const BrowseSucceeded<List<Chapter>>(<List<Chapter>>[]);
+        const BrowseEmpty<List<Chapter>>(
+          siteSuppliedSignal: 'the spy site declares itself empty',
+        );
   }
 
   @override

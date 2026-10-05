@@ -634,41 +634,164 @@ void main() {
       // ADR-023 withdrew B35's schedule, and `15-performance.md` says `workmanager` runs
       // the manual check and nothing else. A `registerPeriodicTask` here would be a
       // background check the reader never asked for — and B38's data cost with no dialog.
+      //
+      // ⚠️ **THE LIST WAS NARROWED TO ONE ENTRY WHEN `6-10` LANDED, AND THE OTHER THREE
+      // WERE WRONG.** It read `registerPeriodicTask`, `registerOneOffTask`, `Workmanager`
+      // and `Workmanager().initialize` — and the last three forbid the manual check itself,
+      // not a schedule. `6-10` is B37: a tap registers a **one-off** foreground job through
+      // `Workmanager`, so a guard that forbade `registerOneOffTask` forbade the slice from
+      // existing and could only be satisfied by deleting the row. The reason text above says
+      // "there is no schedule in any version", and `registerOneOffTask` is not a schedule.
+      //
+      // ⚠️ **THE GUARD IS NOT WEAKENED — IT MOVED, AND IT IS STILL EXACT.** ADR-023 is about
+      // a *periodic* task, so that is the only string this row needs. The complementary
+      // guards live in `test/core/background/check_job_structure_test.dart` and are
+      // *stronger* than what was removed: `CheckJobRequest` has no `frequency`, no
+      // `initialDelay` and no `expedited` field, and the only `registerOneOffTask` call site
+      // in `lib/` is the one inside `CheckJobEngine.registerCheck`. Those rows can fail;
+      // this one could only fail for an unrelated reason.
       for (final File file in _dartFilesIn('lib')) {
         final String code = _codeLinesOf(file.path).join('\n');
-        for (final String forbidden in <String>[
-          'registerPeriodicTask',
-          'registerOneOffTask',
-          'Workmanager',
-          'Workmanager().initialize',
-        ]) {
-          expect(
-            code,
-            isNot(contains(forbidden)),
-            reason:
-                'ADR-023: there is no schedule in any version, and `$forbidden` in '
-                '`${file.path}` would create one',
-          );
-        }
+        expect(
+          code,
+          isNot(contains('registerPeriodicTask')),
+          reason:
+              'ADR-023: there is no schedule in any version, and a `registerPeriodicTask` '
+              'in `${file.path}` would create one',
+        );
       }
     });
 
+    test('no file that reaches the provider starts a pass from a build', () {
+      // § 4.3's mapping is the opposite of an entry point: `updates.md`, `library.md` and
+      // `settings.md` *read* the provider. A screen that watched it in order to fetch would
+      // be B36's violation in a build clause.
+      //
+      // ⚠️ **AND IT IS NOW `data/`'s FALLBACK, WHICH IS NOT A BUILD.** `6-10` § 3.4 requires
+      // the in-process pass to be reachable exactly once, from the fallback that runs when a
+      // foreground job cannot be registered — and that call lives in
+      // `data/background/check_job_providers.dart`, a file that names the provider and calls
+      // `start()` from a *callback*. As written the row forbade any co-occurrence anywhere
+      // in `lib/`, which is stricter than its own stated rule and had one legitimate caller
+      // it could not admit. The rule is about a **screen**, so the rule is now stated over
+      // screens — and strengthened: the fallback's file is asserted to hold *exactly one*
+      // call site, so a second one there fails just as loudly.
+      //
+      // ⚠️ **SCREENS ONLY, AND THE SET IS ASSERTED FIRST SO THE ROW CANNOT GO VACUOUS.**
+      // `lib/features/` exists and holds the three screens that will read this provider; a
+      // loop over "files that happen to mention it" matched nothing today and passed for the
+      // wrong reason, which is the shape § 4.2's guard already got wrong once.
+      final List<File> screens = _dartFilesIn('lib/features').toList();
+      expect(
+        screens.length,
+        greaterThan(10),
+        reason:
+            'precondition: the loop below must have screens to read, or it proves nothing',
+      );
+      for (final File file in screens) {
+        final String code = _codeLinesOf(file.path).join('\n');
+        if (!code.contains('libraryCheckProvider')) continue;
+        expect(
+          code,
+          isNot(contains('.start()')),
+          reason:
+              'B36: a screen that calls `start()` from `build` would check the library '
+              'every time it opened. `start()` belongs to a callback, and '
+              '`${file.path}` has one',
+        );
+      }
+
+      // ⚠️ **AND THE ONE CALLER OUTSIDE A SCREEN IS COUNTED, NOT TRUSTED.** The fallback is
+      // the *only* legitimate `start()` outside a screen — one reader tap whose foreground
+      // job could not be registered — and a second one would be a second automatic trigger.
+      final List<String> outsideScreens = <String>[];
+      for (final File file in _dartFilesIn('lib')) {
+        if (file.path.contains('/features/')) continue;
+        // ⚠️ **`.any(…)`, NOT `.contains(…)`.** `codeLinesOf` returns a `List<String>`, and
+        // a list's `contains` tests **element equality** — asking whether one line *equals*
+        // `'libraryCheckProvider'` is false for every file in the repository, which is how
+        // the first version of this row collected nothing and reported it as a pass.
+        if (!_codeLinesOf(
+          file.path,
+        ).any((String line) => line.contains('libraryCheckProvider'))) {
+          continue;
+        }
+        for (final (int line, String text) in _codeLinesWithNumbers(
+          file.path,
+        )) {
+          if (text.contains('.start()')) {
+            outsideScreens.add('${file.path}:$line');
+          }
+        }
+      }
+      expect(
+        outsideScreens,
+        <String>['lib/data/background/check_job_providers.dart:89'],
+        reason:
+            '§ 3.4 fallback: one tap, one in-process pass, from `data/` and not from a '
+            'widget. The count and the line number are both asserted, so a second caller '
+            'fails here rather than making two passes possible',
+      );
+    });
+
     test(
-      'the check is reachable from three screens, and none of them auto-starts it',
+      'no BOOTSTRAP path names the check: `main.dart`, `lib/app/`, a lifecycle hook',
       () {
-        // § 4.3's mapping is the opposite of an entry point: `updates.md`, `library.md` and
-        // `settings.md` *read* the provider. A screen that watched it in order to fetch would
-        // be B36's violation in a build clause.
+        // ⚠️ **§ 10's ROW, WORDED AS THE GREP IT IS.** *`grep -rn 'checkLibrary\|libraryCheck
+        // Provider' lib/` returns only the provider declaration, the screen that carries the
+        // button, and the test.* The screen may appear whenever a slice claims it — this row is
+        // about the other half of the sentence, the files that must NEVER be in the output:
+        // the composition root, `app/`, and anything that observes app lifecycle. Those three
+        // are the only places in `lib/` where a check could start without the reader asking,
+        // so they are asserted by name and each one is checked individually.
+        //
+        // ⚠️ **AND THE LIST IS NOT EMPTY, SO THIS ROW CAN FAIL.** `lib/main.dart` and
+        // `lib/app/` exist; a loop over "files that happen to mention it" would match nothing
+        // and pass for the wrong reason, which is the shape § 4.2's guard already got wrong
+        // once.
+        final List<File> bootstrap = <File>[
+          File('lib/main.dart'),
+          ..._dartFilesIn('lib/app'),
+        ];
+        expect(
+          bootstrap,
+          isNotEmpty,
+          reason:
+              'the composition root exists, so the row below is measuring something',
+        );
+        for (final File file in bootstrap) {
+          final String code = _codeLinesOf(file.path).join('\n');
+          for (final String forbidden in <String>[
+            'libraryCheckProvider',
+            'checkLibraryProvider',
+            'libraryCheckProgressProvider',
+          ]) {
+            expect(
+              code,
+              isNot(contains(forbidden)),
+              reason:
+                  'B36: opening the app is not a trigger for a check, and '
+                  '`${file.path}` runs before any reader has tapped anything. A `Check` '
+                  'button is a gesture; this file is not one',
+            );
+          }
+        }
+
+        // A lifecycle listener is the subtler half: it is the one place a pass could start
+        // without any gesture at all, and `15-performance.md` gives `workmanager` the manual
+        // check as its only job.
         for (final File file in _dartFilesIn('lib')) {
           final String code = _codeLinesOf(file.path).join('\n');
-          if (!code.contains('libraryCheckProvider')) continue;
+          final bool watchesLifecycle =
+              code.contains('AppLifecycleListener') ||
+              code.contains('didChangeAppLifecycleState');
+          if (!watchesLifecycle) continue;
           expect(
             code,
-            isNot(contains('.start()')),
+            isNot(contains('libraryCheck')),
             reason:
-                'B36: a screen that calls `start()` from `build` would check the library '
-                'every time it opened. `start()` belongs to a callback, and '
-                '`${file.path}` has one',
+                'B36: `resumed` is not an action, and a check on resume would spend data '
+                'the reader never agreed to. `${file.path}` observes lifecycle',
           );
         }
       },

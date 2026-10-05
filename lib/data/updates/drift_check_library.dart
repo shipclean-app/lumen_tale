@@ -312,6 +312,30 @@ final class DriftCheckLibrary implements CheckLibrary {
           for (final List<Chapter> page in pages) ...page,
         ];
 
+        // ⚠️ **AN EMPTY SUCCESS IS E8, NOT A ZERO — AND THIS BRANCH IS THE SECOND HALF OF
+        // B22's "ONE LEGITIMATE ZERO".** The arm above is the only door to
+        // `NovelChecked(0, …)`, so without this line a `BrowseSucceeded` carrying no
+        // chapter at all was a second one, and it was the wider of the two: any source
+        // whose table matched nothing would announce *"checked, nothing new"* to every
+        // novel it holds — the exact sentence E4 and E8 are forbidden to produce.
+        //
+        // Two arguments say this input cannot happen, and both are why the branch is still
+        // here rather than a comment. `OutcomeDiscriminator` reaches `BrowseSucceeded([])`
+        // **only** under `ZeroItemsPolicy.zeroIsGenuine`, and `chapterList` is
+        // `zeroIsBroken` — so the platform cannot hand a check an undeclared empty list. But
+        // that guarantee lives two layers away in a `switch` any source's adapter reaches
+        // through, and the arm above says "one legitimate zero" in a comment the code did
+        // not honour. `18-external-contracts.md` records a site as broken; nothing here
+        // assumes one.
+        //
+        // ⚠️ **AND IT IS `parseFailed`, NOT `sourceLayoutChanged`,** because § 10's E8 row
+        // names this verdict for a page that loaded and produced nothing readable. The
+        // verdict is the same family as E4's; the cause is the site's answer, not a
+        // selector that came back empty — there is no selector evidence to carry here.
+        if (published.isEmpty) {
+          return _fail(novel, CheckFailureKind.parseFailed);
+        }
+
         // ⚠️ **`null` NAME BECOMES THE EMPTY STRING, AND THE NUMBER IS THE SITE'S.** B10:
         // the label is the site's text and the `-1` sentinel is preserved; the loader
         // renders *Untitled* for the empty name.

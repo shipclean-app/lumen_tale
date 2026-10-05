@@ -130,3 +130,8 @@ Two tool-level observations are recorded in `.forge/audit/run-log.jsonl` instead
 
 - `guard_failure` — `state.js anchor` does not refuse a declared reference project.
 - `unknown_domain` — `state.js finding --domain` validates against the project-rules-architect template library, not this repo's numbered rule files.
+- `domain` — a `const` constructor's initializer `assert` cannot call a method, so `assert(!list.toSet().length != list.length)` is a **compile error**, not a runtime check. Measured: `Error: Method invocation is not a constant expression`. An invariant that needs iteration has to be a static method, and it then fires only in a non-`const` invocation. Promotion target: `08-coding-standards.md` § Dart, alongside `prefer_asserts_in_initializer_lists`, whose name suggests the initializer is always the answer. (`0-4`, 2026-10-05.)
+
+- `domain` — `Element.querySelector` returns the **first** match, so a doc comment reading "exactly one node, or this is invalid" is not enforced by the code it documents. `querySelectorAll(...).length != 1` is what turns the comment into a property, and the >1 branch is the one that matters: it is silent otherwise. (`0-4`, 2026-10-05.)
+
+- `10-testing.md` — assert on a **parsed DOM count** when the raw bytes carry a malformed tag: `package:html` materialises a stray `</p>` as an empty `<p></p>`, so "does this page use `<p>` paragraphs?" has two different answers depending on whether you count elements or elements-with-text. `0-4`'s `ParagraphRule.decide` takes the second, and both numbers are asserted so a future capture that fixes the tag changes the test rather than the verdict. (`0-4`, 2026-10-05.)

@@ -48,6 +48,26 @@ enum QueueFailureCode {
   /// unaffected; this chapter is not coming back.
   itemRemovedAtSource('item_removed_at_source'),
 
+  /// ⚠️ **E20, ADDED BY `5-3`, AND IT IS NEVER WRITTEN TO A ROW.**
+  ///
+  /// `5-3` § 3.2's table has **two** rows for a full disk and only one of them is a
+  /// `failed` row — the other says the item **stays `downloading`**, because nobody has
+  /// judged the *chapter* to have failed; the *phone* is full. So `markFailed` must never
+  /// be called with this value, and it exists so `shouldStopQueue` can be a `switch` over a
+  /// closed enum: a policy with no answer for a code the app can produce is a policy
+  /// waiting to be wrong.
+  ///
+  /// It is a code and not a `SourceFailure` for `file_chapter_store.dart`'s own reason:
+  /// `core/error/source_failure.dart` says a full disk is a *write* failure and must not be
+  /// reachable from a `BrowseFailed`.
+  storageFull('storage_full'),
+
+  /// ⚠️ **`5-2`'s CANCELLATION IS A DELETION, NOT A `failed` ROW.** B19: cancelling removes
+  /// every non-`done` row, so this value is never written either. It is here for the same
+  /// reason [storageFull] is — `shouldStopQueue` answers for every code the vocabulary can
+  /// express, including the two that describe a *state* rather than a row.
+  cancelled('cancelled'),
+
   /// § 5.2 / B22 — the body did not survive parsing.
   parseFailed('parse_failed'),
 

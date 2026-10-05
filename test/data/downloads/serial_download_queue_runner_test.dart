@@ -40,6 +40,7 @@ import 'package:lumen_tale/domain/downloads/chapter_content_source.dart';
 import 'package:lumen_tale/domain/downloads/chapter_markdown_converter.dart';
 import 'package:lumen_tale/domain/downloads/chapter_writer.dart';
 import 'package:lumen_tale/domain/downloads/queue_failure_code.dart';
+import 'package:lumen_tale/domain/downloads/queue_stop_policy.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/models/chapter.dart';
 
@@ -144,6 +145,15 @@ final class FakeContent implements ChapterContentSource {
   Future<BrowseOutcome<String>> fetchChapterContent({
     required String sourceId,
     required Chapter chapter,
+    // ⚠️ **`5-3` ADDED THIS PARAMETER TO THE PORT, AND THIS FAKE IGNORES IT.**
+    //
+    // `ChapterContentSource.fetchChapterContent` now offers an optional `onProgress` so a
+    // transport that can count bytes can report them; the registry adapter declines it (the
+    // `Source` contract has no progress channel), so a fake has nothing to feed it either.
+    // Declaring the parameter is the **whole** of the change: no assertion in this file reads
+    // it and none changes behaviour. A fake that omitted it would not compile, because an
+    // `implements` must accept every named parameter of the interface it declares.
+    void Function(int received, int? total)? onProgress,
   }) async {
     inFlight += 1;
     maxConcurrent = inFlight > maxConcurrent ? inFlight : maxConcurrent;
@@ -539,7 +549,14 @@ void main() {
       },
     );
 
-    test('⚠️ `BrowseFailed` → the taxonomy code, and the loop continues', () async {
+    // ⚠️ **`5-3` CHANGED THIS ROW, AND THE NEW WORDING IS *STOPS*, NOT *CONTINUES*.**
+    //
+    // `5-1` asserted that the loop moves on after any `BrowseFailed`. `5-3` § 3.2 gives the
+    // decision per cause, and a **layout change is a stopping cause**: forty-eight chapters
+    // that fail because a selector no longer matches are one broken site, and continuing would
+    // produce forty-eight identical failures (B22). The code is unchanged; what the row now
+    // asserts is that the second chapter was never *fetched*, which is the load-bearing part.
+    test('⚠️ `BrowseFailed(SOURCE_LAYOUT_CHANGED)` → the code, and the queue STOPS', () async {
       final Harness h = await harness();
       addTearDown(h.close);
       await seedNovel(h.db, chapters: 2);
@@ -571,19 +588,75 @@ void main() {
       );
       expect(
         rows[1].state,
-        DownloadState.done,
+        DownloadState.queued,
         reason:
-            'and the next chapter is unaffected — E9: one item is gone, the rest are not',
+            'B22 / `5-3` § 3.2: a site this build cannot read will not read the NEXT chapter '
+            'either, so fetching it would spend a request to learn the same thing twice. The '
+            'row is untouched — still `queued` — which is also B21\'s "resumes where it '
+            'stopped"',
+      );
+      expect(
+        content.fetched,
+        <String>['c0'],
+        reason:
+            '⚠️ **THE FETCH LOG IS THE REAL ASSERTION.** `rows[1]` being `queued` would also be '
+            'true of a loop that fetched it and then failed to record anything; the log is '
+            'what proves no second request was made, which is B19\'s "no further chapter is '
+            'fetched after it"',
       );
     });
 
+    test('⚠️ a source this build does NOT have → `source_unavailable`, not a crash', () async {
+      final Harness h = await harness();
+      addTearDown(h.close);
+      await seedNovel(h.db, chapters: 2);
+      await h.repo.enqueue(<String>['c0', 'c1']);
+      final FakeContent content = FakeContent(<String, BrowseOutcome<String>>{})
+        ..sourceMissing = true;
+      final SerialDownloadQueueRunner runner = runnerFor(h, content);
+
+      runner.start();
+      await runner.drain();
+
+      final List<QueueRow> rows = await rowsOf(h);
+      expect(
+        // ⚠️ **THE LIST IS NOW **ONE** CODE AND TWO EMPTY ONES — `5-3` § 3.2.**
+        //
+        // `5-1` asserted `['source_unavailable', 'source_unavailable']`: the loop ran on and
+        // failed every chapter of the novel the same way. `5-3` makes `source_unavailable` a
+        // stopping cause, because a novel naming a site this build does not contain cannot be
+        // fetched by *any* of its chapters — and forty-eight identical failures is one broken
+        // site (B22). The **sentence** `5-1` cared about is unchanged and is still asserted
+        // below; what changed is that the app says it once and then stops.
+        rows.map((QueueRow r) => r.errorCode).toList(),
+        <String>['source_unavailable', ''],
+        reason:
+            'B3: a stored novel can name a source this build no longer contains. That is '
+            'a sentence the reader can be shown ("this novel can no longer be refreshed"), '
+            'not a crash — and the queue stops after the first one rather than failing the '
+            'same way over and over (B22, `5-3` § 3.2)',
+      );
+      expect(content.fetched, isEmpty, reason: 'and nothing was fetched');
+      expect(
+        (await marksOf(h)).values.every((DateTime? mark) => mark == null),
+        isTrue,
+        reason: 'B19: nothing was marked downloaded',
+      );
+    });
+
+    // ⚠️ **`5-3` CHANGED THE ASSERTION ABOVE, AND THE CASE NOW SAYS *STOPS*.**
+    //
+    // `5-1` asserted that **every** chapter failed with `source_unavailable`. `5-3` § 3.2
+    // makes it a stopping cause: B3's case is a novel naming a site this build does not
+    // contain, and that is true of all four hundred of its chapters alike — so two more
+    // identical failures would say the same thing twice while producing nothing.
     test(
-      '⚠️ a source this build does NOT have → `source_unavailable`, not a crash',
+      '⚠️ a missing source STOPS the queue after the first chapter (B3, B22)',
       () async {
         final Harness h = await harness();
         addTearDown(h.close);
-        await seedNovel(h.db, chapters: 2);
-        await h.repo.enqueue(<String>['c0', 'c1']);
+        await seedNovel(h.db, chapters: 3);
+        await h.repo.enqueue(<String>['c0', 'c1', 'c2']);
         final FakeContent content = FakeContent(
           <String, BrowseOutcome<String>>{},
         )..sourceMissing = true;
@@ -594,18 +667,22 @@ void main() {
 
         final List<QueueRow> rows = await rowsOf(h);
         expect(
-          rows.map((QueueRow r) => r.errorCode).toList(),
-          <String>['source_unavailable', 'source_unavailable'],
-          reason:
-              'B3: a stored novel can name a source this build no longer contains. That is '
-              'a sentence the reader can be shown ("this novel can no longer be refreshed"), '
-              'not a crash that stops a fifty-chapter queue over one novel',
+          rows[0].errorCode,
+          QueueFailureCode.sourceUnavailable.stored,
+          reason: 'B3: the first chapter already carries the typed cause',
         );
-        expect(content.fetched, isEmpty, reason: 'and nothing was fetched');
         expect(
-          (await marksOf(h)).values.every((DateTime? mark) => mark == null),
+          rows.sublist(1).map((QueueRow r) => r.state).toList(),
+          <DownloadState>[DownloadState.queued, DownloadState.queued],
+          reason:
+              'B22/`5-3` § 3.2: a queue producing nothing but identical failures is worse than '
+              'a queue that stopped and named the reason (E7/C12)',
+        );
+        expect(
+          shouldStopQueue(QueueFailureCode.sourceUnavailable.stored),
           isTrue,
-          reason: 'B19: nothing was marked downloaded',
+          reason:
+              'and the policy itself says so — the row above is reasoned from this',
         );
       },
     );

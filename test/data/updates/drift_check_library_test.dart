@@ -26,6 +26,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_tale/core/error/app_exception.dart';
 import 'package:lumen_tale/core/error/source_failure.dart';
+import 'package:lumen_tale/core/network/fetch_result.dart';
 import 'package:lumen_tale/core/network/host_rate_limiter.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/data/updates/drift_check_library.dart';
@@ -33,6 +34,8 @@ import 'package:lumen_tale/domain/library/library_repository.dart';
 import 'package:lumen_tale/domain/sources/browse_outcome.dart';
 import 'package:lumen_tale/domain/sources/models/chapter.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
+import 'package:lumen_tale/domain/sources/outcome_discriminator.dart';
+import 'package:lumen_tale/domain/sources/read_attempt.dart';
 import 'package:lumen_tale/domain/sources/source.dart';
 import 'package:lumen_tale/domain/sources/source_id.dart';
 import 'package:lumen_tale/domain/updates/library_check.dart';
@@ -144,6 +147,17 @@ void main() {
   group('B39 — every library novel is visited, and the list is the proof', () {
     test('23 novels produce exactly 23 entries and a total of 23', () async {
       final _Rig r = _rig(novels: refsOf(23));
+      // ⚠️ **A CHAPTER LIST PER NOVEL, EXPLICITLY.** `SpySource`'s default chapter answer is
+      // the site's *declared* empty — the one shape a real `OutcomeDiscriminator` can
+      // produce for a chapter table without a layout change — and a declared empty takes a
+      // branch that never merges. The row below counts merges, so each novel has to
+      // publish something.
+      r.site.chaptersFor = <String, BrowseOutcome<List<Chapter>>>{
+        for (final LibraryNovelRef novel in refsOf(23))
+          novel.novelId: BrowseSucceeded<List<Chapter>>(<List<Chapter>>[
+            <Chapter>[chapterOf(novel.novelId, 1)],
+          ]),
+      };
 
       final LibraryCheckResult result = await r.check.run(
         onProgress: r.onProgress,
@@ -691,6 +705,85 @@ void main() {
       },
     );
 
+    test('E8 from the chapter list too: `parseFailed`, and never a zero', () async {
+      // ⚠️ **§ 10's E8 ROW NAMES `getChapterList`, AND THIS IS THAT ROW.** The detail-page
+      // shape further down is the one a fake reaches first; the row as written is about
+      // the chapter table, and the two arrive through different arms of `_checkChapters`,
+      // so only one of them covers this path.
+      final _Rig r = _rig(novels: refsOf(1));
+      r.site.chapters = const BrowseFailed<List<Chapter>>(
+        ParseFailed(path: '/fiction/1/chapters'),
+        retriable: false,
+      );
+
+      final LibraryCheckResult result = await r.check.run(
+        onProgress: r.onProgress,
+        cancellation: neverCancelled,
+      );
+
+      expect(
+        result.perNovel.single,
+        isA<NovelCheckFailed>(),
+        reason:
+            'B22/E8: the table was not readable, so "0 new chapters" is a claim the app '
+            'cannot make',
+      );
+      expect(
+        (result.perNovel.single as NovelCheckFailed).kind,
+        CheckFailureKind.parseFailed,
+        reason: 'E8 shares E4\'s verdict family and differs in its cause',
+      );
+      expect(
+        r.store.checkedAt.containsKey('n1'),
+        isFalse,
+        reason:
+            'B49: we could not read the table, so we did not check the novel',
+      );
+      expect(
+        r.store.calls.contains('mergeChapterList'),
+        isFalse,
+        reason:
+            'and there was nothing to merge — the read produced no chapter at all',
+      );
+    });
+
+    test('an UNDECLARED empty list is E8 too: the zero has exactly one door', () async {
+      // ⚠️ **THE ROW § 10 PHRASES AS "ONLY A SOURCE THAT DECLARES ITS EMPTY SIGNAL".**
+      // `BrowseEmpty` IS that declaration, and it is the only arm that becomes
+      // `NovelChecked(0)`. A `BrowseSucceeded` carrying no chapter at all is the same
+      // sentence with none of the evidence, and accepting it gave a broken site a second
+      // way to announce "nothing new" to every novel it holds — which is precisely what E4
+      // and E8 forbid. The check cannot ask whether the site meant it, so it does not.
+      final _Rig r = _rig(novels: refsOf(1));
+      r.site.chapters = const BrowseSucceeded<List<Chapter>>(<List<Chapter>>[]);
+
+      final LibraryCheckResult result = await r.check.run(
+        onProgress: r.onProgress,
+        cancellation: neverCancelled,
+      );
+
+      expect(
+        (result.perNovel.single as NovelCheckFailed).kind,
+        CheckFailureKind.parseFailed,
+        reason:
+            'B22: an undeclared empty list is a page that produced nothing readable, and '
+            'only the site\'s own signal is a zero',
+      );
+      expect(
+        r.store.checkedAt.containsKey('n1'),
+        isFalse,
+        reason: 'B49: no timestamp for a list that could not be read',
+      );
+      expect(r.store.calls.contains('mergeChapterList'), isFalse);
+      expect(
+        r.site.calls,
+        containsAllInOrder(<String>['getNovelDetails', 'getChapterList']),
+        reason:
+            'and both reads still happened: B39 visits the novel either way, and a '
+            'verdict is an outcome rather than a reason to skip',
+      );
+    });
+
     test(
       'E8 — a page that parses into nothing is `parseFailed`, NEVER NovelChecked(0)',
       () async {
@@ -1169,6 +1262,82 @@ void main() {
         isNull,
         reason:
             '17-security.md rule 6: back off on a site that ASKED; a dead socket did not',
+      );
+    });
+  });
+
+  group('B22 § 7 — the platform cannot hand a check an undeclared empty list', () {
+    // ⚠️ **WHY THIS GROUP IS HERE AND NOT IN THE CHECK'S OWN ROWS.** § 10 says *only a
+    // source that declares its empty signal may produce `NovelChecked(0)`*. That claim has
+    // two halves and this file now covers both: the check refuses an undeclared empty
+    // success, and the layer below it refuses to *build* one. The second half lives in
+    // `2-1`'s `OutcomeDiscriminator`, two directories away — and `6-4` has no test for it,
+    // so nothing in this project would notice if a chapter list started arriving as a
+    // successful zero. These two rows are that notice, and they are the reason the check's
+    // own guard is defence in depth rather than the only thing standing there.
+    test('a chapter table with no rows and no site signal classifies as a FAILURE', () {
+      // E8: "the page loads and contains none of the expected items". The classifier's
+      // job, and the check is downstream of it — which is why the check can treat an
+      // empty success as broken and be right.
+      final BrowseOutcome<List<Chapter>>
+      outcome = const OutcomeDiscriminator().classify<List<Chapter>>(
+        const ReadAttempt(
+          stage: ReadStage.chapterList,
+          // ⚠️ **NO `const` ON THESE TWO, AND THAT IS NOT AN OVERSIGHT.** The enclosing
+          // `const ReadAttempt` already makes both arguments constant, so a second
+          // `const` is `unnecessary_const` — and the analyzer is right.
+          fetch: FetchSucceeded(status: 200),
+          content: ExpectedContentFound(0),
+          expectedSelector: 'tr.chapter-row',
+        ),
+      );
+
+      expect(
+        outcome,
+        isA<BrowseFailed<List<Chapter>>>(),
+        reason:
+            'B22: `zeroIsBroken` for `chapterList` means zero is a suspected break, and '
+            'a `BrowseSucceeded([])` here would hand the check an undeclared zero',
+      );
+      expect(
+        (outcome as BrowseFailed<List<Chapter>>).reason,
+        isA<SourceLayoutChanged>(),
+        reason:
+            'E4/E8 family, carrying the selector that came back empty for the owner',
+      );
+    });
+
+    test('the SAME read with the site\'s own signal is the one legitimate zero', () {
+      // B22 verbatim: "the response parsed successfully AND carries the site's own
+      // explicit empty-result signal → genuinely nothing". This is the only input that may
+      // become `NovelChecked(0)`, and the pair of rows above and below is what makes
+      // "only a source that declares its signal" a fact rather than a hope.
+      final BrowseOutcome<List<Chapter>>
+      outcome = const OutcomeDiscriminator().classify<List<Chapter>>(
+        const ReadAttempt(
+          stage: ReadStage.chapterList,
+          // ⚠️ **NO `const` ON THESE TWO, AND THAT IS NOT AN OVERSIGHT.** The enclosing
+          // `const ReadAttempt` already makes both arguments constant, so a second
+          // `const` is `unnecessary_const` — and the analyzer is right.
+          fetch: FetchSucceeded(status: 200),
+          content: ExpectedContentFound(0),
+          siteEmptySignal: 'No chapters yet',
+        ),
+      );
+
+      expect(
+        outcome,
+        isA<BrowseEmpty<List<Chapter>>>(),
+        reason:
+            'the site said it in its own words, so a zero is a result — and this is the '
+            'arm `_checkChapters` turns into `NovelChecked(0, 0, now)`',
+      );
+      expect(
+        kZeroItemsPolicyByStage[ReadStage.chapterList],
+        ZeroItemsPolicy.zeroIsBroken,
+        reason:
+            'and the stage\'s own default is the conservative one: a source that forgot '
+            'to declare anything gets a failure, not a zero',
       );
     });
   });

@@ -23,10 +23,24 @@ import 'package:flutter/material.dart';
 /// repeat; announcing it while it is visible and silent when it is not is the difference
 /// between a useful control and a nuisance.
 class ChapterProgressLine extends StatelessWidget {
-  const ChapterProgressLine({super.key, required this.progress, this.barColor});
+  const ChapterProgressLine({
+    super.key,
+    required this.progress,
+    this.barColor,
+    this.spokenValue,
+  });
 
   /// `0.0`–`1.0`, or `null` for "started, amount unknown".
   final double? progress;
+
+  /// ⚠️ **`5-3` § 4.3: THE FULL SPOKEN VALUE, WHEN THE CALLER HAS ONE.**
+  ///
+  /// `downloads.md` § 7 asks for *Chapter 13 of 50, 41 per cent* — the position and the total
+  /// are facts the bar does not carry, and `5-3`'s criterion is that `Semantics` announces
+  /// them. **`null` keeps the bare percentage**, so the novel-details tile that already passes
+  /// only a fraction is unchanged; a caller with a chapter's position passes the localized
+  /// phrase and the percentage is derived from the value rather than rendered twice.
+  final String? spokenValue;
 
   /// Overridable so a caller inside `NovelDetailsScreen`'s `TintedSurface` can reach
   /// contrast; the default is the accent token rather than a literal colour.
@@ -43,9 +57,13 @@ class ChapterProgressLine extends StatelessWidget {
     // outside `[0, 1]` — so a rounding artefact would take the tile down. Clamping is the
     // honest response: the bar is already at its end.
     final double clamped = value.clamp(0.0, 1.0);
+    // ⚠️ **`spokenValue ?? THE BARE PERCENTAGE`, AND NEVER A SECOND RENDERING OF IT.**
+    // `14-design-tokens.md` § Accessibility: one spoken value per component, and a screen
+    // reader that says "Chapter 13 of 50, 41 per cent" must not then also read a "41%" from
+    // somewhere else in the tree.
     return Semantics(
       liveRegion: true,
-      label: '${(clamped * 100).round()}%',
+      label: spokenValue ?? '${(clamped * 100).round()}%',
       child: ExcludeSemantics(
         child: LinearProgressIndicator(
           value: clamped,

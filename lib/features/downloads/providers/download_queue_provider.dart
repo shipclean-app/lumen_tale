@@ -46,6 +46,8 @@ import 'package:lumen_tale/domain/downloads/download_queue_runner.dart';
 import 'package:lumen_tale/domain/downloads/novel_download_scope.dart';
 import 'package:lumen_tale/domain/downloads/queue_entry.dart';
 import 'package:lumen_tale/domain/downloads/queue_progress_counts.dart';
+import 'package:lumen_tale/features/downloads/providers/download_progress_provider.dart';
+import 'package:lumen_tale/features/downloads/providers/download_queue_control_provider.dart';
 
 /// Overridden at the bootstrap, like every repository over the database.
 final downloadQueueRepositoryProvider = Provider<DownloadQueueRepository>(
@@ -72,6 +74,14 @@ final downloadQueueRunnerProvider = Provider<DownloadQueueRunner>((Ref ref) {
   final SourceManager registry = ref.watch(sourceManagerProvider);
   return SerialDownloadQueueRunner(
     queue: ref.watch(downloadQueueRepositoryProvider),
+    // ⚠️ **THE GATE IS `watch`ED, AND IT IS THE SAME OBJECT THE CONTROL NOTIFIER HOLDS.**
+    // `5-2`'s pause and cancel write flags the loop has to read; two `QueueStopGate`s would
+    // be a queue the reader cannot stop, and the failure would be silent — the queue would
+    // simply ignore the tap.
+    gate: ref.watch(queueStopGateProvider),
+    // ⚠️ **AND SO IS THE PROGRESS REPORTER**, which is how `5-3`'s cadence reaches a widget
+    // the loop knows nothing about.
+    progress: ref.watch(queueProgressReporterProvider),
     // ⚠️ **`byId` IS PASSED AS A CLOSURE, NOT THE MANAGER.** `SourceManager` is a
     // `final class`, and a runner holding one would make the loop untestable without a
     // registry — while the `maxConcurrent == 1` test must interpose a counter around the

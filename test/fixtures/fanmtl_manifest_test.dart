@@ -567,6 +567,149 @@ void main() {
     });
   });
 
+  group("E22 the chapter fixtures come from the site's OWN chapter list", () {
+    // § 10: *chapter-short comes from the real list of novel-detail*. The rows above
+    // prove its NOTES name an exact chapter; they do not prove the chapter EXISTS on the
+    // site. That gap matters: a fabricated URL with a fabricated title in `notes` passes
+    // every other row in this file, and the pair would be a test that proves nothing.
+    //
+    // ⚠️ **Measured limit, stated rather than left to be discovered.** FanMTL's novel page
+    // lists only chapters 1-100 — it publishes no total and no `data-chapters`, unlike
+    // Royal Road — so `chapter-short` (chapter 1960) and `chapter-long` (chapter 1100) are
+    // NOT on `novel-detail` itself. 1960 IS on the pager page `chapter-list-last.html`,
+    // which is the site's own chapter list continued. 1100 is on no frozen page at all —
+    // pager page 11 was never captured — so that one is cross-checkable against nothing,
+    // and this file says so rather than implying otherwise.
+    test(
+      "chapter-short's chapter is a row on a frozen chapter-list page, titled as its notes say",
+      () {
+        final FixtureEntry entry = manifest().require('chapter-short');
+        final int number = _chapterNumberOf(entry.url);
+        expect(
+          number,
+          greaterThan(0),
+          reason:
+              'chapter-short must declare a chapter number in its URL to be checked',
+        );
+
+        // The page that carries it is found by SEARCHING the frozen pages rather than by
+        // assuming which one holds it: a hard-coded page name would make this row fail
+        // for the wrong reason if the capture's shape ever changed.
+        final Map<int, String> titles = _chapterTitlesAcrossFrozenLists();
+        expect(
+          titles.keys,
+          contains(number),
+          reason:
+              'chapter $number must exist as a ROW on one of the frozen chapter-list '
+              'pages. If it does not, chapter-short is not a chapter this novel '
+              'publishes, and no wording of `notes` makes it one',
+        );
+        expect(
+          entry.notes,
+          contains("'${titles[number]}'"),
+          reason:
+              'the title the notes claim to have copied must be the title the site '
+              "publishes for chapter $number, which is '${titles[number]}'. A quoted "
+              'title the site does not publish is a title from memory',
+        );
+      },
+    );
+
+    test('chapter-prose is chapter 1 of the same list, so the family is consistent', () {
+      // Same check on the reference page. Without it, `chapter-short` could be the only
+      // fixture that resolves and a reader would have no reason to believe the others came
+      // from the same list.
+      expect(
+        _chapterTitlesAcrossFrozenLists()[_chapterNumberOf(
+          manifest().require('chapter-prose').url,
+        )],
+        'Chapter 1 Rockefeller Charlotte',
+        reason:
+            'MEASURED: chapter-prose is chapter 1 and the pager page publishes it under '
+            'that exact title. If this changes, the fixture is a different chapter and '
+            'the record must be re-measured',
+      );
+    });
+
+    test("chapter-long's chapter is on NO frozen list page, and that is recorded", () {
+      // ⚠️ **The honest limit.** chapter-long is chapter 1100; pager page 11 was never
+      // captured, so nothing on disk corroborates it. A suite that quietly implied full
+      // corroboration would be the "guess in an assertive tone" rule 1 forbids — so the
+      // gap is a row, and the manifest's own notes must acknowledge it.
+      final FixtureEntry entry = manifest().require('chapter-long');
+      final int number = _chapterNumberOf(entry.url);
+      expect(
+        number,
+        greaterThan(0),
+        reason: 'the URL must declare a chapter number',
+      );
+      expect(
+        _chapterTitlesAcrossFrozenLists().keys,
+        isNot(contains(number)),
+        reason:
+            'MEASURED 2026-10-05: chapter $number is on none of the three frozen '
+            'chapter-list pages (1-100, 201-300, 1923-1966). If this row ever fails, a '
+            'page carrying it was captured and the corroboration exists',
+      );
+      expect(
+        entry.notes,
+        anyOf(
+          contains('pager'),
+          contains('not on'),
+          contains('uncorroborated'),
+        ),
+        reason:
+            "so chapter-long's notes must record that its chapter is not corroborated "
+            'by a frozen list page. "The longest chapter of the fifteen measured" is '
+            'true and is not the same claim',
+      );
+    });
+  });
+
+  group('every declared number is an INTEGER, not a string that parses', () {
+    test('httpStatus and bytes are integers on every entry', () {
+      // § 10: *every manifest entry carries ... `httpStatus` and `bytes` integers*. The
+      // loader's `as int` already refuses a non-int by throwing, so this row is mostly
+      // about the DOCUMENT: it re-reads the JSON, so the claim is about what is on disk
+      // and not about what the loader happened to tolerate.
+      final Object? decoded = jsonDecode(
+        File('$siteDir/manifest.json').readAsStringSync(),
+      );
+      final List<Object?> rawEntries =
+          (decoded! as Map<String, dynamic>)['entries']! as List<Object?>;
+      for (final Object? raw in rawEntries) {
+        final Map<String, dynamic> entry = raw! as Map<String, dynamic>;
+        for (final String field in const <String>['httpStatus', 'bytes']) {
+          expect(
+            entry[field],
+            isA<int>(),
+            reason:
+                '${entry['key']}.$field is ${entry[field].runtimeType}, not an int. A '
+                'quoted "200" satisfies a string comparison and breaks every '
+                'arithmetic the guard does on it',
+          );
+        }
+      }
+    });
+
+    test('a non-integer status or length is REFUSED at load, not coerced', () {
+      // The negative control. Without it, the row above would also pass on a manifest the
+      // loader had silently repaired — which is the whole question.
+      for (final String field in const <String>['httpStatus', 'bytes']) {
+        expect(
+          () => FixtureEntry.fromJson(<String, dynamic>{
+            ..._wellFormedEntry(),
+            field: '200',
+          }, Directory(siteDir)),
+          throwsA(isA<TypeError>()),
+          reason:
+              '$field is declared an int, so a string must fail rather than be coerced. '
+              "A loader that coerced would make the manifest's declared types decorative",
+        );
+      }
+    });
+  });
+
   group('E4 the manufactured artefact differs by exactly one substitution', () {
     test('there is exactly one manufactured artefact and it is the SC-6 one', () {
       // § 10: `architecture.md` § 3.1b authorises ONE fabricated artefact per site.
@@ -612,6 +755,53 @@ void main() {
         for (final FixtureEntry entry in loaded.ofKind('catalogue')) {
           expect(entry.httpStatus, 200);
         }
+      },
+    );
+
+    test(
+      "the plan's literal substitution target does not exist here, and that is written down",
+      () {
+        // ⚠️ **§ 10 row 1 literally names `chapter-content` → `chapter-content-v2`, and that
+        // pair CANNOT be applied to `catalogue-genre-page0.html`.** MEASURED 2026-10-04:
+        // `chapter-content` occurs ZERO times on any catalogue, list, novel-detail or
+        // chapter-list page — it exists on CHAPTER pages only, exactly once each. Applied
+        // to the plan's own source file the substitution would have no target, so the
+        // artefact would be a byte-identical copy of a healthy page and the "zero novel
+        // rows" it exists to demonstrate would be zero before the edit.
+        //
+        // The rows below prove the MECHANISM (§ 3.2) against the class measurement says is
+        // the real one. This row closes the criterion's other half: a deviation from the
+        // plan's own named selector must be NAMED, because an unrecorded deviation is
+        // indistinguishable from a mistake — `18-external-contracts.md` rule 1.
+        final FixtureManifest loaded = manifest();
+        final Map<String, dynamic> edit = _editOf(
+          loaded.require('fanmtl-broken-layout'),
+        );
+        final FixtureEntry source = loaded.requireFile(
+          edit['sourceFile']! as String,
+        );
+        expect(
+          source.readText(),
+          isNot(contains('chapter-content')),
+          reason:
+              "precondition: the plan's target really is absent from the artefact's "
+              'source, so § 10 row 1 could not be met literally',
+        );
+        expect(
+          edit['from'],
+          isNot(contains('chapter-content')),
+          reason:
+              'and the manifest does not claim to have renamed it either — the '
+              'substitution it declares is the one whose target the source actually has',
+        );
+        expect(
+          File('.opencode/rules/18-external-contracts.md').readAsStringSync(),
+          contains("the plan's substitution target does not exist"),
+          reason:
+              '18-external-contracts.md must name the deviation in its own words. A test '
+              'that quietly checks a DIFFERENT class name than the plan named would be a '
+              'green test proving something the plan never asked for',
+        );
       },
     );
 
@@ -1047,6 +1237,46 @@ Map<String, dynamic> _wellFormedEntry() => <String, dynamic>{
 Set<String> _chapterNumbersOf(FixtureEntry entry) => RegExp(
   'class="chapter-no ">([^<]*)<',
 ).allMatches(entry.readText()).map((Match m) => m.group(1)!).toSet();
+
+/// The chapter number a chapter fixture's URL names: `/novel/ke383028_1960.html` → 1960.
+///
+/// **0 is a failure value on purpose.** Every caller asserts `greaterThan(0)` first, so a
+/// fixture whose URL shape changed is caught as "not checkable" instead of silently
+/// matching chapter 0 — which this site's chapter list never publishes.
+int _chapterNumberOf(String url) {
+  final Match? match = RegExp(r'_(\d+)\.html(?:$|\?)').firstMatch(url);
+  return match == null ? 0 : int.parse(match.group(1)!);
+}
+
+/// Every chapter title the site publishes, keyed by chapter number, across ALL frozen
+/// `chapter-list` pages.
+///
+/// ⚠️ **Why the union and not `novel-detail`.** FanMTL's novel page publishes only the
+/// first 100 of 1,966 chapters and no total, so chapters 1960 and 1100 are absent from it;
+/// the pager pages are where the list continues. Reading only the novel page would make
+/// `chapter-short` look uncorroborated when the site does publish it.
+///
+/// Rows, never hrefs — the measured trap the disjointness row documents: every pager page
+/// carries a `Latest Release:` link to the newest chapter, so hrefs would put chapter 1966
+/// on all three pages.
+Map<int, String> _chapterTitlesAcrossFrozenLists() {
+  final Map<int, String> titles = <int, String>{};
+  for (final FixtureEntry entry in manifest().ofKind('chapter-list')) {
+    final String html = entry.readText();
+    final List<RegExpMatch> numbers = RegExp(
+      'class="chapter-no ">([^<]*)<',
+    ).allMatches(html).toList();
+    final List<RegExpMatch> labels = RegExp(
+      'class="chapter-title">(.*?)</',
+    ).allMatches(html).toList();
+    for (int i = 0; i < numbers.length && i < labels.length; i++) {
+      final int? number = int.tryParse(numbers[i].group(1)!.trim());
+      if (number == null) continue;
+      titles[number] = labels[i].group(1)!.trim();
+    }
+  }
+  return titles;
+}
 
 int _count(String haystack, String needle) => haystack.split(needle).length - 1;
 

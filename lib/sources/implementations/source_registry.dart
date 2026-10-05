@@ -77,15 +77,31 @@ List<SourceEntry> buildSourceEntries() => <SourceEntry>[
 /// `main.dart` overrides a provider with this. Building it per screen would re-run every
 /// builder on every push, and `05-state-management.md` rule 8 puts a registry in a provider for
 /// exactly this reason.
-SourceManager buildSourceManager({required String appVersion}) {
-  final HostRateLimiter limiter = HostRateLimiter();
+///
+/// ## ⚠️ `[limiter]` IS A PARAMETER BECAUSE TWO CALLERS NEED TO NAME THE SAME OBJECT
+///
+/// It was a local, and that was a hole with two mouths. `DriftCheckLibrary` **feeds** the
+/// limiter with a site's own `Retry-After` (C7) — so whoever builds a check needs the
+/// instance its `HttpClient`s already acquire from, and a local hands them a *second* one:
+/// a table that stays empty while the requests it was meant to space go straight through.
+/// `6-10`'s background isolate has the same shape — its own registry, its own limiter, and
+/// the same instance must reach both.
+///
+/// `null` keeps the previous behaviour — build one — so a caller with no second use for the
+/// limiter does not have to think about this. The two callers that DO need it pass the same
+/// object, and `main.dart` owns it.
+SourceManager buildSourceManager({
+  required String appVersion,
+  HostRateLimiter? limiter,
+}) {
+  final HostRateLimiter shared = limiter ?? HostRateLimiter();
   final List<Source> built = <Source>[];
 
   for (final SourceEntry entry in buildSourceEntries()) {
     try {
       built.add(
         entry.build(
-          buildHttpClient(entry.endpoint, limiter, appVersion: appVersion),
+          buildHttpClient(entry.endpoint, shared, appVersion: appVersion),
         ),
       );
     } on Object {

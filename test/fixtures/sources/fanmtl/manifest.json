@@ -183,7 +183,7 @@
       "expected": {
         "textCharsAtLeast": 100
       },
-      "notes": "E18's positive control: the LONGEST chapter of the fifteen measured on 2026-10-04, at 24,892 bytes. Without a known-long page, 'long enough' is untested — a threshold that rejects everything and a threshold that rejects nothing both pass against a fixture set of only short pages."
+      "notes": "E18's positive control: the LONGEST chapter of the fifteen measured on 2026-10-04, at 24,892 bytes. Without a known-long page, 'long enough' is untested — a threshold that rejects everything and a threshold that rejects nothing both pass against a fixture set of only short pages. PROVENANCE LIMIT, MEASURED 2026-10-05: chapter 1100 is on NONE of the three frozen chapter-list pages (they hold 1-100, 201-300 and 1923-1966), because pager page 11 was never captured. So unlike chapter-short, its existence and its title cannot be cross-checked against anything on disk, and the title it would carry is deliberately NOT recorded here rather than guessed. novel-detail itself publishes only chapters 1-100 and the site publishes no total, so the novel's full list is not readable without paging to the end."
     },
     {
       "key": "search-failure",

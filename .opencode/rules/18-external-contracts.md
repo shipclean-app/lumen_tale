@@ -543,3 +543,132 @@ source contract.
 None hit. Twenty-four requests across the capture and the discovery probes, 3–4 seconds
 apart, all 200 (or the documented 404), no `429`, no `Retry-After`. `tool/capture.py` holds
 the fixed delay and the `429`/`403`/`5xx` branches so the next capture is not a bare `curl`.
+
+### FanMTL — Content vs furniture, measured from fixtures `chapter-prose`, `chapter-short`, `chapter-long` (`0-4`)
+
+**Every row below was read from the frozen bytes, not recalled**, and
+`test/domain/sources/chapter_content_policy_test.dart` re-derives each number on every run.
+A re-capture that changes one fails the suite instead of quietly invalidating this section.
+
+**What the content node is.** `.chapter-content` — **exactly one per page**, and its
+`class` attribute carries **nothing else**, so an exact match is correct here (Royal Road
+needs `.chapter-inner.chapter-content`, because `div.chapter-content` matches **zero** there).
+The prose is bare text separated by `<br><br>`; **there is no `<p>` in the source of
+`chapter-prose` at all**.
+
+| # | Selector | Verdict | Why, in one sentence | Evidence |
+|---|---|---|---|---|
+| 1 | `.chapter-content` | **CONTENT** | the node whose subtree is the prose — 7,327 visible characters on `chapter-prose` | `chapter-prose` |
+| 2 | `#chapter-article` | **FURNITURE (hors zone)** | it wraps `header.chapter-header` (novel title, chapter title, and the font picker) and the `section` that holds the content — the body is *inside* it, not equal to it | `chapter-prose` |
+| 3 | `header.chapter-header` | **FURNITURE (hors zone)** | novel title and chapter title. **The displayed chapter title comes from `2-1` reading the novel page's list, NOT from this node** — putting it in the Markdown would show it twice | `chapter-prose` |
+| 4 | `aside.control-action` | **FURNITURE** | the font selector (Default / Dyslexic / Roboto / Lora) plus Prev / Next and night mode; an `<aside>` is already in the general drop list | `chapter-prose` |
+| 5 | `nav.action-items` | **FURNITURE** | the anchor inside that `<aside>` — same reasoning, and listed so the pair is justified one by one | `chapter-prose` |
+| 6 | `div.chapternav` | **FURNITURE (hors zone)** | Prev / Index / Next chapter links, a **sibling** of `.chapter-content` — never in the output, so there is no removal selector to maintain | `chapter-prose` |
+| 7 | `script[src="/d/js/ad/page_01.js"]` | **FURNITURE** | an ad `<script>` **inside the content div**; its path is under `/d/`, which robots.txt disallows, so dropping the tag is also what stops the app requesting it (**B5**) | `chapter-prose` |
+| 8 | `section.recommends.content-wrap` | **FURNITURE (hors zone)** | the "You'll Also Like" shelf — 10 anchors and 10 covers, all outside the content node | `chapter-prose` |
+| 9 | `ins.adsbygoogle` | **FURNITURE** | a Google ad slot **inside the prose** with **no text at all**; the general drop list does **not** match it, so `2-2` may want `ins.adsbygoogle` in its per-source `additionalRemovals` — it costs nothing today because it emits nothing | `chapter-long` |
+| 10 | `p` inside `.chapter-content` | **INDETERMINATE** | see the paragraph table below: the three chapters disagree, and nothing observed decides which shape the next chapter takes | `chapter-prose`, `chapter-short`, `chapter-long` |
+
+**No removal selector was added for a single link.** The general list of
+`04-html-to-markdown.md` is sufficient for FanMTL **once `.chapter-content` is the right
+selector** — a decision, not an omission. Only `script` is actually *exercised* inside the
+content node on these three pages (2, 4 and 5 occurrences); the other eleven entries match
+the page chrome, which the content node never contains. The list is kept whole because it
+is the shared contract, and a list that contained a selector no fixture exercises could no
+longer be justified entry by entry.
+
+#### The paragraph rule — the three chapters DISAGREE, and that is the finding
+
+⚠️ **`0-4` § 3.3 assumed all three chapter pages would classify the same way. Measured
+2026-10-05, they do not — and the site's own `18-external-contracts.md` quirk 1 ("a chapter
+contains **0 `<p>` tags**") is true of one page out of three.**
+
+| Fixture | `<p>` opening tags in the bytes | `<p>` holding visible text | `<br><br>` runs | Rule the observation implies |
+|---|---|---|---|---|
+| `chapter-prose` | **0** | 0 | **104** | `brBrDelimitedText` |
+| `chapter-short` | **53** | 51 | **0** | `pElementsOnly` |
+| `chapter-long` | **110** | 107 | **0** | `pElementsOnly` |
+
+**So the value in `ChapterContentPolicy` is `ParagraphRule.pThenBrBr`** — `<p>` first, then
+`<br><br>` on what is left — because it is the only one of the three that is **correct on
+every page of the capture**. `04-html-to-markdown.md` § Required behaviour already demands
+both shapes be handled; this is the measurement of *why*, on this site.
+
+**Two facts that a `<p>` count in the DOM gets wrong, and one that the source bytes get
+right:**
+
+- `chapter-prose` parses to **one** `<p>` element and it is **empty**. The bytes contain a
+  stray `</p>` with no opener, and `package:html` materialises it as `<p></p>`. A count of
+  *elements* therefore reads the one page in this capture that has no `<p>` at all as
+  `<p>`-delimited. `ParagraphRule.decide` counts `<p>` **holding visible text** for exactly
+  this reason, and the test asserts both numbers so a future capture that closes the stray
+  tag changes the test rather than the verdict silently.
+- `chapter-prose`'s ad scripts sit in `<div align="center">`; the other two pages' also sit
+  inside `<p><script src=/d/js/ad/ad01.js></script></p>`. **Three pages, two shapes of the
+  same furniture** — a cleaner that only knew the `div` form would leave `<p><script>` behind.
+
+#### E1 — the chapter-navigation block: measured, and it is a NUMBER
+
+**Zero chapter links inside the content container, on all three pages.** `chapter-prose`
+carries **2** chapter links in the whole document and `chapter-short` / `chapter-long`
+carry **4** each; every one of them is in `div.chapternav` (3 links: Prev / Index / Next),
+which is a sibling of `.chapter-content` and never in the output. On `chapter-prose` the
+"previous chapter" link is `href="javascript:;"` with `class="prevchap isDisabled"` — there
+is no chapter 0.
+
+**This answers `0-4` § 7 open question 2, and the answer is "no".** A FanMTL chapter page
+does **not** enumerate chapters; it carries three navigation links. So there is nothing to
+remove link by link, and the E1 trap § 6.2 describes — a chapter-list block inside a
+chapter page — **does not exist on this site**. The number is written here instead of a
+list of selectors, which is what § 6.2 asks for.
+
+⚠️ **The chapter list is read on `novel-detail` and on `/e/extend/fy.php?page=N`, NEVER on
+a chapter page.** A source that read it from a chapter page would find three links and
+report a three-chapter novel — a wrong answer that looks plausible, which is B9's failure
+mode in miniature.
+
+#### B44 — what is KEPT, and the measured negative behind it
+
+**`<a href>` and `<img src>` are not removed.** The general drop list contains no `a` and
+no `img` selector, which is the mechanism.
+
+⚠️ **MEASURED NEGATIVE, and it is why the rule needs its reason:** `chapter-prose`'s
+`.chapter-content` contains **0 anchors and 0 images**. `chapter-short` and `chapter-long`
+are the same. The only frozen chapter page in this repository whose prose carries an image
+is Royal Road's `chapter-glossary.html` (**one** `<img src="https://i.imgur.com/SAONMlP.png">`),
+and it survives the drop list — asserted against that fixture.
+
+So the "a prose link survives" half of B44 has **no fixture on either site**, and the test
+says so with a small in-test document instead of pretending a site publishes one. That is
+deliberate: a fabricated fixture for a shape no site produces is the § 7 mistake, and B44's
+second half — *a URL found in a page is not forbidden, following it is how pagination and
+covers work* — is why the list must not grow an `a` or an `img` to look tidy.
+
+**Promotion**: `04-html-to-markdown.md` § Required behaviour — *the `<br><br>` paragraph
+rule and the `.chapter-content` selector*. Both are **now measured on three pages of one
+site**, and the paragraph rule's promotion text must change: it is not "`br br` →
+paragraph", it is **"`<p>` first, then `br br`, because this site emits both"**.
+
+#### B8 — the same selector on every page of a chapter
+
+The plan's test is "the same `contentSelector` applied to the two pieces of a multi-page
+chapter". ⚠️ **There are no such pieces: E3 measured above found FanMTL never splits a
+chapter, and `chapter-multipage-p1` / `-p2` are a recorded absence.** What is testable, and
+is what B8 is actually for — a selector that works on chapter 1 and nowhere else — is
+asserted over **every** frozen chapter page of the site (chapters 1, 1100 and 1960): the
+same selector returns a **non-null** node on all three. That is a stronger statement than
+the two-piece one, because those three pages are 1,996 chapters apart.
+
+#### C6 / C12 — the `null` is the screen
+
+`ChapterContentPolicy.selectContent` returns `null` — and **only** `null` — when the
+selector matches zero nodes or more than one. No exception, no empty element, no empty
+string. The caller turns it into `SourceLayoutChanged(selector: …)`, which carries **the
+selector that failed**: `failedSelector`. That is what makes a failure reportable in words
+by the reader who has no server to ask (**C12**). The failure is **not** an empty chapter:
+B22's whole distinction is "no results" versus "could not read", and `null` is the only
+value that keeps them apart.
+
+⚠️ **The exact string a reader would be asked to read is `.chapter-content`** — the class,
+not the id, not the path. If the site renames it, the failure message names the thing that
+changed.

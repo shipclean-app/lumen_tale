@@ -52,6 +52,12 @@ void main() {
     'sourceBrowse': AppRoutes.sourceBrowse,
     'sourceGenre': AppRoutes.sourceGenre,
     'sourceUnavailable': AppRoutes.sourceUnavailable,
+    // ⚠️ **`5-2`'s SCREEN.** It was a `PlaceholderScreen` in `_subRoutesFor` while being
+    // implemented, registered and tested — and this map is the half of the check that would
+    // have caught it. Without the entry the row below compares `registeredScreens` against a
+    // set that does not contain the path, and the failure it names is "a new route was added
+    // without being listed here".
+    'downloads': AppRoutes.downloads,
     'settings': AppRoutes.settings,
     'settingsReader': AppRoutes.settingsReader,
     'settingsAbout': AppRoutes.settingsAbout,
