@@ -31,6 +31,10 @@ STRINGS: dict[str, tuple[str, str]] = {
     # space-refusal dialogue and the collection is the point: one table, one placeholder
     # check, both languages.
     "commonOk": ("OK", "OK"),
+    # ⚠️ **"Load more", NOT "Retry".** The catalogue footer asks the site for the NEXT page —
+    # new novels, not the same ones — and "Retry" means the load failed. A right action behind
+    # a wrong word is still a misdirection.
+    "browseActionLoadMore": ("Load more", "Charger plus"),
     "downloadAddedSnackbar": ("Download added", "Téléchargement ajouté"),
     "downloadAlreadyStoredSnackbar": (
         "This chapter is already downloaded",

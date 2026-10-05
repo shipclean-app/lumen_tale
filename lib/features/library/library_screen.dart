@@ -33,17 +33,21 @@
 // duplication `09-widgets-ui.md` rule 2 forbids. So the button `2-5` shipped stays, and
 // when the selection bar lands it replaces this slot rather than sitting beside it.
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:lumen_tale/app/router/app_routes.dart';
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
 import 'package:lumen_tale/core/ui/library_dialogs.dart';
+import 'package:lumen_tale/data/background/check_job_providers.dart';
 import 'package:lumen_tale/data/library/library_providers.dart';
+import 'package:lumen_tale/data/updates/check_library_providers.dart';
 import 'package:lumen_tale/domain/library/library_repository.dart';
 import 'package:lumen_tale/domain/library/library_row.dart';
 import 'package:lumen_tale/domain/library/library_search.dart';
+import 'package:lumen_tale/domain/updates/check_job.dart';
+import 'package:lumen_tale/domain/updates/library_check.dart';
 import 'package:lumen_tale/features/library/providers/library_query.dart';
 import 'package:lumen_tale/features/library/providers/library_rows.dart';
 import 'package:lumen_tale/features/library/providers/library_sort_filter.dart';
@@ -117,18 +121,63 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             tooltip: copy.librarySortTitle,
             onPressed: () => showLibrarySortFilterSheet(context),
           ),
-          // ⚠️ **DISABLED, NOT ABSENT AND NOT LIVE**, and an **`IconButton` with a
-          // tooltip** rather than `2-5`'s `TextButton`. Three labelled actions do not fit
-          // a 360dp app bar — the first version overflowed by 132px the moment the label
-          // was the honest *Check for new chapters*. § 5 asks the control to "carry the
-          // label, not a bare refresh glyph", and a tooltip **is** that label: it is what a
-          // long-press shows and what a screen reader announces, so the glyph is never the
-          // only thing there. `6-4` wires the tap.
-          IconButton(
-            key: const Key('library.check-button'),
-            icon: const Icon(Icons.refresh),
-            tooltip: copy.checkNowAction,
-            onPressed: null,
+          // ⚠️ **LIVE NOW, AND IT WAS `null` FOR SIX SLICES AFTER `6-4` SHIPPED.**
+          //
+          // `2-5` left it `onPressed: null` with the comment *"`6-4` wires the tap"*, and
+          // `6-4` then landed a complete, validated check pipeline — and never came back for
+          // the button. ⚠️ **A feature that ships without the control that starts it is the
+          // sixth instance of this project's one shape**: the code is there, the label is
+          // right, the tests pass, and the reader cannot reach any of it. The `//` comment
+          // made the deferral *look* deliberate, which is what let it survive a slice
+          // boundary nobody re-read.
+          //
+          // ⚠️ **AN `IconButton` WITH A TOOLTIP, not `2-5`'s `TextButton`.** Three labelled
+          // actions do not fit a 360dp app bar — the first version overflowed by 132px the
+          // moment the label was the honest *Check for new chapters*. § 5 asks the control
+          // to "carry the label, not a bare refresh glyph", and a tooltip **is** that label:
+          // it is what a long-press shows and what a screen reader announces.
+          //
+          // ⚠️ **DISABLED *WHILE A PASS RUNS*, AND THAT IS NOT `null`.** B36's single entry
+          // point is `start()`; a second tap mid-pass would be a second pass, and the
+          // notifier's own `_starting` guard would swallow it — so the control goes disabled
+          // and the reader sees *why* (the spinner beside it) rather than a button that
+          // silently does nothing.
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final bool running = ref.watch(
+                libraryCheckProvider.select(
+                  (AsyncValue<LibraryCheckResult?> s) => s.isLoading,
+                ),
+              );
+              // ⚠️ **`checkJobController`, NOT `libraryCheckProvider.notifier`.**
+              //
+              // My first version called the in-process pass directly, and `6-10`'s own B36
+              // rows caught it: § 3.4 requires the buttons to reach the check through the
+              // **controller**, which registers a foreground job and falls back to the
+              // in-process pass only when registration is refused. Calling
+              // `libraryCheckProvider` from a screen is the second entry point § 3.4
+              // forbids — ⚠️ **two implementations of a rule SC-3 depends on diverge
+              // invisibly, because both produce a plausible result.**
+              final AppLocalizations copy = AppLocalizations.of(context);
+              return IconButton(
+                key: const Key('library.check-button'),
+                icon: const Icon(Icons.refresh),
+                tooltip: copy.checkNowAction,
+                onPressed: running
+                    ? null
+                    : () => unawaited(
+                        ref
+                            .read(checkJobControllerProvider)
+                            .start(
+                              notification: CheckJobNotificationCopy(
+                                title: copy.checkNotificationTitle,
+                                text: copy.checkDiscovered(0, 0),
+                                channelName: copy.checkNotificationChannelName,
+                              ),
+                            ),
+                      ),
+              );
+            },
           ),
         ],
       ),

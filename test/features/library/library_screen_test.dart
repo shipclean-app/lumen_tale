@@ -24,13 +24,14 @@
 //   `LibraryEntry` is `2-5`'s; `library_row.dart`'s header says why they differ.
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_tale/app/theme/app_theme.dart';
 import 'package:lumen_tale/core/ui/library_dialogs.dart';
+import 'package:lumen_tale/data/background/check_job_providers.dart';
 import 'package:lumen_tale/data/library/library_providers.dart';
+import 'package:lumen_tale/data/updates/check_library_providers.dart';
 import 'package:lumen_tale/domain/library/library_entry.dart';
 import 'package:lumen_tale/domain/library/library_repository.dart';
 import 'package:lumen_tale/domain/library/library_row.dart';
@@ -38,6 +39,9 @@ import 'package:lumen_tale/domain/library/library_rows_repository.dart';
 import 'package:lumen_tale/domain/library/library_search.dart';
 import 'package:lumen_tale/domain/library/similar_title.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
+import 'package:lumen_tale/domain/updates/check_job.dart';
+import 'package:lumen_tale/domain/updates/check_job_controller.dart';
+import 'package:lumen_tale/domain/updates/library_check.dart';
 import 'package:lumen_tale/features/library/library_screen.dart';
 import 'package:lumen_tale/features/library/providers/library_sort_filter.dart';
 import 'package:lumen_tale/features/library/widgets/library_novel_row.dart';
@@ -180,6 +184,15 @@ Future<FakeLibraryRows> pumpLibrary(
   bool failRows = false,
   Size size = const Size(360, 800),
   double textScale = 1,
+
+  /// Called instead of `CheckJobController.start()`. ⚠️ **A CALLBACK, NOT A FAKE
+  /// CONTROLLER**, because the row's claim is *the tap reaches the controller* — and a fake
+  /// controller would let the screen hold a different one and still pass.
+  VoidCallback? onStartCheck,
+
+  /// Forces `libraryCheckProvider` into its loading state, so the disabled-while-running row
+  /// does not have to run a real pass to get there.
+  bool checkRunning = false,
 }) async {
   tester.view
     ..physicalSize = size
@@ -198,6 +211,12 @@ Future<FakeLibraryRows> pumpLibrary(
       overrides: [
         libraryRowsRepositoryProvider.overrideWithValue(rowSource),
         libraryRepositoryProvider.overrideWithValue(repository),
+        if (onStartCheck != null)
+          checkJobControllerProvider.overrideWithValue(
+            _RecordingCheckJobController(onStartCheck),
+          ),
+        if (checkRunning)
+          libraryCheckProvider.overrideWith(FakeRunningCheck.new),
       ],
       child: MediaQuery(
         data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
@@ -209,6 +228,56 @@ Future<FakeLibraryRows> pumpLibrary(
   rowSource.controller.add(rowSource.rows);
   await tester.pumpAndSettle();
   return rowSource;
+}
+
+/// Counts the taps that reach the job controller.
+///
+/// ⚠️ **`start()` RECORDS AND RETURNS, AND DOES NOTHING ELSE.** `6-10`'s controller is a
+/// `final class` and its real `start()` registers a foreground job — so a row that wanted the
+/// real thing would be asserting a plugin. What the screen owes is that it *asks*, and that
+/// is what this records.
+final class _RecordingCheckJobController implements CheckJobController {
+  _RecordingCheckJobController(this._onStart);
+
+  final VoidCallback _onStart;
+
+  bool started = false;
+
+  @override
+  Future<CheckJobOutcome?> start({
+    required CheckJobNotificationCopy notification,
+  }) async {
+    started = true;
+    _onStart();
+    return null;
+  }
+
+  @override
+  Future<void> cancel() async {}
+
+  @override
+  Future<NotificationPermission> permissionState() async =>
+      NotificationPermission.granted;
+
+  // ⚠️ **STREAMS THAT NEVER EMIT, AND A NO-OP `dispose`.** The screen does not read these,
+  // and a stream that emits would mean this fake is doing more than counting taps.
+  @override
+  Stream<CheckJobProgress> get progress =>
+      const Stream<CheckJobProgress>.empty();
+
+  @override
+  Stream<CheckJobOutcome> get outcomes => const Stream<CheckJobOutcome>.empty();
+
+  @override
+  void dispose() {}
+}
+
+/// `libraryCheckProvider` in its loading state, so *disabled while running* is reachable
+/// without running a pass.
+final class FakeRunningCheck extends LibraryCheckNotifier {
+  @override
+  FutureOr<LibraryCheckResult?> build() async =>
+      await Completer<LibraryCheckResult?>().future;
 }
 
 class _App extends StatelessWidget {
@@ -1127,10 +1196,57 @@ void main() {
   });
 
   group('B36 — the check action is `6-4`\'s, and it is a LABELLED HOLE', () {
-    testWidgets('⚠️ it is DISABLED, not a live button that does nothing', (
+    // ⚠️ **THIS ROW USED TO ASSERT THE OPPOSITE, AND THAT WAS THE DEFECT.**
+    //
+    // It read *"it is DISABLED, not a live button that does nothing"* and passed — while
+    // `6-4` shipped a complete check pipeline, `6-10` shipped the controller that starts it,
+    // and the one control a reader has to press stayed `null` for **six slices**. ⚠️ **A row
+    // that asserts a deferral is honest is a row that makes the deferral permanent**: it went
+    // green, and green meant *finished*.
+    //
+    // ⚠️ **THE ROW NOW ASSERTS THE GESTURE, not the state.** Reading `onPressed` and
+    // asserting it is non-null proves a closure exists and nothing about it; pressing it and
+    // watching the controller asked to start is the assertion.
+    testWidgets('⚠️ pressing it ASKS THE CONTROLLER to start a check', (
       WidgetTester tester,
     ) async {
-      await pumpLibrary(tester, rows: <LibraryRow>[row()]);
+      int starts = 0;
+      await pumpLibrary(
+        tester,
+        rows: <LibraryRow>[row()],
+        onStartCheck: () => starts++,
+      );
+
+      final IconButton check = tester.widget<IconButton>(
+        find.byKey(const Key('library.check-button')),
+      );
+      expect(
+        check.onPressed,
+        isNotNull,
+        reason:
+            'the check pipeline exists and this is the only control that starts it. A `null` '
+            'here is B36 with the button still in place: the reader cannot reach any of it',
+      );
+
+      await tester.tap(find.byKey(const Key('library.check-button')));
+      await tester.pump();
+      expect(
+        starts,
+        1,
+        reason:
+            'and the tap REACHES THE JOB CONTROLLER — not `libraryCheckProvider` directly. '
+            '§ 3.4 requires the buttons to go through the controller, which registers a '
+            'foreground job and falls back to the in-process pass only when registration is '
+            'refused. Two entry points diverge invisibly, because both produce a plausible '
+            'result',
+      );
+    });
+
+    // ⚠️ **AND IT IS DISABLED *WHILE RUNNING*, WHICH IS NOT THE SAME AS NEVER.**
+    testWidgets('⚠️ it is DISABLED while a pass runs, and says why', (
+      WidgetTester tester,
+    ) async {
+      await pumpLibrary(tester, rows: <LibraryRow>[row()], checkRunning: true);
 
       final IconButton check = tester.widget<IconButton>(
         find.byKey(const Key('library.check-button')),
@@ -1139,8 +1255,10 @@ void main() {
         check.onPressed,
         isNull,
         reason:
-            'B36/B38/B39\'s wire is `6-4`\'s; a live-looking button that silently does '
-            'nothing is worse than a disabled one',
+            'a second tap mid-pass would be a second pass. The notifier\'s `_starting` guard '
+            'would swallow it, so the control goes disabled and the reader sees the spinner '
+            'beside it — a disabled button that is *working*, unlike the one that was '
+            'disabled because nobody came back for it',
       );
     });
   });

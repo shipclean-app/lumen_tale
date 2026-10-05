@@ -124,6 +124,58 @@ abstract final class AppRoutes {
   static String sourceGenreFor(String sourceId, String genre) =>
       '$_sourceRoot/$sourceId/genre/$genre';
 
+  /// ⚠️ **THE PAGE IS A QUERY PARAMETER, NOT A PATH SEGMENT.**
+  ///
+  /// The catalogue's pages are `?page=N` on **one** route, for two reasons that both have to
+  /// be true at once:
+  ///
+  /// 1. a path segment would make `/browse/:sourceId/genre/:genre/page/:page` a *second*
+  ///    route, and `CatalogueScreen` would then be registered twice — `11-app-router` counts
+  ///    registrations, so a screen registered per page is a screen whose count depends on
+  ///    how many pages exist;
+  /// 2. a page is not an identity. "Page 2 of this tag" is the *same* catalogue at a
+  ///    different offset, and giving it its own path says it is a different place, which is
+  ///    what makes a reader's back stack fill with entries that mean nothing.
+  ///
+  /// ⚠️ **`words` RIDES ALONG, because a search's page 2 is a different result set.** Dropping
+  /// it would silently turn "more results for *rune*" into "more results for everything".
+  static String sourceGenrePage({
+    required String sourceId,
+    required String genre,
+    required int page,
+    String? words,
+  }) {
+    final StringBuffer query = StringBuffer();
+    if (words != null && words.isNotEmpty) {
+      query.write('?q=${Uri.encodeQueryComponent(words)}');
+    }
+    // ⚠️ **PAGE 1 IS THE ABSENT DEFAULT, WRITTEN AS THE ABSENT DEFAULT.** Emitting `?page=1`
+    // would make the first page a *different* location from the route's own, and a reader who
+    // opened the genre and pressed back would land on a URL this app never produces.
+    if (page > 1) {
+      // ⚠️ **`?` ON THE FIRST PARAMETER, `&` ON EVERY LATER ONE — and getting this wrong
+      // produced `/browse/fanmtl/genre/xianxiapage=2`,** a location that parses as the genre
+      // `xianxiapage=2` rather than as page 2. It did not throw, did not warn, and looked
+      // like a URL. The row `the catalogue page is a query parameter` caught it on its first
+      // run, which is the argument for writing the row before trusting the helper.
+      query.write(query.isEmpty ? '?page=' : '&page=');
+      query.write('$page');
+    }
+    final String location = sourceGenreFor(sourceId, genre);
+    return query.isEmpty ? location : '$location$query';
+  }
+
+  /// Reads `?page=` from a URI, defaulting to 1 and refusing anything else.
+  ///
+  /// ⚠️ **AN UNPARSEABLE PAGE IS PAGE 1, NOT AN ERROR.** The query string is reader-reachable
+  /// — a shared link, a typo, a crawler — and `int.parse('two')` throwing during a route
+  /// build turns a malformed link into an error page. A page this app did not ask for is
+  /// simply the page it can serve.
+  static int pageFrom(Uri uri) {
+    final int? parsed = int.tryParse(uri.queryParameters['page'] ?? '1');
+    return parsed != null && parsed > 0 ? parsed : 1;
+  }
+
   static String sourceUnavailableFor(String sourceId) =>
       '$_sourceRoot/$sourceId/unavailable';
 

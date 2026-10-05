@@ -11,10 +11,13 @@
 // A reader who pressed Retry on page 3 and landed on page 1 would think the site had fewer
 // novels than it has. The requested page is part of the request, not of the retry decision.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lumen_tale/app/router/app_router.dart' show openNovelDetails;
+import 'package:lumen_tale/app/router/app_router.dart'
+    show openCataloguePage, openNovelDetails;
 import 'package:lumen_tale/core/ui/app_scaffold.dart';
 import 'package:lumen_tale/data/library/library_providers.dart'
     show libraryStreamProvider;
@@ -192,10 +195,16 @@ class CatalogueScreen extends ConsumerWidget {
                   CatalogueFilled() => _Grid(
                     state: state,
                     actions: _rowActions(context),
+                    sourceId: sourceId,
+                    tag: tag,
+                    words: words,
                   ),
                   CatalogueSearchFilled() => _Grid(
                     state: state.state,
                     actions: _rowActions(context),
+                    sourceId: sourceId,
+                    tag: tag,
+                    words: words,
                   ),
                   _ => CatalogueStates.forState(state),
                 },
@@ -229,10 +238,23 @@ void goToSearch(BuildContext context, String sourceId, String words) {
 /// ⚠️ **Keyed by the novel's id**, because a novel's id is stable across re-reads and its
 /// position is not.
 class _Grid extends StatelessWidget {
-  const _Grid({required this.state, required this.actions});
+  const _Grid({
+    required this.state,
+    required this.actions,
+    required this.sourceId,
+    required this.tag,
+    this.words,
+  });
 
   final CatalogueFilled state;
   final _CatalogueRowActions actions;
+
+  // ⚠️ **THE SCREEN'S OWN ANSWER TO "WHICH CATALOGUE AM I IN", passed down rather than
+  // re-derived.** A widget that recovered these from `GoRouter.of(context)` would be a second
+  // source of truth, and the two would disagree the moment a row is reused in a search.
+  final String sourceId;
+  final String tag;
+  final String? words;
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +265,12 @@ class _Grid extends StatelessWidget {
       separatorBuilder: (_, _) => const Divider(height: 1),
       itemBuilder: (BuildContext context, int index) {
         if (index == state.items.length) {
-          return _Footer(state: state);
+          return _Footer(
+            state: state,
+            sourceId: sourceId,
+            tag: tag,
+            words: words,
+          );
         }
         final Novel novel = state.items[index];
         return CatalogueRow(
@@ -341,9 +368,21 @@ class CatalogueRow extends StatelessWidget {
 /// ⚠️ **Rendered for a [CatalogueFilled] and for nothing else.** An error state has no footer:
 /// a footer under an error is a promise that more is coming, and there is nothing coming.
 class _Footer extends StatelessWidget {
-  const _Footer({required this.state});
+  const _Footer({
+    required this.state,
+    required this.sourceId,
+    required this.tag,
+    this.words,
+  });
 
   final CatalogueFilled state;
+
+  // ⚠️ **THE FOOTER CARRIES THE THREE THINGS THE NAVIGATION NEEDS, AND NOTHING ELSE.** It
+  // cannot read them from the route: a widget that recovered its own location would have two
+  // sources of truth for "which catalogue am I in", and this one is the screen's.
+  final String sourceId;
+  final String tag;
+  final String? words;
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +399,30 @@ class _Footer extends StatelessWidget {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           else if (state.hasMore)
-            TextButton(onPressed: () {}, child: Text(copy.browseActionRetry))
+            // ⚠️ **WIRED TO A REAL CALL — and this is the FOURTH time this project has had to
+            // say that sentence.** `TextButton(onPressed: () {}, child: Text(…Retry))` has
+            // shipped three times already (`3-6`'s absent retry, `3-1`'s absent Add, and the
+            // duplicated `registerScreens()`), and every one of them looked finished because
+            // the button was there, the label was right, and the tests asserted *state*
+            // rather than *gesture*.
+            //
+            // ⚠️ **`browseActionRetry` WAS ALSO THE WRONG VERB.** "Retry" means the load
+            // failed and this is a second attempt at the same thing. This button asks the site
+            // for the *next* page — new novels, not the same ones — so it says **Load more**,
+            // and the row below asserts the LABEL too, because a right action behind a wrong
+            // word is still a misdirection.
+            TextButton(
+              onPressed: () => unawaited(
+                openCataloguePage(
+                  context,
+                  sourceId: sourceId,
+                  tag: tag,
+                  page: state.page + 1,
+                  words: words,
+                ),
+              ),
+              child: Text(copy.browseActionLoadMore),
+            )
           else
             Text(
               copy.browseFooterEnd,

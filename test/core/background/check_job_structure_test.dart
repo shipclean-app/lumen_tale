@@ -190,16 +190,30 @@ void main() {
       );
     });
 
-    test('no feature reaches the in-process pass directly', () {
+    // ⚠️ **THIS ROW WAS "NO FEATURE MAY MENTION IT", AND THAT WAS STRICTER THAN ITS OWN
+    // RULE — the same mistake its sibling row was corrected for, in the file next door.**
+    //
+    // § 4.3's mapping is the opposite of an entry point: `updates.md`, `library.md` and
+    // `settings.md` **read** the provider, because a button must be *disabled while a pass
+    // runs* and that is the only place the state is. Forbidding the mention forbade the
+    // documented mapping in order to prevent a call — and it did not prevent the call: the
+    // library's first wiring called `libraryCheckProvider.notifier.start()` directly and was
+    // caught by a **different** row, one file over.
+    //
+    // ⚠️ **THE RULE IS THE CALL, NOT THE MENTION.** No feature may START the in-process pass;
+    // reading its state is required. Two implementations of a rule SC-3 depends on diverge
+    // invisibly, and `start()` is the implementation.
+    test('no feature STARTS the in-process pass', () {
       for (final File file in dartFilesIn('lib/features')) {
         expect(
-          linesWith(file.path, 'libraryCheckProvider'),
+          linesWith(file.path, 'libraryCheckProvider.notifier'),
           isEmpty,
           reason:
-              '§ 3.4 forbids a second implementation of the check loop for the background '
-              'isolate: two implementations of a rule SC-3 depends on diverge invisibly, '
-              'because both produce a plausible result. The in-process pass is reached only '
-              'through the fallback seam in data/',
+              '§ 3.4: the in-process pass is reached only through the fallback seam in '
+              'data/, which registers a foreground job first. A screen that calls '
+              '`start()` is a second entry point. READING the provider is required — a '
+              'button must be disabled while a pass runs — so the mention itself is not '
+              'the violation',
         );
       }
     });

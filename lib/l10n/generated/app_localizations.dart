@@ -269,6 +269,12 @@ abstract class AppLocalizations {
   ///
   ///
   /// In en, this message translates to:
+  /// **'Load more'**
+  String get browseActionLoadMore;
+
+  ///
+  ///
+  /// In en, this message translates to:
   /// **'Open library'**
   String get browseActionOpenLibrary;
 
@@ -1124,6 +1130,202 @@ abstract class AppLocalizations {
   /// **'The download could not be added. Nothing was changed.'**
   String get downloadWriteFailedSnackbar;
 
+  /// `downloads.md` § 9 (E18): 'The attempt count is shown, because a threshold being applied is a thing the reader deserves to know about' — and C12, because 'it failed twice' and 'it failed once' are not described the same way.
+  ///
+  /// In en, this message translates to:
+  /// **'Tried {count} times'**
+  String downloadsAttemptCount(Object count);
+
+  /// B19's cancellation, and the only destructive control on the screen — hence the confirmation dialog rather than a button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel download'**
+  String get downloadsCancelAction;
+
+  /// `downloads.md` § 4 *Submit error (a)*, verbatim in substance: the ONE submission in the app whose failure must INVERT the display, because a queue shown as cancelled while it keeps writing chapters is what B19 forbids.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel. The download is still running.'**
+  String get downloadsCancelFailedSnackbar;
+
+  /// B19: the reader needs to know what SURVIVED. A cancellation that reported nothing would leave them wondering whether chapter 12 was deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Download cancelled — {kept} chapters kept.'**
+  String downloadsCancelledKept(Object kept);
+
+  /// The one action an empty state offers: the discover loop, not an explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse sources'**
+  String get downloadsEmptyActionBrowse;
+
+  /// The body's sentence. `downloads.md` § 4: 'Downloaded chapters read with no signal at all' — the benefit, not the mechanism.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded chapters read with no signal at all. Start one from any novel\'s page.'**
+  String get downloadsEmptyBody;
+
+  /// `downloads.md` § 4 *Empty — never visited*. The body states the BENEFIT in the reader's terms, because that is the one thing a download queue is for.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is downloaded yet'**
+  String get downloadsEmptyTitle;
+
+  /// The failed row's chapter name — the SITE's own title (B10). `downloads.md` § 3: 'Every failed row names the chapter, not just the novel'.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter: {name}'**
+  String downloadsFailedRowTitle(Object name);
+
+  /// `downloads.md` § 3's `COULD NOT DOWNLOAD` overline, and § 4: the section is NOT rendered at all when empty.
+  ///
+  /// In en, this message translates to:
+  /// **'COULD NOT DOWNLOAD'**
+  String get downloadsFailedSectionLabel;
+
+  /// C8: both numbers EXACT. `downloaded` is `count(state='done')`, never 13 after a failure and never 11 after a cancellation. Declared with `placeholders` because a translated placeholder NAME would ADD a parameter rather than rename one (B28).
+  ///
+  /// In en, this message translates to:
+  /// **'{downloaded} of {total} downloaded'**
+  String downloadsHeaderCounts(Object downloaded, Object total);
+
+  /// E7, and the reason it is the FIRST line under the title in EVERY state. `flows.md` § 4.4 calls this 'the single most likely over-promise in the product': every competing reader ships a background download service, so the default expectation is that closing the app just moves the bar somewhere invisible.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads continue only while the app is open.'**
+  String get downloadsInProcessNotice;
+
+  /// The `· 1 in progress` half of the header. B18 makes it at most one, so the string carries the number and the row carries the chapter.
+  ///
+  /// In en, this message translates to:
+  /// **'· {count} in progress'**
+  String downloadsInProgressSuffix(Object count);
+
+  /// The reassurance, and it is load-bearing: with no backup (ADR-010) the reader's first assumption is data loss. Nothing was deleted, and nothing can be fetched until the records can be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing has been deleted. This app cannot see what it has already stored, and nothing can be fetched until it can.'**
+  String get downloadsLoadErrorBody;
+
+  /// B24: 'Any action that can fail shows an error the user can read and act on, together with a way to try again.'
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get downloadsLoadErrorRetry;
+
+  /// `downloads.md` § 4 *Load error*: a real failure with a consequence worth stating precisely — the records could not be read, which is not the same as there being none.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen Tale could not read its download records'**
+  String get downloadsLoadErrorTitle;
+
+  /// E9's action for a chapter the site says is gone. NOT a retry — the site has confirmed the item is not coming back, so re-fetching it would fail identically. Navigation is honest: the reader can look at the novel's chapter list.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the novel'**
+  String get downloadsOpenNovelAction;
+
+  /// B19: 'Stop before the next chapter'. C11: 48dp, and no gesture — a swipe that stopped a queue would be a swipe nobody asked for.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get downloadsPauseAction;
+
+  /// E7/B19. `--color-warning` PLUS this word PLUS an icon: `14-design-tokens.md` § Accessibility forbids a colour-only state.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get downloadsPausedLabel;
+
+  /// The `DOWNLOAD QUEUE` overline. `--text-overline`, 600, letter-spaced.
+  ///
+  /// In en, this message translates to:
+  /// **'DOWNLOAD QUEUE'**
+  String get downloadsQueueSectionLabel;
+
+  /// B21: continue FROM the chapter it stopped at, never from chapter one.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get downloadsResumeAction;
+
+  /// B24/B5: 'Re-fetch that chapter alone, and only that one.' NOT a retry-everything control — one chapter's typed failure says nothing about the other 47.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this chapter'**
+  String get downloadsRetryAction;
+
+  /// The status word while the loop is moving. Shown as a word and not only as a bar, for the same reason as Paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading'**
+  String get downloadsRunningLabel;
+
+  /// `downloads.md` § 7: the determinate bar's SPOKEN value, 'Chapter 13 of 50, 41 per cent'. `14-design-tokens.md` § Accessibility and `16-i18n.md` rule 7: a semantics label is localized like any other string. A percentage inside a ring is unreadable by a screen reader and useless at 2dp — this is the alternative.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {position} of {total}, {percent} per cent'**
+  String downloadsSemanticsChapterProgress(
+    Object percent,
+    Object position,
+    Object total,
+  );
+
+  /// The same spoken value with NO percentage, and `downloads.md` § 8 is explicit that `0` must never stand in for one: a bar at zero that never moves is a bar that lies.
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {position} of {total}, downloading'**
+  String downloadsSemanticsProgressUndetermined(Object position, Object total);
+
+  /// E7's state. C12: the reader must be able to say 'the downloads stopped' aloud to whoever owns the phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Stopped'**
+  String get downloadsStoppedLabel;
+
+  /// E7/E5. `downloads.md` § 4 *Offline*: the reason in WORDS, not an icon alone — C11 is a one-handed, often-glanced context at night.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection'**
+  String get downloadsStoppedNoConnection;
+
+  /// E20. `downloads.md` § 9 refuses to DISPLAY free space — the app has no honest way to read it without a platform channel it has not earned — so the honest sentence is the fact and the action, and no figure.
+  ///
+  /// In en, this message translates to:
+  /// **'The phone is out of storage. Free up some space, then resume.'**
+  String get downloadsStoppedOutOfStorage;
+
+  /// `17-security.md` rule 6 and `5-3` § 3.2: the site sent 429 with Retry-After, and the answer is to WAIT for the time the site named — never a guessed one.
+  ///
+  /// In en, this message translates to:
+  /// **'The site asked us to wait until {time}.'**
+  String downloadsStoppedRateLimited(Object time);
+
+  /// B22: ONE line for a broken site, not one per chapter. C12 needs the sentence to be sayable, and it names the SITE.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen Tale could not read {source}.'**
+  String downloadsStoppedSourceUnreadable(Object source);
+
+  /// E20's ONE measured figure: what the chapter the app was writing needs. It is NOT free space, which `downloads.md` § 9 refuses to display at all — a stale number is worse than none.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter needs {bytes}.'**
+  String downloadsStorageNeeded(Object bytes);
+
+  /// The screen's title. `downloads.md` § 3: a title bar back to /more.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get downloadsTitle;
+
+  /// E7, and the sentence that closes the trap. `downloads.md` § 4 says it goes on the line BELOW the reason, in the stopped state — the reader is most likely to wonder exactly here.
+  ///
+  /// In en, this message translates to:
+  /// **'It will not continue on its own when the signal comes back.'**
+  String get downloadsWillNotContinueOnItsOwn;
+
   /// B48: an uncertain count says it is uncertain; it is never estimated.
   ///
   /// In en, this message translates to:
@@ -1861,6 +2063,90 @@ abstract class AppLocalizations {
   /// **'Step {current} of {total}'**
   String onboardingStepPosition(int current, int total);
 
+  /// The confirmation WITHOUT a chapter in flight. `{kept}` is the number that survives, and it is a count rather than a pre-built phrase so no caller can decorate it.
+  ///
+  /// In en, this message translates to:
+  /// **'The {kept} chapters already downloaded are kept. Nothing else is fetched.'**
+  String queueCancelBody(Object kept);
+
+  /// The confirmation WITH a chapter in flight. `downloads.md` § 5: the dialog names the chapter, so the confirmation is about a specific thing — and `{name}` is the site's own title (B10), not a placeholder this app invented.
+  ///
+  /// In en, this message translates to:
+  /// **'\'{name}\' is being downloaded. It will be discarded. The {kept} chapters already downloaded are kept.'**
+  String queueCancelBodyWithChapter(Object kept, Object name);
+
+  /// The filled button. `commonCancel` is the other one, and the pair is the whole dialogue: two exits, no dead end, no silent consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the download'**
+  String get queueCancelConfirm;
+
+  /// B19's confirmation. `downloads.md` § 7: 'Destructive actions are confirmed and named' — a generic 'Are you sure?' is a statement about nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this download?'**
+  String get queueCancelTitle;
+
+  /// E9 for `item_removed_at_source`. The site's own answer, so the reader is not asked to retry something the site has confirmed is gone.
+  ///
+  /// In en, this message translates to:
+  /// **'The site says this chapter has been removed.'**
+  String get queueCauseItemRemovedAtSource;
+
+  /// B24/C12 for `no_connection`: a sentence a borrowed-device reader can read aloud to the owner, and an action they can take.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection dropped while this chapter was being downloaded.'**
+  String get queueCauseNoConnection;
+
+  /// E18 for `no_real_text`, and E22's half of the bargain: a short chapter must never be mistaken for a broken one, so the sentence is about THIS chapter.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter had no readable text on the page.'**
+  String get queueCauseNoRealText;
+
+  /// B22 for `parse_failed`: the app's own failure, named as its own. `C5` says a failure the reader cannot report is a failure nobody will fix.
+  ///
+  /// In en, this message translates to:
+  /// **'This chapter\'s text could not be built.'**
+  String get queueCauseParseFailed;
+
+  /// B24 for `rate_limited`. `17-security.md` rule 6: the answer is to wait, never to hammer — and the sentence must not sound like the site is broken.
+  ///
+  /// In en, this message translates to:
+  /// **'The site asked us to slow down.'**
+  String get queueCauseRateLimited;
+
+  /// E8/B22 for `source_empty`. The distinction from 'the app has nothing' is the whole point: the SITE said so itself.
+  ///
+  /// In en, this message translates to:
+  /// **'The site published nothing for this chapter.'**
+  String get queueCauseSourceEmpty;
+
+  /// B22 for `source_layout_changed`, E4. 'this app cannot read this site any more' is a report the owner can act on; 'download failed' is not.
+  ///
+  /// In en, this message translates to:
+  /// **'This site has changed its layout, so this app can no longer read it.'**
+  String get queueCauseSourceLayoutChanged;
+
+  /// B3 for `source_unavailable`: the novel names a site this build no longer contains, which is a statement about the app rather than about the chapter.
+  ///
+  /// In en, this message translates to:
+  /// **'This novel\'s site is not in this version of the app.'**
+  String get queueCauseSourceUnavailable;
+
+  /// E20 for `storage_full`. NEVER a free-space figure — `downloads.md` § 9 — and never 'try again', which would send the reader round the same loop.
+  ///
+  /// In en, this message translates to:
+  /// **'The phone ran out of storage.'**
+  String get queueCauseStorageFull;
+
+  /// The only honest sentence for an unreadable code. `queue_run_state_deriver.dart` maps one to `QueueStopReason.unknown` and this is what the reader is shown — it does not guess, and C12 accepts a true 'the app cannot say' over a plausible fiction.
+  ///
+  /// In en, this message translates to:
+  /// **'This app cannot say what went wrong.'**
+  String get queueCauseUnknown;
+
   ///
   ///
   /// In en, this message translates to:
@@ -2428,286 +2714,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications are turned off in your phone\'s settings.'**
   String get warningNotifications;
-
-  /// `downloads.md` § 9 (E18): 'The attempt count is shown, because a threshold being applied is a thing the reader deserves to know about' — and C12, because 'it failed twice' and 'it failed once' are not described the same way.
-  ///
-  /// In en, this message translates to:
-  /// **'Tried {count} times'**
-  String downloadsAttemptCount(Object count);
-
-  /// B19's cancellation, and the only destructive control on the screen — hence the confirmation dialog rather than a button.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel download'**
-  String get downloadsCancelAction;
-
-  /// `downloads.md` § 4 *Submit error (a)*, verbatim in substance: the ONE submission in the app whose failure must INVERT the display, because a queue shown as cancelled while it keeps writing chapters is what B19 forbids.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not cancel. The download is still running.'**
-  String get downloadsCancelFailedSnackbar;
-
-  /// B19: the reader needs to know what SURVIVED. A cancellation that reported nothing would leave them wondering whether chapter 12 was deleted.
-  ///
-  /// In en, this message translates to:
-  /// **'Download cancelled — {kept} chapters kept.'**
-  String downloadsCancelledKept(Object kept);
-
-  /// The one action an empty state offers: the discover loop, not an explanation.
-  ///
-  /// In en, this message translates to:
-  /// **'Browse sources'**
-  String get downloadsEmptyActionBrowse;
-
-  /// The body's sentence. `downloads.md` § 4: 'Downloaded chapters read with no signal at all' — the benefit, not the mechanism.
-  ///
-  /// In en, this message translates to:
-  /// **'Downloaded chapters read with no signal at all. Start one from any novel\'s page.'**
-  String get downloadsEmptyBody;
-
-  /// `downloads.md` § 4 *Empty — never visited*. The body states the BENEFIT in the reader's terms, because that is the one thing a download queue is for.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing is downloaded yet'**
-  String get downloadsEmptyTitle;
-
-  /// The failed row's chapter name — the SITE's own title (B10). `downloads.md` § 3: 'Every failed row names the chapter, not just the novel'.
-  ///
-  /// In en, this message translates to:
-  /// **'Chapter: {name}'**
-  String downloadsFailedRowTitle(Object name);
-
-  /// `downloads.md` § 3's `COULD NOT DOWNLOAD` overline, and § 4: the section is NOT rendered at all when empty.
-  ///
-  /// In en, this message translates to:
-  /// **'COULD NOT DOWNLOAD'**
-  String get downloadsFailedSectionLabel;
-
-  /// C8: both numbers EXACT. `downloaded` is `count(state='done')`, never 13 after a failure and never 11 after a cancellation. Declared with `placeholders` because a translated placeholder NAME would ADD a parameter rather than rename one (B28).
-  ///
-  /// In en, this message translates to:
-  /// **'{downloaded} of {total} downloaded'**
-  String downloadsHeaderCounts(Object downloaded, Object total);
-
-  /// E7, and the reason it is the FIRST line under the title in EVERY state. `flows.md` § 4.4 calls this 'the single most likely over-promise in the product': every competing reader ships a background download service, so the default expectation is that closing the app just moves the bar somewhere invisible.
-  ///
-  /// In en, this message translates to:
-  /// **'Downloads continue only while the app is open.'**
-  String get downloadsInProcessNotice;
-
-  /// The `· 1 in progress` half of the header. B18 makes it at most one, so the string carries the number and the row carries the chapter.
-  ///
-  /// In en, this message translates to:
-  /// **'· {count} in progress'**
-  String downloadsInProgressSuffix(Object count);
-
-  /// The reassurance, and it is load-bearing: with no backup (ADR-010) the reader's first assumption is data loss. Nothing was deleted, and nothing can be fetched until the records can be read.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing has been deleted. This app cannot see what it has already stored, and nothing can be fetched until it can.'**
-  String get downloadsLoadErrorBody;
-
-  /// B24: 'Any action that can fail shows an error the user can read and act on, together with a way to try again.'
-  ///
-  /// In en, this message translates to:
-  /// **'Try again'**
-  String get downloadsLoadErrorRetry;
-
-  /// `downloads.md` § 4 *Load error*: a real failure with a consequence worth stating precisely — the records could not be read, which is not the same as there being none.
-  ///
-  /// In en, this message translates to:
-  /// **'Lumen Tale could not read its download records'**
-  String get downloadsLoadErrorTitle;
-
-  /// B19: 'Stop before the next chapter'. C11: 48dp, and no gesture — a swipe that stopped a queue would be a swipe nobody asked for.
-  ///
-  /// In en, this message translates to:
-  /// **'Pause'**
-  String get downloadsPauseAction;
-
-  /// E7/B19. `--color-warning` PLUS this word PLUS an icon: `14-design-tokens.md` § Accessibility forbids a colour-only state.
-  ///
-  /// In en, this message translates to:
-  /// **'Paused'**
-  String get downloadsPausedLabel;
-
-  /// The `DOWNLOAD QUEUE` overline. `--text-overline`, 600, letter-spaced.
-  ///
-  /// In en, this message translates to:
-  /// **'DOWNLOAD QUEUE'**
-  String get downloadsQueueSectionLabel;
-
-  /// B21: continue FROM the chapter it stopped at, never from chapter one.
-  ///
-  /// In en, this message translates to:
-  /// **'Resume'**
-  String get downloadsResumeAction;
-
-  /// B24/B5: 'Re-fetch that chapter alone, and only that one.' NOT a retry-everything control — one chapter's typed failure says nothing about the other 47.
-  ///
-  /// In en, this message translates to:
-  /// **'Retry this chapter'**
-  String get downloadsRetryAction;
-
-  /// The status word while the loop is moving. Shown as a word and not only as a bar, for the same reason as Paused.
-  ///
-  /// In en, this message translates to:
-  /// **'Downloading'**
-  String get downloadsRunningLabel;
-
-  /// `downloads.md` § 7: the determinate bar's SPOKEN value, 'Chapter 13 of 50, 41 per cent'. `14-design-tokens.md` § Accessibility and `16-i18n.md` rule 7: a semantics label is localized like any other string. A percentage inside a ring is unreadable by a screen reader and useless at 2dp — this is the alternative.
-  ///
-  /// In en, this message translates to:
-  /// **'Chapter {position} of {total}, {percent} per cent'**
-  String downloadsSemanticsChapterProgress(
-    Object percent,
-    Object position,
-    Object total,
-  );
-
-  /// The same spoken value with NO percentage, and `downloads.md` § 8 is explicit that `0` must never stand in for one: a bar at zero that never moves is a bar that lies.
-  ///
-  /// In en, this message translates to:
-  /// **'Chapter {position} of {total}, downloading'**
-  String downloadsSemanticsProgressUndetermined(Object position, Object total);
-
-  /// E7's state. C12: the reader must be able to say 'the downloads stopped' aloud to whoever owns the phone.
-  ///
-  /// In en, this message translates to:
-  /// **'Stopped'**
-  String get downloadsStoppedLabel;
-
-  /// E7/E5. `downloads.md` § 4 *Offline*: the reason in WORDS, not an icon alone — C11 is a one-handed, often-glanced context at night.
-  ///
-  /// In en, this message translates to:
-  /// **'No connection'**
-  String get downloadsStoppedNoConnection;
-
-  /// E20. `downloads.md` § 9 refuses to DISPLAY free space — the app has no honest way to read it without a platform channel it has not earned — so the honest sentence is the fact and the action, and no figure.
-  ///
-  /// In en, this message translates to:
-  /// **'The phone is out of storage. Free up some space, then resume.'**
-  String get downloadsStoppedOutOfStorage;
-
-  /// `17-security.md` rule 6 and `5-3` § 3.2: the site sent 429 with Retry-After, and the answer is to WAIT for the time the site named — never a guessed one.
-  ///
-  /// In en, this message translates to:
-  /// **'The site asked us to wait until {time}.'**
-  String downloadsStoppedRateLimited(Object time);
-
-  /// B22: ONE line for a broken site, not one per chapter. C12 needs the sentence to be sayable, and it names the SITE.
-  ///
-  /// In en, this message translates to:
-  /// **'Lumen Tale could not read {source}.'**
-  String downloadsStoppedSourceUnreadable(Object source);
-
-  /// E20's ONE measured figure: what the chapter the app was writing needs. It is NOT free space, which `downloads.md` § 9 refuses to display at all — a stale number is worse than none.
-  ///
-  /// In en, this message translates to:
-  /// **'This chapter needs {bytes}.'**
-  String downloadsStorageNeeded(Object bytes);
-
-  /// The screen's title. `downloads.md` § 3: a title bar back to /more.
-  ///
-  /// In en, this message translates to:
-  /// **'Downloads'**
-  String get downloadsTitle;
-
-  /// E7, and the sentence that closes the trap. `downloads.md` § 4 says it goes on the line BELOW the reason, in the stopped state — the reader is most likely to wonder exactly here.
-  ///
-  /// In en, this message translates to:
-  /// **'It will not continue on its own when the signal comes back.'**
-  String get downloadsWillNotContinueOnItsOwn;
-
-  /// The confirmation WITHOUT a chapter in flight. `{kept}` is the number that survives, and it is a count rather than a pre-built phrase so no caller can decorate it.
-  ///
-  /// In en, this message translates to:
-  /// **'The {kept} chapters already downloaded are kept. Nothing else is fetched.'**
-  String queueCancelBody(Object kept);
-
-  /// The confirmation WITH a chapter in flight. `downloads.md` § 5: the dialog names the chapter, so the confirmation is about a specific thing — and `{name}` is the site's own title (B10), not a placeholder this app invented.
-  ///
-  /// In en, this message translates to:
-  /// **'\'{name}\' is being downloaded. It will be discarded. The {kept} chapters already downloaded are kept.'**
-  String queueCancelBodyWithChapter(Object kept, Object name);
-
-  /// The filled button. `commonCancel` is the other one, and the pair is the whole dialogue: two exits, no dead end, no silent consent.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel the download'**
-  String get queueCancelConfirm;
-
-  /// B19's confirmation. `downloads.md` § 7: 'Destructive actions are confirmed and named' — a generic 'Are you sure?' is a statement about nothing.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel this download?'**
-  String get queueCancelTitle;
-
-  /// E9 for `item_removed_at_source`. The site's own answer, so the reader is not asked to retry something the site has confirmed is gone.
-  ///
-  /// In en, this message translates to:
-  /// **'The site says this chapter has been removed.'**
-  String get queueCauseItemRemovedAtSource;
-
-  /// B24/C12 for `no_connection`: a sentence a borrowed-device reader can read aloud to the owner, and an action they can take.
-  ///
-  /// In en, this message translates to:
-  /// **'The connection dropped while this chapter was being downloaded.'**
-  String get queueCauseNoConnection;
-
-  /// E18 for `no_real_text`, and E22's half of the bargain: a short chapter must never be mistaken for a broken one, so the sentence is about THIS chapter.
-  ///
-  /// In en, this message translates to:
-  /// **'This chapter had no readable text on the page.'**
-  String get queueCauseNoRealText;
-
-  /// B22 for `parse_failed`: the app's own failure, named as its own. `C5` says a failure the reader cannot report is a failure nobody will fix.
-  ///
-  /// In en, this message translates to:
-  /// **'This chapter\'s text could not be built.'**
-  String get queueCauseParseFailed;
-
-  /// B24 for `rate_limited`. `17-security.md` rule 6: the answer is to wait, never to hammer — and the sentence must not sound like the site is broken.
-  ///
-  /// In en, this message translates to:
-  /// **'The site asked us to slow down.'**
-  String get queueCauseRateLimited;
-
-  /// E8/B22 for `source_empty`. The distinction from 'the app has nothing' is the whole point: the SITE said so itself.
-  ///
-  /// In en, this message translates to:
-  /// **'The site published nothing for this chapter.'**
-  String get queueCauseSourceEmpty;
-
-  /// B22 for `source_layout_changed`, E4. 'this app cannot read this site any more' is a report the owner can act on; 'download failed' is not.
-  ///
-  /// In en, this message translates to:
-  /// **'This site has changed its layout, so this app can no longer read it.'**
-  String get queueCauseSourceLayoutChanged;
-
-  /// B3 for `source_unavailable`: the novel names a site this build no longer contains, which is a statement about the app rather than about the chapter.
-  ///
-  /// In en, this message translates to:
-  /// **'This novel\'s site is not in this version of the app.'**
-  String get queueCauseSourceUnavailable;
-
-  /// E20 for `storage_full`. NEVER a free-space figure — `downloads.md` § 9 — and never 'try again', which would send the reader round the same loop.
-  ///
-  /// In en, this message translates to:
-  /// **'The phone ran out of storage.'**
-  String get queueCauseStorageFull;
-
-  /// The only honest sentence for an unreadable code. `queue_run_state_deriver.dart` maps one to `QueueStopReason.unknown` and this is what the reader is shown — it does not guess, and C12 accepts a true 'the app cannot say' over a plausible fiction.
-  ///
-  /// In en, this message translates to:
-  /// **'This app cannot say what went wrong.'**
-  String get queueCauseUnknown;
-
-  /// E9's action for a chapter the site says is gone. NOT a retry — the site has confirmed the item is not coming back, so re-fetching it would fail identically. Navigation is honest: the reader can look at the novel's chapter list.
-  ///
-  /// In en, this message translates to:
-  /// **'Open the novel'**
-  String get downloadsOpenNovelAction;
 }
 
 class _AppLocalizationsDelegate

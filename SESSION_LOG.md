@@ -5853,3 +5853,100 @@ pushed, twenty commits of real work sit on top of it, and the ARB would have to 
 rewrite that risks a day's work to fix a commit *subject line* is a bad trade** — and the wrong
 claim was already corrected where it will actually be read, which is the log and the message
 that followed it. **This is a documented deviation, not a closed item.**
+
+---
+
+## 2026-10-05 — Session 37: THE AUDIT — two showstoppers, both invisible to every gate
+
+### THE FINDING THAT MATTERS
+
+`DoD` was **PASS 7 of 7**, `analyze` was clean, and **1 927 tests were green** — and the app
+**threw `UnimplementedError` the first time a reader opened a chapter**, and **every download
+failed at the first chapter**.
+
+| hole | declared | read by | overridden at the bootstrap? |
+|---|---|---|---|
+| `chapterReaderRepositoryProvider` | `throw UnimplementedError('overridden in the composition root')` | `chapterDocumentProvider` — the reader's data | **NO** |
+| `chapterWriterProvider` | `throw UnimplementedError('overridden at the bootstrap')` | `downloadQueueRunnerProvider` — `5-1`'s runner | **NO** |
+
+⚠️ **EVERY TEST SUPPLIED ITS OWN FAKE, SO 1 927 GREEN TESTS PROVED NOTHING ABOUT EITHER.**
+This is the project's **sixth** instance of one shape, and it is a class rather than a slip:
+
+| # | the shape | what it cost |
+|---|---|---|
+| 1 | `3-6`'s absent retry | a button that did nothing |
+| 2 | `3-1`'s `() {}` Add | a button labelled *add this novel* that added nothing |
+| 3 | duplicated `registerScreens()` | two composition roots |
+| 4 | the catalogue footer's `() {}` Retry | a button that retried nothing |
+| 5 | `library_screen.dart`'s `onPressed: null` | the check pipeline was **unreachable for six slices** |
+| 6 | **these two seams** | **the reader and the queue could not run at all** |
+
+⚠️ **NOTHING IN THE GATE CAN SEE THIS SHAPE.** The code says exactly what it means, it
+analyzes clean, and the suite passes *because it supplies the seam*. A seam every test
+overrides and production does not is **tested and absent**.
+
+### THE FIX: A MECHANICAL, TOTAL ROW — `test/app/bootstrap_seams_test.dart`
+
+⚠️ **ENUMERATED BY PARSING `lib/`, NOT BY REMEMBERING.** "Every provider whose body throws is
+overridden" — because the defect was never "someone forgot", it was **"nobody checked"**.
+
+⚠️ **AND THE SCAN HAS ITS OWN ROW.** *`the SCAN FINDS THE SEAMS`* asserts the RegExp still
+matches and still finds `chapterReaderRepositoryProvider`. An empty scan makes every other row
+pass for the wrong reason, and ⚠️ **this project has four guards that reported success while
+testing nothing.**
+
+### ⚠️ ⚠️ THREE OF MY OWN ROWS WERE WRONG, AND THE CODE WAS RIGHT
+
+| my row | what it demanded | why that was wrong |
+|---|---|---|
+| overridden in `lib/main.dart` | the bootstrap specifically | `onboardingRouterProvider` needs a `BuildContext` only an element under the router has, so `OnboardingScreen` overrides it. ⚠️ **A rule that demands the wrong place sends you to move a correct override** |
+| `overrideWith(` | the bare form | `main.dart` uses `overrideWithValue(`, a real override. ⚠️ **A row that fails on correct code trains people to ignore it** |
+| `onPressed: null` is a dead control | ban it | **`null` is how Flutter spells _disabled_.** A disabled button with a tooltip saying who owns it is honest. ⚠️ **A grep that cannot tell DISABLED from DEAD will eventually demand a disabled button be made live** |
+
+### ⚠️ `6-10`'s B36 ROW WAS OVER-STRICT IN *TWO* PLACES AND ONLY ONE WAS FIXED
+
+§ 4.3's mapping is the **opposite** of an entry point: the three screens **read**
+`libraryCheckProvider`, because a button must be *disabled while a pass runs*. A row forbidding
+the **mention** forbids the documented mapping in order to prevent a **call** — and it did not
+prevent the call: my first wiring called `libraryCheckProvider.notifier.start()` directly and
+was caught by **a different row, one file over**. ⚠️ **The rule is the call, not the mention.**
+
+### ⚠️ `library_screen.dart`'s ROW ASSERTED THE **HOLE** WAS HONEST
+
+It read *"it is DISABLED, not a live button that does nothing"* and went green — while `6-4`
+and `6-10` shipped everything behind it. ⚠️ **A row that asserts a deferral is honest is a row
+that makes the deferral permanent**: it went green, and green meant *finished*. It now asserts
+the **gesture** — press it and watch the controller asked to start — plus a second row for
+*disabled while running*, which is the honest kind of `null`.
+
+### ALSO FIXED
+
+- **The catalogue footer's `() {}` Retry** — the fourth dead control. Now navigates to
+  `?page=N` via `openCataloguePage`, and says **Load more**, because page 2 of a tag is new
+  content and *"Retry"* means the load failed. ⚠️ **A right action behind a wrong word is still
+  a misdirection.**
+- **`LibraryEntry.sourceName` was `'unknown'` in production** — `DriftLibraryRepository`
+  defaults `sourceNameOf` to a function returning that literal, and nothing supplied a
+  resolver. ⚠️ **A default is not an error**, so no linter and no state assertion could see it.
+  Now overridden with `sources.byId(sourceId)?.name` — **one registry, per ADR-013**, or a
+  source would have two names in two screens.
+
+### ⚠️ MY OWN ROWS CAUGHT MY OWN BUGS, TWICE, BEFORE ANYBODY ELSE
+
+1. `sourceGenrePage` emitted `/browse/fanmtl/genre/xianxiapage=2` — **no `?`** — which parses as
+   a genre *named* `xianxiapage=2`. It did not throw, did not warn, and looked like a URL.
+2. The dead-control grep matched **its own comment**, which names the pattern it forbids. ⚠️ **A
+   grep that matches its own explanation cannot ever pass, which means it gets switched off** —
+   and one already was, for a session, and reported as a passing guard.
+
+### SABOTAGE — three, each caught by its intended row
+
+| sabotage | row |
+|---|---|
+| the reader's repository override removed | *EVERY throwing provider is overridden SOMEWHERE REAL* |
+| the check button back to `onPressed: null` | *pressing it ASKS THE CONTROLLER to start a check* |
+| the button calling the in-process pass directly | *no feature STARTS the in-process pass* |
+
+### STATUS
+
+**`DoD: PASS — 7 of 7`**, **1 944 passed, 0 failed**, analyze zero issues zero infos.

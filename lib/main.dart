@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart' show GoRouterState;
@@ -19,17 +20,31 @@ import 'package:lumen_tale/core/storage/onboarding_seen.dart';
 import 'package:lumen_tale/core/storage/shared_preferences_provider.dart';
 import 'package:lumen_tale/data/background/check_job_entry_point.dart';
 import 'package:lumen_tale/data/background/check_job_providers.dart';
+import 'package:lumen_tale/data/library/drift_library_repository.dart';
+import 'package:lumen_tale/data/library/drift_reading_position_store.dart';
+import 'package:lumen_tale/data/library/library_providers.dart';
+import 'package:lumen_tale/data/reader/chapter_row.dart';
+import 'package:lumen_tale/data/reader/local_chapter_reader_repository.dart';
 import 'package:lumen_tale/data/sources/source_manager.dart';
 import 'package:lumen_tale/data/updates/check_library_providers.dart';
+import 'package:lumen_tale/domain/reader/chapter_reader_repository.dart';
 import 'package:lumen_tale/domain/sources/models/novel.dart';
 import 'package:lumen_tale/features/about/about_screen.dart';
 import 'package:lumen_tale/features/browse/catalogue_screen.dart';
+import 'package:lumen_tale/features/downloads/providers.dart';
+import 'package:lumen_tale/features/downloads/providers/download_queue_provider.dart'
+    show chapterWriterProvider;
+// ⚠️ `sourceManagerProvider` IS DECLARED IN TWO FEATURES — the browse repository's and the
+// queue's. `hide` rather than a prefix: main.dart uses the browse one, and a prefix here
+// would import a second name for the same concept.
 import 'package:lumen_tale/features/downloads/screens/downloads_screen.dart';
+import 'package:lumen_tale/features/downloads/stored_chapter_writer.dart';
 import 'package:lumen_tale/features/history/history_screen.dart';
 import 'package:lumen_tale/features/library/library_screen.dart';
 import 'package:lumen_tale/features/novel_details/novel_details_screen.dart';
 import 'package:lumen_tale/features/onboarding/domain/onboarding_state.dart';
 import 'package:lumen_tale/features/onboarding/screens/onboarding_screen.dart';
+import 'package:lumen_tale/features/reader/reader_providers.dart';
 import 'package:lumen_tale/features/reader/reader_screen.dart';
 import 'package:lumen_tale/features/settings/settings_screen.dart';
 import 'package:lumen_tale/features/source_unavailable/failure_cause.dart';
@@ -126,6 +141,9 @@ void registerScreens() {
       sourceId: state.pathParameters['sourceId']!,
       tag: state.pathParameters['genre']!,
       words: state.uri.queryParameters['q'],
+      // ⚠️ **`?page=` IS READ HERE AND NOWHERE ELSE.** One parse, one place: a screen that
+      // resolved its own page could disagree with the router about which page is showing.
+      page: AppRoutes.pageFrom(state.uri),
     ),
   );
   registerScreen(
@@ -268,6 +286,113 @@ Future<void> main() async {
       overrides: [
         appThemePreferencesProvider.overrideWithValue(
           SharedPrefsThemePreferences(prefs),
+        ),
+        // ⚠️ **THE SOURCE-NAME RESOLVER, AND `6-6` IS WHY IT IS HERE.**
+        //
+        // `DriftLibraryRepository`'s constructor defaults `sourceNameOf` to a function that
+        // returns the literal `'unknown'`, and the library rows print it — so every row in
+        // production read *unknown* where a site name belongs. The seam was there; nothing
+        // supplied it.
+        //
+        // ⚠️ **ONE REGISTRY, PER ADR-013.** The resolver reads the SAME [sources] every other
+        // caller reads. A second index built here would be a second compiled registry, and a
+        // source compiled into one and not the other would print `unknown` in the library and
+        // its real name in the browser — the app contradicting itself about the same site.
+        // ⚠️ **THE READER'S REAL REPOSITORY — AND ITS ABSENCE MADE EVERY CHAPTER THROW.**
+        //
+        // `chapterReaderRepositoryProvider` is declared
+        // `throw UnimplementedError('overridden in the composition root')`, and **the
+        // composition root never overrode it.** Every reader test supplies a fake, so 1936
+        // green tests proved nothing about this: the app's core screen would have thrown
+        // `UnimplementedError` the first time a reader opened a chapter.
+        //
+        // ⚠️ **THIS IS THE FIFTH DEAD-CONTROL DEFECT IN ONE SHAPE.** A seam every test
+        // overrides, and production does not, is a seam that is *tested* and *absent* — and
+        // it is invisible to every gate, because analyze is clean, the suite is green and the
+        // code says exactly what it means. The row that catches it is
+        // `test/app/bootstrap_seams_test.dart`: *every provider whose body throws is
+        // overridden here*.
+        // ⚠️ **THE QUEUE RUNNER'S WRITER, AND IT THREW FOR THE SAME REASON.**
+        //
+        // `chapterWriterProvider` is declared `throw UnimplementedError('overridden at the
+        // bootstrap')`, is read by `downloadQueueRunnerProvider`, and **was never
+        // overridden**. So the second showstopper was live: `5-1`'s runner resolved a writer
+        // that threw, and every download failed at the first chapter. Its own 137 cases pass
+        // because each supplies its own writer.
+        //
+        // ⚠️ **THE WRITER IS AN ADAPTER AROUND THE SAME STORE THE READER USES.** Two writers
+        // would mean two sets of `downloadedAt` writes and two orders for B6's two writes to
+        // be wrong in.
+        chapterWriterProvider.overrideWith(
+          (Ref ref) => StoredChapterWriter(ref.watch(chapterStoreProvider)),
+        ),
+        chapterReaderRepositoryProvider.overrideWith(
+          (Ref ref) => LocalChapterReaderRepository(
+            rowLookup: driftChapterRowLookup(ref.watch(appDatabaseProvider)),
+            // ⚠️ **THE SAME STORE THE QUEUE WRITES THROUGH.** A reader that resolved a
+            // position from a different store than the one `5-1` saves to would restore an
+            // offset against a chapter it has not read.
+            store: ref.watch(chapterStoreProvider),
+            positions: DriftReadingPositionStore(
+              ref.watch(appDatabaseProvider),
+            ),
+            // B6-adjacent: **the mark is a column write, not a file write**, so it cannot
+            // precede the store's rename. `2-3` owns `downloadedAt`; `isRead` is the
+            // reader's own column and has no such ordering.
+            onMarkOpened: (String chapterId) async {
+              final AppDatabase db = ref.read(appDatabaseProvider);
+              await (db.update(db.chapters)
+                    ..where(($ChaptersTable t) => t.id.equals(chapterId)))
+                  .write(const ChaptersCompanion(isRead: Value<bool>(true)));
+            },
+            // ⚠️ **NEIGHBOURS BY `ordinal` WITHIN THE NOVEL, AND `null` AT EITHER END.**
+            // The reader's previous/next is the site's order, so a neighbour that skipped a
+            // chapter would put a reader on the wrong text with no way to tell.
+            onNeighbour: (String chapterId, NeighbourDirection direction) async {
+              final AppDatabase db = ref.read(appDatabaseProvider);
+              final ChapterRow? here =
+                  await (db.select(db.chapters)
+                        ..where(($ChaptersTable t) => t.id.equals(chapterId)))
+                      .getSingleOrNull();
+              if (here == null) return null;
+              final int step = direction == NeighbourDirection.previous
+                  ? -1
+                  : 1;
+              final List<ChapterRow> found =
+                  await (db.select(db.chapters)
+                        ..where(
+                          ($ChaptersTable t) =>
+                              t.novelId.equals(here.novelId) &
+                              (step < 0
+                                  ? t.ordinal.isSmallerThanValue(here.ordinal)
+                                  : t.ordinal.isBiggerThanValue(here.ordinal)),
+                        )
+                        // ⚠️ **THE ORDER FOLLOWS THE DIRECTION, and it is the whole
+                        // query.** `previous` must be the *nearest* chapter below,
+                        // which is the largest ordinal under it — so `desc`. Getting
+                        // this backwards puts a reader on the first chapter of the
+                        // novel instead of the one before.
+                        ..orderBy(<OrderClauseGenerator<$ChaptersTable>>[
+                          if (step < 0)
+                            ($ChaptersTable t) => OrderingTerm.desc(t.ordinal)
+                          else
+                            ($ChaptersTable t) => OrderingTerm.asc(t.ordinal),
+                        ])
+                        ..limit(1))
+                      .get();
+              if (found.isEmpty) return null;
+              return ChapterNeighbour(
+                chapterId: found.first.id,
+                ordinal: found.first.ordinal,
+              );
+            },
+          ),
+        ),
+        libraryRepositoryProvider.overrideWith(
+          (Ref ref) => DriftLibraryRepository(
+            ref.watch(appDatabaseProvider),
+            sourceNameOf: (String sourceId) => sources.byId(sourceId)?.name,
+          ),
         ),
         // ⚠️ **The instance `getInstance()` returned, shared.**
         //

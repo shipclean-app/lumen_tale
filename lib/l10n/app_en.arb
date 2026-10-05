@@ -94,6 +94,10 @@
   "@browseActionBrowseAnother": {
     "description": ""
   },
+  "@browseActionLoadMore": {
+    "description": "",
+    "placeholders": {}
+  },
   "@browseActionOpenLibrary": {
     "description": ""
   },
@@ -108,11 +112,15 @@
   },
   "@browseEmptyTagBody": {
     "description": "",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@browseEmptyTagTitle": {
     "description": "⚠️ **The tag is echoed back**, because a reader who has forgotten what they tapped needs to be told — and an empty-state sentence that does not name the tag could belong to any screen.",
-    "placeholders": {"tag": {}}
+    "placeholders": {
+      "tag": {}
+    }
   },
   "@browseFailureItemRemoved": {
     "description": ""
@@ -143,7 +151,9 @@
   },
   "@browseNoConnectionBody": {
     "description": "⚠️ **`Your library is unaffected`**, and it is not reassurance for its own sake: SC-6 exists because a site that cannot be read looks like a broken app, and the reader's first fear is their library.",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@browseNoConnectionTitle": {
     "description": ""
@@ -153,7 +163,10 @@
   },
   "@browseSiteSaidNothingBody": {
     "description": "⚠️ **The query is quoted AND the site is named.** The site's own marker is the reason this state exists at all, and a reader needs to see what they asked for before they decide the site is at fault.",
-    "placeholders": {"query": {}, "source": {}}
+    "placeholders": {
+      "query": {},
+      "source": {}
+    }
   },
   "@browseSiteSaidNothingTitle": {
     "description": ""
@@ -163,7 +176,9 @@
   },
   "@browseSourceUnavailableTitle": {
     "description": "",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@browseSucceeded": {
     "description": "Almost never displayed; it exists so the mapping is exhaustive and testable."
@@ -206,18 +221,25 @@
   },
   "@causeContentRemovedTitle": {
     "description": "",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@causeEvidenceHeading": {
     "description": ""
   },
   "@causeLayoutChangedBody": {
     "description": "⚠️ **\"A fault in the copy this app HAS of {source} — not in {source}\".** E8's whole point: the reader did not break anything and the site did not break anything. A message that says \"{source} is broken\" transfers the fault to the site, which is the wrong party and the one the reader cannot report to.",
-    "placeholders": {"retryNote": {}, "source": {}}
+    "placeholders": {
+      "retryNote": {},
+      "source": {}
+    }
   },
   "@causeLayoutChangedDictation": {
     "description": "⚠️ **A sentence the reader can read ALOUD**, which is C12: the reader is often on a phone they cannot type on, and \"the pages of X have changed\" is something a person can act on while \"HTTP 200\" is not.",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@causeLayoutChangedKicker": {
     "description": ""
@@ -236,7 +258,9 @@
   },
   "@causeNoConnectionTitle": {
     "description": "",
-    "placeholders": {"host": {}}
+    "placeholders": {
+      "host": {}
+    }
   },
   "@causeSiteUnavailableBody": {
     "description": ""
@@ -246,7 +270,9 @@
   },
   "@causeSiteUnavailableTitle": {
     "description": "",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@causeUnreadableRecordBody": {
     "description": "⚠️ **\"It will not guess\", stated as a virtue.** This is the only screen that admits the app does not know, and saying so plainly is what stops a reader assuming the app knows and is being coy."
@@ -310,15 +336,22 @@
   },
   "@chapterListEmptyAtSourceTitle": {
     "description": "",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@chapterListHeaderAtSource": {
     "description": "",
-    "placeholders": {"count": {}, "source": {}}
+    "placeholders": {
+      "count": {},
+      "source": {}
+    }
   },
   "@chapterListHeaderCount": {
     "description": "",
-    "placeholders": {"count": {}}
+    "placeholders": {
+      "count": {}
+    }
   },
   "@chapterListJumpToCurrent": {
     "description": ""
@@ -342,21 +375,27 @@
   },
   "@chapterListMarkedReadFailedBody": {
     "description": "⚠️ **\"Your progress has NOT been deleted.\"** An invariant a reader cannot see is an invariant they learn to distrust. Saying the app has not touched their progress is what stops them re-adding the novel to 'fix' it.",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@chapterListMarkedReadFailedTitle": {
     "description": ""
   },
   "@chapterListNeverLoadedBody": {
     "description": "⚠️ **It says what loading DOES before offering it.** B12's whole point is that a list nobody asked for is not an empty list, and a reader who sees an empty area and one button cannot tell whether the button will create something or reveal something. This sentence says: it asks the site, and it stores.",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@chapterListNeverLoadedTitle": {
     "description": ""
   },
   "@chapterListNoConnectionBody": {
     "description": "",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@chapterListNoConnectionTitle": {
     "description": ""
@@ -369,28 +408,37 @@
   },
   "@chapterListSpaceRefusedBody": {
     "description": "",
-    "placeholders": {"bytes": {}}
+    "placeholders": {
+      "bytes": {}
+    }
   },
   "@chapterListSpaceRefusedTitle": {
     "description": ""
   },
   "@chapterListStoredUnreadableBody": {
     "description": "⚠️ **\"The app has NOT done that\", stated explicitly.** This is the only state where loading again would be *destructive*, and a screen that offers the button without saying so would quietly replace a copy the reader cannot read with one they can — which loses the unread marks along with it.",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@chapterListStoredUnreadableTitle": {
     "description": ""
   },
   "@chapterListTailMarker": {
     "description": "",
-    "placeholders": {"displayed": {}, "total": {}}
+    "placeholders": {
+      "displayed": {},
+      "total": {}
+    }
   },
   "@chapterListUnreadableBody": {
     "description": ""
   },
   "@chapterListUnreadableTitle": {
     "description": "",
-    "placeholders": {"source": {}}
+    "placeholders": {
+      "source": {}
+    }
   },
   "@chapterListUntitled": {
     "description": "⚠️ **B10: shown when the site published no title at all.** Never an index, never a generated \"Chapter 12\" — a fabricated title is a sentence the app invented and the reader would believe."
@@ -658,6 +706,136 @@
     "description": "",
     "placeholders": {}
   },
+  "@downloadsAttemptCount": {
+    "description": "`downloads.md` § 9 (E18): 'The attempt count is shown, because a threshold being applied is a thing the reader deserves to know about' — and C12, because 'it failed twice' and 'it failed once' are not described the same way.",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@downloadsCancelAction": {
+    "description": "B19's cancellation, and the only destructive control on the screen — hence the confirmation dialog rather than a button."
+  },
+  "@downloadsCancelFailedSnackbar": {
+    "description": "`downloads.md` § 4 *Submit error (a)*, verbatim in substance: the ONE submission in the app whose failure must INVERT the display, because a queue shown as cancelled while it keeps writing chapters is what B19 forbids."
+  },
+  "@downloadsCancelledKept": {
+    "description": "B19: the reader needs to know what SURVIVED. A cancellation that reported nothing would leave them wondering whether chapter 12 was deleted.",
+    "placeholders": {
+      "kept": {}
+    }
+  },
+  "@downloadsEmptyActionBrowse": {
+    "description": "The one action an empty state offers: the discover loop, not an explanation."
+  },
+  "@downloadsEmptyBody": {
+    "description": "The body's sentence. `downloads.md` § 4: 'Downloaded chapters read with no signal at all' — the benefit, not the mechanism."
+  },
+  "@downloadsEmptyTitle": {
+    "description": "`downloads.md` § 4 *Empty — never visited*. The body states the BENEFIT in the reader's terms, because that is the one thing a download queue is for."
+  },
+  "@downloadsFailedRowTitle": {
+    "description": "The failed row's chapter name — the SITE's own title (B10). `downloads.md` § 3: 'Every failed row names the chapter, not just the novel'.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "@downloadsFailedSectionLabel": {
+    "description": "`downloads.md` § 3's `COULD NOT DOWNLOAD` overline, and § 4: the section is NOT rendered at all when empty."
+  },
+  "@downloadsHeaderCounts": {
+    "description": "C8: both numbers EXACT. `downloaded` is `count(state='done')`, never 13 after a failure and never 11 after a cancellation. Declared with `placeholders` because a translated placeholder NAME would ADD a parameter rather than rename one (B28).",
+    "placeholders": {
+      "downloaded": {},
+      "total": {}
+    }
+  },
+  "@downloadsInProcessNotice": {
+    "description": "E7, and the reason it is the FIRST line under the title in EVERY state. `flows.md` § 4.4 calls this 'the single most likely over-promise in the product': every competing reader ships a background download service, so the default expectation is that closing the app just moves the bar somewhere invisible."
+  },
+  "@downloadsInProgressSuffix": {
+    "description": "The `· 1 in progress` half of the header. B18 makes it at most one, so the string carries the number and the row carries the chapter.",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "@downloadsLoadErrorBody": {
+    "description": "The reassurance, and it is load-bearing: with no backup (ADR-010) the reader's first assumption is data loss. Nothing was deleted, and nothing can be fetched until the records can be read."
+  },
+  "@downloadsLoadErrorRetry": {
+    "description": "B24: 'Any action that can fail shows an error the user can read and act on, together with a way to try again.'"
+  },
+  "@downloadsLoadErrorTitle": {
+    "description": "`downloads.md` § 4 *Load error*: a real failure with a consequence worth stating precisely — the records could not be read, which is not the same as there being none."
+  },
+  "@downloadsOpenNovelAction": {
+    "description": "E9's action for a chapter the site says is gone. NOT a retry — the site has confirmed the item is not coming back, so re-fetching it would fail identically. Navigation is honest: the reader can look at the novel's chapter list."
+  },
+  "@downloadsPauseAction": {
+    "description": "B19: 'Stop before the next chapter'. C11: 48dp, and no gesture — a swipe that stopped a queue would be a swipe nobody asked for."
+  },
+  "@downloadsPausedLabel": {
+    "description": "E7/B19. `--color-warning` PLUS this word PLUS an icon: `14-design-tokens.md` § Accessibility forbids a colour-only state."
+  },
+  "@downloadsQueueSectionLabel": {
+    "description": "The `DOWNLOAD QUEUE` overline. `--text-overline`, 600, letter-spaced."
+  },
+  "@downloadsResumeAction": {
+    "description": "B21: continue FROM the chapter it stopped at, never from chapter one."
+  },
+  "@downloadsRetryAction": {
+    "description": "B24/B5: 'Re-fetch that chapter alone, and only that one.' NOT a retry-everything control — one chapter's typed failure says nothing about the other 47."
+  },
+  "@downloadsRunningLabel": {
+    "description": "The status word while the loop is moving. Shown as a word and not only as a bar, for the same reason as Paused."
+  },
+  "@downloadsSemanticsChapterProgress": {
+    "description": "`downloads.md` § 7: the determinate bar's SPOKEN value, 'Chapter 13 of 50, 41 per cent'. `14-design-tokens.md` § Accessibility and `16-i18n.md` rule 7: a semantics label is localized like any other string. A percentage inside a ring is unreadable by a screen reader and useless at 2dp — this is the alternative.",
+    "placeholders": {
+      "percent": {},
+      "position": {},
+      "total": {}
+    }
+  },
+  "@downloadsSemanticsProgressUndetermined": {
+    "description": "The same spoken value with NO percentage, and `downloads.md` § 8 is explicit that `0` must never stand in for one: a bar at zero that never moves is a bar that lies.",
+    "placeholders": {
+      "position": {},
+      "total": {}
+    }
+  },
+  "@downloadsStoppedLabel": {
+    "description": "E7's state. C12: the reader must be able to say 'the downloads stopped' aloud to whoever owns the phone."
+  },
+  "@downloadsStoppedNoConnection": {
+    "description": "E7/E5. `downloads.md` § 4 *Offline*: the reason in WORDS, not an icon alone — C11 is a one-handed, often-glanced context at night."
+  },
+  "@downloadsStoppedOutOfStorage": {
+    "description": "E20. `downloads.md` § 9 refuses to DISPLAY free space — the app has no honest way to read it without a platform channel it has not earned — so the honest sentence is the fact and the action, and no figure."
+  },
+  "@downloadsStoppedRateLimited": {
+    "description": "`17-security.md` rule 6 and `5-3` § 3.2: the site sent 429 with Retry-After, and the answer is to WAIT for the time the site named — never a guessed one.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "@downloadsStoppedSourceUnreadable": {
+    "description": "B22: ONE line for a broken site, not one per chapter. C12 needs the sentence to be sayable, and it names the SITE.",
+    "placeholders": {
+      "source": {}
+    }
+  },
+  "@downloadsStorageNeeded": {
+    "description": "E20's ONE measured figure: what the chapter the app was writing needs. It is NOT free space, which `downloads.md` § 9 refuses to display at all — a stale number is worse than none.",
+    "placeholders": {
+      "bytes": {}
+    }
+  },
+  "@downloadsTitle": {
+    "description": "The screen's title. `downloads.md` § 3: a title bar back to /more."
+  },
+  "@downloadsWillNotContinueOnItsOwn": {
+    "description": "E7, and the sentence that closes the trap. `downloads.md` § 4 says it goes on the line BELOW the reason, in the stopped state — the reader is most likely to wonder exactly here."
+  },
   "@errorCountUnavailable": {
     "description": "B48: an uncertain count says it is uncertain; it is never estimated."
   },
@@ -686,13 +864,13 @@
     }
   },
   "@errorSettingsLoad": {
-    "description": "A startup failure, therefore never a screen state. See the comment on main(). \u26a0\ufe0f `6-7` \u00a7 3.2 rule 2: EVERY failure sentence names what survived, and in a product with no backup (ADR-010) a sentence that names nothing reads as data loss. This one says the library, the downloads and the reading positions are stored separately, which is the fact that makes it survivable. \u00a7 10.16 then requires it to be a BLOCK rather than a one-line banner at 200 % type \u2014 so the second clause is load-bearing twice."
+    "description": "A startup failure, therefore never a screen state. See the comment on main(). ⚠️ `6-7` § 3.2 rule 2: EVERY failure sentence names what survived, and in a product with no backup (ADR-010) a sentence that names nothing reads as data loss. This one says the library, the downloads and the reading positions are stored separately, which is the fact that makes it survivable. § 10.16 then requires it to be a BLOCK rather than a one-line banner at 200 % type — so the second clause is load-bearing twice."
   },
   "@errorSettingsWrite": {
     "description": "The control snaps back and says why: showing a value it could not store is worse than a visible failure."
   },
   "@errorSiteUnreadable": {
-    "description": "B22, and the load-bearing half of it: 'not the same as a site with no chapters'. 'Your other sources': one site failing is not the app failing. \u26a0\ufe0f The distinction B22 exists for is between 'the site answered and had nothing' and 'the site did not answer'; a sentence that only said 'unavailable' would let a reader conclude their novel has no chapters."
+    "description": "B22, and the load-bearing half of it: 'not the same as a site with no chapters'. 'Your other sources': one site failing is not the app failing. ⚠️ The distinction B22 exists for is between 'the site answered and had nothing' and 'the site did not answer'; a sentence that only said 'unavailable' would let a reader conclude their novel has no chapters."
   },
   "@errorSourceLayoutChanged": {
     "description": "E4 / SC-6. Nothing to retry: this is a defect to report."
@@ -927,7 +1105,10 @@
   },
   "@libraryRemoveBody": {
     "description": "⚠️ **The number appears INSIDE every plural branch, and that is the bug a row caught.** With the count only in the placeholder selector and never in the branches, the sentence renders \"Its downloaded chapters and your reading history stay\" — no figure at all, in a dialog whose whole purpose is to quote one. B32 is a promise about what survives, and \"nothing\" survives it as well as 148 chapters do.",
-    "placeholders": {"count": {}, "title": {}}
+    "placeholders": {
+      "count": {},
+      "title": {}
+    }
   },
   "@libraryRemoveKept": {
     "description": "Shown after a removal, and it says **nothing was deleted**. B32 is a promise the reader should be able to see, not a rule they have to trust."
@@ -940,7 +1121,9 @@
   },
   "@libraryRemoved": {
     "description": "",
-    "placeholders": {"title": {}}
+    "placeholders": {
+      "title": {}
+    }
   },
   "@libraryRowCouldNotCheck": {
     "description": ""
@@ -995,7 +1178,12 @@
   },
   "@librarySimilarBody": {
     "description": "",
-    "placeholders": {"existing": {}, "incoming": {}, "incomingSource": {}, "source": {}}
+    "placeholders": {
+      "existing": {},
+      "incoming": {},
+      "incomingSource": {},
+      "source": {}
+    }
   },
   "@librarySimilarExplain": {
     "description": "⚠️ **Said BEFORE the choice, not after it.** \"Add anyway\" reads like a merge; this line is what makes it a second row."
@@ -1029,14 +1217,19 @@
   },
   "@libraryTileProgress": {
     "description": "**The mark's count, not the files'** (B48, ADR-022). An interrupted download has no mark, so this figure never counts a chapter the reader cannot open.",
-    "placeholders": {"downloaded": {}, "total": {}}
+    "placeholders": {
+      "downloaded": {},
+      "total": {}
+    }
   },
   "@libraryTileUndownloaded": {
     "description": ""
   },
   "@libraryTileUnopened": {
     "description": "",
-    "placeholders": {"count": {}}
+    "placeholders": {
+      "count": {}
+    }
   },
   "@libraryTitle": {
     "description": "⚠️ **Identical in meaning to `navLibrary`, and separate anyway.** The tab label and the screen title are two surfaces, and the design gives the screen a `--text-h1` title bar. Merging them would make one string serve a 13 dp tab and a 31 dp title."
@@ -1110,6 +1303,55 @@
         "example": "2"
       }
     }
+  },
+  "@queueCancelBody": {
+    "description": "The confirmation WITHOUT a chapter in flight. `{kept}` is the number that survives, and it is a count rather than a pre-built phrase so no caller can decorate it.",
+    "placeholders": {
+      "kept": {}
+    }
+  },
+  "@queueCancelBodyWithChapter": {
+    "description": "The confirmation WITH a chapter in flight. `downloads.md` § 5: the dialog names the chapter, so the confirmation is about a specific thing — and `{name}` is the site's own title (B10), not a placeholder this app invented.",
+    "placeholders": {
+      "kept": {},
+      "name": {}
+    }
+  },
+  "@queueCancelConfirm": {
+    "description": "The filled button. `commonCancel` is the other one, and the pair is the whole dialogue: two exits, no dead end, no silent consent."
+  },
+  "@queueCancelTitle": {
+    "description": "B19's confirmation. `downloads.md` § 7: 'Destructive actions are confirmed and named' — a generic 'Are you sure?' is a statement about nothing."
+  },
+  "@queueCauseItemRemovedAtSource": {
+    "description": "E9 for `item_removed_at_source`. The site's own answer, so the reader is not asked to retry something the site has confirmed is gone."
+  },
+  "@queueCauseNoConnection": {
+    "description": "B24/C12 for `no_connection`: a sentence a borrowed-device reader can read aloud to the owner, and an action they can take."
+  },
+  "@queueCauseNoRealText": {
+    "description": "E18 for `no_real_text`, and E22's half of the bargain: a short chapter must never be mistaken for a broken one, so the sentence is about THIS chapter."
+  },
+  "@queueCauseParseFailed": {
+    "description": "B22 for `parse_failed`: the app's own failure, named as its own. `C5` says a failure the reader cannot report is a failure nobody will fix."
+  },
+  "@queueCauseRateLimited": {
+    "description": "B24 for `rate_limited`. `17-security.md` rule 6: the answer is to wait, never to hammer — and the sentence must not sound like the site is broken."
+  },
+  "@queueCauseSourceEmpty": {
+    "description": "E8/B22 for `source_empty`. The distinction from 'the app has nothing' is the whole point: the SITE said so itself."
+  },
+  "@queueCauseSourceLayoutChanged": {
+    "description": "B22 for `source_layout_changed`, E4. 'this app cannot read this site any more' is a report the owner can act on; 'download failed' is not."
+  },
+  "@queueCauseSourceUnavailable": {
+    "description": "B3 for `source_unavailable`: the novel names a site this build no longer contains, which is a statement about the app rather than about the chapter."
+  },
+  "@queueCauseStorageFull": {
+    "description": "E20 for `storage_full`. NEVER a free-space figure — `downloads.md` § 9 — and never 'try again', which would send the reader round the same loop."
+  },
+  "@queueCauseUnknown": {
+    "description": "The only honest sentence for an unreadable code. `queue_run_state_deriver.dart` maps one to `QueueStopReason.unknown` and this is what the reader is shown — it does not guess, and C12 accepts a true 'the app cannot say' over a plausible fiction."
   },
   "@readerActionBack": {
     "description": ""
@@ -1458,11 +1700,17 @@
   },
   "@sourceUnavailableRetryIn": {
     "description": "",
-    "placeholders": {"seconds": {}}
+    "placeholders": {
+      "seconds": {}
+    }
   },
   "@sourceUnavailableStillWorksBody": {
     "description": "⚠️ **The whole reason this screen exists.** SC-6's damage is not the failure — it is a reader concluding their library is gone. The three figures are LOCAL counts (B14, B48), so they are true without a network and they are the sentence that ends the fear.",
-    "placeholders": {"downloaded": {}, "library": {}, "source": {}}
+    "placeholders": {
+      "downloaded": {},
+      "library": {},
+      "source": {}
+    }
   },
   "@sourceUnavailableStillWorksEmpty": {
     "description": "⚠️ **A count of zero says \"nothing was lost\" rather than nothing.** The empty case and the failure case read alike otherwise, and a reader who has just seen a failure cannot tell \"empty\" from \"gone\"."
@@ -1472,7 +1720,9 @@
   },
   "@sourceUnavailableWaitingForSite": {
     "description": "",
-    "placeholders": {"seconds": {}}
+    "placeholders": {
+      "seconds": {}
+    }
   },
   "@unitBytes": {
     "description": "",
@@ -1529,6 +1779,7 @@
   "actionReportBug": "Report the problem",
   "appTitle": "Lumen Tale",
   "browseActionBrowseAnother": "Browse another tag",
+  "browseActionLoadMore": "Load more",
   "browseActionOpenLibrary": "Open library",
   "browseActionRetry": "Retry",
   "browseEmpty": "This site has nothing to show here.",
@@ -1672,6 +1923,38 @@
   "downloadSpaceRefusedAction": "Delete a downloaded chapter, then try again.",
   "downloadSpaceRefusedBody": "This download needs {requiredBytes}, and this phone has {freeBytes} free.",
   "downloadWriteFailedSnackbar": "The download could not be added. Nothing was changed.",
+  "downloadsAttemptCount": "Tried {count} times",
+  "downloadsCancelAction": "Cancel download",
+  "downloadsCancelFailedSnackbar": "Could not cancel. The download is still running.",
+  "downloadsCancelledKept": "Download cancelled — {kept} chapters kept.",
+  "downloadsEmptyActionBrowse": "Browse sources",
+  "downloadsEmptyBody": "Downloaded chapters read with no signal at all. Start one from any novel's page.",
+  "downloadsEmptyTitle": "Nothing is downloaded yet",
+  "downloadsFailedRowTitle": "Chapter: {name}",
+  "downloadsFailedSectionLabel": "COULD NOT DOWNLOAD",
+  "downloadsHeaderCounts": "{downloaded} of {total} downloaded",
+  "downloadsInProcessNotice": "Downloads continue only while the app is open.",
+  "downloadsInProgressSuffix": "· {count} in progress",
+  "downloadsLoadErrorBody": "Nothing has been deleted. This app cannot see what it has already stored, and nothing can be fetched until it can.",
+  "downloadsLoadErrorRetry": "Try again",
+  "downloadsLoadErrorTitle": "Lumen Tale could not read its download records",
+  "downloadsOpenNovelAction": "Open the novel",
+  "downloadsPauseAction": "Pause",
+  "downloadsPausedLabel": "Paused",
+  "downloadsQueueSectionLabel": "DOWNLOAD QUEUE",
+  "downloadsResumeAction": "Resume",
+  "downloadsRetryAction": "Retry this chapter",
+  "downloadsRunningLabel": "Downloading",
+  "downloadsSemanticsChapterProgress": "Chapter {position} of {total}, {percent} per cent",
+  "downloadsSemanticsProgressUndetermined": "Chapter {position} of {total}, downloading",
+  "downloadsStoppedLabel": "Stopped",
+  "downloadsStoppedNoConnection": "No connection",
+  "downloadsStoppedOutOfStorage": "The phone is out of storage. Free up some space, then resume.",
+  "downloadsStoppedRateLimited": "The site asked us to wait until {time}.",
+  "downloadsStoppedSourceUnreadable": "Lumen Tale could not read {source}.",
+  "downloadsStorageNeeded": "This chapter needs {bytes}.",
+  "downloadsTitle": "Downloads",
+  "downloadsWillNotContinueOnItsOwn": "It will not continue on its own when the signal comes back.",
   "errorCountUnavailable": "That count could not be computed.",
   "errorHistoryClear": "History could not be cleared.",
   "errorItemRemovedAtSource": "This novel is no longer on the site. The rest of your library is untouched.",
@@ -1794,6 +2077,20 @@
   "onboardingStep2Headline": "There is no backup.",
   "onboardingStep2Kicker": "BEFORE YOU START",
   "onboardingStepPosition": "Step {current} of {total}",
+  "queueCancelBody": "The {kept} chapters already downloaded are kept. Nothing else is fetched.",
+  "queueCancelBodyWithChapter": "'{name}' is being downloaded. It will be discarded. The {kept} chapters already downloaded are kept.",
+  "queueCancelConfirm": "Cancel the download",
+  "queueCancelTitle": "Cancel this download?",
+  "queueCauseItemRemovedAtSource": "The site says this chapter has been removed.",
+  "queueCauseNoConnection": "The connection dropped while this chapter was being downloaded.",
+  "queueCauseNoRealText": "This chapter had no readable text on the page.",
+  "queueCauseParseFailed": "This chapter's text could not be built.",
+  "queueCauseRateLimited": "The site asked us to slow down.",
+  "queueCauseSourceEmpty": "The site published nothing for this chapter.",
+  "queueCauseSourceLayoutChanged": "This site has changed its layout, so this app can no longer read it.",
+  "queueCauseSourceUnavailable": "This novel's site is not in this version of the app.",
+  "queueCauseStorageFull": "The phone ran out of storage.",
+  "queueCauseUnknown": "This app cannot say what went wrong.",
   "readerActionBack": "Back",
   "readerActionDownloadAgain": "Download again",
   "readerActionDownloadChapter": "Download this chapter",
@@ -1887,201 +2184,5 @@
   "unitGigabytes": "{count} GB",
   "unitKilobytes": "{count} KB",
   "unitMegabytes": "{count} MB",
-  "warningNotifications": "Notifications are turned off in your phone's settings.",
-  "downloadsAttemptCount": "Tried {count} times",
-  "@downloadsAttemptCount": {
-    "description": "`downloads.md` § 9 (E18): 'The attempt count is shown, because a threshold being applied is a thing the reader deserves to know about' — and C12, because 'it failed twice' and 'it failed once' are not described the same way.",
-    "placeholders": {"count": {}}
-  },
-  "downloadsCancelAction": "Cancel download",
-  "@downloadsCancelAction": {
-    "description": "B19's cancellation, and the only destructive control on the screen — hence the confirmation dialog rather than a button."
-  },
-  "downloadsCancelFailedSnackbar": "Could not cancel. The download is still running.",
-  "@downloadsCancelFailedSnackbar": {
-    "description": "`downloads.md` § 4 *Submit error (a)*, verbatim in substance: the ONE submission in the app whose failure must INVERT the display, because a queue shown as cancelled while it keeps writing chapters is what B19 forbids."
-  },
-  "downloadsCancelledKept": "Download cancelled — {kept} chapters kept.",
-  "@downloadsCancelledKept": {
-    "description": "B19: the reader needs to know what SURVIVED. A cancellation that reported nothing would leave them wondering whether chapter 12 was deleted.",
-    "placeholders": {"kept": {}}
-  },
-  "downloadsEmptyActionBrowse": "Browse sources",
-  "@downloadsEmptyActionBrowse": {
-    "description": "The one action an empty state offers: the discover loop, not an explanation."
-  },
-  "downloadsEmptyBody": "Downloaded chapters read with no signal at all. Start one from any novel's page.",
-  "@downloadsEmptyBody": {
-    "description": "The body's sentence. `downloads.md` § 4: 'Downloaded chapters read with no signal at all' — the benefit, not the mechanism."
-  },
-  "downloadsEmptyTitle": "Nothing is downloaded yet",
-  "@downloadsEmptyTitle": {
-    "description": "`downloads.md` § 4 *Empty — never visited*. The body states the BENEFIT in the reader's terms, because that is the one thing a download queue is for."
-  },
-  "downloadsFailedRowTitle": "Chapter: {name}",
-  "@downloadsFailedRowTitle": {
-    "description": "The failed row's chapter name — the SITE's own title (B10). `downloads.md` § 3: 'Every failed row names the chapter, not just the novel'.",
-    "placeholders": {"name": {}}
-  },
-  "downloadsFailedSectionLabel": "COULD NOT DOWNLOAD",
-  "@downloadsFailedSectionLabel": {
-    "description": "`downloads.md` § 3's `COULD NOT DOWNLOAD` overline, and § 4: the section is NOT rendered at all when empty."
-  },
-  "downloadsHeaderCounts": "{downloaded} of {total} downloaded",
-  "@downloadsHeaderCounts": {
-    "description": "C8: both numbers EXACT. `downloaded` is `count(state='done')`, never 13 after a failure and never 11 after a cancellation. Declared with `placeholders` because a translated placeholder NAME would ADD a parameter rather than rename one (B28).",
-    "placeholders": {"downloaded": {}, "total": {}}
-  },
-  "downloadsInProcessNotice": "Downloads continue only while the app is open.",
-  "@downloadsInProcessNotice": {
-    "description": "E7, and the reason it is the FIRST line under the title in EVERY state. `flows.md` § 4.4 calls this 'the single most likely over-promise in the product': every competing reader ships a background download service, so the default expectation is that closing the app just moves the bar somewhere invisible."
-  },
-  "downloadsInProgressSuffix": "· {count} in progress",
-  "@downloadsInProgressSuffix": {
-    "description": "The `· 1 in progress` half of the header. B18 makes it at most one, so the string carries the number and the row carries the chapter.",
-    "placeholders": {"count": {}}
-  },
-  "downloadsLoadErrorBody": "Nothing has been deleted. This app cannot see what it has already stored, and nothing can be fetched until it can.",
-  "@downloadsLoadErrorBody": {
-    "description": "The reassurance, and it is load-bearing: with no backup (ADR-010) the reader's first assumption is data loss. Nothing was deleted, and nothing can be fetched until the records can be read."
-  },
-  "downloadsLoadErrorRetry": "Try again",
-  "@downloadsLoadErrorRetry": {
-    "description": "B24: 'Any action that can fail shows an error the user can read and act on, together with a way to try again.'"
-  },
-  "downloadsLoadErrorTitle": "Lumen Tale could not read its download records",
-  "@downloadsLoadErrorTitle": {
-    "description": "`downloads.md` § 4 *Load error*: a real failure with a consequence worth stating precisely — the records could not be read, which is not the same as there being none."
-  },
-  "downloadsPauseAction": "Pause",
-  "@downloadsPauseAction": {
-    "description": "B19: 'Stop before the next chapter'. C11: 48dp, and no gesture — a swipe that stopped a queue would be a swipe nobody asked for."
-  },
-  "downloadsPausedLabel": "Paused",
-  "@downloadsPausedLabel": {
-    "description": "E7/B19. `--color-warning` PLUS this word PLUS an icon: `14-design-tokens.md` § Accessibility forbids a colour-only state."
-  },
-  "downloadsQueueSectionLabel": "DOWNLOAD QUEUE",
-  "@downloadsQueueSectionLabel": {
-    "description": "The `DOWNLOAD QUEUE` overline. `--text-overline`, 600, letter-spaced."
-  },
-  "downloadsResumeAction": "Resume",
-  "@downloadsResumeAction": {
-    "description": "B21: continue FROM the chapter it stopped at, never from chapter one."
-  },
-  "downloadsRetryAction": "Retry this chapter",
-  "@downloadsRetryAction": {
-    "description": "B24/B5: 'Re-fetch that chapter alone, and only that one.' NOT a retry-everything control — one chapter's typed failure says nothing about the other 47."
-  },
-  "downloadsRunningLabel": "Downloading",
-  "@downloadsRunningLabel": {
-    "description": "The status word while the loop is moving. Shown as a word and not only as a bar, for the same reason as Paused."
-  },
-  "downloadsSemanticsChapterProgress": "Chapter {position} of {total}, {percent} per cent",
-  "@downloadsSemanticsChapterProgress": {
-    "description": "`downloads.md` § 7: the determinate bar's SPOKEN value, 'Chapter 13 of 50, 41 per cent'. `14-design-tokens.md` § Accessibility and `16-i18n.md` rule 7: a semantics label is localized like any other string. A percentage inside a ring is unreadable by a screen reader and useless at 2dp — this is the alternative.",
-    "placeholders": {"percent": {}, "position": {}, "total": {}}
-  },
-  "downloadsSemanticsProgressUndetermined": "Chapter {position} of {total}, downloading",
-  "@downloadsSemanticsProgressUndetermined": {
-    "description": "The same spoken value with NO percentage, and `downloads.md` § 8 is explicit that `0` must never stand in for one: a bar at zero that never moves is a bar that lies.",
-    "placeholders": {"position": {}, "total": {}}
-  },
-  "downloadsStoppedLabel": "Stopped",
-  "@downloadsStoppedLabel": {
-    "description": "E7's state. C12: the reader must be able to say 'the downloads stopped' aloud to whoever owns the phone."
-  },
-  "downloadsStoppedNoConnection": "No connection",
-  "@downloadsStoppedNoConnection": {
-    "description": "E7/E5. `downloads.md` § 4 *Offline*: the reason in WORDS, not an icon alone — C11 is a one-handed, often-glanced context at night."
-  },
-  "downloadsStoppedOutOfStorage": "The phone is out of storage. Free up some space, then resume.",
-  "@downloadsStoppedOutOfStorage": {
-    "description": "E20. `downloads.md` § 9 refuses to DISPLAY free space — the app has no honest way to read it without a platform channel it has not earned — so the honest sentence is the fact and the action, and no figure."
-  },
-  "downloadsStoppedRateLimited": "The site asked us to wait until {time}.",
-  "@downloadsStoppedRateLimited": {
-    "description": "`17-security.md` rule 6 and `5-3` § 3.2: the site sent 429 with Retry-After, and the answer is to WAIT for the time the site named — never a guessed one.",
-    "placeholders": {"time": {}}
-  },
-  "downloadsStoppedSourceUnreadable": "Lumen Tale could not read {source}.",
-  "@downloadsStoppedSourceUnreadable": {
-    "description": "B22: ONE line for a broken site, not one per chapter. C12 needs the sentence to be sayable, and it names the SITE.",
-    "placeholders": {"source": {}}
-  },
-  "downloadsStorageNeeded": "This chapter needs {bytes}.",
-  "@downloadsStorageNeeded": {
-    "description": "E20's ONE measured figure: what the chapter the app was writing needs. It is NOT free space, which `downloads.md` § 9 refuses to display at all — a stale number is worse than none.",
-    "placeholders": {"bytes": {}}
-  },
-  "downloadsTitle": "Downloads",
-  "@downloadsTitle": {
-    "description": "The screen's title. `downloads.md` § 3: a title bar back to /more."
-  },
-  "downloadsWillNotContinueOnItsOwn": "It will not continue on its own when the signal comes back.",
-  "@downloadsWillNotContinueOnItsOwn": {
-    "description": "E7, and the sentence that closes the trap. `downloads.md` § 4 says it goes on the line BELOW the reason, in the stopped state — the reader is most likely to wonder exactly here."
-  },
-  "queueCancelBody": "The {kept} chapters already downloaded are kept. Nothing else is fetched.",
-  "@queueCancelBody": {
-    "description": "The confirmation WITHOUT a chapter in flight. `{kept}` is the number that survives, and it is a count rather than a pre-built phrase so no caller can decorate it.",
-    "placeholders": {"kept": {}}
-  },
-  "queueCancelBodyWithChapter": "'{name}' is being downloaded. It will be discarded. The {kept} chapters already downloaded are kept.",
-  "@queueCancelBodyWithChapter": {
-    "description": "The confirmation WITH a chapter in flight. `downloads.md` § 5: the dialog names the chapter, so the confirmation is about a specific thing — and `{name}` is the site's own title (B10), not a placeholder this app invented.",
-    "placeholders": {"kept": {}, "name": {}}
-  },
-  "queueCancelConfirm": "Cancel the download",
-  "@queueCancelConfirm": {
-    "description": "The filled button. `commonCancel` is the other one, and the pair is the whole dialogue: two exits, no dead end, no silent consent."
-  },
-  "queueCancelTitle": "Cancel this download?",
-  "@queueCancelTitle": {
-    "description": "B19's confirmation. `downloads.md` § 7: 'Destructive actions are confirmed and named' — a generic 'Are you sure?' is a statement about nothing."
-  },
-  "queueCauseItemRemovedAtSource": "The site says this chapter has been removed.",
-  "@queueCauseItemRemovedAtSource": {
-    "description": "E9 for `item_removed_at_source`. The site's own answer, so the reader is not asked to retry something the site has confirmed is gone."
-  },
-  "queueCauseNoConnection": "The connection dropped while this chapter was being downloaded.",
-  "@queueCauseNoConnection": {
-    "description": "B24/C12 for `no_connection`: a sentence a borrowed-device reader can read aloud to the owner, and an action they can take."
-  },
-  "queueCauseNoRealText": "This chapter had no readable text on the page.",
-  "@queueCauseNoRealText": {
-    "description": "E18 for `no_real_text`, and E22's half of the bargain: a short chapter must never be mistaken for a broken one, so the sentence is about THIS chapter."
-  },
-  "queueCauseParseFailed": "This chapter's text could not be built.",
-  "@queueCauseParseFailed": {
-    "description": "B22 for `parse_failed`: the app's own failure, named as its own. `C5` says a failure the reader cannot report is a failure nobody will fix."
-  },
-  "queueCauseRateLimited": "The site asked us to slow down.",
-  "@queueCauseRateLimited": {
-    "description": "B24 for `rate_limited`. `17-security.md` rule 6: the answer is to wait, never to hammer — and the sentence must not sound like the site is broken."
-  },
-  "queueCauseSourceEmpty": "The site published nothing for this chapter.",
-  "@queueCauseSourceEmpty": {
-    "description": "E8/B22 for `source_empty`. The distinction from 'the app has nothing' is the whole point: the SITE said so itself."
-  },
-  "queueCauseSourceLayoutChanged": "This site has changed its layout, so this app can no longer read it.",
-  "@queueCauseSourceLayoutChanged": {
-    "description": "B22 for `source_layout_changed`, E4. 'this app cannot read this site any more' is a report the owner can act on; 'download failed' is not."
-  },
-  "queueCauseSourceUnavailable": "This novel's site is not in this version of the app.",
-  "@queueCauseSourceUnavailable": {
-    "description": "B3 for `source_unavailable`: the novel names a site this build no longer contains, which is a statement about the app rather than about the chapter."
-  },
-  "queueCauseStorageFull": "The phone ran out of storage.",
-  "@queueCauseStorageFull": {
-    "description": "E20 for `storage_full`. NEVER a free-space figure — `downloads.md` § 9 — and never 'try again', which would send the reader round the same loop."
-  },
-  "queueCauseUnknown": "This app cannot say what went wrong.",
-  "@queueCauseUnknown": {
-    "description": "The only honest sentence for an unreadable code. `queue_run_state_deriver.dart` maps one to `QueueStopReason.unknown` and this is what the reader is shown — it does not guess, and C12 accepts a true 'the app cannot say' over a plausible fiction."
-  },
-  "downloadsOpenNovelAction": "Open the novel",
-  "@downloadsOpenNovelAction": {
-    "description": "E9's action for a chapter the site says is gone. NOT a retry — the site has confirmed the item is not coming back, so re-fetching it would fail identically. Navigation is honest: the reader can look at the novel's chapter list."
-  }
+  "warningNotifications": "Notifications are turned off in your phone's settings."
 }

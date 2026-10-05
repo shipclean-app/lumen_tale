@@ -116,6 +116,31 @@ Future<Object?> openOnboarding(BuildContext context) {
   return GoRouter.of(context).push(AppRoutes.onboardingDisclosurePath());
 }
 
+/// Opens another page of a genre's catalogue.
+///
+/// ⚠️ **`push`, NOT `go`, AND THE REASON IS THE BACK BUTTON.** Page 2 of a tag is reached by
+/// scrolling, and a reader who taps *Load more* and then presses back expects to be **above
+/// where they were in page 1**, not returned to the shelf they started from. `go` replaces the
+/// stack, so back would leave the app; `push` appends, so back pops the page they just opened.
+/// This is the same structural reason the reader is pushed rather than `go`-ed, and it is
+/// written on `app_router.dart`'s header.
+Future<Object?> openCataloguePage(
+  BuildContext context, {
+  required String sourceId,
+  required String tag,
+  required int page,
+  String? words,
+}) {
+  return GoRouter.of(context).push(
+    AppRoutes.sourceGenrePage(
+      sourceId: sourceId,
+      genre: tag,
+      page: page,
+      words: words,
+    ),
+  );
+}
+
 /// Opens a novel's details, **on top of** the branch the reader is already on.
 ///
 /// `push`, not `go`, and the reason is different from [openReader]'s: this route
